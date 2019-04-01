@@ -15,9 +15,15 @@ def laplacian_matrix(verts, tris):
     """
     Sparse Laplace(-Beltrami) operator
 
-    verts: (n, 3) array (float)
-    tris: (m, 3) array (int) - indices into the verts array
-    Cotangent weights: w_ij = - 0.5* (cot(alpha) + cot(beta))
+    Parameters:
+
+        verts: (n, 3) array (float)
+        tris: (m, 3) array (int) - indices into the verts array
+
+
+    Returns:
+
+        Cotangent weights: w_ij = - 0.5* (cot(alpha) + cot(beta))
 
     """
     N = verts.shape[0]
