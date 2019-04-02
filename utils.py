@@ -87,3 +87,35 @@ def dual_areas(tris, ta):
             areas[tris[i,j]] += ta[i]
 
     return areas/3
+
+
+def find_mesh_boundaries(verts, tris, edges):
+    '''
+    Finds the open boundaries of a mesh by finding the edges that only
+    belong to a single triangle. Returns an index array of inner vertices
+    and triangles that do not touch the outer boundary.
+    Takes edge parameter for convenience.
+    '''
+
+    unique, unique_idx, unique_count = np.unique(np.sort(edges, axis=-1), axis=0,
+                                                 return_index=True,
+                                                 return_counts=True)
+
+    #If edge only used in one triangle, it is a boundary edge
+    boundary_edges = edges[unique_idx[np.where(unique_count==1)]]
+
+    #Create index arrays for boundary vertices
+    boundary_verts = np.unique(boundary_edges.flatten())
+    inner_verts = np.delete(np.arange(0, len(self.verts)), self.boundary_verts)
+
+    #Find triangles using boundary vertices
+    boundary_tris = np.array([], dtype=np.int)
+    for vert in self.boundary_verts:
+        boundary_tris = np.append(boundary_tris, np.where(np.any(tris == vert, axis=-1) is True)[0])
+
+    #Create index arrays for boundary triangles
+    boundary_tris = np.unique(boundary_tris)
+    inner_tris = np.delete(np.arange(0, len(tris)), boundary_tris)
+
+    return boundary_verts, inner_verts, boundary_tris, inner_tris
+

@@ -51,38 +51,19 @@ class ToBeNamed:
 
         #Useful mesh metrics etc, more can be added
         self.dual_areas = utils.dual_areas(self.tris, self.tri_areas)
-#        self.tri_barycenters =
-#        self.
+
+        self.boundary_verts, self.inner_verts,
+        self.boundary_tris, self.inner_tris = utils.find_mesh_boundaries(self.verts,
+                                                                         self.tris,
+                                                                         self.mesh.edges)
+#        self.tri_barycenters = ...
+
 
         #Define uncomputed measures as None in constructor
         self.inductance = None
         self.resistance = None
         self.laplacian = None
         self.mass_matrix = None
-
-
-    def find_boundary(self):
-        '''
-        Finds the open boundaries of a mesh by finding the edges that only
-        belong to a single triangle. Returns an index array of inner vertices
-        and triangles that do not touch the outer boundary.
-        '''
-        unique, unique_idx, unique_count = np.unique(np.sort(self.mesh.edges,axis=-1), axis=0,
-                                                     return_index=True,
-                                                     return_counts=True)
-
-        boundary_edges = self.mesh.edges[unique_idx[np.where(unique_count==1)]]
-
-        self.boundary_verts = np.unique(boundary_edges.flatten())
-        self.inner_verts = np.delete(np.arange(0, len(self.verts)), self.boundary_verts)
-
-        self.boundary_tris = np.array([], dtype=np.int)
-        for vert in self.boundary_verts:
-            self.boundary_tris = np.append(self.boundary_tris, np.where(np.any(self.tris==vert, axis=-1)==True)[0])
-
-        self.boundary_tris = np.unique(self.boundary_tris)
-
-        self.inner_tris = np.delete(np.arange(0, len(self.tris)), self.boundary_tris)
 
 
 
