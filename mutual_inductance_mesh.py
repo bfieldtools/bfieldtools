@@ -139,7 +139,7 @@ def mutual_inductance_matrix(verts, tris, tri_normals=None, tri_areas=None):
 
     RR = quadpoints[:,:, None, None, :] - R[None, None, :, :, :]
     print('Calculating potentials')
-    pots = triangle_potential(RR, n) # Ntri_eval, Nquad, Ntri_source
+    pots = triangle_potential(RR, tri_normals) # Ntri_eval, Nquad, Ntri_source
     pots = np.sum(pots*weights[None,:,None], axis=1) # Ntri_eval, Ntri_source
 
 

@@ -52,8 +52,7 @@ class ToBeNamed:
         #Useful mesh metrics etc, more can be added
         self.dual_areas = utils.dual_areas(self.tris, self.tri_areas)
 
-        self.boundary_verts, self.inner_verts,
-        self.boundary_tris, self.inner_tris = utils.find_mesh_boundaries(self.verts,
+        self.boundary_verts, self.inner_verts, self.boundary_tris, self.inner_tris = utils.find_mesh_boundaries(self.verts,
                                                                          self.tris,
                                                                          self.mesh.edges)
 #        self.tri_barycenters = ...
@@ -113,9 +112,46 @@ class ToBeNamed:
         Plot eigenmodes of surface currents
         '''
 
+        from scipy.linalg import eigh
 
 
-        return NotImplementedError()
+        M=0.5*(self.inductance + self.inductance.T)
+        Min = M[self.inner_verts[None,:], self.inner_verts[:,None]]
+        print('Calculating modes')
+
+        L = np.array(self.laplacian.todense())
+        Lin = L[self.inner_verts[None,:], self.inner_verts[:,None]]
+        w,v = eigh(-Lin, Min)
+
+        mlab.figure()
+        scalars = np.zeros((self.verts.shape[0],))
+
+        limit = np.max(abs(v[:,0]))
+
+        for ii in range(n_modes):
+
+            n = int(np.sqrt(n_modes))
+
+            i = ii % n
+            j = int(ii/n)
+
+            print(i,j)
+
+            #Offset modes on XY-plane
+            x = self.verts[:,0] + i*1.1
+            y = self.verts[:,1] + j*1.1
+            z = self.verts[:,2]
+
+            scalars[self.inner_verts] = v[:,ii]
+
+            s=mlab.triangular_mesh(x, y, z, self.tris, scalars=scalars)
+
+            s.module_manager.scalar_lut_manager.number_of_colors = 16
+            s.module_manager.scalar_lut_manager.data_range = np.array([-limit,limit])
+
+            s.actor.mapper.interpolate_scalars_before_mapping = True
+
+        return s
 
 
 if __name__ == '__main__':
@@ -134,5 +170,9 @@ if __name__ == '__main__':
     tris = tt.triangles
 
 
-    obj = ToBeNamed(mesh_file='/m/nbe/project/hrmeg/matlab_koodit/CoilDesignPackage/CoilDesign/streamBEM/data/RZ_test_4planes_round.obj')
+    obj = ToBeNamed(mesh_file='/m/nbe/project/hrmeg/matlab_koodit/CoilDesignPackage/CoilDesign/streamBEM/data/RZ_test_4planes_lowres.obj')
+    obj.compute_mutual_inductance()
+    obj.compute_laplacian()
+
+    obj.plot_eigenmodes(n_modes=8)
 

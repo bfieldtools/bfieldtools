@@ -106,11 +106,11 @@ def find_mesh_boundaries(verts, tris, edges):
 
     #Create index arrays for boundary vertices
     boundary_verts = np.unique(boundary_edges.flatten())
-    inner_verts = np.delete(np.arange(0, len(self.verts)), self.boundary_verts)
+    inner_verts = np.delete(np.arange(0, len(verts)), boundary_verts)
 
     #Find triangles using boundary vertices
     boundary_tris = np.array([], dtype=np.int)
-    for vert in self.boundary_verts:
+    for vert in boundary_verts:
         boundary_tris = np.append(boundary_tris, np.where(np.any(tris == vert, axis=-1) is True)[0])
 
     #Create index arrays for boundary triangles
