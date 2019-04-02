@@ -119,7 +119,7 @@ def triangle_potential(R, tn, planar = True):
 
 
 
-def mutual_inductance_matrix(verts, tris):
+def mutual_inductance_matrix(verts, tris, tri_normals=None, tri_areas=None):
     """ Calculate a mutual inductance matrix for hat basis functions
         (stream functions) in the triangular mesh described by
 
@@ -133,8 +133,9 @@ def mutual_inductance_matrix(verts, tris):
     weights, quadpoints = get_quad_points(verts, tris, 'Centroid')
     # Nt x Nquad x  3 (x,y,z)
 
-    # normals and areas
-    n, a = tri_normals_and_areas(verts, tris)
+    # Triangle normals and areas, compute if not provided
+    if isinstance(tri_normals, type(None)) or isinstance(tri_areas, type(None)):
+        tri_normals, tri_areas = tri_normals_and_areas(verts, tris)
 
     RR = quadpoints[:,:, None, None, :] - R[None, None, :, :, :]
     print('Calculating potentials')
@@ -143,8 +144,8 @@ def mutual_inductance_matrix(verts, tris):
 
 
     tri_data = np.sum(edges[None,:,None,:,:]*edges[:,None,:,None,:], axis=-1) # i,j,k,l
-    tri_data /= (a[:,None]*a[None,:]*4)[:,:,None,None]
-    tri_data *= (a[:, None]*pots)[:,:,None,None]
+    tri_data /= (tri_areas[:,None]*tri_areas[None,:]*4)[:,:,None,None]
+    tri_data *= (tri_areas[:, None]*pots)[:,:,None,None]
     print('Inserting stuff into M-matrix')
 
     # Non optimized version of the matrix assembly

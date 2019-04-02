@@ -11,7 +11,7 @@ from scipy.sparse import csr_matrix, spdiags
 from utils import tri_normals_and_areas, dual_areas
 
 
-def laplacian_matrix(verts, tris):
+def laplacian_matrix(verts, tris, tri_normals=None, tri_areas=None, da=None):
     """
     Sparse Laplace(-Beltrami) operator
 
@@ -28,10 +28,13 @@ def laplacian_matrix(verts, tris):
     """
     N = verts.shape[0]
     R = verts[tris]  # Nt x 3 (corners) x 3 (xyz)
+
     # Edges opposite to the vertex
     edges = np.roll(R, 1, -2) - np.roll(R, 2, -2) # Nt x 3 (edges) x 3 (x,y,z)
-    # Areas
-    n, a = tri_normals_and_areas(verts, tris)
+
+    # Triangle normals and areas, compute if not provided
+    if isinstance(tri_normals, type(None)) or isinstance(tri_areas, type(None)):
+        tri_normals, tri_areas = tri_normals_and_areas(verts, tris)
     ii = []
     jj = []
     cot = []
@@ -41,7 +44,7 @@ def laplacian_matrix(verts, tris):
         i2 = (i+2) % 3
         ii.append(tris[:, i1])
         jj.append(tris[:, i2])
-        cot.append(-0.5*(edges[:, i1, :]*edges[:, i2, :]).sum(axis=-1)/(2*a))
+        cot.append(-0.5*(edges[:, i1, :]*edges[:, i2, :]).sum(axis=-1)/(2*tri_areas))
 
     ii = np.ravel(ii)
     jj = np.ravel(jj)
@@ -53,7 +56,8 @@ def laplacian_matrix(verts, tris):
     L = L + L.T
     L = L - spdiags(L.sum(axis=0), 0, N, N)
 
-    da = dual_areas(tris, a)
+    if da is None:
+        da = dual_areas(tris, tri_areas)
     # Area / Mass matrix
     A =spdiags(da, 0, verts.shape[0], verts.shape[0]).tocsr()
 
