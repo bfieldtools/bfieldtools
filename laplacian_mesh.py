@@ -58,10 +58,24 @@ def laplacian_matrix(verts, tris, tri_normals=None, tri_areas=None, da=None):
 
     if da is None:
         da = dual_areas(tris, tri_areas)
-    # Area / Mass matrix
+
+    return L
+
+def mass_matrix(verts, tris, tri_areas=None, da=None):
+    '''
+    Computes mass matrix of mesh
+    '''
+
+    if da is None:
+        if tri_areas is None:
+            tri_normals, tri_areas = tri_normals_and_areas(verts, tris)
+
+        da = dual_areas(tris, tri_areas)
+
     A =spdiags(da, 0, verts.shape[0], verts.shape[0]).tocsr()
 
-    return L, A
+    return A
+
 
 
 if __name__ == '__main__':

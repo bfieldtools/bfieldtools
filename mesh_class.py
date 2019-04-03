@@ -11,8 +11,26 @@ import trimesh
 
 
 import utils
-from laplacian_mesh import laplacian_matrix
+from laplacian_mesh import laplacian_matrix, mass_matrix
 from mutual_inductance_mesh import mutual_inductance_matrix
+
+
+class LazyProperty():
+    '''
+    Implementation of lazily loading properties, see
+    http://blog.pythonisito.com/2008/08/lazy-descriptors.html
+    '''
+
+    def __init__(self, func):
+        self._func = func
+        self.__name__ = func.__name__
+        self.__doc__ = func.__doc__
+
+    def __get__(self, obj, klass=None):
+        if obj is None:
+            return None
+        result = obj.__dict__[self.__name__] = self._func(obj)
+        return result
 
 
 class ToBeNamed:
@@ -53,49 +71,66 @@ class ToBeNamed:
         self.dual_areas = utils.dual_areas(self.tris, self.tri_areas)
 
         self.boundary_verts, self.inner_verts, self.boundary_tris, self.inner_tris = utils.find_mesh_boundaries(self.verts,
-                                                                         self.tris,
-                                                                         self.mesh.edges)
+                                                                                                                self.tris,
+                                                                                                                self.mesh.edges)
 #        self.tri_barycenters = ...
 
 
-        #Define uncomputed measures as None in constructor
-        self.inductance = None
-        self.resistance = None
-        self.laplacian = None
-        self.mass_matrix = None
+#        #Define uncomputed measures as None in constructor
+#        self.inductance = None
+#        self.resistance = None
+#        self.laplacian = None
+#        self.mass_matrix = None
 
 
-
-    def compute_laplacian(self):
+    @LazyProperty
+    def laplacian(self):
         '''
         Compute and return surface laplacian matrix as well as mass matrix.
         '''
-        self.laplacian, self.mass_matrix = laplacian_matrix(self.verts, self.tris,
-                                                            self.tri_normals,
-                                                            self.tri_areas,
-                                                            self.dual_areas)
+        laplacian = laplacian_matrix(self.verts, self.tris,
+                                     self.tri_normals,
+                                     self.tri_areas,
+                                     self.dual_areas)
 
-        return self.laplacian, self.mass_matrix
+        return laplacian
 
 
-    def compute_mutual_inductance(self):
+    @LazyProperty
+    def mass(self):
+        '''
+        Compute and return mesh mass matrix.
+        '''
+        mass = mass_matrix(self.verts, self.tris, self.tri_areas, self.dual_areas)
+
+        return mass
+
+
+    @LazyProperty
+    def inductance(self):
         '''
         Compute and return mutual inductance matrix.
         '''
 
-        self.inductance = mutual_inductance_matrix(self.verts, self.tris)
+        inductance = mutual_inductance_matrix(self.verts, self.tris)
 
-        return self.inductance
+        return inductance
 
 
-    def compute_resistance(self):
+    @LazyProperty
+    def resistance(self, resistivity=1.68*1e-8, thickness=1e-4):
         '''
-        Compute and return resistance/resistivity matrix.
+        Compute and return resistance/resistivity matrix using Laplace matrix.
+        Default resistivity set to that of copper.
+        NB! For now, the resistivity and thickness values are set in stone.
+        To continue using @LazyProperty, they could be moved into class attributes.
+        Alternatively, this LazyProperty could be turned into a method.
         '''
 
-        self.resistance = NotImplementedError('Function not implemented yet')
+        resistance = 1/(resistivity*thickness)*self.laplacian
 
-        return self.resistance
+        return resistance
+
 
     def plot_mesh(self):
         '''
@@ -107,6 +142,7 @@ class ToBeNamed:
 
         return mesh
 
+
     def plot_eigenmodes(self, n_modes=8):
         '''
         Plot eigenmodes of surface currents
@@ -114,40 +150,39 @@ class ToBeNamed:
 
         from scipy.linalg import eigh
 
-
-        M=0.5*(self.inductance + self.inductance.T)
-        Min = M[self.inner_verts[None,:], self.inner_verts[:,None]]
+        M = 0.5 * (self.inductance + self.inductance.T)
+        Min = M[self.inner_verts[None, :], self.inner_verts[:, None]]
         print('Calculating modes')
 
         L = np.array(self.laplacian.todense())
-        Lin = L[self.inner_verts[None,:], self.inner_verts[:,None]]
-        w,v = eigh(-Lin, Min)
+        Lin = L[self.inner_verts[None, :], self.inner_verts[:, None]]
+        w, v = eigh(-Lin, Min)
 
         mlab.figure()
-        scalars = np.zeros((self.verts.shape[0],))
+        scalars = np.zeros((self.verts.shape[0], ))
 
-        limit = np.max(abs(v[:,0]))
+        limit = np.max(abs(v[:, 0]))
 
         for ii in range(n_modes):
 
             n = int(np.sqrt(n_modes))
 
             i = ii % n
-            j = int(ii/n)
+            j = int(ii / n)
 
-            print(i,j)
+            print(i, j)
 
             #Offset modes on XY-plane
-            x = self.verts[:,0] + i*1.1
-            y = self.verts[:,1] + j*1.1
-            z = self.verts[:,2]
+            x = self.verts[:, 0] + i * 1.1
+            y = self.verts[:, 1] + j * 1.1
+            z = self.verts[:, 2]
 
-            scalars[self.inner_verts] = v[:,ii]
+            scalars[self.inner_verts] = v[:, ii]
 
-            s=mlab.triangular_mesh(x, y, z, self.tris, scalars=scalars)
+            s = mlab.triangular_mesh(x, y, z, self.tris, scalars=scalars)
 
             s.module_manager.scalar_lut_manager.number_of_colors = 16
-            s.module_manager.scalar_lut_manager.data_range = np.array([-limit,limit])
+            s.module_manager.scalar_lut_manager.data_range = np.array([-limit, limit])
 
             s.actor.mapper.interpolate_scalars_before_mapping = True
 
@@ -171,8 +206,5 @@ if __name__ == '__main__':
 
 
     obj = ToBeNamed(mesh_file='/m/nbe/project/hrmeg/matlab_koodit/CoilDesignPackage/CoilDesign/streamBEM/data/RZ_test_4planes_lowres.obj')
-    obj.compute_mutual_inductance()
-    obj.compute_laplacian()
 
     obj.plot_eigenmodes(n_modes=8)
-
