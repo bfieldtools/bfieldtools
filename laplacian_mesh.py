@@ -11,7 +11,7 @@ from scipy.sparse import csr_matrix, spdiags
 from utils import tri_normals_and_areas, dual_areas
 
 
-def laplacian_matrix(verts, tris, tri_normals=None, tri_areas=None, da=None):
+def laplacian_matrix(verts, tris, tri_normals=None, tri_areas=None):
     """
     Sparse Laplace(-Beltrami) operator
 
@@ -56,14 +56,11 @@ def laplacian_matrix(verts, tris, tri_normals=None, tri_areas=None, da=None):
     L = L + L.T
     L = L - spdiags(L.sum(axis=0), 0, N, N)
 
-    if da is None:
-        da = dual_areas(tris, tri_areas)
-
     return L
 
 def mass_matrix(verts, tris, tri_areas=None, da=None):
     '''
-    Computes mass matrix of mesh
+    Computes mass matrix of mesh.
     '''
 
     if da is None:

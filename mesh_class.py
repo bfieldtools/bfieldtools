@@ -90,8 +90,7 @@ class ToBeNamed:
         '''
         laplacian = laplacian_matrix(self.verts, self.tris,
                                      self.tri_normals,
-                                     self.tri_areas,
-                                     self.dual_areas)
+                                     self.tri_areas)
 
         return laplacian
 
@@ -127,7 +126,7 @@ class ToBeNamed:
         Alternatively, this LazyProperty could be turned into a method.
         '''
 
-        resistance = 1/(resistivity*thickness)*self.laplacian
+        resistance = resistivity / thickness * self.laplacian
 
         return resistance
 
