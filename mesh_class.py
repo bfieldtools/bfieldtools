@@ -49,22 +49,17 @@ class ToBeNamed:
         if mesh_file: #First, check if mesh_file passed
             self.mesh = trimesh.load(mesh_file)
 
-            self.verts = self.mesh.vertices
-            self.tris = self.mesh.faces
-
-            self.tri_areas = self.mesh.area_faces
-            self.tri_normals = self.mesh.face_normals
 
         else: #Fall back on verts, tris parameters
             if isinstance(verts, type(None)) or isinstance(tris, type(None)):
                 ValueError('You must provide either verts and tris or a mesh file')
+            self.mesh = trimesh.Trimesh(verts, tris)
 
-            self.verts = verts
-            self.tris = tris
+        self.verts = self.mesh.vertices
+        self.tris = self.mesh.faces
 
-            #Compute normals and surface already in constructor, should be quick
-            self.tri_normals, self.tri_areas = utils.tri_normals_and_areas(self.verts, self.tris)
-
+        self.tri_areas = self.mesh.area_faces
+        self.tri_normals = self.mesh.face_normals
 
 
         #Useful mesh metrics etc, more can be added
@@ -126,7 +121,10 @@ class ToBeNamed:
         Alternatively, this LazyProperty could be turned into a method.
         '''
 
-        resistance = resistivity / thickness * self.laplacian
+        resistance = np.zeros(self.laplacian.shape) # Do we want this sparse?
+        R = resistivity / thickness
+        ii = obj.inner_verts
+        resistance[ii][:,ii] = R * self.laplacian[ii][:,ii]
 
         return resistance
 
@@ -153,9 +151,9 @@ class ToBeNamed:
         Min = M[self.inner_verts[None, :], self.inner_verts[:, None]]
         print('Calculating modes')
 
-        L = np.array(self.laplacian.todense())
-        Lin = L[self.inner_verts[None, :], self.inner_verts[:, None]]
-        w, v = eigh(-Lin, Min)
+        R = np.array(self.laplacian.todense())
+        Rin = R[self.inner_verts[None, :], self.inner_verts[:, None]]
+        w, v = eigh(-Rin, Min)
 
         mlab.figure()
         scalars = np.zeros((self.verts.shape[0], ))
@@ -204,6 +202,6 @@ if __name__ == '__main__':
     tris = tt.triangles
 
 
-    obj = ToBeNamed(mesh_file='/m/nbe/project/hrmeg/matlab_koodit/CoilDesignPackage/CoilDesign/streamBEM/data/RZ_test_4planes_lowres.obj')
-
+    #obj = ToBeNamed(mesh_file='/m/nbe/project/hrmeg/matlab_koodit/CoilDesignPackage/CoilDesign/streamBEM/data/RZ_test_4planes_lowres.obj')
+    obj = ToBeNamed(verts, tris)
     obj.plot_eigenmodes(n_modes=8)
