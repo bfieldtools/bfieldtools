@@ -121,10 +121,10 @@ class ToBeNamed:
         Alternatively, this LazyProperty could be turned into a method.
         '''
 
-        resistance = np.zeros(self.laplacian.shape) # Do we want this sparse?
-        R = resistivity / thickness
-        ii = obj.inner_verts
-        resistance[ii][:,ii] = R * self.laplacian[ii][:,ii]
+        resistance = (resistivity / thickness) *self.laplacian
+#        ii = self.boundary_verts
+#        resistance[ii, :]  = 0
+#        resistance[:, ii]  = 0
 
         return resistance
 

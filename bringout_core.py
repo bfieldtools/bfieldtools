@@ -1,5 +1,6 @@
 import numpy as np
 from numba import jit, prange
+from utils import tri_normals_and_areas
 
 def get_neighbour_vertices(vertices, edges):
     '''
