@@ -13,7 +13,7 @@ import trimesh
 import utils
 from laplacian_mesh import laplacian_matrix, mass_matrix
 from mutual_inductance_mesh import mutual_inductance_matrix
-
+from scipy.sparse import csr_matrix
 
 class LazyProperty():
     '''
@@ -65,17 +65,10 @@ class ToBeNamed:
         #Useful mesh metrics etc, more can be added
         self.dual_areas = utils.dual_areas(self.tris, self.tri_areas)
 
-        self.boundary_verts, self.inner_verts, self.boundary_tris, self.inner_tris = utils.find_mesh_boundaries(self.verts,
-                                                                                                                self.tris,
-                                                                                                                self.mesh.edges)
-#        self.tri_barycenters = ...
-
-
-#        #Define uncomputed measures as None in constructor
-#        self.inductance = None
-#        self.resistance = None
-#        self.laplacian = None
-#        self.mass_matrix = None
+        self.boundary_verts, self.inner_verts,\
+        self.boundary_tris, self.inner_tris = utils.find_mesh_boundaries(self.verts,
+                                                                         self.tris,
+                                                                         self.mesh.edges)
 
 
     @LazyProperty
@@ -121,10 +114,11 @@ class ToBeNamed:
         Alternatively, this LazyProperty could be turned into a method.
         '''
 
-        resistance = np.zeros(self.laplacian.shape) # Do we want this sparse?
         R = resistivity / thickness
-        ii = obj.inner_verts
-        resistance[ii][:,ii] = R * self.laplacian[ii][:,ii]
+        resistance = R * self.laplacian.todense()
+
+        #Set boundary vertices to zero
+        resistance[obj.boundary_verts, :][:, obj.boundary_verts] = 0
 
         return resistance
 
@@ -185,6 +179,18 @@ class ToBeNamed:
 
         return s
 
+    def optimize_streamfunctions(objective='energy', target_error=0.05, target_field, target_points):
+
+        from scipy.optimize import minimize, LinearConstraint
+
+        energy = lambda I, L: np.dot(np.dot(I, L), I)
+
+
+        error_constraint = LinearConstraint(self.C, lb, ub)
+
+        minimize(energy, init_guess, args=(self.inductance), constraints=error_constraint)
+
+
 
 if __name__ == '__main__':
     from matplotlib.tri import Triangulation
@@ -202,6 +208,8 @@ if __name__ == '__main__':
     tris = tt.triangles
 
 
-    #obj = ToBeNamed(mesh_file='/m/nbe/project/hrmeg/matlab_koodit/CoilDesignPackage/CoilDesign/streamBEM/data/RZ_test_4planes_lowres.obj')
-    obj = ToBeNamed(verts, tris)
-    obj.plot_eigenmodes(n_modes=8)
+    obj = ToBeNamed(mesh_file='/m/nbe/project/hrmeg/matlab_koodit/CoilDesignPackage/CoilDesign/streamBEM/data/RZ_test_4planes_lowres.obj')
+#    obj = ToBeNamed(verts, tris)
+#    obj.plot_eigenmodes(n_modes=8)
+#
+    obj.resistance
