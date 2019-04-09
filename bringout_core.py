@@ -1,5 +1,6 @@
 import numpy as np
 from numba import jit, prange
+from utils import tri_normals_and_areas, get_quad_points
 
 def get_neighbour_vertices(vertices, edges):
     '''
@@ -73,9 +74,9 @@ def create_basis(verts, tris, centre=np.array([0, 0, 0]), tri_areas=None, tri_no
 
 
             if dotprod > 0:
-                vmi[m].append((Ami - Bmi)/tri_areas[tri_idx])
+                vmi[m].append((Ami - Bmi)/(2 * tri_areas[tri_idx]))
             else:
-                vmi[m].append((Bmi - Ami)/tri_areas[tri_idx])
+                vmi[m].append((Bmi - Ami)/(2 * tri_areas[tri_idx]))
 
     return dict(v=vmi, A=Ami, B=Bmi, C=Cmi)
 
@@ -220,7 +221,7 @@ def compute_L(verts1, tris1, basis1=None, verts2=None, tris2=None, basis2=None,
         L[m] = superBigSum
 
 
-#@jit
+@jit
 def compute_R(verts, tris, basis=None, vert_links=None, tri_areas=None, rho=1.68*1e-8, t=1e-4):
     '''
     Computes resitivity matrix for surface mesh made of material with resistivity rho and thickness t
@@ -239,6 +240,7 @@ def compute_R(verts, tris, basis=None, vert_links=None, tri_areas=None, rho=1.68
     R = np.full((n_verts, n_verts), fill_value=np.nan)
 
 
+
     surface_resistance = rho/t
 
     #Compute vertex links if needed
@@ -255,7 +257,7 @@ def compute_R(verts, tris, basis=None, vert_links=None, tri_areas=None, rho=1.68
 
 
     # Iterate though upper triangular matrix including diagonal
-    for m in prange(n_verts):
+    for m in range(n_verts):
         for n in range(m, n_verts):
             bigSum = 0
             for i in range(len(vert_links[m])):
@@ -275,7 +277,7 @@ def compute_R(verts, tris, basis=None, vert_links=None, tri_areas=None, rho=1.68
 
                         vnj = basis['v'][n][j]
 
-                        bigSum += np.dot(vmi, vnj)*tri_areas[m]
+                        bigSum += np.dot(vmi, vnj) * tri_areas[m]**2
 
             R[m, n] = surface_resistance * bigSum
 
@@ -286,9 +288,54 @@ def compute_R(verts, tris, basis=None, vert_links=None, tri_areas=None, rho=1.68
 
     return R
 
+@jit
+def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None):
+    '''
+    Given a mesh, computes the "cn matrix", see eq. 5.13 in Michael Poole's thesis.
 
-def compute_C(mesh, basis, r):
-    return C
+    '''
+    mu0 = 4 * np.pi * 1e-7
+    coef = mu0 / np.pi
+
+    if vert_links is None:
+        vert_links = get_vert_links(mesh.vertices, mesh.faces)
+
+    if tri_areas is None:
+        tri_normals, tri_areas = tri_normals_and_areas(mesh.vertices, mesh.faces)
+
+    if basis is None:
+        basis = create_basis(mesh.vertices, mesh.faces)
+
+
+    w_quad, r_quad = get_quad_points(mesh.vertices, mesh.faces, method='Centroid')
+    n_quad_points = 1
+
+    n_target_points = len(r)
+
+    n_verts = len(mesh.vertices)
+
+    C = np.zeros((n_target_points, n_verts, 3))
+
+    #For each vertex
+    for n in prange(n_verts):
+
+        print('vertex: %d'%n)
+
+        #For each target point
+        for k in range(n_target_points):
+
+            #For each triangle the vertex is used for
+            for i in range(len(vert_links[n])):
+
+                #For each quadrature point of that triangle
+                for l in range(n_quad_points):
+                    denom = np.linalg.norm(r[k] - r_quad[l])**3
+                    C[k, n] += w_quad[l] * np.cross(-(r[k] - r_quad[l]) / denom, basis['v'][n][i]).flatten()
+
+                #Some kind of area scaling applied by Bringout, is this due to the area integral?
+                C[k, n] *= 2 * tri_areas[vert_links[n][i]]
+
+    return coef * C
 
 
 
