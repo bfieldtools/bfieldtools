@@ -144,4 +144,4 @@ def fibonacci_sphere(samples=1, center=np.array([0, 0, 0]), radius = 1, randomiz
         points[i, 0] = np.cos(phi) * r
         points[i, 2] = np.sin(phi) * r
 
-    return points
+    return radius*(points+center)
