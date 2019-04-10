@@ -179,18 +179,6 @@ class ToBeNamed:
 
         return s
 
-    def optimize_streamfunctions(objective='energy', target_error=0.05, target_field, target_points):
-
-        from scipy.optimize import minimize, LinearConstraint
-
-        energy = lambda I, L: np.dot(np.dot(I, L), I)
-
-
-        error_constraint = LinearConstraint(self.C, lb, ub)
-
-        minimize(energy, init_guess, args=(self.inductance), constraints=error_constraint)
-
-
 
 if __name__ == '__main__':
     from matplotlib.tri import Triangulation
@@ -208,8 +196,9 @@ if __name__ == '__main__':
     tris = tt.triangles
 
 
-    obj = ToBeNamed(mesh_file='/m/nbe/project/hrmeg/matlab_koodit/CoilDesignPackage/CoilDesign/streamBEM/data/RZ_test_4planes_lowres.obj')
+    obj = ToBeNamed(mesh_file='/l/bfieldtools/RZ_test_4planes_lowres.obj')
 #    obj = ToBeNamed(verts, tris)
 #    obj.plot_eigenmodes(n_modes=8)
-#
-    obj.resistance
+##
+#    obj.resistance
+#    obj.inductance

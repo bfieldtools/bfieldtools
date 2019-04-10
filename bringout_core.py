@@ -61,9 +61,9 @@ def create_basis(verts, tris, centre=np.array([0, 0, 0]), tri_areas=None, tri_no
 
 
             #A - coordinates of the second node of the i_th face of the m_th node
-            Ami = verts[a_vert_idx]
+            Ami = verts[tris[tri_idx]][a_vert_idx]
             #B - coordinates of the third node of the i_th face of the m_th node
-            Bmi = verts[b_vert_idx]
+            Bmi = verts[tris[tri_idx]][b_vert_idx]
             #C - coordinates of the first node of the i_th face of the m_th node
             Cmi = verts[m]
 
@@ -330,9 +330,13 @@ def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None):
                 #For each quadrature point of that triangle
                 for l in range(n_quad_points):
                     denom = np.linalg.norm(r[k] - r_quad[l])**3
-                    C[k, n] += w_quad[l] * np.cross(-(r[k] - r_quad[l]) / denom, basis['v'][n][i]).flatten()
+                    C[k, n] += w_quad[l] * np.cross(-(r[k] - r_quad[vert_links[n][i]][l]) / denom, basis['v'][n][i]).flatten()
 
-                #Some kind of area scaling applied by Bringout, is this due to the area integral?
+#                    C[k, n, 0] = w_quad[l] * ((-basis['v'][n][i][2]*(r[k, 1] - r_quad[l, 1]) + basis['v'][n][i][1] * (r[k, 2] - r_quad[l, 2]))) / denom
+#                    C[k, n, 1] = w_quad[l] * ((-basis['v'][n][i][0]*(r[k, 2] - r_quad[l, 2]) + basis['v'][n][i][2] * (r[k, 0] - r_quad[l, 0]))) / denom
+#                    C[k, n, 2] = w_quad[l] * ((-basis['v'][n][i][1]*(r[k, 0] - r_quad[l, 0]) + basis['v'][n][i][0] * (r[k, 1] - r_quad[l, 1]))) / denom
+
+                #Area scaling applied by Bringout, is this due to the area integral?
                 C[k, n] *= 2 * tri_areas[vert_links[n][i]]
 
     return coef * C
