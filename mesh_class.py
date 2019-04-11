@@ -198,7 +198,10 @@ if __name__ == '__main__':
     tris = tt.triangles
 
 
-    obj = ToBeNamed(mesh_file='/l/bfieldtools/example_meshes/macqsimal_testcoils.obj')
+    obj = ToBeNamed(mesh_file='/l/bfieldtools/example_meshes/macqsimal_testcoils_lowres.obj')
+
+
+
 
     #for millimeters to meters
     obj.mesh.apply_scale(0.001)
@@ -213,9 +216,9 @@ if __name__ == '__main__':
 
     target_field = 1e-8*np.ones((n_points, ))
     I = optimize_streamfunctions(obj, target_field,
-                                 target_axis=1,
+                                 target_axis=2,
                                  target_error={'on_axis':0.005, 'off_axis':0.005},
-                                 laplacian_smooth=200)
+                                 laplacian_smooth=0)
 
     limit = np.max(np.abs(I))
 

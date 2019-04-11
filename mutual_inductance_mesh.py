@@ -88,7 +88,7 @@ def omega(R):
     return sa
 
 
-def triangle_potential(R, tn, planar = True):
+def triangle_potential(R, tn, planar = False):
     """ 1/r potential of a uniform triangle
 
         Parameters:
@@ -119,7 +119,7 @@ def triangle_potential(R, tn, planar = True):
 
 
 
-def mutual_inductance_matrix(verts, tris, tri_normals=None, tri_areas=None):
+def mutual_inductance_matrix(verts, tris, tri_normals=None, tri_areas=None, planar=False):
     """ Calculate a mutual inductance matrix for hat basis functions
         (stream functions) in the triangular mesh described by
 
@@ -139,7 +139,7 @@ def mutual_inductance_matrix(verts, tris, tri_normals=None, tri_areas=None):
 
     RR = quadpoints[:,:, None, None, :] - R[None, None, :, :, :]
     print('Calculating potentials')
-    pots = triangle_potential(RR, tri_normals) # Ntri_eval, Nquad, Ntri_source
+    pots = triangle_potential(RR, tri_normals, planar=planar) # Ntri_eval, Nquad, Ntri_source
     pots = np.sum(pots*weights[None,:,None], axis=1) # Ntri_eval, Ntri_source
 
 
