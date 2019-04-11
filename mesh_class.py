@@ -9,11 +9,10 @@ Created on Tue Apr  2 10:41:43 2019
 from mayavi import mlab
 import trimesh
 
-
 import utils
 from laplacian_mesh import laplacian_matrix, mass_matrix
 from mutual_inductance_mesh import mutual_inductance_matrix
-from scipy.sparse import csr_matrix
+
 
 class LazyProperty():
     '''
@@ -183,6 +182,9 @@ class ToBeNamed:
 if __name__ == '__main__':
     from matplotlib.tri import Triangulation
     import numpy as np
+    from utils import fibonacci_sphere
+    from bringout_core import compute_C
+    from coil_optimize import optimize_streamfunctions
 
     xx = np.linspace(0, 1, 50)
     X, Y = np.meshgrid(xx, xx, indexing='ij')
@@ -196,9 +198,49 @@ if __name__ == '__main__':
     tris = tt.triangles
 
 
-    obj = ToBeNamed(mesh_file='/l/bfieldtools/RZ_test_4planes_lowres.obj')
-#    obj = ToBeNamed(verts, tris)
-#    obj.plot_eigenmodes(n_modes=8)
-##
-#    obj.resistance
-#    obj.inductance
+    obj = ToBeNamed(mesh_file='/l/bfieldtools/example_meshes/macqsimal_testcoils.obj')
+
+    #for millimeters to meters
+    obj.mesh.apply_scale(0.001)
+    obj.verts = obj.mesh.vertices
+
+    n_points = 50
+    radius = 0.001
+    center = np.array([0, 0, 0])
+    target_points = fibonacci_sphere(n_points, radius=radius, center=center)
+
+    obj.C = compute_C(obj.mesh, target_points)
+
+    target_field = 1e-8*np.ones((n_points, ))
+    I = optimize_streamfunctions(obj, target_field, target_axis=1, target_error=0.005, laplacian_smooth=0)
+
+    limit = np.max(np.abs(I))
+
+    mlab.figure()
+    s=mlab.triangular_mesh(*obj.verts.T, obj.tris,scalars=I)
+    s.module_manager.scalar_lut_manager.data_range = np.array([-limit,limit])
+#    mlab.points3d(*target_points.T)
+
+    B_target = np.vstack((obj.C[:, :, 0].dot(I), obj.C[:, :, 1].dot(I), obj.C[:, :, 2].dot(I))).T
+
+    mlab.quiver3d(*target_points.T, *B_target.T)
+
+#
+#    xx = np.linspace(-0.01, 0.01, 20)
+#    X, Z = np.meshgrid(xx, xx, indexing='ij')
+#
+#    x = X.ravel()
+#    z = Z.ravel()
+#    y = np.zeros_like(x)
+#
+#    plane_points = np.vstack((x, y, z)).T
+#
+#    mlab.points3d(*plane_points.T)
+#
+#    plane_C = compute_C(obj.mesh, plane_points)
+#
+#    B_plane = np.vstack((plane_C[:, :, 0].dot(I), plane_C[:, :, 1].dot(I), plane_C[:, :, 2].dot(I))).T
+#
+#
+##    mlab.points3d(*plane_points.T)
+#    mlab.quiver3d(*plane_points.T, *B_plane.T)

@@ -1,5 +1,5 @@
 import numpy as np
-from numba import jit, prange
+from numba import njit, jit, prange
 from utils import tri_normals_and_areas, get_quad_points
 
 def get_neighbour_vertices(vertices, edges):
@@ -46,9 +46,16 @@ def create_basis(verts, tris, centre=np.array([0, 0, 0]), tri_areas=None, tri_no
 #    vert_links = get_neighbour_vertices(verts, edges)
 
     vmi = []
+    A = []
+    B = []
+    C = []
     for m in range(n_verts):
 
         vmi.append([])
+
+        A.append([])
+        B.append([])
+        C.append([])
 
         vert_links, vert_idx = np.where(tris == m)
 
@@ -67,6 +74,10 @@ def create_basis(verts, tris, centre=np.array([0, 0, 0]), tri_areas=None, tri_no
             #C - coordinates of the first node of the i_th face of the m_th node
             Cmi = verts[m]
 
+            A[m].append(Ami)
+            B[m].append(Bmi)
+            C[m].append(Cmi)
+
 
             vectorOA = Ami - centre
 
@@ -78,7 +89,7 @@ def create_basis(verts, tris, centre=np.array([0, 0, 0]), tri_areas=None, tri_no
             else:
                 vmi[m].append((Bmi - Ami)/(2 * tri_areas[tri_idx]))
 
-    return dict(v=vmi, A=Ami, B=Bmi, C=Cmi)
+    return dict(v=vmi, A=A, B=B, C=C)
 
 
 
@@ -86,114 +97,85 @@ def create_basis(verts, tris, centre=np.array([0, 0, 0]), tri_areas=None, tri_no
 
 
 @jit
-def compute_L(verts1, tris1, basis1=None, verts2=None, tris2=None, basis2=None,
-              vert_links1=None, vert_links2=None,
-              tri_areas1=None, tri_areas2=None,
+def compute_L(verts, tris, basis=None,
+              vert_links=None,
+              tri_areas=None,
               mu0=4*np.pi*1e-7):
     '''
     Compute and return mutual inductance matrix.
     '''
 
-    #If second mesh not given, compute L within surface
-    if verts2 is None:
-        verts2 = verts1
-        tris2 = tris1
-        basis2 = basis1
-
-        same_surface = 1
-
-    else:
-        same_surface = 0
-
     #Compute vertex links if not provided
-    if vert_links1 is None:
-        vert_links1 = get_vert_links(verts1, tris1)
+    if vert_links is None:
+        vert_links = get_vert_links(verts, tris)
 
-        if same_surface:
-            vert_links2 = vert_links1
-        else:
-            vert_links2 = get_vert_links(verts2, tris2)
 
     #Compute triangle areas if not provided
-    if tri_areas1 is None:
-        tri_normals1, tri_areas1 = tri_normals_and_areas(verts1, tris1)
+    if tri_areas is None:
+        tri_normals, tri_areas = tri_normals_and_areas(verts, tris)
 
-        if same_surface:
-            tri_normals2, tri_areas2 = tri_normals1, tri_areas1
-        else:
-            tri_normals2, tri_areas2 = tri_normals_and_areas(verts2, tris2)
 
     #Compute basis if not provided
-    if basis1 is None:
-        basis1 = create_basis(verts1, tris1, tri_areas=tri_areas1)
+    if basis is None:
+        basis = create_basis(verts, tris, tri_areas=tri_areas)
 
-        if same_surface:
-            basis2 = basis1
-        else:
-            basis2 = create_basis(verts2, tris2, tri_areas=tri_areas2)
 
 
     # Gauss Legendre integration
-    cl = ck = triGaussPoints(2) #FIX QUADRATURE POINTS
-
-    n_integration_points = len(ck)
+    w_quad, r_quad = get_quad_points(verts, tris, method='Centroid')
+    n_quad_points = 1
 
     coef = mu0 / (4*np.pi)
 
-    n_verts1 = len(verts1)
-    n_verts2 = len(verts2)
+    n_verts = len(verts)
 
-    L = np.full((n_verts1, n_verts2), fill_value=np.nan)
+    L = np.full((n_verts, n_verts), fill_value=np.nan)
 
     # Iterate though matrix, utilizing symmetry if possible
-    for m in prange(n_verts1):
-        if same_surface:
-            start_second_loop = m
-        else:
-            start_second_loop = 0
+    for m in prange(n_verts):
 
-        for n in range(start_second_loop, n_verts2):
+        for n in range(m, n_verts):
 
             superBigSum = 0
 
-            for i in range(vert_links1[m]):
+            for i in range(len(vert_links[m])):
 
-                currentTriangle_i = vert_links1[m][i]
+                currentTriangle_i = vert_links[m][i]
 
-                vmi = basis1['v'][m][i]
+                vmi = basis['v'][m][i]
 
-                r_o = basis1[m][i]['r_o'] #FIX
+                r_o = r_quad[currentTriangle_i]
 
-                for j in range(vert_links2[n]):
+                for j in range(len(vert_links[n])):
 
-                    currentTriangle_j = vert_links2[n][j]
+                    currentTriangle_j = vert_links[n][j]
 
-                    vnj = basis2['v'][n][j]
+                    vnj = basis['v'][n][j]
 
                     integral = 0
 
                     #If the current triangles are not the same,
                     #then we will not share any basis function. We can thus solve that easily
-                    if currentTriangle_i != currentTriangle_j or same_surface == 0:
-                        r_p = bases2[n][j]['r_o']
+                    if currentTriangle_i != currentTriangle_j:
+                        r_p = r_quad[currentTriangle_j]
 
-                        for k in range(n_integration_points):
-                            for l in range(n_integration_points):
-                                integral += cl[l]/np.linalg.norm(r_o[k] - r_p[l])
+                        for k in range(n_quad_points):
+                            for l in range(n_quad_points):
+                                integral += w_quad[l]/np.linalg.norm(r_o[k] - r_p[l])
 
-                            integral *= ck[k]
+                            integral *= w_quad[k]
 
-                        bigSum = integral * (2 * tri_areas2[currentTriangle_j] *
-                                             2 * tri_areas1[currentTriangle_i])
+                        bigSum = integral * (2 * tri_areas[currentTriangle_j] *
+                                             2 * tri_areas[currentTriangle_i])
 
                     # If the 2 triangle are similar, we use an approximate
                     # calculation, according to page 72 equ 5.40 of Poole's
                     # thesis
 
                     else:
-                        Ami = basis1['A'][m][i]
-                        Bmi = basis1['B'][m][i]
-                        Cmi = basis1['C'][m][i]
+                        Ami = basis['A'][m][i]
+                        Bmi = basis['B'][m][i]
+                        Cmi = basis['C'][m][i]
 
                         a = np.dot(Cmi - Ami, Cmi - Ami)
                         b = np.dot(Cmi - Ami, Cmi - Bmi)
@@ -204,7 +186,7 @@ def compute_L(verts1, tris1, basis1=None, verts2=None, tris2=None, basis2=None,
                         ss = np.sqrt(a - 2*b + c)
                         sac = np.sqrt(a * c)
 
-                        bigSum = (1 * (4 * tri_areas1[currentTriangle_i]**2))                   \
+                        bigSum = (1 * (4 * tri_areas[currentTriangle_i]**2))                   \
                         * (1 / (6 * sa) * np.log(((a - b + sa * ss) * (b + sac)) /              \
                                                ((-b + sac) * (-a + b +sa*ss)))                  \
                         + 1 / (6 * sc) * np.log(((b + sac) * (-b + c + sc * ss)) /              \
@@ -219,6 +201,8 @@ def compute_L(verts1, tris1, basis1=None, verts2=None, tris2=None, basis2=None,
             superBigSum *= coef
 
         L[m] = superBigSum
+
+    return L
 
 
 @jit
@@ -277,7 +261,7 @@ def compute_R(verts, tris, basis=None, vert_links=None, tri_areas=None, rho=1.68
 
                         vnj = basis['v'][n][j]
 
-                        bigSum += np.dot(vmi, vnj) * tri_areas[m]**2
+                        bigSum += np.dot(vmi, vnj) * tri_areas[m]**2 #Square or not?
 
             R[m, n] = surface_resistance * bigSum
 
@@ -288,7 +272,7 @@ def compute_R(verts, tris, basis=None, vert_links=None, tri_areas=None, rho=1.68
 
     return R
 
-@jit
+@jit(parallel=True)
 def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None):
     '''
     Given a mesh, computes the "cn matrix", see eq. 5.13 in Michael Poole's thesis.
@@ -296,6 +280,9 @@ def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None):
     '''
     mu0 = 4 * np.pi * 1e-7
     coef = mu0 / np.pi
+
+
+    print('Computing Cn matrix...')
 
     if vert_links is None:
         vert_links = get_vert_links(mesh.vertices, mesh.faces)
@@ -319,7 +306,7 @@ def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None):
     #For each vertex
     for n in prange(n_verts):
 
-        print('vertex: %d'%n)
+#        print('vertex: %d'%n)
 
         #For each target point
         for k in range(n_target_points):
@@ -327,17 +314,19 @@ def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None):
             #For each triangle the vertex is used for
             for i in range(len(vert_links[n])):
 
+                element = 0.
+
                 #For each quadrature point of that triangle
                 for l in range(n_quad_points):
-                    denom = np.linalg.norm(r[k] - r_quad[l])**3
-                    C[k, n] += w_quad[l] * np.cross(-(r[k] - r_quad[vert_links[n][i]][l]) / denom, basis['v'][n][i]).flatten()
+                    denom = np.linalg.norm(r[k] - r_quad[vert_links[n][i]][l])**3
+                    element += w_quad[l] * np.cross(-(r[k] - r_quad[vert_links[n][i]][l]) / denom, basis['v'][n][i]).flatten()
 
-#                    C[k, n, 0] = w_quad[l] * ((-basis['v'][n][i][2]*(r[k, 1] - r_quad[l, 1]) + basis['v'][n][i][1] * (r[k, 2] - r_quad[l, 2]))) / denom
-#                    C[k, n, 1] = w_quad[l] * ((-basis['v'][n][i][0]*(r[k, 2] - r_quad[l, 2]) + basis['v'][n][i][2] * (r[k, 0] - r_quad[l, 0]))) / denom
-#                    C[k, n, 2] = w_quad[l] * ((-basis['v'][n][i][1]*(r[k, 0] - r_quad[l, 0]) + basis['v'][n][i][0] * (r[k, 1] - r_quad[l, 1]))) / denom
+#                    C[k, n, 0] = w_quad[l] * ((-basis['v'][n][i][2]*(r[k, 1] - r_quad[vert_links[n][i]][l, 1]) + basis['v'][n][i][1] * (r[k, 2] - r_quad[vert_links[n][i]][l, 2]))) / denom
+#                    C[k, n, 1] = w_quad[l] * ((-basis['v'][n][i][0]*(r[k, 2] - r_quad[vert_links[n][i]][l, 2]) + basis['v'][n][i][2] * (r[k, 0] - r_quad[vert_links[n][i]][l, 0]))) / denom
+#                    C[k, n, 2] = w_quad[l] * ((-basis['v'][n][i][1]*(r[k, 0] - r_quad[vert_links[n][i]][l, 0]) + basis['v'][n][i][0] * (r[k, 1] - r_quad[vert_links[n][i]][l, 1]))) / denom
 
                 #Area scaling applied by Bringout, is this due to the area integral?
-                C[k, n] *= 2 * tri_areas[vert_links[n][i]]
+                C[k, n] += element * 2 * tri_areas[vert_links[n][i]]
 
     return coef * C
 

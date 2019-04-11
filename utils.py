@@ -121,7 +121,7 @@ def find_mesh_boundaries(verts, tris, edges):
 
 
 
-def fibonacci_sphere(samples=1, center=np.array([0, 0, 0]), radius = 1, randomize=True):
+def fibonacci_sphere(samples=10, center=np.array([0, 0, 0]), radius = 1, randomize=True):
     '''
     Generates a set of points approximately evenly distributed on a sphere,
     with adjustable center and radius. Uses spherical Fibonacci Lattice.
@@ -144,4 +144,4 @@ def fibonacci_sphere(samples=1, center=np.array([0, 0, 0]), radius = 1, randomiz
         points[i, 0] = np.cos(phi) * r
         points[i, 2] = np.sin(phi) * r
 
-    return radius*(points+center)
+    return radius * points + center
