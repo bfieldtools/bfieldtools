@@ -212,7 +212,10 @@ if __name__ == '__main__':
     obj.C = compute_C(obj.mesh, target_points)
 
     target_field = 1e-8*np.ones((n_points, ))
-    I = optimize_streamfunctions(obj, target_field, target_axis=1, target_error=0.005, laplacian_smooth=0)
+    I = optimize_streamfunctions(obj, target_field,
+                                 target_axis=1,
+                                 target_error={'on_axis':0.005, 'off_axis':0.005},
+                                 laplacian_smooth=200)
 
     limit = np.max(np.abs(I))
 
