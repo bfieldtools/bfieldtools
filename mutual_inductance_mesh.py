@@ -124,12 +124,13 @@ def mutual_inductance_matrix(verts1, tris1, verts2, tris2,
     """ Calculate a mutual inductance matrix for hat basis functions
         (stream functions) in the triangular mesh described by
 
-        verts: Nv x 3 array of mesh vertices (coordinates)
-        tris: Nt x 3 array of mesh triangles (indices to verts array)
+        verts1: Nv x 3 array of mesh1 vertices (coordinates)
+        tris1: Nt x 3 array of mesh1 triangles (indices to verts array)
+
+        verts2: Nv x 3 array of mesh2 vertices (coordinates)
+        tris2: Nt x 3 array of mesh2 triangles (indices to verts array)
     """
     R = verts1[tris1]  # Nt x 3 (corners) x 3 (xyz)
-    # Calculate edge vectors for each triangle
-    edges = np.roll(R, 1, -2) - np.roll(R, 2, -2)  # Nt x 3 (edges) x 3 (x,y,z)
     # Calculate quadrature points
     weights, quadpoints = get_quad_points(verts2, tris2, 'Centroid')
     # Nt x Nquad x  3 (x,y,z)
@@ -146,10 +147,12 @@ def mutual_inductance_matrix(verts1, tris1, verts2, tris2,
     pots = triangle_potential(RR, tri_normals1, planar=planar) # Ntri_eval, Nquad, Ntri_source
     pots = np.sum(pots*weights[None,:,None], axis=1) # Ntri_eval, Ntri_source
 
-
-    tri_data = np.sum(edges[None,:,None,:,:]*edges[:,None,:,None,:], axis=-1) # i,j,k,l
-    tri_data /= (tri_areas1[:,None]*tri_areas2[None,:]*4)[:,:,None,None]
-    tri_data *= (tri_areas1[:, None]*pots)[:,:,None,None]
+    # Calculate edge vectors for each triangle
+    edges1 = np.roll(R, 1, -2) - np.roll(R, 2, -2)  # Nt x 3 (edges) x 3 (x,y,z)
+    edges2 = np.roll(verts2[tris2], 1, -2) - np.roll(verts2[tris2], 2, -2)  # Nt x 3 (edges) x 3 (x,y,z)
+    tri_data = np.sum(edges1[None,:,None,:,:]*edges2[:,None,:,None,:], axis=-1) # i,j,k,l
+    tri_data /= (tri_areas2[:,None]*tri_areas1[None,:]*4)[:,:,None,None]
+    tri_data *= (tri_areas2[:, None]*pots)[:,:,None,None]
     print('Inserting stuff into M-matrix')
 
     t0 = clock()
