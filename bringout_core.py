@@ -1,6 +1,8 @@
 import numpy as np
 from numba import njit, jit, prange
 from utils import tri_normals_and_areas, get_quad_points
+from joblib import Parallel, delayed
+import multiprocessing
 
 def get_neighbour_vertices(vertices, edges):
     '''
@@ -272,8 +274,8 @@ def compute_R(verts, tris, basis=None, vert_links=None, tri_areas=None, rho=1.68
 
     return R
 
-@jit(parallel=True)
-def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None):
+
+def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None, parallel=True):
     '''
     Given a mesh, computes the "cn matrix", see eq. 5.13 in Michael Poole's thesis.
 
@@ -303,8 +305,58 @@ def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None):
 
     C = np.zeros((n_target_points, n_verts, 3))
 
+    # If specified, split C matrix computation into chunks done in parallel
+    if parallel:
+
+        #Use all available cores
+        num_cores = multiprocessing.cpu_count()
+
+        #Determine the chunking of C
+        vert_ranges = []
+        for i in range(num_cores):
+            vert_ranges.append((int(n_verts/num_cores * i), int(n_verts/num_cores * (i+1))))
+
+        #Compute in parallel
+        Cn_parts = Parallel(n_jobs=num_cores,
+                               max_nbytes=1e9,
+                               verbose=51)(delayed(_Cn_part)(
+                                       mesh.vertices[vert_range[0]:vert_range[1]],
+                                       vert_links[vert_range[0]:vert_range[1]],
+                                       r,
+                                       tri_areas,
+                                       r_quad,
+                                       w_quad,
+                                       basis['v'][vert_range[0]:vert_range[1]]
+                                       ) for vert_range in vert_ranges)
+
+        #Assemble into whole matrix
+        for i in range(len(Cn_parts)):
+            C[:, vert_ranges[i][0]:vert_ranges[i][1]] = Cn_parts[i]
+
+    else:
+        C = _Cn_part(mesh.vertices,
+                      vert_links,
+                      r,
+                      tri_areas,
+                      r_quad,
+                      w_quad,
+                      basis['v'])
+
+    return coef * C
+
+
+def _Cn_part(verts, vert_links, r, tri_areas, r_quad, w_quad, basis_value):
+    '''
+    Computes part of Cn matrix, used for parallelization.
+    '''
+
+    n_target_points = len(r)
+    n_verts = len(verts)
+
+    C_part = np.zeros((n_target_points, n_verts, 3))
+
     #For each vertex
-    for n in prange(n_verts):
+    for n in range(n_verts):
 
 #        print('vertex: %d'%n)
 
@@ -317,18 +369,15 @@ def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None):
                 element = 0.
 
                 #For each quadrature point of that triangle
-                for l in range(n_quad_points):
+                for l in range(len(w_quad)):
                     denom = np.linalg.norm(r[k] - r_quad[vert_links[n][i]][l])**3
-                    element += w_quad[l] * np.cross(-(r[k] - r_quad[vert_links[n][i]][l]) / denom, basis['v'][n][i]).flatten()
+                    element += w_quad[l] * np.cross(-(r[k] - r_quad[vert_links[n][i]][l]) / denom, basis_value[n][i]).flatten()
 
 #                    C[k, n, 0] = w_quad[l] * ((-basis['v'][n][i][2]*(r[k, 1] - r_quad[vert_links[n][i]][l, 1]) + basis['v'][n][i][1] * (r[k, 2] - r_quad[vert_links[n][i]][l, 2]))) / denom
 #                    C[k, n, 1] = w_quad[l] * ((-basis['v'][n][i][0]*(r[k, 2] - r_quad[vert_links[n][i]][l, 2]) + basis['v'][n][i][2] * (r[k, 0] - r_quad[vert_links[n][i]][l, 0]))) / denom
 #                    C[k, n, 2] = w_quad[l] * ((-basis['v'][n][i][1]*(r[k, 0] - r_quad[vert_links[n][i]][l, 0]) + basis['v'][n][i][0] * (r[k, 1] - r_quad[vert_links[n][i]][l, 1]))) / denom
 
                 #Area scaling applied by Bringout, is this due to the area integral?
-                C[k, n] += element * 2 * tri_areas[vert_links[n][i]]
+                C_part[k, n] += element * 2 * tri_areas[vert_links[n][i]]
 
-    return coef * C
-
-
-
+    return C_part
