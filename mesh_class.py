@@ -113,11 +113,18 @@ class ToBeNamed:
         Alternatively, this LazyProperty could be turned into a method.
         '''
 
+<<<<<<< HEAD
+        resistance = (resistivity / thickness) *self.laplacian
+#        ii = self.boundary_verts
+#        resistance[ii, :]  = 0
+#        resistance[:, ii]  = 0
+=======
         R = resistivity / thickness
         resistance = R * self.laplacian.todense()
 
         #Set boundary vertices to zero
         resistance[obj.boundary_verts, :][:, obj.boundary_verts] = 0
+>>>>>>> 9a3de370a06201d212bb871b34536fc1e835ed97
 
         return resistance
 

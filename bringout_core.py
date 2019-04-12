@@ -1,8 +1,13 @@
 import numpy as np
 from numba import njit, jit, prange
-from utils import tri_normals_and_areas, get_quad_points
+
 from joblib import Parallel, delayed
 import multiprocessing
+
+from utils import tri_normals_and_areas, get_quad_points
+
+
+
 
 def get_neighbour_vertices(vertices, edges):
     '''
