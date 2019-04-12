@@ -155,9 +155,7 @@ def mutual_inductance_matrix(verts1, tris1, verts2, tris2,
     tri_data *= (tri_areas2[:, None]*pots)[:,:,None,None]
     print('Inserting stuff into M-matrix')
 
-    t0 = clock()
     M = assemble_matrix(tris1, verts1.shape[0], tri_data)
-    print('Assembling took', clock()-t0, 'seconds')
     return M*1e-7
 
 def self_inductance_matrix(verts, tris, tri_normals=None, tri_areas=None, planar=False):
@@ -199,9 +197,7 @@ def self_inductance_matrix(verts, tris, tri_normals=None, tri_areas=None, planar
 ##                    e2 = edges[j, l]
 ##                    gradproduct = np.sum(e1*e2)/(a[i]*a[j]*4)
 ##                    M[v1, v2] += pots[i, j]*a[i]*gradproduct
-    t0 = clock()
     M = assemble_matrix(tris, verts.shape[0], tri_data)
-    print('Assembling took', clock()-t0, 'seconds')
     return M*1e-7
 
 
@@ -252,11 +248,11 @@ if __name__ == '__main__':
     inner_inds = np.setdiff1d(inner_inds,np.nonzero(boundary_all)[0])
 
 
-    M = mutual_inductance_matrix(verts, tris)
+    M = self_inductance_matrix(verts, tris)
     M=0.5*(M+M.T)
     Min = M[inner_inds[None,:], inner_inds[:,None]]
     print('Calculating modes')
-    L, A = laplacian_matrix(verts, tris)
+    L = laplacian_matrix(verts, tris)
     L = np.array(L.todense())
     w,v = eigh(-L[inner_inds[None,:], inner_inds[:,None]], Min)
 
