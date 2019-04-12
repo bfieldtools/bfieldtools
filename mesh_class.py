@@ -11,7 +11,7 @@ import trimesh
 
 import utils
 from laplacian_mesh import laplacian_matrix, mass_matrix
-from mutual_inductance_mesh import mutual_inductance_matrix
+from mutual_inductance_mesh import self_inductance_matrix, mutual_inductance_matrix
 
 
 class LazyProperty():
@@ -98,7 +98,43 @@ class ToBeNamed:
         Compute and return mutual inductance matrix.
         '''
 
-        inductance = mutual_inductance_matrix(self.verts, self.tris)
+        #If mesh corresponds of many submeshes, compute these separately to save memory
+        if self.mesh.body_count > 1:
+
+
+            inductance = np.zeros((len(self.mesh.vertices), len(self.mesh.vertices)))
+
+            #Split into separate sub-bodies
+            submeshes = self.mesh.split(only_watertight=False)
+
+            n_submeshes = len(submeshes)
+
+            #Determine how submesh vertex indices correspond to full mesh vertex indices
+            vertex_lookup = []
+
+            for i in range(n_submeshes):
+                vertex_lookup.append([])
+                for vert in submeshes[i].vertices:
+                    vertex_lookup[i].append(np.where((self.mesh.vertices == vert).all(axis=1) == True)[0][0])
+
+            #Loop through block matrix components
+            for i in range(n_submeshes):
+                for j in range(n_submeshes):
+                    if i==j:
+                        sub_block = self_inductance_matrix(submeshes[i].vertices, submeshes[i].faces)
+                    else:
+                        sub_block = mutual_inductance_matrix(submeshes[i].vertices, submeshes[i].faces,
+                                                 submeshes[j].vertices, submeshes[j].faces)
+
+                    #Assign to full matrix
+                    inductance[np.asarray(vertex_lookup[i])[:, None], np.asarray(vertex_lookup[j])] = sub_block
+
+
+#            #Fill in lower triangle
+#            i_lower = np.tril_indices(inductance.shape[0], -1)
+#            inductance[i_lower] = inductance.T[i_lower]
+        else:
+            inductance = self_inductance_matrix(self.verts, self.tris)
 
         return inductance
 
@@ -113,18 +149,11 @@ class ToBeNamed:
         Alternatively, this LazyProperty could be turned into a method.
         '''
 
-<<<<<<< HEAD
-        resistance = (resistivity / thickness) *self.laplacian
-#        ii = self.boundary_verts
-#        resistance[ii, :]  = 0
-#        resistance[:, ii]  = 0
-=======
         R = resistivity / thickness
         resistance = R * self.laplacian.todense()
 
         #Set boundary vertices to zero
         resistance[obj.boundary_verts, :][:, obj.boundary_verts] = 0
->>>>>>> 9a3de370a06201d212bb871b34536fc1e835ed97
 
         return resistance
 
