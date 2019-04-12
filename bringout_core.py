@@ -126,37 +126,28 @@ def compute_L(verts, tris, basis=None,
     if basis is None:
         basis = create_basis(verts, tris, tri_areas=tri_areas)
 
-
-
     # Gauss Legendre integration
-    w_quad, r_quad = get_quad_points(verts, tris, method='Centroid')
-    n_quad_points = 1
+    w_quad, r_quad = get_quad_points(verts, tris, method='Centroid', index=1)
+    n_quad_points = len(w_quad)
 
     coef = mu0 / (4*np.pi)
 
     n_verts = len(verts)
 
-    L = np.full((n_verts, n_verts), fill_value=np.nan)
+    L = np.zeros((n_verts, n_verts))
 
     # Iterate though matrix, utilizing symmetry if possible
-    for m in prange(n_verts):
-
+    for m in range(n_verts):
         for n in range(m, n_verts):
-
-            superBigSum = 0
 
             for i in range(len(vert_links[m])):
 
                 currentTriangle_i = vert_links[m][i]
-
                 vmi = basis['v'][m][i]
-
-                r_o = r_quad[currentTriangle_i]
 
                 for j in range(len(vert_links[n])):
 
                     currentTriangle_j = vert_links[n][j]
-
                     vnj = basis['v'][n][j]
 
                     integral = 0
@@ -164,16 +155,14 @@ def compute_L(verts, tris, basis=None,
                     #If the current triangles are not the same,
                     #then we will not share any basis function. We can thus solve that easily
                     if currentTriangle_i != currentTriangle_j:
-                        r_p = r_quad[currentTriangle_j]
-
                         for k in range(n_quad_points):
                             for l in range(n_quad_points):
-                                integral += w_quad[l]/np.linalg.norm(r_o[k] - r_p[l])
+                                integral += w_quad[l]/np.linalg.norm(r_quad[currentTriangle_i, k] - r_quad[currentTriangle_j, l])
 
                             integral *= w_quad[k]
 
-                        bigSum = integral * (2 * tri_areas[currentTriangle_j] *
-                                             2 * tri_areas[currentTriangle_i])
+                        integral *= 2 * tri_areas[currentTriangle_j] *\
+                                    2 * tri_areas[currentTriangle_i]
 
                     # If the 2 triangle are similar, we use an approximate
                     # calculation, according to page 72 equ 5.40 of Poole's
@@ -193,7 +182,7 @@ def compute_L(verts, tris, basis=None,
                         ss = np.sqrt(a - 2*b + c)
                         sac = np.sqrt(a * c)
 
-                        bigSum = (1 * (4 * tri_areas[currentTriangle_i]**2))                   \
+                        integral = (1 * (4 * tri_areas[currentTriangle_i]**2))                   \
                         * (1 / (6 * sa) * np.log(((a - b + sa * ss) * (b + sac)) /              \
                                                ((-b + sac) * (-a + b +sa*ss)))                  \
                         + 1 / (6 * sc) * np.log(((b + sac) * (-b + c + sc * ss)) /              \
@@ -201,15 +190,13 @@ def compute_L(verts, tris, basis=None,
                         + 1 / (6 * ss) * np.log(((a - b + sa * ss) * (-b + c + sc * ss)) /      \
                                                 ((b - c + sc * ss) * (-a + b + sa * ss) )))
 
-                    vmi_vnj = np.dot(vmi, vnj)
+                    L[m, n] += np.dot(vmi, vnj) * integral
 
-                    superBigSum += vmi_vnj*bigSum
+    #Fill in lower triangular matrix, L is symmetric
+    i_lower = np.tril_indices(L.shape[0], -1)
+    L[i_lower] = L.T[i_lower]
 
-            superBigSum *= coef
-
-        L[m] = superBigSum
-
-    return L
+    return coef * L
 
 
 @jit
