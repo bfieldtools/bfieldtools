@@ -76,6 +76,22 @@ def assemble_matrix(tris, Nverts, triangle_data):
     return M
 
 @jit
+def assemble_matrix2(tris1, tris2, Nverts1, Nverts2, triangle_data):
+    """ Optimized  assembly of finite element matrix for
+        precomputed triangle data for separate meshes 1 and 2
+
+        Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
+        for the nodes neighbouring the triangle
+    """
+    M = np.zeros((Nverts1, Nverts2))
+    for i in range(tris1.shape[0]):  # Source triangles
+        for j in range(tris2.shape[0]):  # Eval triangles
+            for k in range(tris1.shape[1]): # Source triangle hats
+                for l in range(tris2.shape[1]): # Eval triangle hats
+                    M[tris1[i,k], tris2[j,l]] += triangle_data[i,j,k,l]
+    return M
+
+@jit
 def dual_areas(tris, ta):
     """ Calculate (dual) areas for each node in inds
 

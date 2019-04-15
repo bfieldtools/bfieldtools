@@ -222,7 +222,7 @@ if __name__ == '__main__':
     from bringout_core import compute_C
     from coil_optimize import optimize_streamfunctions
 
-    obj = ToBeNamed(mesh_file='/l/bfieldtools/example_meshes/macqsimal_testcoils_lowres.obj')
+    obj = ToBeNamed(mesh_file='./example_meshes/macqsimal_testcoils_lowres.obj')
 
     obj.inductance;
     obj.laplacian;
