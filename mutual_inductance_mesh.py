@@ -9,7 +9,7 @@ Created on Wed Mar 27 09:01:32 2019
 import numpy as np
 from time import clock
 from utils import (get_quad_points, tri_normals_and_areas,
-                   assemble_matrix, dual_areas)
+                   assemble_matrix, assemble_matrix2, dual_areas)
 
 
 def gamma0(R, reg=1e-13, symmetrize=True):
@@ -155,7 +155,7 @@ def mutual_inductance_matrix(verts1, tris1, verts2, tris2,
     tri_data *= (tri_areas2[:, None]*pots)[:,:,None,None]
     print('Inserting stuff into M-matrix')
 
-    M = assemble_matrix(tris1, verts1.shape[0], tri_data)
+    M = assemble_matrix2(tris1, tris2, verts1.shape[0], verts2.shape[0], tri_data)
     return M*1e-7
 
 def self_inductance_matrix(verts, tris, tri_normals=None, tri_areas=None, planar=False):
