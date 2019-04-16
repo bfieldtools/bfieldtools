@@ -46,13 +46,13 @@ class ToBeNamed:
     def __init__(self, verts=None, tris=None, mesh_file=None):
 
         if mesh_file: #First, check if mesh_file passed
-            self.mesh = trimesh.load(mesh_file)
+            self.mesh = trimesh.load(mesh_file, process=False)
 
 
         else: #Fall back on verts, tris parameters
             if isinstance(verts, type(None)) or isinstance(tris, type(None)):
                 ValueError('You must provide either verts and tris or a mesh file')
-            self.mesh = trimesh.Trimesh(verts, tris)
+            self.mesh = trimesh.Trimesh(verts, tris, process=False)
 
         self.verts = self.mesh.vertices
         self.tris = self.mesh.faces
@@ -127,7 +127,7 @@ class ToBeNamed:
                                                  submeshes[j].vertices, submeshes[j].faces)
 
                     #Assign to full matrix
-                    inductance[np.asarray(vertex_lookup[i])[:, None], np.asarray(vertex_lookup[j])] = sub_block
+                    inductance[np.asarray(vertex_lookup[i])[:,None], vertex_lookup[j]] = sub_block
 
 
 #            #Fill in lower triangle
@@ -222,33 +222,54 @@ if __name__ == '__main__':
     from bringout_core import compute_C
     from coil_optimize import optimize_streamfunctions
 
-    obj = ToBeNamed(mesh_file='/l/bfieldtools/example_meshes/macqsimal_testcoils_lowres.obj')
+    obj = ToBeNamed(mesh_file='/l/bfieldtools/example_meshes/macqsimal_testcoils_midres.obj')
 
-    obj.inductance;
-    obj.laplacian;
+
 
     #for millimeters to meters
     obj.mesh.apply_scale(0.001)
     obj.verts = obj.mesh.vertices
 
-    n_points = 250
+
+    obj.inductance = self_inductance_matrix(obj.verts, obj.tris)
+    obj.laplacian
+
+    n_points = 200
     radius = 0.00075
     center = np.array([0, 0, 0])
     target_points = fibonacci_sphere(n_points, radius=radius, center=center)
 
     obj.C = compute_C(obj.mesh, target_points)
 
-    target_field = 1e-8*np.ones((n_points, ))
-    I = optimize_streamfunctions(obj, target_field,
+    n_stray_points = 60
+    stray_radius = 0.02
+    stray_points = fibonacci_sphere(n_stray_points, radius=stray_radius, center=center)
+
+
+    obj.strayC = compute_C(obj.mesh, stray_points)
+
+    target_field = 1e-10*np.ones((n_points, ))
+    I, sol = optimize_streamfunctions(obj, target_field,
                                  target_axis=2,
-                                 target_error={'on_axis':0.05, 'off_axis':0.05},
+                                 target_error={'on_axis':0.01, 'off_axis':0.01, 'stray':0.01},
                                  laplacian_smooth=0)
 
     limit = np.max(np.abs(I))
 
-    mlab.figure()
-    s=mlab.triangular_mesh(*obj.verts.T, obj.tris,scalars=I)
-    s.module_manager.scalar_lut_manager.data_range = np.array([-limit,limit])
+
+
+
+    mlab.figure(1, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                   size=(480, 480))
+    mlab.clf()
+
+#    s=mlab.triangular_mesh(*obj.verts.T, obj.tris,scalars=I)
+
+    surface = mlab.pipeline.triangular_mesh_source(*obj.verts.T, obj.tris,scalars=I)
+
+    windings = mlab.pipeline.contour_surface(surface, contours=20)
+
+#    s.module_manager.scalar_lut_manager.data_range = np.array([-limit,limit])
 #    mlab.points3d(*target_points.T)
 
     B_target = np.vstack((obj.C[:, :, 0].dot(I), obj.C[:, :, 1].dot(I), obj.C[:, :, 2].dot(I))).T
@@ -267,30 +288,71 @@ if __name__ == '__main__':
 
     B_line = np.vstack((line_C[:, :, 0].dot(I), line_C[:, :, 1].dot(I), line_C[:, :, 2].dot(I))).T
 
-    plt.plot(z*1e3, np.linalg.norm(B_line, axis=1)*1e9)
-    plt.ylabel('Field amplitude (a.u., could be nT)')
+    plt.plot(z*1e3, np.linalg.norm(B_line, axis=1)/np.mean(np.abs(target_field)))
+    plt.ylabel('Field amplitude (target field units)')
     plt.xlabel('Position on z-axis [mm]')
+    plt.grid(True)
 
 
 #
-
-    xx = np.linspace(0, 0.015, 31)
-    Y, Z = np.meshgrid(xx, xx, indexing='ij')
-
-    y = Y.ravel()
-    z = Z.ravel()
-    x = np.zeros_like(y)
-
-    plane_points = np.vstack((x, y, z)).T
-
-#    mlab.points3d(*plane_points.T)
-
-    plane_C = compute_C(obj.mesh, plane_points)
-
-    B_plane = np.vstack((plane_C[:, :, 0].dot(I), plane_C[:, :, 1].dot(I), plane_C[:, :, 2].dot(I))).T
-
 #
-##    mlab.points3d(*plane_points.T)
-    mlab.quiver3d(*plane_points.T, *B_plane.T)
-
-    mlab.contour3d(*plane_points.T, np.linalg.norm(B_plane, axis=1))
+#    xx = np.linspace(-0.015, 0.02, 15)
+#    yy = np.linspace(0, 0.02, 15)
+#    zz = np.linspace(0, 0.02, 15)
+#    X, Y, Z = np.meshgrid(xx, yy, zz, indexing='ij')
+#
+#    x = X.ravel()
+#    y = Y.ravel()
+#    z = Z.ravel()
+#
+#    grid_points = np.vstack((x, y, z)).T
+#
+#    mlab.points3d(*grid_points.T)
+#
+#    grid_C = compute_C(obj.mesh, grid_points)
+#
+#    B_grid = np.vstack((grid_C[:, :, 0].dot(I), grid_C[:, :, 1].dot(I), grid_C[:, :, 2].dot(I))).T
+#    B_grid_matrix = B_grid.reshape((15, 15, 15, 3))
+#
+#    B_grid_matrix_norm = np.linalg.norm(B_grid_matrix, axis=-1)
+#
+#    field = mlab.pipeline.vector_field(X, Y, Z, B_grid_matrix[:,:,:,0], B_grid_matrix[:,:,:,1], B_grid_matrix[:,:,:,2],
+#                                  scalars=B_grid_matrix_norm, name='B-field')
+#
+#    field2 = mlab.pipeline.vector_field(X, Y, -Z, B_grid_matrix[:,:,:,0], B_grid_matrix[:,:,:,1], B_grid_matrix[:,:,:,2],
+#                                  scalars=B_grid_matrix_norm, name='B-field2')
+#
+#
+#    vectors = mlab.pipeline.vectors(field,
+#                          scale_factor=(X[1, 0, 0] - X[0, 0, 0]),
+#                          )
+#
+#
+#    vectors.glyph.mask_input_points = True
+#    vectors.glyph.mask_points.on_ratio = 2
+#
+#    vcp = mlab.pipeline.vector_cut_plane(field)
+#    vcp.glyph.glyph.scale_factor=10*(X[1, 0, 0] - X[0, 0, 0])
+#    # For prettier picture:
+#    #vcp.implicit_plane.widget.enabled = False
+#
+#    Bt=np.mean(np.linalg.norm(B_target, axis=1))
+#
+#    iso = mlab.pipeline.iso_surface(field,
+#                                    contours=[0.005*Bt, 0.01*Bt, 0.05*Bt,0.1*Bt, 0.5*Bt,0.9*Bt, 1.1*Bt,2.5*Bt, 5*Bt],
+#                                    opacity=0.6,
+#                                    colormap='viridis')
+#
+#    iso2 = mlab.pipeline.iso_surface(field2,
+#                                    contours=[0.005*Bt, 0.01*Bt, 0.05*Bt,0.1*Bt, 0.5*Bt,0.9*Bt, 1.1*Bt,2.5*Bt, 5*Bt],
+#                                    opacity=0.6,
+#                                    colormap='viridis')
+#
+#    # A trick to make transparency look better: cull the front face
+#    iso.actor.property.frontface_culling = True
+#
+##
+###    mlab.points3d(*plane_points.T)
+##    mlab.quiver3d(*grid_points.T, *B_grid.T)
+#
+#    mlab.contour3d(X, Y, Z, B_grid_matrix/np.mean(np.abs(target_field)))

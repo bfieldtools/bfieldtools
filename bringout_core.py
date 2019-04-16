@@ -99,15 +99,11 @@ def create_basis(verts, tris, centre=np.array([0, 0, 0]), tri_areas=None, tri_no
     return dict(v=vmi, A=A, B=B, C=C)
 
 
-
-
-
-
-@jit
 def compute_L(verts, tris, basis=None,
               vert_links=None,
               tri_areas=None,
-              mu0=4*np.pi*1e-7):
+              mu0=4*np.pi*1e-7,
+              parallel=True):
     '''
     Compute and return mutual inductance matrix.
     '''
@@ -136,19 +132,76 @@ def compute_L(verts, tris, basis=None,
 
     L = np.zeros((n_verts, n_verts))
 
-    # Iterate though matrix, utilizing symmetry if possible
-    for m in range(n_verts):
+    # If specified, split L matrix computation into chunks done in parallel
+    if parallel:
+        #Use all available cores
+        num_cores = multiprocessing.cpu_count()
+
+        #Determine the chunking of C
+        vert_ranges = []
+        for i in range(num_cores):
+            vert_ranges.append((int(n_verts/num_cores * i), int(n_verts/num_cores * (i+1))))
+
+        #Compute in parallel
+        L_parts = Parallel(n_jobs=num_cores,
+                           max_nbytes=2e9,
+                           verbose=51)(delayed(_L_part)(verts,
+                                                        vert_range,
+                                                        vert_links,
+                                                        tri_areas,
+                                                        r_quad,
+                                                        w_quad,
+                                                        basis['v'],
+                                                        basis['A'],
+                                                        basis['B'],
+                                                        basis['C']
+                                                        ) for vert_range in vert_ranges)
+
+        print(L_parts[0].shape)
+        #Assemble into whole matrix
+        for i in range(len(L_parts)):
+            L[vert_ranges[i][0]:vert_ranges[i][1], :] = L_parts[i]
+
+    #Otherwise, compute L matrix in one piece, one thread
+    else:
+        L = _L_part(verts,
+                   (0, len(verts)),
+                   vert_links,
+                   tri_areas,
+                   r_quad,
+                   w_quad,
+                   basis['v'],
+                   basis['A'],
+                   basis['B'],
+                   basis['C'])
+#
+#    #Fill in lower triangular matrix, L is symmetric
+#    i_lower = np.tril_indices(L.shape[0], -1)
+#    L[i_lower] = L.T[i_lower]
+
+    return coef * L
+
+
+def _L_part(verts, vert_range, vert_links, tri_areas, r_quad, w_quad, basis_value, basis_A, basis_B, basis_C):
+    '''
+    Computes part of
+    '''
+
+    n_verts = len(verts)
+    n_quad_points = len(w_quad)
+
+    L_part = np.zeros((vert_range[1] - vert_range[0], n_verts))
+        # Iterate though upper triangle of matrix
+    for m in range(vert_range[0], vert_range[1]):
         for n in range(m, n_verts):
 
             for i in range(len(vert_links[m])):
 
                 currentTriangle_i = vert_links[m][i]
-                vmi = basis['v'][m][i]
 
                 for j in range(len(vert_links[n])):
 
                     currentTriangle_j = vert_links[n][j]
-                    vnj = basis['v'][n][j]
 
                     integral = 0
 
@@ -164,14 +217,14 @@ def compute_L(verts, tris, basis=None,
                         integral *= 2 * tri_areas[currentTriangle_j] *\
                                     2 * tri_areas[currentTriangle_i]
 
-                    # If the 2 triangle are similar, we use an approximate
+                    # If the 2 triangles are similar, we use an approximate
                     # calculation, according to page 72 equ 5.40 of Poole's
                     # thesis
 
                     else:
-                        Ami = basis['A'][m][i]
-                        Bmi = basis['B'][m][i]
-                        Cmi = basis['C'][m][i]
+                        Ami = basis_A[m][i]
+                        Bmi = basis_B[m][i]
+                        Cmi = basis_C[m][i]
 
                         a = np.dot(Cmi - Ami, Cmi - Ami)
                         b = np.dot(Cmi - Ami, Cmi - Bmi)
@@ -190,14 +243,9 @@ def compute_L(verts, tris, basis=None,
                         + 1 / (6 * ss) * np.log(((a - b + sa * ss) * (-b + c + sc * ss)) /      \
                                                 ((b - c + sc * ss) * (-a + b + sa * ss) )))
 
-                    L[m, n] += np.dot(vmi, vnj) * integral
+                    L_part[m, n] += np.dot(basis_value[m][i], basis_value[n][j]) * integral
 
-    #Fill in lower triangular matrix, L is symmetric
-    i_lower = np.tril_indices(L.shape[0], -1)
-    L[i_lower] = L.T[i_lower]
-
-    return coef * L
-
+    return L_part
 
 @jit
 def compute_R(verts, tris, basis=None, vert_links=None, tri_areas=None, rho=1.68*1e-8, t=1e-4):
@@ -289,7 +337,7 @@ def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None, parallel=Tru
 
 
     w_quad, r_quad = get_quad_points(mesh.vertices, mesh.faces, method='Centroid')
-    n_quad_points = 1
+#    n_quad_points = len(w_quad)
 
     n_target_points = len(r)
 
@@ -310,8 +358,8 @@ def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None, parallel=Tru
 
         #Compute in parallel
         Cn_parts = Parallel(n_jobs=num_cores,
-                               max_nbytes=1e9,
-                               verbose=51)(delayed(_Cn_part)(
+                            max_nbytes=1e9,
+                            verbose=51)(delayed(_Cn_part)(
                                        mesh.vertices[vert_range[0]:vert_range[1]],
                                        vert_links[vert_range[0]:vert_range[1]],
                                        r,
@@ -344,6 +392,7 @@ def _Cn_part(verts, vert_links, r, tri_areas, r_quad, w_quad, basis_value):
 
     n_target_points = len(r)
     n_verts = len(verts)
+    n_quad_points = len(w_quad)
 
     C_part = np.zeros((n_target_points, n_verts, 3))
 
@@ -361,7 +410,7 @@ def _Cn_part(verts, vert_links, r, tri_areas, r_quad, w_quad, basis_value):
                 element = 0.
 
                 #For each quadrature point of that triangle
-                for l in range(len(w_quad)):
+                for l in range(n_quad_points):
                     denom = np.linalg.norm(r[k] - r_quad[vert_links[n][i]][l])**3
                     element += w_quad[l] * np.cross(-(r[k] - r_quad[vert_links[n][i]][l]) / denom, basis_value[n][i]).flatten()
 
@@ -369,7 +418,7 @@ def _Cn_part(verts, vert_links, r, tri_areas, r_quad, w_quad, basis_value):
 #                    C[k, n, 1] = w_quad[l] * ((-basis['v'][n][i][0]*(r[k, 2] - r_quad[vert_links[n][i]][l, 2]) + basis['v'][n][i][2] * (r[k, 0] - r_quad[vert_links[n][i]][l, 0]))) / denom
 #                    C[k, n, 2] = w_quad[l] * ((-basis['v'][n][i][1]*(r[k, 0] - r_quad[vert_links[n][i]][l, 0]) + basis['v'][n][i][0] * (r[k, 1] - r_quad[vert_links[n][i]][l, 1]))) / denom
 
-                #Area scaling applied by Bringout, is this due to the area integral?
+                #Area integral
                 C_part[k, n] += element * 2 * tri_areas[vert_links[n][i]]
 
     return C_part
