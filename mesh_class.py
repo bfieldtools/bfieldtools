@@ -153,7 +153,7 @@ class ToBeNamed:
         resistance = R * self.laplacian.todense()
 
         #Set boundary vertices to zero
-        resistance[obj.boundary_verts, :][:, obj.boundary_verts] = 0
+        resistance[self.boundary_verts, :][:, self.boundary_verts] = 0
 
         return resistance
 
@@ -218,36 +218,48 @@ class ToBeNamed:
 if __name__ == '__main__':
 
     import numpy as np
-    from utils import fibonacci_sphere
+    from utils import fibonacci_sphere, cylinder_points
     from bringout_core import compute_C
     from coil_optimize import optimize_streamfunctions
+    import matplotlib.pyplot as plt
 
-    obj = ToBeNamed(mesh_file='./example_meshes/macqsimal_testcoils_lowres.obj')
+
+#%% Load mesh, do basics
+    coil = ToBeNamed(mesh_file='./example_meshes/macqsimal_testcoils_midres.obj')
 
     #for millimeters to meters
-    obj.mesh.apply_scale(0.001)
-    obj.verts = obj.mesh.vertices
+    coil.mesh.apply_scale(0.001)
+    coil.verts = coil.mesh.vertices
 
 
-    obj.inductance = self_inductance_matrix(obj.verts, obj.tris)
-    obj.laplacian
+    coil.inductance = self_inductance_matrix(coil.verts, coil.tris)
+    coil.laplacian
 
-    n_points = 200
+#%% Set up target and stray field points
+    n_points = 100
     radius = 0.00075
     center = np.array([0, 0, 0])
     target_points = fibonacci_sphere(n_points, radius=radius, center=center)
 
-    obj.C = compute_C(obj.mesh, target_points)
 
-    n_stray_points = 60
+
+
     stray_radius = 0.02
-    stray_points = fibonacci_sphere(n_stray_points, radius=stray_radius, center=center)
+    stray_points = cylinder_points(radius=stray_radius,
+                                   length=0.05,
+                                   nlength=6,
+                                   nalpha=10,
+                                   orientation=np.array([1, 0, 0]))
+
+    n_stray_points = len(stray_points)
 
 
-    obj.strayC = compute_C(obj.mesh, stray_points)
+#%% Compute C matrices and run quadratic solver
+    coil.C = compute_C(coil.mesh, target_points)
+    coil.strayC = compute_C(coil.mesh, stray_points)
 
     target_field = 1e-10*np.ones((n_points, ))
-    I, sol = optimize_streamfunctions(obj, target_field,
+    I, sol = optimize_streamfunctions(coil, target_field,
                                  target_axis=2,
                                  target_error={'on_axis':0.01, 'off_axis':0.01, 'stray':0.01},
                                  laplacian_smooth=0)
@@ -255,43 +267,63 @@ if __name__ == '__main__':
     limit = np.max(np.abs(I))
 
 
-
+#%% Plot coil windings
 
     mlab.figure(1, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                    size=(480, 480))
     mlab.clf()
 
-#    s=mlab.triangular_mesh(*obj.verts.T, obj.tris,scalars=I)
+#    s=mlab.triangular_mesh(*coil.verts.T, coil.tris,scalars=I)
 
-    surface = mlab.pipeline.triangular_mesh_source(*obj.verts.T, obj.tris,scalars=I)
+    surface = mlab.pipeline.triangular_mesh_source(*coil.verts.T, coil.tris,scalars=I)
 
     windings = mlab.pipeline.contour_surface(surface, contours=20)
 
 #    s.module_manager.scalar_lut_manager.data_range = np.array([-limit,limit])
 #    mlab.points3d(*target_points.T)
 
-    B_target = np.vstack((obj.C[:, :, 0].dot(I), obj.C[:, :, 1].dot(I), obj.C[:, :, 2].dot(I))).T
+#    mlab.points3d(*stray_points.T)
+
+    B_target = np.vstack((coil.C[:, :, 0].dot(I), coil.C[:, :, 1].dot(I), coil.C[:, :, 2].dot(I))).T
+
 
     mlab.quiver3d(*target_points.T, *B_target.T)
 
 
-
+#%% Plot field residual falloff on two axes
     z = np.linspace(0, 0.03, 51)
 
     x = y = np.zeros_like(z)
 
     line_points = np.vstack((x, y, z)).T
 
-    line_C = compute_C(obj.mesh, r=line_points)
+    line_C = compute_C(coil.mesh, r=line_points)
 
     B_line = np.vstack((line_C[:, :, 0].dot(I), line_C[:, :, 1].dot(I), line_C[:, :, 2].dot(I))).T
 
-    plt.plot(z*1e3, np.linalg.norm(B_line, axis=1)/np.mean(np.abs(target_field)))
-    plt.ylabel('Field amplitude (target field units)')
-    plt.xlabel('Position on z-axis [mm]')
+    plt.plot(z*1e3, np.linalg.norm(B_line, axis=1)/np.mean(np.abs(target_field)), label='Z')
+
     plt.grid(True)
 
+    y = np.linspace(0, 0.03, 51)
 
+    z = x = np.zeros_like(z)
+
+    line_points = np.vstack((x, y, z)).T
+
+    line_C = compute_C(coil.mesh, r=line_points)
+
+    B_line = np.vstack((line_C[:, :, 0].dot(I), line_C[:, :, 1].dot(I), line_C[:, :, 2].dot(I))).T
+
+    plt.plot(y*1e3, np.linalg.norm(B_line, axis=1)/np.mean(np.abs(target_field)), label='Y')
+    plt.ylabel('Field amplitude (target field units)')
+    plt.xlabel('Distance from origin [mm]')
+    plt.grid(True)
+
+    plt.legend()
+
+
+#%% Compute field on a larger grid, plot vectors and isosurfaces etc.
 #
 #
 #    xx = np.linspace(-0.015, 0.02, 15)
@@ -307,7 +339,7 @@ if __name__ == '__main__':
 #
 #    mlab.points3d(*grid_points.T)
 #
-#    grid_C = compute_C(obj.mesh, grid_points)
+#    grid_C = compute_C(coil.mesh, grid_points)
 #
 #    B_grid = np.vstack((grid_C[:, :, 0].dot(I), grid_C[:, :, 1].dot(I), grid_C[:, :, 2].dot(I))).T
 #    B_grid_matrix = B_grid.reshape((15, 15, 15, 3))
@@ -327,7 +359,7 @@ if __name__ == '__main__':
 #
 #
 #    vectors.glyph.mask_input_points = True
-#    vectors.glyph.mask_points.on_ratio = 2
+#    vectors.glyph.mask_points.on_ratio = 5
 #
 #    vcp = mlab.pipeline.vector_cut_plane(field)
 #    vcp.glyph.glyph.scale_factor=10*(X[1, 0, 0] - X[0, 0, 0])
@@ -349,8 +381,3 @@ if __name__ == '__main__':
 #    # A trick to make transparency look better: cull the front face
 #    iso.actor.property.frontface_culling = True
 #
-##
-###    mlab.points3d(*plane_points.T)
-##    mlab.quiver3d(*grid_points.T, *B_grid.T)
-#
-#    mlab.contour3d(X, Y, Z, B_grid_matrix/np.mean(np.abs(target_field)))
