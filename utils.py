@@ -161,3 +161,56 @@ def fibonacci_sphere(samples=10, center=np.array([0, 0, 0]), radius = 1, randomi
         points[i, 2] = np.sin(phi) * r
 
     return radius * points + center
+
+
+def cylinder_points(radius=1, length=1, nlength=10, alpha=360, nalpha=10, center=np.array([0,0,0]), orientation=np.array([1,0,0])):
+    '''
+    Generate and return a set of points on a cylindrical surface.
+    '''
+    #Create the length array
+    I = np.linspace(0, length, nlength)
+
+    #Create alpha array avoid duplication of endpoints
+    #Conditional should be changed to meet your requirements
+    if int(alpha) == 360:
+        A = np.linspace(0, alpha, num=nalpha, endpoint=False)/180*np.pi
+    else:
+        A = np.linspace(0, alpha, num=nalpha)/180*np.pi
+
+    #Calculate X and Y
+    X = radius * np.cos(A)
+    Y = radius * np.sin(A)
+
+    #Tile/repeat indices so all unique pairs are present
+    pz = np.tile(I, nalpha)
+    px = np.repeat(X, nlength)
+    py = np.repeat(Y, nlength)
+
+    points = np.vstack(( pz, px, py )).T
+
+    #Shift to center
+    shift = np.array(center) - np.mean(points, axis=0)
+    points += shift
+
+    #Orient tube to new vector
+
+    #Grabbed from an old unutbu answer
+    def rotation_matrix(axis,theta):
+        a = np.cos(theta/2)
+        b,c,d = -axis*np.sin(theta/2)
+        return np.array([[a*a+b*b-c*c-d*d, 2*(b*c-a*d), 2*(b*d+a*c)],
+                         [2*(b*c+a*d), a*a+c*c-b*b-d*d, 2*(c*d-a*b)],
+                         [2*(b*d-a*c), 2*(c*d+a*b), a*a+d*d-b*b-c*c]])
+
+    ovec = orientation / np.linalg.norm(orientation)
+    cylvec = np.array([1,0,0])
+
+    if np.allclose(cylvec, ovec):
+        return points
+
+    #Get orthogonal axis and rotation
+    oaxis = np.cross(ovec, cylvec)
+    rot = np.arccos(np.dot(ovec, cylvec))
+
+    R = rotation_matrix(oaxis, rot)
+    return points.dot(R)
