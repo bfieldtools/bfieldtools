@@ -225,7 +225,8 @@ if __name__ == '__main__':
 
 
 #%% Load mesh, do basics
-    coil = ToBeNamed(mesh_file='./example_meshes/macqsimal_testcoils_midres.obj')
+#    coil = ToBeNamed(mesh_file='./example_meshes/macqsimal_testcoils_midres.obj')
+    coil = ToBeNamed(mesh_file='./example_meshes/disc.obj')
 
     #for millimeters to meters
     coil.mesh.apply_scale(0.001)

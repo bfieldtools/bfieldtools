@@ -73,7 +73,7 @@ def assemble_matrix(tris, Nverts, triangle_data):
             for k in range(tris.shape[1]): # Eval triangle hats
                 for l in range(tris.shape[1]): # Source triangle hats
                     M[tris[i,k], tris[j,l]] += triangle_data[i,j,k,l]
-    return M
+    return M.T
 
 @jit
 def assemble_matrix2(tris1, tris2, Nverts1, Nverts2, triangle_data):
@@ -84,12 +84,12 @@ def assemble_matrix2(tris1, tris2, Nverts1, Nverts2, triangle_data):
         for the nodes neighbouring the triangle
     """
     M = np.zeros((Nverts1, Nverts2))
-    for i in range(tris1.shape[0]):  # Source triangles
-        for j in range(tris2.shape[0]):  # Eval triangles
-            for k in range(tris1.shape[1]): # Source triangle hats
-                for l in range(tris2.shape[1]): # Eval triangle hats
-                    M[tris1[i,k], tris2[j,l]] += triangle_data[i,j,k,l]
-    return M
+    for i in range(tris2.shape[0]):  # Eval triangles
+        for j in range(tris1.shape[0]):  # Source triangles
+            for k in range(tris2.shape[1]): # Eval triangle hats
+                for l in range(tris1.shape[1]): # Source triangle hats
+                    M[tris2[i,k], tris1[j,l]] += triangle_data[i,j,k,l]
+    return M.T
 
 @jit
 def dual_areas(tris, ta):
