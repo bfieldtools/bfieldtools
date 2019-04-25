@@ -225,11 +225,12 @@ if __name__ == '__main__':
 
 
 #%% Load mesh, do basics
-    coil = ToBeNamed(mesh_file='./example_meshes/macqsimal_testcoils_midres.obj')
+    coil = ToBeNamed(mesh_file='./example_meshes/discpos.obj')
 
     #for millimeters to meters
     coil.mesh.apply_scale(0.001)
     coil.verts = coil.mesh.vertices
+    coil.tris = coil.mesh.faces
 
 
     coil.inductance = self_inductance_matrix(coil.verts, coil.tris)
@@ -254,9 +255,11 @@ if __name__ == '__main__':
     n_stray_points = len(stray_points)
 
 
-#%% Compute C matrices and run quadratic solver
+#%% Compute C matrices
     coil.C = compute_C(coil.mesh, target_points)
     coil.strayC = compute_C(coil.mesh, stray_points)
+
+#%% Specify target field and run solver
 
     target_field = 1e-10*np.ones((n_points, ))
     I, sol = optimize_streamfunctions(coil, target_field,
@@ -269,7 +272,7 @@ if __name__ == '__main__':
 
 #%% Plot coil windings
 
-    mlab.figure(1, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+    mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                    size=(480, 480))
     mlab.clf()
 
@@ -301,9 +304,7 @@ if __name__ == '__main__':
 
     B_line = np.vstack((line_C[:, :, 0].dot(I), line_C[:, :, 1].dot(I), line_C[:, :, 2].dot(I))).T
 
-    plt.plot(z*1e3, np.linalg.norm(B_line, axis=1)/np.mean(np.abs(target_field)), label='Z')
-
-    plt.grid(True)
+    plt.semilogy(z*1e3, np.linalg.norm(B_line, axis=1)/np.mean(np.abs(target_field)), label='Z')
 
     y = np.linspace(0, 0.03, 51)
 
@@ -315,10 +316,12 @@ if __name__ == '__main__':
 
     B_line = np.vstack((line_C[:, :, 0].dot(I), line_C[:, :, 1].dot(I), line_C[:, :, 2].dot(I))).T
 
-    plt.plot(y*1e3, np.linalg.norm(B_line, axis=1)/np.mean(np.abs(target_field)), label='Y')
+    plt.semilogy(y*1e3, np.linalg.norm(B_line, axis=1)/np.mean(np.abs(target_field)), label='Y')
     plt.ylabel('Field amplitude (target field units)')
     plt.xlabel('Distance from origin [mm]')
-    plt.grid(True)
+    plt.grid(True, which='minor', axis='y')
+    plt.grid(True, which='major', axis='y', color='k')
+    plt.grid(True, which='major', axis='x')
 
     plt.legend()
 
@@ -380,4 +383,9 @@ if __name__ == '__main__':
 #
 #    # A trick to make transparency look better: cull the front face
 #    iso.actor.property.frontface_culling = True
-#
+
+
+#%% Extract stream function isosurfaces/contours
+
+
+
