@@ -106,9 +106,13 @@ def optimize_streamfunctions(meshobj, target_field, target_axis,
 
     scaled_lapl = np.max(np.abs(ind_eigs))/np.max(np.abs(lapl_eigs))*-inner_lapl
 
+    quadratic_term = (inner_L + laplacian_smooth * scaled_lapl)
 
+    quad_eigs = np.linalg.eigvalsh(quadratic_term)
 
-    I_inner, sol = cvxopt_solve_qp(P=1e6*(inner_L + laplacian_smooth * scaled_lapl),
+    quadratic_term /= np.max(np.abs(quad_eigs))
+
+    I_inner, sol = cvxopt_solve_qp(P=quadratic_term,
                    q=linear_part,
                    G=stacked_inner_C,
                    h=stacked_bounds,
