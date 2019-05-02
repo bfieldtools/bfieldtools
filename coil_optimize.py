@@ -19,9 +19,9 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7):
         if A is not None:
             args.extend([matrix(A), matrix(b)])
 
-    cvxopt.solvers.options['abstol']=1e-04
-    cvxopt.solvers.options['feastol']=1e-04
-    cvxopt.solvers.options['reltol']=1e-04
+    cvxopt.solvers.options['abstol']=1e-08
+    cvxopt.solvers.options['feastol']=1e-08
+    cvxopt.solvers.options['reltol']=1e-08
 #    cvxopt.solvers.options['refinement']=7
 
     sol = cvxopt.solvers.qp(*args)
