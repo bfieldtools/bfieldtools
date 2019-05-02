@@ -83,7 +83,7 @@ def assemble_matrix2(tris1, tris2, Nverts1, Nverts2, triangle_data):
         Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
         for the nodes neighbouring the triangle
     """
-    M = np.zeros((Nverts1, Nverts2))
+    M = np.zeros((Nverts2, Nverts1))
     for i in range(tris2.shape[0]):  # Eval triangles
         for j in range(tris1.shape[0]):  # Source triangles
             for k in range(tris2.shape[1]): # Eval triangle hats
