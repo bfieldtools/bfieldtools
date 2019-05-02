@@ -223,18 +223,21 @@ if __name__ == '__main__':
     from coil_optimize import optimize_streamfunctions
     import matplotlib.pyplot as plt
 
-
+Ilist = [None, None, None]
+coil =  [None, None, None]
+for stack in range(3):
 #%% Load mesh, do basics
-    coil = ToBeNamed(mesh_file='./example_meshes/discpos.obj')
+    coil[stack] = ToBeNamed(mesh_file='./example_meshes/macqsimal_design_example_stack'+ str(stack+1)+'_noshield.obj')
 
     #for millimeters to meters
-    coil.mesh.apply_scale(0.001)
-    coil.verts = coil.mesh.vertices
-    coil.tris = coil.mesh.faces
+    coil[stack].mesh.apply_scale(0.001)
+
+    coil[stack].verts = coil[stack].mesh.vertices
+    coil[stack].tris = coil[stack].mesh.faces
 
 
-    coil.inductance = self_inductance_matrix(coil.verts, coil.tris)
-    coil.laplacian
+#    coil.inductance = self_inductance_matrix(coil.verts, coil.tris)
+    coil[stack].laplacian
 
 #%% Set up target and stray field points
     n_points = 100
@@ -256,18 +259,20 @@ if __name__ == '__main__':
 
 
 #%% Compute C matrices
-    coil.C = compute_C(coil.mesh, target_points)
-    coil.strayC = compute_C(coil.mesh, stray_points)
+    coil[stack].C = compute_C(coil[stack].mesh, target_points)
+    coil[stack].strayC = compute_C(coil[stack].mesh, stray_points)
 
 #%% Specify target field and run solver
 
     target_field = 1e-10*np.ones((n_points, ))
-    I, sol = optimize_streamfunctions(coil, target_field,
-                                 target_axis=2,
+    I, sol = optimize_streamfunctions(coil[stack], target_field,
+                                 target_axis=stack,
                                  target_error={'on_axis':0.01, 'off_axis':0.01, 'stray':0.01},
                                  laplacian_smooth=0)
 
-    limit = np.max(np.abs(I))
+    Ilist[stack] = I
+
+    limit = np.max(np.abs(Ilist[stack]))
 
 
 #%% Plot coil windings
@@ -278,31 +283,35 @@ if __name__ == '__main__':
 
 #    s=mlab.triangular_mesh(*coil.verts.T, coil.tris,scalars=I)
 
-    surface = mlab.pipeline.triangular_mesh_source(*coil.verts.T, coil.tris,scalars=I)
+    surface = mlab.pipeline.triangular_mesh_source(*coil[stack].verts.T, coil[stack].tris,scalars=Ilist[stack])
 
-    windings = mlab.pipeline.contour_surface(surface, contours=20)
+    windings = mlab.pipeline.contour_surface(surface, contours=10)
+
 
 #    s.module_manager.scalar_lut_manager.data_range = np.array([-limit,limit])
 #    mlab.points3d(*target_points.T)
 
 #    mlab.points3d(*stray_points.T)
 
-    B_target = np.vstack((coil.C[:, :, 0].dot(I), coil.C[:, :, 1].dot(I), coil.C[:, :, 2].dot(I))).T
+    B_target = np.vstack((coil[stack].C[:, :, 0].dot(Ilist[stack]), coil[stack].C[:, :, 1].dot(Ilist[stack]), coil[stack].C[:, :, 2].dot(Ilist[stack]))).T
 
 
     mlab.quiver3d(*target_points.T, *B_target.T)
 
 
 #%% Plot field residual falloff on two axes
+
+    plt.figure()
+
     z = np.linspace(0, 0.03, 51)
 
     x = y = np.zeros_like(z)
 
     line_points = np.vstack((x, y, z)).T
 
-    line_C = compute_C(coil.mesh, r=line_points)
+    line_C = compute_C(coil[stack].mesh, r=line_points)
 
-    B_line = np.vstack((line_C[:, :, 0].dot(I), line_C[:, :, 1].dot(I), line_C[:, :, 2].dot(I))).T
+    B_line = np.vstack((line_C[:, :, 0].dot(Ilist[stack]), line_C[:, :, 1].dot(Ilist[stack]), line_C[:, :, 2].dot(Ilist[stack]))).T
 
     plt.semilogy(z*1e3, np.linalg.norm(B_line, axis=1)/np.mean(np.abs(target_field)), label='Z')
 
@@ -312,9 +321,9 @@ if __name__ == '__main__':
 
     line_points = np.vstack((x, y, z)).T
 
-    line_C = compute_C(coil.mesh, r=line_points)
+    line_C = compute_C(coil[stack].mesh, r=line_points)
 
-    B_line = np.vstack((line_C[:, :, 0].dot(I), line_C[:, :, 1].dot(I), line_C[:, :, 2].dot(I))).T
+    B_line = np.vstack((line_C[:, :, 0].dot(Ilist[stack]), line_C[:, :, 1].dot(Ilist[stack]), line_C[:, :, 2].dot(Ilist[stack]))).T
 
     plt.semilogy(y*1e3, np.linalg.norm(B_line, axis=1)/np.mean(np.abs(target_field)), label='Y')
     plt.ylabel('Field amplitude (target field units)')
