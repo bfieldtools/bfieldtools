@@ -119,7 +119,7 @@ class ToBeNamed:
 
             #Loop through block matrix components
             for i in range(n_submeshes):
-                for j in range(n_submeshes):
+                for j in range(i, n_submeshes):
                     if i==j:
                         sub_block = self_inductance_matrix(submeshes[i].vertices, submeshes[i].faces)
                     else:
@@ -128,6 +128,9 @@ class ToBeNamed:
 
                     #Assign to full matrix
                     inductance[np.asarray(vertex_lookup[i])[:,None], vertex_lookup[j]] = sub_block
+
+                    if i != j:
+                        inductance[np.asarray(vertex_lookup[j])[:,None], vertex_lookup[i]] = sub_block
 
 
 #            #Fill in lower triangle
@@ -225,9 +228,9 @@ if __name__ == '__main__':
 
 Ilist = [None, None, None]
 coil =  [None, None, None]
-for stack in range(3):
+for stack in range(1):
 #%% Load mesh, do basics
-    coil[stack] = ToBeNamed(mesh_file='./example_meshes/macqsimal_design_example_stack'+ str(stack+1)+'_noshield.obj')
+    coil[stack] = ToBeNamed(mesh_file='./example_meshes/macqsimal_design_example_stack'+ str(stack+1)+'.obj')
 
     #for millimeters to meters
     coil[stack].mesh.apply_scale(0.001)
