@@ -19,9 +19,9 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7):
         if A is not None:
             args.extend([matrix(A), matrix(b)])
 
-    cvxopt.solvers.options['abstol']=1e-08
-    cvxopt.solvers.options['feastol']=1e-08
-    cvxopt.solvers.options['reltol']=1e-08
+    cvxopt.solvers.options['abstol']=5e-09
+    cvxopt.solvers.options['feastol']=5e-09
+    cvxopt.solvers.options['reltol']=5e-09
 #    cvxopt.solvers.options['refinement']=7
 
     sol = cvxopt.solvers.qp(*args)
@@ -43,8 +43,8 @@ def optimize_streamfunctions(meshobj, target_field, target_axis,
 
 #
     # Set lower and upper bound for stray field, all three axes
-    lb_stray = np.repeat((-np.abs(target_field[0:len(meshobj.strayC)]) * target_error['stray'])[:, None], 3, axis=1).flatten()
-    ub_stray = np.repeat((-np.abs(target_field[0:len(meshobj.strayC)]) * target_error['stray'])[:, None], 3, axis=1).flatten()
+    lb_stray = np.repeat((-np.abs(np.repeat(target_field[0],len(meshobj.strayC), axis=0)) * target_error['stray'])[:, None], 3, axis=1).flatten()
+    ub_stray = np.repeat((np.abs(np.repeat(target_field[0],len(meshobj.strayC), axis=0)) * target_error['stray'])[:, None], 3, axis=1).flatten()
 #
 #    #Limit stray field C matrix to inner vertices
     inner_strayC = meshobj.strayC[:, meshobj.inner_verts]
@@ -100,18 +100,30 @@ def optimize_streamfunctions(meshobj, target_field, target_axis,
 
     inner_lapl = meshobj.laplacian.todense()[meshobj.inner_verts][:, meshobj.inner_verts]
 
-    #Scale laplacian matrix to same magnitude as inductance
-    lapl_eigs = np.linalg.eigvalsh(-inner_lapl)
-    ind_eigs = np.linalg.eigvalsh(inner_L)
 
-    scaled_lapl = np.max(np.abs(ind_eigs))/np.max(np.abs(lapl_eigs))*-inner_lapl
 
-    quadratic_term = (inner_L + laplacian_smooth * scaled_lapl)
+    if laplacian_smooth != 0:
 
-    quad_eigs = np.linalg.eigvalsh(quadratic_term)
+        print('Scaling matrices before optimization. This requires singular value computation, hold on.')
 
-    quadratic_term /= np.max(np.abs(quad_eigs))
+        #Scale laplacian matrix to same magnitude as inductance
 
+        lapl_eigs = np.linalg.eigvalsh(-inner_lapl)
+        ind_eigs = np.linalg.eigvalsh(inner_L)
+
+        scaled_lapl = np.max(np.abs(ind_eigs))/np.max(np.abs(lapl_eigs))*-inner_lapl
+
+        quadratic_term = (inner_L + laplacian_smooth * scaled_lapl)
+
+    else:
+        quadratic_term = inner_L
+
+#    quad_eigs = np.linalg.eigvalsh(quadratic_term)
+#    quadratic_term /= np.max(np.abs(quad_eigs))
+
+    quadratic_term /= np.max(np.abs(quadratic_term))
+
+    print('Solving quadratic programming problem using cvxopt...')
     I_inner, sol = cvxopt_solve_qp(P=quadratic_term,
                    q=linear_part,
                    G=stacked_inner_C,
