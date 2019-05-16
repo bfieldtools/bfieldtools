@@ -163,7 +163,7 @@ class ToBeNamed:
 
     def plot_mesh(self):
         '''
-        Simply plot the mesh surface.
+        Simply plot the mesh surface in mayavi.
         '''
 
         mesh = mlab.triangular_mesh(*self.verts.T, self.tris,
@@ -172,232 +172,142 @@ class ToBeNamed:
         return mesh
 
 
-    def plot_eigenmodes(self, n_modes=8):
-        '''
-        Plot eigenmodes of surface currents
-        '''
-
-        from scipy.linalg import eigh
-
-        M = 0.5 * (self.inductance + self.inductance.T)
-        Min = M[self.inner_verts[None, :], self.inner_verts[:, None]]
-        print('Calculating modes')
-
-        R = np.array(self.laplacian.todense())
-        Rin = R[self.inner_verts[None, :], self.inner_verts[:, None]]
-        w, v = eigh(-Rin, Min)
-
-        mlab.figure()
-        scalars = np.zeros((self.verts.shape[0], ))
-
-        limit = np.max(abs(v[:, 0]))
-
-        for ii in range(n_modes):
-
-            n = int(np.sqrt(n_modes))
-
-            i = ii % n
-            j = int(ii / n)
-
-            print(i, j)
-
-            #Offset modes on XY-plane
-            x = self.verts[:, 0] + i * 1.1
-            y = self.verts[:, 1] + j * 1.1
-            z = self.verts[:, 2]
-
-            scalars[self.inner_verts] = v[:, ii]
-
-            s = mlab.triangular_mesh(x, y, z, self.tris, scalars=scalars)
-
-            s.module_manager.scalar_lut_manager.number_of_colors = 16
-            s.module_manager.scalar_lut_manager.data_range = np.array([-limit, limit])
-
-            s.actor.mapper.interpolate_scalars_before_mapping = True
-
-        return s
-
+    #%% Compact example of design of a biplanar coil
 
 if __name__ == '__main__':
 
     import numpy as np
-    from utils import fibonacci_sphere, cylinder_points
+    from utils import cylinder_points
     from bringout_core import compute_C
     from coil_optimize import optimize_streamfunctions
     import matplotlib.pyplot as plt
 
-Ilist = [None, None, None]
-coil =  [None, None, None]
-for stack in range(1):
-#%% Load mesh, do basics
-    coil[stack] = ToBeNamed(mesh_file='./example_meshes/macqsimal_design_example_stack'+ str(stack+1)+'.obj')
 
-    #for millimeters to meters
-    coil[stack].mesh.apply_scale(0.001)
-
-    coil[stack].verts = coil[stack].mesh.vertices
-    coil[stack].tris = coil[stack].mesh.faces
+    #Set unit, e.g. meter or millimeter.
+    # This doesn't matter, the problem is scale-invariant
+    scaling_factor = 1e2
 
 
-#    coil.inductance = self_inductance_matrix(coil.verts, coil.tris)
-    coil[stack].laplacian
+    #Load simple plane mesh that is centered on the origin
+    planemesh = trimesh.load(file_obj='./example_meshes/10x10_plane_hires.obj', process=False)
 
-#%% Set up target and stray field points
-    n_points = 100
-    radius = 0.00075
-    center = np.array([0, 0, 0])
-    target_points = fibonacci_sphere(n_points, radius=radius, center=center)
+    planemesh.apply_scale(scaling_factor)
 
-
+    #Specify coil plane geometry
+    center_offset = np.array([0, 0, 0]) * scaling_factor
+    standoff = np.array([0, 4, 0]) * scaling_factor
 
 
-    stray_radius = 0.02
+    #Create coil plane pairs
+    coil_plus = trimesh.Trimesh(planemesh.vertices + center_offset + standoff,
+                                 planemesh.faces, process=False)
+
+    coil_minus = trimesh.Trimesh(planemesh.vertices + center_offset - standoff,
+                             planemesh.faces, process=False)
+
+    #Join coil planes into single mesh
+    joined_planes = coil_plus.union(coil_minus)
+
+    #Create mesh class object
+    coil = ToBeNamed(verts=joined_planes.vertices, tris=joined_planes.faces)
+
+    #%% Set up target and stray field points
+
+    #Here, the target points are on a spherical surface centered on the origin
+    radius = 0.75 * scaling_factor
+    center = np.array([1.5, 0, 0]) * scaling_factor
+
+    target_points_mesh = trimesh.creation.icosphere(subdivisions=2, radius=radius)
+    target_points = target_points_mesh.vertices + center
+
+
+    #Here, the stray field points are on a cylindrical surface
+    stray_radius = 15 * scaling_factor
+    stray_length = 20 * scaling_factor
+
     stray_points = cylinder_points(radius=stray_radius,
-                                   length=0.05,
-                                   nlength=6,
-                                   nalpha=10,
+                                   length = stray_length,
+                                   nlength = 5,
+                                   nalpha = 30,
                                    orientation=np.array([1, 0, 0]))
 
     n_stray_points = len(stray_points)
 
 
-#%% Compute C matrices
-    coil[stack].C = compute_C(coil[stack].mesh, target_points)
-    coil[stack].strayC = compute_C(coil[stack].mesh, stray_points)
 
-#%% Specify target field and run solver
+    #%% Compute C matrices that are used to compute the generated magnetic field
+    coil.C = compute_C(coil.mesh, target_points)
+    coil.strayC = compute_C(coil.mesh, stray_points)
 
-    target_field = 1e-10*np.ones((n_points, ))
-    I, sol = optimize_streamfunctions(coil[stack], target_field,
-                                 target_axis=stack,
+    #%% Specify target field and run solver
+
+    #The absolute target field amplitude is not of importance,
+    # and it is scaled to match the C matrix in the optimization function
+    target_field = np.ones((target_points.shape[0], ))
+
+
+    # The tolerance parameter will determine the spatial detail of the coil.
+    # Smaller tolerance means better but more intricate patterns. Too small values
+    # will not be solveable.
+    tolerance = 0.15
+
+    I, sol = optimize_streamfunctions(coil, target_field,
+                                 target_axis=0,
                                  target_error={'on_axis':0.01, 'off_axis':0.01, 'stray':0.01},
-                                 laplacian_smooth=0)
-
-    Ilist[stack] = I
-
-    limit = np.max(np.abs(Ilist[stack]))
+                                 laplacian_smooth=0,
+                                 tolerance=tolerance)
 
 
-#%% Plot coil windings
+    #%% Plot coil windings and target points
 
     mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                    size=(480, 480))
     mlab.clf()
 
-#    s=mlab.triangular_mesh(*coil.verts.T, coil.tris,scalars=I)
+    surface = mlab.pipeline.triangular_mesh_source(*coil.verts.T, coil.tris,scalars=I)
 
-    surface = mlab.pipeline.triangular_mesh_source(*coil[stack].verts.T, coil[stack].tris,scalars=Ilist[stack])
-
-    windings = mlab.pipeline.contour_surface(surface, contours=10)
+    windings = mlab.pipeline.contour_surface(surface, contours=8)
 
 
-#    s.module_manager.scalar_lut_manager.data_range = np.array([-limit,limit])
-#    mlab.points3d(*target_points.T)
-
-#    mlab.points3d(*stray_points.T)
-
-    B_target = np.vstack((coil[stack].C[:, :, 0].dot(Ilist[stack]), coil[stack].C[:, :, 1].dot(Ilist[stack]), coil[stack].C[:, :, 2].dot(Ilist[stack]))).T
+    B_target = np.vstack((coil.C[:, :, 0].dot(I),
+                          coil.C[:, :, 1].dot(I),
+                          coil.C[:, :, 2].dot(I))).T
 
 
     mlab.quiver3d(*target_points.T, *B_target.T)
 
 
-#%% Plot field residual falloff on two axes
+    #%% Plot field falloff on two axes
 
     plt.figure()
 
-    z = np.linspace(0, 0.03, 51)
+    z1 = np.linspace(0, 30, 31) * scaling_factor
 
-    x = y = np.zeros_like(z)
+    x1 = y1 = np.zeros_like(z1)
 
-    line_points = np.vstack((x, y, z)).T
+    line1_points = np.vstack((x1, y1, z1)).T
 
-    line_C = compute_C(coil[stack].mesh, r=line_points)
+    line1_C = compute_C(coil.mesh, r=line1_points)
 
-    B_line = np.vstack((line_C[:, :, 0].dot(Ilist[stack]), line_C[:, :, 1].dot(Ilist[stack]), line_C[:, :, 2].dot(Ilist[stack]))).T
+    B_line1 = np.vstack((line1_C[:, :, 0].dot(I), line1_C[:, :, 1].dot(I), line1_C[:, :, 2].dot(I))).T
 
-    plt.semilogy(z*1e3, np.linalg.norm(B_line, axis=1)/np.mean(np.abs(target_field)), label='Z')
+    plt.semilogy(z1 / scaling_factor, np.linalg.norm(B_line1, axis=1)/np.mean(np.abs(target_field)), label='Z')
 
-    y = np.linspace(0, 0.03, 51)
+    y2 = np.linspace(0, 30, 31) * scaling_factor
 
-    z = x = np.zeros_like(z)
+    z2 = x2 = np.zeros_like(y2)
 
-    line_points = np.vstack((x, y, z)).T
+    line2_points = np.vstack((x2, y2, z2)).T
 
-    line_C = compute_C(coil[stack].mesh, r=line_points)
+    line2_C = compute_C(coil.mesh, r=line2_points)
 
-    B_line = np.vstack((line_C[:, :, 0].dot(Ilist[stack]), line_C[:, :, 1].dot(Ilist[stack]), line_C[:, :, 2].dot(Ilist[stack]))).T
+    B_line2 = np.vstack((line2_C[:, :, 0].dot(I), line2_C[:, :, 1].dot(I), line2_C[:, :, 2].dot(I))).T
 
-    plt.semilogy(y*1e3, np.linalg.norm(B_line, axis=1)/np.mean(np.abs(target_field)), label='Y')
+    plt.semilogy(y2 / scaling_factor, np.linalg.norm(B_line2, axis=1)/np.mean(np.abs(target_field)), label='Y')
     plt.ylabel('Field amplitude (target field units)')
-    plt.xlabel('Distance from origin [mm]')
+    plt.xlabel('Distance from origin')
     plt.grid(True, which='minor', axis='y')
     plt.grid(True, which='major', axis='y', color='k')
     plt.grid(True, which='major', axis='x')
 
     plt.legend()
-
-
-#%% Compute field on a larger grid, plot vectors and isosurfaces etc.
-#
-#
-#    xx = np.linspace(-0.015, 0.02, 15)
-#    yy = np.linspace(0, 0.02, 15)
-#    zz = np.linspace(0, 0.02, 15)
-#    X, Y, Z = np.meshgrid(xx, yy, zz, indexing='ij')
-#
-#    x = X.ravel()
-#    y = Y.ravel()
-#    z = Z.ravel()
-#
-#    grid_points = np.vstack((x, y, z)).T
-#
-#    mlab.points3d(*grid_points.T)
-#
-#    grid_C = compute_C(coil.mesh, grid_points)
-#
-#    B_grid = np.vstack((grid_C[:, :, 0].dot(I), grid_C[:, :, 1].dot(I), grid_C[:, :, 2].dot(I))).T
-#    B_grid_matrix = B_grid.reshape((15, 15, 15, 3))
-#
-#    B_grid_matrix_norm = np.linalg.norm(B_grid_matrix, axis=-1)
-#
-#    field = mlab.pipeline.vector_field(X, Y, Z, B_grid_matrix[:,:,:,0], B_grid_matrix[:,:,:,1], B_grid_matrix[:,:,:,2],
-#                                  scalars=B_grid_matrix_norm, name='B-field')
-#
-#    field2 = mlab.pipeline.vector_field(X, Y, -Z, B_grid_matrix[:,:,:,0], B_grid_matrix[:,:,:,1], B_grid_matrix[:,:,:,2],
-#                                  scalars=B_grid_matrix_norm, name='B-field2')
-#
-#
-#    vectors = mlab.pipeline.vectors(field,
-#                          scale_factor=(X[1, 0, 0] - X[0, 0, 0]),
-#                          )
-#
-#
-#    vectors.glyph.mask_input_points = True
-#    vectors.glyph.mask_points.on_ratio = 5
-#
-#    vcp = mlab.pipeline.vector_cut_plane(field)
-#    vcp.glyph.glyph.scale_factor=10*(X[1, 0, 0] - X[0, 0, 0])
-#    # For prettier picture:
-#    #vcp.implicit_plane.widget.enabled = False
-#
-#    Bt=np.mean(np.linalg.norm(B_target, axis=1))
-#
-#    iso = mlab.pipeline.iso_surface(field,
-#                                    contours=[0.005*Bt, 0.01*Bt, 0.05*Bt,0.1*Bt, 0.5*Bt,0.9*Bt, 1.1*Bt,2.5*Bt, 5*Bt],
-#                                    opacity=0.6,
-#                                    colormap='viridis')
-#
-#    iso2 = mlab.pipeline.iso_surface(field2,
-#                                    contours=[0.005*Bt, 0.01*Bt, 0.05*Bt,0.1*Bt, 0.5*Bt,0.9*Bt, 1.1*Bt,2.5*Bt, 5*Bt],
-#                                    opacity=0.6,
-#                                    colormap='viridis')
-#
-#    # A trick to make transparency look better: cull the front face
-#    iso.actor.property.frontface_culling = True
-
-
-#%% Extract stream function isosurfaces/contours
-
-
-

@@ -9,6 +9,7 @@ Created on Tue Apr  9 17:08:27 2019
 import numpy as np
 import cvxopt
 from cvxopt import matrix
+from scipy.sparse.linalg import svds
 
 
 def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7):
@@ -19,9 +20,9 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7):
         if A is not None:
             args.extend([matrix(A), matrix(b)])
 
-    cvxopt.solvers.options['abstol']=5e-09
-    cvxopt.solvers.options['feastol']=5e-09
-    cvxopt.solvers.options['reltol']=5e-09
+    cvxopt.solvers.options['abstol']=tolerance
+    cvxopt.solvers.options['feastol']=tolerance
+    cvxopt.solvers.options['reltol']=tolerance
 #    cvxopt.solvers.options['refinement']=7
 
     sol = cvxopt.solvers.qp(*args)
@@ -32,7 +33,7 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7):
 def optimize_streamfunctions(meshobj, target_field, target_axis,
                              target_error={'on_axis':0.05, 'off_axis':0.05, 'stray':0.05},
                              laplacian_smooth=0.1,
-                             tolerance=1e-7):
+                             tolerance=0.1):
     '''
     Quadratic optimization of coil stream function according to minimal field energy,
     while keeping specified target field at target points within bounds.
@@ -61,6 +62,8 @@ def optimize_streamfunctions(meshobj, target_field, target_axis,
     lb_off_axis = -np.abs(target_field) * target_error['off_axis']
     ub_off_axis = np.abs(target_field) * target_error['off_axis']
 
+
+    #Collect on-axis and off-axis bounds
     lb = np.full((lb_on_axis.shape[0], 3), fill_value=np.nan)
     ub = np.full((lb_on_axis.shape[0], 3), fill_value=np.nan)
 
@@ -84,53 +87,56 @@ def optimize_streamfunctions(meshobj, target_field, target_axis,
     inner_C = inner_C.reshape((inner_C.shape[0], -1)).T
 
     # Stack to turn upper and lower bound constraints into single constraint
-#    stacked_bounds = np.hstack((lb, -ub))
-#    stacked_inner_C = np.vstack((-inner_C, inner_C))
-
-
     stacked_bounds = np.hstack((lb, -ub, lb_stray, -ub_stray))
     stacked_inner_C = np.vstack((-inner_C, inner_C, -inner_strayC, inner_strayC))
 
     #Limit L matrix to inner vertices
     inner_L = meshobj.inductance[meshobj.inner_verts][:, meshobj.inner_verts]
 
-
+    #Linear part of QP problem not used, set to zero
     linear_part = np.zeros((len(meshobj.inner_verts), ))
 
 
-    inner_lapl = meshobj.laplacian.todense()[meshobj.inner_verts][:, meshobj.inner_verts]
 
 
+
+    print('Scaling matrices before optimization. This requires singular value computation, hold on.')
 
     if laplacian_smooth != 0:
 
-        print('Scaling matrices before optimization. This requires singular value computation, hold on.')
+        #Limit Laplacian matrix to inner vertices (if used)
+        inner_lapl = meshobj.laplacian.todense()[meshobj.inner_verts][:, meshobj.inner_verts]
 
-        #Scale laplacian matrix to same magnitude as inductance
-
+        #Scale Laplacian matrix to same magnitude as inductance i.e. L
         lapl_eigs = np.linalg.eigvalsh(-inner_lapl)
-        ind_eigs = np.linalg.eigvalsh(inner_L)
+        L_eigs = np.linalg.eigvalsh(inner_L)
 
-        scaled_lapl = np.max(np.abs(ind_eigs))/np.max(np.abs(lapl_eigs))*-inner_lapl
+        scaled_lapl = np.max(np.abs(L_eigs))/np.max(np.abs(lapl_eigs))*-inner_lapl
 
         quadratic_term = (inner_L + laplacian_smooth * scaled_lapl)
 
     else:
         quadratic_term = inner_L
 
-#    quad_eigs = np.linalg.eigvalsh(quadratic_term)
-#    quadratic_term /= np.max(np.abs(quad_eigs))
+    #Scale whole quadratic term according to largest eigenvalue
+    quad_eigs = np.linalg.eigvalsh(quadratic_term)
+    quadratic_term /= np.max(np.abs(quad_eigs))
 
-    quadratic_term /= np.max(np.abs(quadratic_term))
+
+    #Compute, scale C matrix according to largest singular value
+    u, s, vt = svds(stacked_inner_C, k=1)
+
+    #Also, scale constraints so max value is 1
 
     print('Solving quadratic programming problem using cvxopt...')
     I_inner, sol = cvxopt_solve_qp(P=quadratic_term,
                    q=linear_part,
-                   G=stacked_inner_C,
-                   h=stacked_bounds,
+                   G=stacked_inner_C/s[0],
+                   h=stacked_bounds/np.max(target_field),
                    tolerance=tolerance)
 
+    #Build final I vector with zeros on boundary elements, scale by same singular value
     I = np.zeros((meshobj.inductance.shape[0], ))
-    I[meshobj.inner_verts] = I_inner
+    I[meshobj.inner_verts] = I_inner / s[0]
 
     return I, sol
