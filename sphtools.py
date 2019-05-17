@@ -275,9 +275,9 @@ if __name__ == '__main__':
     sph = sphbasis(20) 
     plotsph = plotsph
     
-    obj = plotsph.plotPsilm(sph,4,0)
+    obj = plotsph.plotPsilm(sph,5,3)
     
-    obj = plotsph.plotPsilm_volume(sph,5,1, 4.34, 7)
+    obj = plotsph.plotPsilm_volume(sph,5,3, 4.34, 7)
     
     Psilm1 = sph.Psilm(1,0, sph.sqp[:,1], sph.sqp[:,2])
     Psilm2 = sph.Psilm(7,0, sph.sqp[:,1], sph.sqp[:,2])
@@ -293,5 +293,6 @@ if __name__ == '__main__':
     B = sph.cartvec2sph(sph.sqp,B)
     
     coeffs = sph.vsphspectra(B, 7)
+    
     plt.figure()
     plt.semilogy(coeffs**2)
