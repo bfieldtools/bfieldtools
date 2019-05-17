@@ -83,18 +83,23 @@ if __name__ == '__main__':
     from scipy.linalg import eigh
     from mayavi import mlab
 
-    xx = np.linspace(0, 1, 50)
-    X, Y = np.meshgrid(xx, xx, indexing='ij')
-    x = X.ravel()
-    y = Y.ravel()
-    z = np.zeros_like(x)
-    print('Triangulating mesh')
-    tt = Triangulation(x, y)
+#    xx = np.linspace(0, 1, 50)
+#    X, Y = np.meshgrid(xx, xx, indexing='ij')
+#    x = X.ravel()
+#    y = Y.ravel()
+#    z = np.zeros_like(x)
+#    print('Triangulating mesh')
+#    tt = Triangulation(x, y)
 
-    verts = np.array([x, y, z]).T
-    tris = tt.triangles
-    L, M = laplacian_matrix(verts, tris)
-    u, v = eigh(-L.todense(), M.todense())
+    import trimesh
+    import utils
+    mesh = trimesh.load('./example_meshes/10x10_plane_hires.obj')
+    boundary_verts, inner_verts, boundary_tris, inner_tris = utils.find_mesh_boundaries(mesh.vertices, mesh.faces, mesh.edges)
+    L = laplacian_matrix(mesh.vertices, mesh.faces)
+    M = mass_matrix(mesh.vertices, mesh.faces)
+    u, v = eigh(-L.todense()[inner_verts][:,inner_verts], M.todense()[inner_verts][:,inner_verts])
 
     plt.plot(u)
-    mlab.triangular_mesh(*verts.T, tris, scalars=v[:, 7])
+    scalars = np.zeros(L.shape[0])
+    scalars[inner_verts] = v[:, 200]
+    mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars)
