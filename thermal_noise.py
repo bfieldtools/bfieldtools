@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     mesh = trimesh.load('./example_meshes/10x10_plane_hires.obj')
 
-#    mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
+    mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 
     boundary_verts, inner_verts, boundary_tris, inner_tris = utils.find_mesh_boundaries(mesh.vertices, mesh.faces, mesh.edges)
 
@@ -51,9 +51,11 @@ if __name__ == '__main__':
 
     
     Np = 10
+    dz = 0.3
+    
     x, z = np.meshgrid(np.linspace(-0.1,0.1,Np),np.linspace(-0.1,0.1,Np))
         
-    fp = np.array((x.flatten(),np.ones(x.flatten().shape), z.flatten())).T
+    fp = np.array((x.flatten(),dz*np.ones(x.flatten().shape), z.flatten())).T
     
 #    mlab.figure()
 #    mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
@@ -82,24 +84,23 @@ if __name__ == '__main__':
     kB = 1.38064852e-23
     mu0 = 4*np.pi*1e-7
     
+    plt.figure()
     B = np.zeros(fp.shape)
-    for i in range(40):
+    for i in range(7000):
         vec = np.zeros(L.shape[0])
         vec[inner_verts] = v[:, i]#/np.linalg.norm(v[:,i])
         vec = M.sqrt()@vec
-#        vec /= np.sqrt(u[i])
-#        vec *= np.sqrt(4*kB*T*sigma*d)
-#        vec *= np.sqrt(2*kB*T/(sigma*d*mu0*np.sqrt(u[i])))
-        vec *= np.sqrt(2*kB*T*sigma*d/np.sqrt(u[i]))
-#        vec *= np.sqrt(4*kB*T*sigma*d)
-        #sigma*d*2
+        vec *= 1/np.sqrt(u[i])
+        vec *= np.sqrt(4*kB*T*sigma*d)
         B[:,0] += (C[:,:,0]@vec)**2
         B[:,1] += (C[:,:,1]@vec)**2
         B[:,2] += (C[:,:,2]@vec)**2
-    
+        
+        plt.plot(i, np.sqrt(B[0,1]),'.')
+        
     B = np.sqrt(B)
     
     
-    dz = 1
+    
     Binf = mu0*np.sqrt(sigma*kB*T/(8*np.pi)*(d/(dz*(dz+d))))
     Broth = mu0*np.sqrt(kB*T*sigma*d/(8*np.pi*dz**2))
