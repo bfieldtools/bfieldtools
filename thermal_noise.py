@@ -11,7 +11,8 @@ if __name__ == '__main__':
     from bringout_core import compute_C
     from laplacian_mesh import laplacian_matrix, mass_matrix
 
-    mesh = trimesh.load('./example_meshes/10x10_plane_hires.obj')
+#    mesh = trimesh.load('./example_meshes/10x10_plane_hires.obj')
+    mesh = trimesh.load('./example_meshes/disc.obj')
 
     mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 
@@ -20,11 +21,12 @@ if __name__ == '__main__':
     L = laplacian_matrix(mesh.vertices, mesh.faces)
     M = mass_matrix(mesh.vertices, mesh.faces)
 
-    u, v = eigh(-L.todense()[inner_verts][:,inner_verts], M.todense()[inner_verts][:,inner_verts])
-
+#    u, v = eigh(-L.todense()[inner_verts][:,inner_verts], M.todense()[inner_verts][:,inner_verts])
+    u, v = eigh(-L.todense(), M.todense())
     plt.plot(u)
-    scalars = np.zeros(L.shape[0])
-    scalars[inner_verts] = v[:, 1]
+#    scalars = np.zeros(L.shape[0])
+#    scalars[inner_verts] = v[:, 1]
+    scalars = v[:,5]
     mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars)
 
     Nmodes = 30
@@ -33,7 +35,7 @@ if __name__ == '__main__':
     verts= mesh.vertices
     tris = mesh.faces
 
-    for ii in range(Nmodes):
+    for ii in range(1,Nmodes):
         n = int(np.sqrt(Nmodes))
         i = ii % n
         j = int(ii/n)
@@ -41,9 +43,10 @@ if __name__ == '__main__':
         x = verts[:,0] + i*12
         y = verts[:,1]
         z = verts[:,2] + j*12
-        scalars[inner_verts] = v[:,ii]
+#        scalars[inner_verts] = v[:,ii]
 #        scalars[inner] = v[:,4] +v[:,5]
-        s=mlab.triangular_mesh(x,y,z, tris, scalars=scalars) #M[:,70])
+        scalars = v[:,ii]
+        s=mlab.triangular_mesh(x,y,z, tris, scalars=scalars, colormap = 'bwr') #M[:,70])
         s.module_manager.scalar_lut_manager.number_of_colors = 256
         s.module_manager.scalar_lut_manager.data_range = np.array([-limit,limit])
         s.actor.mapper.interpolate_scalars_before_mapping = True
@@ -51,7 +54,7 @@ if __name__ == '__main__':
 
     
     Np = 10
-    dz = 0.3
+    dz = 0.2
     
     x, z = np.meshgrid(np.linspace(-0.1,0.1,Np),np.linspace(-0.1,0.1,Np))
         
@@ -63,8 +66,9 @@ if __name__ == '__main__':
 #    
     C = compute_C(mesh, fp)
     
-    vec = np.zeros(L.shape[0])
-    vec[inner_verts] = v[:, 3]
+#    vec = np.zeros(L.shape[0])
+#    vec[inner_verts] = v[:, 3]
+    vec = v[:,3]
     
     B = np.zeros(fp.shape)
     B[:,0] = C[:,:,0]@vec
@@ -86,9 +90,10 @@ if __name__ == '__main__':
     
     plt.figure()
     B = np.zeros(fp.shape)
-    for i in range(7000):
-        vec = np.zeros(L.shape[0])
-        vec[inner_verts] = v[:, i]#/np.linalg.norm(v[:,i])
+    for i in range(1,5000):
+#        vec = np.zeros(L.shape[0])
+#        vec[inner_verts] = v[:, i]#/np.linalg.norm(v[:,i])
+        vec = v[:,i]
         vec = M.sqrt()@vec
         vec *= 1/np.sqrt(u[i])
         vec *= np.sqrt(4*kB*T*sigma*d)
@@ -100,6 +105,7 @@ if __name__ == '__main__':
         
     B = np.sqrt(B)
     
+    np.mean(B, axis=0)
     
     
     Binf = mu0*np.sqrt(sigma*kB*T/(8*np.pi)*(d/(dz*(dz+d))))
