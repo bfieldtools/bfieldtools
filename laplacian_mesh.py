@@ -99,10 +99,10 @@ if __name__ == '__main__':
 
     plt.plot(u)
     scalars = np.zeros(L.shape[0])
-    scalars[inner_verts] = v[:, 1]
+    scalars[inner_verts] = v[:, 0]
     mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars)
 
-    Nmodes = 100
+    Nmodes = 16**2
     limit = np.max(abs(v[:,0]))
 
     verts= mesh.vertices
@@ -122,3 +122,26 @@ if __name__ == '__main__':
         s.module_manager.scalar_lut_manager.number_of_colors = 256
         s.module_manager.scalar_lut_manager.data_range = np.array([-limit,limit])
         s.actor.mapper.interpolate_scalars_before_mapping = True
+
+
+
+
+#    s = mlab.triangular_mesh(*verts.T, tris, scalars=scalars)
+#    s.actor.mapper.interpolate_scalars_before_mapping = True
+#
+#    @mlab.animate
+#    def anim():
+#        for i in range(100000):
+#            scalars = np.zeros(L.shape[0])
+#
+#            prev = int(i / 10)
+#            post = prev + 1
+#
+#            trans = (i % 10) / 10
+#
+#            scalars[inner_verts] = (1 - trans ) * v[:, prev]  + trans * v[:, post]
+#            s.mlab_source.scalars = np.asarray(scalars, 'd')
+#            yield
+#
+#    anim()
+#    mlab.show()
