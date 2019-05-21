@@ -199,20 +199,80 @@ class sphbasis:
             for m in range(-1*l,l+1):
                 Psilm = self.Psilm(l,m,self.sqp[:,1],self.sqp[:,2])
                 ctemp = self.innerproduct(fun, Psilm)
-#                ctemp /= (self.sqp[0,0]**(l-1)*np.sqrt(2*l**2 +l))
-                ctemp /= (self.sqp[0,0]**(l-1))
+                ctemp /= (self.sqp[0,0]**(l-1)*np.sqrt(2*l**2 +l))
+#                ctemp /= (self.sqp[0,0]**(l-1))
                 coeffs.append(ctemp)
         
         coeffs = np.array(coeffs)
         return coeffs
     
+    def fitSpectra(self, coords, Bmeas, lmax):
+        Nmeas = coords.shape[0]
+        A = np.zeros((3*Nmeas, lmax*(lmax+2)))
+        
+
+        for e in range(3):
+            p = coords[:,:,e]
+            sp = self.cartesian2spherical(p)
+            
+            lind = 0
+            for l in range(1,lmax):
+                for m in range(-1*l,l+1):
+                    Psilm = self.Psilm(l,m, sp[:,1],sp[:,2])
+                    Psilm *= np.sqrt(2*l**2 + l)
+                    Psilm[:,0] *= sp[:,0]**(l-1)
+                    Psilm[:,1] *= sp[:,0]**(l-1)
+                    Psilm[:,2] *= sp[:,0]**(l-1)
+                    Psilm = self.sphvec2cart(sp, Psilm)
+                    A[e*Nmeas:(e+1)*Nmeas, lind] = Psilm[:,e]
+                    lind += 1
+        coeffs = np.linalg.pinv(A)@Bmeas.T.flatten()
+        
+        return coeffs
+                        
 class plotsph:
     
-    def plotYlm(sph, l, m):
+    def plotYlms(sph, lmax):
+        #https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html
         theta = np.reshape(sph.sp[:,1], (sph.Np, sph.Np))
         phi = np.reshape(sph.sp[:,2], (sph.Np, sph.Np))
+        r = 0.3
+        x=r*np.sin(theta)*np.cos(phi)
+        y=r*np.sin(theta)*np.sin(phi)
+        z=r*np.cos(theta)
         
         
+        for l in range(1, lmax):
+            for m in range(l):
+                ylm = sph.ylm(l,m,theta.flatten(),phi.flatten())
+                ylm = np.reshape(ylm, (sph.Np, sph.Np))
+
+                mlab.mesh(x - m, y - l, z, scalars=ylm, colormap='bwr')
+                ylm /= ylm.max()
+                mlab.mesh(ylm * x - m, ylm * y - l, ylm * z + 1.3,
+                          scalars=np.abs(ylm), colormap='Spectral')
+        
+        mlab.view(90, 70, 6.2, (-1.3, -2.9, 0.25))
+        
+
+    def plotYlm(sph, l,m):
+        theta = np.reshape(sph.sp[:,1], (sph.Np, sph.Np))
+        phi = np.reshape(sph.sp[:,2], (sph.Np, sph.Np))
+        r = 0.6
+        x=r*np.sin(theta)*np.cos(phi)
+        y=r*np.sin(theta)*np.sin(phi)
+        z=r*np.cos(theta)
+        
+        ylm = sph.ylm(l,m,theta.flatten(),phi.flatten())
+        ylm = np.reshape(ylm, (sph.Np, sph.Np))
+
+        mlab.mesh(x - m, y - l, z, scalars=ylm, colormap='bwr')
+
+        ylm /= ylm.max()
+        mlab.mesh(ylm * x - m, ylm * y - l, ylm * z + 1.3,
+                  scalars=np.abs(ylm), colormap='Spectral')
+    
+            
     def plotPsilm(sph,l, m):
         Psilm = sph.Psilm(l,m, sph.sp[:,1], sph.sp[:,2])
         Psilm = sph.sphvec2cart(sph.sp, Psilm)
@@ -233,38 +293,11 @@ class plotsph:
         Psilm[:,2] *= sp[:,0]**(l-1)
         
         Psilm = sph.sphvec2cart(sp, Psilm)
-        Psilm[np.isinf(Psilm)] = np.nan
         obj = mlab.quiver3d(p[:,0],p[:,1],p[:,2], Psilm[:,0], Psilm[:,1], Psilm[:,2])
         obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))        
         return obj
     
         
-    def plotcontourPsilm_volume(sph,l, m, lim, Np):
-        x, y, z = np.meshgrid(np.linspace(-lim,lim,Np),np.linspace(-lim,lim,Np),np.linspace(-lim,lim,Np))
-        
-        p = np.array((x.flatten(), y.flatten(), z.flatten())).T
-        sp = sph.cartesian2spherical(p)
-        
-        Psilm = sph.Psilm(l,m, sp[:,1], sp[:,2])
-        
-        Psilm[:,0] *= sp[:,0]**(l-1)
-        Psilm[:,1] *= sp[:,0]**(l-1)
-        Psilm[:,2] *= sp[:,0]**(l-1)
-        
-        Psilm = sph.sphvec2cart(sp, Psilm)
-        Psilm[np.isinf(Psilm)] = 0
-        Psilm[np.isnan(Psilm)] = 0
-        amp_Psilm = np.linalg.norm(Psilm, axis=1)
-        
-        field = mlab.pipeline.vector_field(x, y, z, np.reshape(Psilm[:,0], x.shape), np.reshape(Psilm[:,1], x.shape), np.reshape(Psilm[:,2], x.shape), scalars=np.reshape(amp_Psilm, x.shape), name='B-field')
-
-        iso = mlab.pipeline.iso_surface(field,opacity=0.6,colormap='viridis')
-
-
-        
-        obj = mlab.contour3d(x,y,z, np.reshape(amp_Psilm, x.shape), contours=4, transparent=True)
-#        obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))        
-        return obj
     
     
 #https://arxiv.org/pdf/1306.3201.pdf    
@@ -272,27 +305,51 @@ class plotsph:
 
 if __name__ == '__main__':
     
-    sph = sphbasis(20) 
+    sph = sphbasis(40) 
     plotsph = plotsph
     
-    obj = plotsph.plotPsilm(sph,5,3)
+#    obj = plotsph.plotYlms(sph,8)
+#    obj = plotsph.plotYlm(sph,3,3)
+#    obj = plotsph.plotPsilm(sph,5,3)
+#    obj = plotsph.plotPsilm_volume(sph,5,3, 4.34, 7)
+#    
+#    Psilm1 = sph.Psilm(1,0, sph.sqp[:,1], sph.sqp[:,2])
+#    Psilm2 = sph.Psilm(7,0, sph.sqp[:,1], sph.sqp[:,2])
+#    
+#    print(sph.innerproduct(Psilm1,Psilm2))
+#    
+#    
+#    B = np.zeros(sph.sqp.shape)
+#    #B[:,0] = 1
+#    B[:,2] = sph.qp.points[:,0]/np.max(sph.qp.points[:,0])
+#    B += 0.1*sci.random.randn(B.shape[0], B.shape[1])
+#    
+#    B = sph.cartvec2sph(sph.sqp,B)
+#    
+#    coeffs = sph.vsphspectra(B, 7)
+#    
+#    plt.figure()
+#    plt.semilogy(coeffs**2)
+#    
+#    obj = plotsph.plotYlm(sph,5,3)
     
-    obj = plotsph.plotPsilm_volume(sph,5,3, 4.34, 7)
+    Np = 10
+    lim = 1
+    x, y, z = np.meshgrid(np.linspace(-lim+0.1,lim,Np),np.linspace(-lim+0.1,lim,Np),np.linspace(-lim+0.1,lim,Np))
+        
+    p = np.array((x.flatten(), y.flatten(), z.flatten())).T
+    coords = np.zeros((p.shape[0],p.shape[1],3))
+    coords[:,:,0] = p
+    coords[:,:,1] = p
+    coords[:,:,2] = p
     
-    Psilm1 = sph.Psilm(1,0, sph.sqp[:,1], sph.sqp[:,2])
-    Psilm2 = sph.Psilm(7,0, sph.sqp[:,1], sph.sqp[:,2])
+    B = np.zeros((coords.shape[0],coords.shape[1]))
+    B[:,2] = p[:,0]/np.max(p[:,0])
+    B[:,1] = 0.3
+    B += 0.4*sci.random.randn(B.shape[0], B.shape[1])
     
-    print(sph.innerproduct(Psilm1,Psilm2))
-    
-    
-    B = np.zeros(sph.sqp.shape)
-    #B[:,0] = 1
-    B[:,2] = sph.qp.points[:,0]/np.max(sph.qp.points[:,0])
-    B += 0.1*sci.random.randn(B.shape[0], B.shape[1])
-    
-    B = sph.cartvec2sph(sph.sqp,B)
-    
-    coeffs = sph.vsphspectra(B, 7)
+    coeffs = sph.fitSpectra(coords, B, 4)
     
     plt.figure()
-    plt.semilogy(coeffs**2)
+    plt.semilogy(coeffs**2,'.')
+    
