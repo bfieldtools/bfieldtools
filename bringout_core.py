@@ -321,7 +321,7 @@ def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None, parallel=Tru
 
     '''
     mu0 = 4 * np.pi * 1e-7
-    coef = mu0 / np.pi
+    coef = mu0 / (4 * np.pi)
 
 
     print('Computing Cn matrix...')
@@ -419,6 +419,6 @@ def _Cn_part(verts, vert_links, r, tri_areas, r_quad, w_quad, basis_value):
 #                    C[k, n, 2] = w_quad[l] * ((-basis['v'][n][i][1]*(r[k, 0] - r_quad[vert_links[n][i]][l, 0]) + basis['v'][n][i][0] * (r[k, 1] - r_quad[vert_links[n][i]][l, 1]))) / denom
 
                 #Area integral
-                C_part[k, n] += element * 2 * tri_areas[vert_links[n][i]]
+                C_part[k, n] += element * tri_areas[vert_links[n][i]]
 
     return C_part
