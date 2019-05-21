@@ -8,6 +8,7 @@ Created on Tue Apr  2 10:41:43 2019
 
 from mayavi import mlab
 import trimesh
+import numpy as np
 
 import utils
 from laplacian_mesh import laplacian_matrix, mass_matrix
