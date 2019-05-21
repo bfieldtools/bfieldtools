@@ -60,3 +60,5 @@ if __name__ == '__main__':
     plt.plot(z, B[:,2]/np.max(B[:,2]))
     plt.plot(z, Ban/np.max(Ban))
     
+    plt.figure()
+    plt.plot(z, np.abs((B[:,2]-Ban))/np.abs(Ban)*100)
