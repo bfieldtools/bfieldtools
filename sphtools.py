@@ -226,10 +226,29 @@ class sphbasis:
                     Psilm = self.sphvec2cart(sp, Psilm)
                     A[e*Nmeas:(e+1)*Nmeas, lind] = Psilm[:,e]
                     lind += 1
+        print("Condition number = %f\n" % (np.linalg.cond(A)))
         coeffs = np.linalg.pinv(A)@Bmeas.T.flatten()
         
+        
         return coeffs
-                        
+    
+    def reconstructB(self, p, coeffs,lmax):
+        B = np.zeros(p.shape)
+        sp = self.cartesian2spherical(p)
+        idx = 0
+        for l in range(1,lmax):
+                for m in range(-1*l,l+1):
+                    Psilm = self.Psilm(l,m, sp[:,1],sp[:,2])
+                    Psilm *= np.sqrt(2*l**2 + l)
+                    Psilm[:,0] *= sp[:,0]**(l-1)
+                    Psilm[:,1] *= sp[:,0]**(l-1)
+                    Psilm[:,2] *= sp[:,0]**(l-1)
+                    Psilm *= coeffs[idx]
+                    Psilm = self.sphvec2cart(sp, Psilm)
+                    B += Psilm
+                    idx += 1
+        return B
+        
 class plotsph:
     
     def plotYlms(sph, lmax):
@@ -310,7 +329,8 @@ if __name__ == '__main__':
     
 #    obj = plotsph.plotYlms(sph,8)
 #    obj = plotsph.plotYlm(sph,3,3)
-#    obj = plotsph.plotPsilm(sph,5,3)
+    
+#    obj = plotsph.plotPsilm(sph,2,0)
 #    obj = plotsph.plotPsilm_volume(sph,5,3, 4.34, 7)
 #    
 #    Psilm1 = sph.Psilm(1,0, sph.sqp[:,1], sph.sqp[:,2])
@@ -348,7 +368,7 @@ if __name__ == '__main__':
     B[:,1] = 0.3
     B += 0.4*sci.random.randn(B.shape[0], B.shape[1])
     
-    coeffs = sph.fitSpectra(coords, B, 4)
+    coeffs = sph.fitSpectra(coords, B, 2)
     
     plt.figure()
     plt.semilogy(coeffs**2,'.')

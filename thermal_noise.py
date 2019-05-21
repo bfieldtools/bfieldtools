@@ -12,11 +12,11 @@ if __name__ == '__main__':
     from laplacian_mesh import laplacian_matrix, mass_matrix
 
 #    mesh = trimesh.load('./example_meshes/10x10_plane_hires.obj')
-    mesh = trimesh.load('./example_meshes/unit_disc.stl')
-#    mesh = trimesh.load('./example_meshes/unit_spiral.stl')
-    
-    mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
-    mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
+#    mesh = trimesh.load('./example_meshes/unit_disc.stl')
+    mesh = trimesh.load('./example_meshes/unit_spiral.stl')
+#    
+#    mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
+#    mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 #    mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 #    mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
     boundary_verts, inner_verts, boundary_tris, inner_tris = utils.find_mesh_boundaries(mesh.vertices, mesh.faces, mesh.edges)
@@ -68,7 +68,7 @@ if __name__ == '__main__':
 #    
     mlab.figure()
     mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
-#    mlab.points3d(*fp.T,scale_factor = 0.1)
+    mlab.points3d(*fp.T,scale_factor = 0.1)
     
     C = compute_C(mesh, fp)
     
