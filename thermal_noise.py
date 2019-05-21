@@ -15,7 +15,7 @@ if __name__ == '__main__':
     mesh = trimesh.load('./example_meshes/unit_disc.stl')
 
     mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
-#    mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
+    mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 #    mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 #    mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
     boundary_verts, inner_verts, boundary_tris, inner_tris = utils.find_mesh_boundaries(mesh.vertices, mesh.faces, mesh.edges)
@@ -65,10 +65,10 @@ if __name__ == '__main__':
     
     z = np.linspace(0.1, 10, Np)
     fp = np.array((np.zeros(z.shape), np.zeros(z.shape), z)).T
-#    mlab.figure()
-#    mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
-#    mlab.points3d(*fp.T)
-#    
+    mlab.figure()
+    mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
+    mlab.points3d(*fp.T)
+    
     C = compute_C(mesh, fp)
     
 #    vec = np.zeros(L.shape[0])
@@ -98,15 +98,17 @@ if __name__ == '__main__':
     for i in range(1,v.shape[1]):
 #        vec = np.zeros(L.shape[0])
 #        vec[inner_verts] = v[:, i]
+#        vec = M.sqrt()@vec/np.sqrt(u[i])
 #        vec = v[:,i]
 #        vec = M.sqrt()@v[:,i]/np.sqrt(u[i])*np.sqrt(4*kB*T*sigma*d)
-        vec = M.sqrt()@v[:,i]/np.sqrt(u[i])
-#        vec *= 4*kB*T*sigma*d
+#        M.sqrt()@
+        vec = v[:,i]/np.sqrt(u[i])
+        vec *= np.sqrt(4*kB*T*sigma*d)
 #        vec *= 1/np.sqrt(u[i])
 #        vec *= np.sqrt(4*kB*T*sigma*d)
-        B[:,0] += (C[:,:,0]@vec)**2*4*kB*T*sigma*d
-        B[:,1] += (C[:,:,1]@vec)**2*4*kB*T*sigma*d
-        B[:,2] += (C[:,:,2]@vec)**2*4*kB*T*sigma*d
+        B[:,0] += (C[:,:,0]/8@vec)**2
+        B[:,1] += (C[:,:,1]/8@vec)**2
+        B[:,2] += (C[:,:,2]/8@vec)**2
         
 #        plt.plot(i, np.sqrt(B[-1,2]),'.')
         
