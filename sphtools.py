@@ -205,50 +205,63 @@ class sphbasis:
         
         coeffs = np.array(coeffs)
         return coeffs
+
+        
     
-    def fitSpectra(self, coords, Bmeas, lmax):
+class sphfittools:
+        
+    def fitSpectra(sph, coords, Bmeas, lmax):
         Nmeas = coords.shape[0]
         A = np.zeros((3*Nmeas, lmax*(lmax+2)))
         
 
         for e in range(3):
             p = coords[:,:,e]
-            sp = self.cartesian2spherical(p)
+            sp = sph.cartesian2spherical(p)
             
             lind = 0
-            for l in range(1,lmax):
+            for l in range(1,lmax+1):
                 for m in range(-1*l,l+1):
-                    Psilm = self.Psilm(l,m, sp[:,1],sp[:,2])
+                    Psilm = sph.Psilm(l,m, sp[:,1],sp[:,2])
                     Psilm *= np.sqrt(2*l**2 + l)
                     Psilm[:,0] *= sp[:,0]**(l-1)
                     Psilm[:,1] *= sp[:,0]**(l-1)
                     Psilm[:,2] *= sp[:,0]**(l-1)
-                    Psilm = self.sphvec2cart(sp, Psilm)
+                    Psilm = sph.sphvec2cart(sp, Psilm)
                     A[e*Nmeas:(e+1)*Nmeas, lind] = Psilm[:,e]
                     lind += 1
-        print("Condition number = %f\n" % (np.linalg.cond(A)))
+        print("Condition number = %f" % (np.linalg.cond(A)))
         coeffs = np.linalg.pinv(A)@Bmeas.T.flatten()
         
-        
-        return coeffs
-    
-    def reconstructB(self, p, coeffs,lmax):
-        B = np.zeros(p.shape)
-        sp = self.cartesian2spherical(p)
-        idx = 0
-        for l in range(1,lmax):
+        coeffs2 = np.zeros(coeffs.shape)
+        lind = 0
+        for l in range(1,lmax+1):
                 for m in range(-1*l,l+1):
-                    Psilm = self.Psilm(l,m, sp[:,1],sp[:,2])
+                    coeffs2[lind] = coeffs[lind]/np.sqrt(2*l**2 + l)
+                    lind += 1
+        Breco = A@coeffs
+#        mse = np.mean((Bmeas.T.flatten()-Breco)**2)
+        nrmse = np.sqrt(np.mean((Bmeas.T.flatten()-Breco)**2))/np.max(np.abs(Bmeas.T.flatten()))*100
+        print("Normalized RMS error = %f%%" % (nrmse))
+        return coeffs, coeffs2, nrmse
+    
+    def reconstructB(sph, p, coeffs,lmax):
+        B = np.zeros(p.shape)
+        sp = sph.cartesian2spherical(p)
+        idx = 0
+        for l in range(1,lmax+1):
+                for m in range(-1*l,l+1):
+                    Psilm = sph.Psilm(l,m, sp[:,1],sp[:,2])
                     Psilm *= np.sqrt(2*l**2 + l)
                     Psilm[:,0] *= sp[:,0]**(l-1)
                     Psilm[:,1] *= sp[:,0]**(l-1)
                     Psilm[:,2] *= sp[:,0]**(l-1)
                     Psilm *= coeffs[idx]
-                    Psilm = self.sphvec2cart(sp, Psilm)
+                    Psilm = sph.sphvec2cart(sp, Psilm)
                     B += Psilm
                     idx += 1
         return B
-        
+    
 class plotsph:
     
     def plotYlms(sph, lmax):
@@ -353,7 +366,7 @@ if __name__ == '__main__':
 #    
 #    obj = plotsph.plotYlm(sph,5,3)
     
-    Np = 10
+    Np = 5
     lim = 1
     x, y, z = np.meshgrid(np.linspace(-lim+0.1,lim,Np),np.linspace(-lim+0.1,lim,Np),np.linspace(-lim+0.1,lim,Np))
         
@@ -368,8 +381,10 @@ if __name__ == '__main__':
     B[:,1] = 0.3
     B += 0.4*sci.random.randn(B.shape[0], B.shape[1])
     
-    coeffs = sph.fitSpectra(coords, B, 2)
+    lmax = 5
+    coeffs,coeffs2, mse = sphfittools.fitSpectra(sph,coords, B, lmax)
     
     plt.figure()
     plt.semilogy(coeffs**2,'.')
+    
     
