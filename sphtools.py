@@ -391,7 +391,7 @@ if __name__ == '__main__':
      
     offset = np.array((0, 0, 2))
     mlab.figure()
-    obj = plotsph.plotBPhilm_volume(sph,5,2, 1, 15,offset)
+    obj = plotsph.plotBPhilm_volume(sph,2,0, 1, 15,offset)
     
     mlab.figure()
     obj = plotsph.plotBPsilm_volume(sph,2,0, 1, 15,offset)

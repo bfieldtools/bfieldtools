@@ -11,9 +11,9 @@ if __name__ == '__main__':
     from bringout_core import compute_C
     from laplacian_mesh import laplacian_matrix, mass_matrix
 
-#    mesh = trimesh.load('./example_meshes/10x10_plane_hires.obj')
+    mesh = trimesh.load('./example_meshes/10x10_plane_hires.obj')
 #    mesh = trimesh.load('./example_meshes/unit_disc.stl')
-    mesh = trimesh.load('./example_meshes/unit_spiral.stl')
+#    mesh = trimesh.load('./example_meshes/unit_spiral.stl')
 #    
     mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 #    mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
@@ -31,7 +31,7 @@ if __name__ == '__main__':
 #    scalars[inner_verts] = v[:, 30]
 #    mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars)
 
-    Nmodes = 20
+    Nmodes = 64
     limit = np.max(abs(v[:,0]))
 
     verts= mesh.vertices
@@ -42,9 +42,9 @@ if __name__ == '__main__':
         i = ii % n
         j = int(ii/n)
         print(i,j)
-        x = 5*verts[:,0] + i*12
-        y = 5*verts[:,1]+ j*12
-        z = 5*verts[:,2]
+        x = 1*verts[:,0] + i*12
+        y = 1*verts[:,1]
+        z = 1*verts[:,2]+ j*12
         scalars = np.zeros(L.shape[0])
         scalars[inner_verts] = v[:,ii]
         s=mlab.triangular_mesh(x,y,z, tris, scalars=scalars, colormap = 'bwr') #M[:,70])
