@@ -187,12 +187,16 @@ class sphbasis:
         Psilm *= 1/np.sqrt(2*l**2+l)
         return Psilm
 
+    def Philm(self,l,m,theta,phi):
+        Philm = -1*(l+1)*self.Plm(l,m,theta,phi) + np.sqrt(l*(l+1))*self.Blm(l,m,theta,phi)
+        Philm *= 1/np.sqrt((l+1)*(2*l+1))
+        return Philm
     
     def innerproduct(self,fun1,fun2):
         dotp = np.sum(self.qp.weights*np.sum(fun1*fun2,axis=1))*4*np.pi
         return dotp
     
-    def vsphspectra(self, fun, lmax):
+    def avsphspectra(self, fun, lmax):
         coeffs = []
 
         for l in range(1,lmax):
@@ -206,7 +210,19 @@ class sphbasis:
         coeffs = np.array(coeffs)
         return coeffs
 
+    def bvsphspectra(self, fun, lmax):
+        coeffs = []
+
+        for l in range(1,lmax):
+            for m in range(-1*l,l+1):
+                Philm = self.Philm(l,m,self.sqp[:,1],self.sqp[:,2])
+                ctemp = self.innerproduct(fun, Philm)
+                ctemp /= (self.sqp[0,0]**(l-1)*np.sqrt((l+1)*(2*l+1)))
+#                ctemp /= (self.sqp[0,0]**(l-1))
+                coeffs.append(ctemp)
         
+        coeffs = np.array(coeffs)
+        return coeffs
     
 class sphfittools:
         
@@ -235,9 +251,12 @@ class sphfittools:
         
         coeffs2 = np.zeros(coeffs.shape)
         lind = 0
+        Rmax = np.max(sp[:,0])
         for l in range(1,lmax+1):
                 for m in range(-1*l,l+1):
-                    coeffs2[lind] = coeffs[lind]/np.sqrt(2*l**2 + l)
+#                    coeffs2[lind] = coeffs[lind]*np.sqrt(2*l**2 + l)
+                    temp = (2*l**2 + l)*Rmax**(2*l-1)/(2*l-1)
+                    coeffs2[lind] = coeffs[lind]**2*temp
                     lind += 1
         Breco = A@coeffs
 #        mse = np.mean((Bmeas.T.flatten()-Breco)**2)
@@ -274,7 +293,7 @@ class plotsph:
         z=r*np.cos(theta)
         
         
-        for l in range(1, lmax):
+        for l in range(1, lmax+1):
             for m in range(l):
                 ylm = sph.ylm(l,m,theta.flatten(),phi.flatten())
                 ylm = np.reshape(ylm, (sph.Np, sph.Np))
@@ -312,14 +331,14 @@ class plotsph:
         obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))        
         return obj
     
-    def plotPsilm_volume(sph,l, m, lim, Np):
-        x, y, z = np.meshgrid(np.linspace(-lim,lim,Np),np.linspace(-lim,lim,Np),np.linspace(-lim,lim,Np))
+    def plotBPsilm_volume(sph,l, m, lim, Np,offset):
+        x, y, z = np.meshgrid(np.linspace(-lim+offset[0],lim+offset[0],Np),np.linspace(-lim+offset[1],lim+offset[1],Np),np.linspace(-lim+offset[2],lim+offset[2],Np))
         
         p = np.array((x.flatten(), y.flatten(), z.flatten())).T
         sp = sph.cartesian2spherical(p)
         
         Psilm = sph.Psilm(l,m, sp[:,1], sp[:,2])
-        
+        Psilm *= np.sqrt(2*l**2 +l)
         Psilm[:,0] *= sp[:,0]**(l-1)
         Psilm[:,1] *= sp[:,0]**(l-1)
         Psilm[:,2] *= sp[:,0]**(l-1)
@@ -329,6 +348,30 @@ class plotsph:
         obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))        
         return obj
     
+    def plotPhilm(sph,l, m):
+        Philm = sph.Philm(l,m, sph.sp[:,1], sph.sp[:,2])
+        Philm = sph.sphvec2cart(sph.sp, Philm)
+        obj = mlab.quiver3d(sph.p[:,0],sph.p[:,1],sph.p[:,2], Philm[:,0], Philm[:,1], Philm[:,2])
+        obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))        
+        return obj
+    
+    def plotBPhilm_volume(sph,l, m, lim, Np, offset):
+        x, y, z = np.meshgrid(np.linspace(-lim+offset[0],lim+offset[0],Np),np.linspace(-lim+offset[1],lim+offset[1],Np),np.linspace(-lim+offset[2],lim+offset[2],Np))
+        
+        p = np.array((x.flatten(), y.flatten(), z.flatten())).T
+        sp = sph.cartesian2spherical(p)
+        
+        Philm = sph.Philm(l,m, sp[:,1], sp[:,2])
+        Philm *= np.sqrt((l+1)*(2*l+1))
+        
+        Philm[:,0] *= sp[:,0]**(-1*(l+2))
+        Philm[:,1] *= sp[:,0]**(-1*(l+2))
+        Philm[:,2] *= sp[:,0]**(-1*(l+2))
+        
+        Philm = sph.sphvec2cart(sp, Philm)
+        obj = mlab.quiver3d(p[:,0],p[:,1],p[:,2], Philm[:,0], Philm[:,1], Philm[:,2])
+        obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))        
+        return obj
         
     
     
@@ -344,12 +387,25 @@ if __name__ == '__main__':
 #    obj = plotsph.plotYlm(sph,3,3)
     
 #    obj = plotsph.plotPsilm(sph,2,0)
-#    obj = plotsph.plotPsilm_volume(sph,5,3, 4.34, 7)
-#    
+#    obj = plotsph.plotPhilm(sph,2,0)
+     
+    offset = np.array((0, 0, 2))
+    mlab.figure()
+    obj = plotsph.plotBPhilm_volume(sph,5,2, 1, 15,offset)
+    
+    mlab.figure()
+    obj = plotsph.plotBPsilm_volume(sph,2,0, 1, 15,offset)
+    
 #    Psilm1 = sph.Psilm(1,0, sph.sqp[:,1], sph.sqp[:,2])
 #    Psilm2 = sph.Psilm(7,0, sph.sqp[:,1], sph.sqp[:,2])
 #    
 #    print(sph.innerproduct(Psilm1,Psilm2))
+#    
+#    Philm1 = sph.Philm(1,0, sph.sqp[:,1], sph.sqp[:,2])
+#    Philm2 = sph.Philm(7,0, sph.sqp[:,1], sph.sqp[:,2])
+#    
+#    print(sph.innerproduct(Philm2,Philm2))
+    
 #    
 #    
 #    B = np.zeros(sph.sqp.shape)
@@ -366,25 +422,25 @@ if __name__ == '__main__':
 #    
 #    obj = plotsph.plotYlm(sph,5,3)
     
-    Np = 5
-    lim = 1
-    x, y, z = np.meshgrid(np.linspace(-lim+0.1,lim,Np),np.linspace(-lim+0.1,lim,Np),np.linspace(-lim+0.1,lim,Np))
-        
-    p = np.array((x.flatten(), y.flatten(), z.flatten())).T
-    coords = np.zeros((p.shape[0],p.shape[1],3))
-    coords[:,:,0] = p
-    coords[:,:,1] = p
-    coords[:,:,2] = p
-    
-    B = np.zeros((coords.shape[0],coords.shape[1]))
-    B[:,2] = p[:,0]/np.max(p[:,0])
-    B[:,1] = 0.3
-    B += 0.4*sci.random.randn(B.shape[0], B.shape[1])
-    
-    lmax = 5
-    coeffs,coeffs2, mse = sphfittools.fitSpectra(sph,coords, B, lmax)
-    
-    plt.figure()
-    plt.semilogy(coeffs**2,'.')
-    
+#    Np = 5
+#    lim = 1
+#    x, y, z = np.meshgrid(np.linspace(-lim+0.1,lim,Np),np.linspace(-lim+0.1,lim,Np),np.linspace(-lim+0.1,lim,Np))
+#        
+#    p = np.array((x.flatten(), y.flatten(), z.flatten())).T
+#    coords = np.zeros((p.shape[0],p.shape[1],3))
+#    coords[:,:,0] = p
+#    coords[:,:,1] = p
+#    coords[:,:,2] = p
+#    
+#    B = np.zeros((coords.shape[0],coords.shape[1]))
+#    B[:,2] = p[:,0]/np.max(p[:,0])
+#    B[:,1] = 0.3
+#    B += 0.4*sci.random.randn(B.shape[0], B.shape[1])
+#    
+#    lmax = 5
+#    coeffs,coeffs2, mse = sphfittools.fitSpectra(sph,coords, B, lmax)
+#    
+#    plt.figure()
+#    plt.semilogy(coeffs**2,'.')
+#    
     
