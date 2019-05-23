@@ -17,6 +17,8 @@ class sphbasis:
     used as the inner product <C,D> = int C dot D dOmega.
     
     Has also lot of functions for spherical <-> cartesian transformations.
+    
+    TODO: mu0 might be missing!!!
     '''  
     
     def __init__(self,Np):
@@ -70,7 +72,7 @@ class sphbasis:
         
         Parameters:
             
-            p: Nx3 array - cartesian croodinates
+            p: Nx3 array - cartesian coordinates
             
         Returns:
             
@@ -532,8 +534,37 @@ class sphbasis:
         coeffs = np.array(coeffs)
         return coeffs
     
-    
+    def potential(self,p, acoeffs, bcoeffs, lmax):
+        '''
+        Computes magnetic scalar potential from the sph coefficients.
+        Ignores the 'DC' component l=0.
 
+        Parameters:
+            
+            p: Nx3 array - coordinates in which the potential is computed
+            acoeffs: lmax*(lmax+2)x1 array - spectral coefficients of r**l terms
+            bcoeffs: lmax*(lmax+2)x1 array - spectral coefficients of r**(-l) terms
+            lmax: single - maximum degree l which is used in computing
+            
+        Returns:
+            
+            pot: Nx1 array - magnetic scalar potential at p
+        
+        '''
+        
+        pot = np.zeros(p.shape[0])
+        
+        sp = self.cartesian2spherical(p)
+        
+        lind = 0
+        for l in range(1,lmax+1):
+            for m in range(-1*l,l+1):
+                ylm = self.ylm(l, m, sp[:,1], sp[:,2])
+                pot += (acoeffs[lind]*sp[:,0]**l + bcoeffs[lind]*sp[:,0]**(-1*l-1))*ylm
+                lind += 1
+        return pot
+    
+        
 class sphfittools:
     '''
     Class for fitting spherical harmonics basis functions to measured magnetic field data.
@@ -833,12 +864,15 @@ if __name__ == '__main__':
 #    obj = plotsph.plotPsilm(sph,2,0)
 #    obj = plotsph.plotPhilm(sph,2,0)
      
-    offset = np.array((0, 0, 0))
-    mlab.figure()
-    obj = plotsph.plotBPhilm_volume(sph,2,2, 1, 15,offset)
+#    offset = np.array((0, 0, 0))
+#    mlab.figure()
+#    obj = plotsph.plotBPhilm_volume(sph,2,2, 1, 15,offset)
+#    
+#    mlab.figure()
+#    obj = plotsph.plotBPsilm_volume(sph,2,2, 1, 15,offset)
+#    
     
-    mlab.figure()
-    obj = plotsph.plotBPsilm_volume(sph,2,2, 1, 15,offset)
+    
     
 #    Psilm1 = sph.Psilm(1,0, sph.sqp[:,1], sph.sqp[:,2])
 #    Psilm2 = sph.Psilm(7,0, sph.sqp[:,1], sph.sqp[:,2])
@@ -866,11 +900,26 @@ if __name__ == '__main__':
 #    
 #    obj = plotsph.plotYlm(sph,5,3)
     
-#    Np = 5
-#    lim = 1
-#    x, y, z = np.meshgrid(np.linspace(-lim+0.1,lim,Np),np.linspace(-lim+0.1,lim,Np),np.linspace(-lim+0.1,lim,Np))
-#        
+    Np = 10
+    lim = 3
+    x, y, z = np.meshgrid(np.linspace(-lim,lim,Np),np.linspace(-lim,lim,Np),np.linspace(-lim,lim,Np))
+        
+    
 #    p = np.array((x.flatten(), y.flatten(), z.flatten())).T
+    
+    p = np.array((x.flatten(), y.flatten(), np.zeros(y.flatten().shape))).T
+    lmax = 2
+    acoeffs = np.zeros(lmax*(lmax+2))
+    bcoeffs = np.zeros(lmax*(lmax+2))
+    acoeffs[7] = 1
+#    bcoeffs[2] = 1
+    
+    pot = sph.potential(p, acoeffs,bcoeffs, lmax)
+    
+    pot = np.reshape(pot, x.shape)
+    
+    mlab.mesh(x[:,:,0], y[:,:,0] ,z[:,:,0] , scalars=pot[:,:,0], colormap='Spectral')
+    
 #    coords = np.zeros((p.shape[0],p.shape[1],3))
 #    coords[:,:,0] = p
 #    coords[:,:,1] = p
