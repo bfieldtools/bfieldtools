@@ -42,9 +42,9 @@ if __name__ == '__main__':
         i = ii % n
         j = int(ii/n)
         print(i,j)
-        x = 1*verts[:,0] + i*12
-        y = 1*verts[:,1]
-        z = 1*verts[:,2]+ j*12
+        x = 5*verts[:,0] + i*12
+        y = 5*verts[:,1]+ j*12
+        z = 5*verts[:,2]
         scalars = np.zeros(L.shape[0])
         scalars[inner_verts] = v[:,ii]
         s=mlab.triangular_mesh(x,y,z, tris, scalars=scalars, colormap = 'bwr') #M[:,70])
@@ -127,69 +127,61 @@ if __name__ == '__main__':
     
     
     Mind = self_inductance_matrix(mesh.vertices,mesh.faces,mesh.face_normals)
-    Mind=0.5*(Mind+Mind.T)
+#    Mind=0.5*(Mind+Mind.T)
+    
     vl = np.zeros(Mind.shape)
     for i in range(v.shape[1]):
         vl[inner_verts,i] = v[:, i]/np.sqrt(u[i])
     
-    Mind_lap = vl@Mind@vl.T
+    Mind_lap = vl.T@Mind@vl
     
-    um, vm = eigh(Mind_lap)
-    um = np.flip(um)
-    vm = np.flip(vm,axis=1)
-    mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=vm[:,0])
-    
+    um_t, vm_t = eigh(Mind_lap)
+    um_t = np.flip(um_t)
+    vm_t = np.flip(vm_t,axis=1)
     
     
+    um = np.zeros(um_t.shape)
+    vm = np.zeros(vm_t.shape)
     
+    csum = np.cumsum(um_t**2)/np.sum(um_t**2)
+    Ncomps = np.max(np.where(csum < 0.99))
     
-    M = self_inductance_matrix(mesh.vertices,mesh.faces,mesh.face_normals)
-    M=0.5*(M+M.T)
-    Min = M[inner_verts][:,inner_verts]
+    um[0:Ncomps] = um_t[0:Ncomps]
+    vm[0:Ncomps,0:Ncomps] = vm_t[0:Ncomps,0:Ncomps]
     
-    L = laplacian_matrix(verts, tris)
-    L = np.array(L.todense())
-    
-    w,v = eigh(-L[inner_verts][:,inner_verts],Min)
-    
-    vl = np.zeros(M.shape)
-    for i in range(v.shape[1]):
-        vl[inner_verts,i] = v[:, i]
-#    
-    mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=vl[:,1])
-#    
+
     d = 100e-6
     sigma = 3.7e7
     T = 300
     kB = 1.38064852e-23
     mu0 = 4*np.pi*1e-7
-    f = 10000
+
+    freqs = np.arange(0, 1000, 10)
+    B = np.zeros((freqs.shape[0], fp.shape[0],fp.shape[1]))
     
-#    eps = np.sqrt(4*kB*T/(sigma*d))*np.ones((vl.shape[0]))
-    
-#    A = np.linalg.pinv(1j*2*np.pi*f*Mind_lap + (1/(sigma*d))*np.eye(Mind_lap.shape[0]))
-    
-#    currents = A@eps
-#    currents = np.abs(currents)
-    
-    eps = np.sqrt(4*kB*T/(sigma*d))*np.ones((vl.shape[0]))
-    A = np.diag(1/np.sqrt((1/(sigma*d))**2 + (um*2*np.pi*f)**2))
-    currents = vm@A@vm.T@eps
-    
-    B = np.zeros(fp.shape)
-    for i in range(vl.shape[0]):
-#        vec = np.ones(vm.shape[1]).T
-#        vec *= np.sqrt(4*kB*T*sigma*d)/(np.sqrt((1 + (2*np.pi*um[i]*sigma*d*f))))
-#        vec = vm@vec
-#        vec = vm[:,i]
-#        vec *= np.sqrt(4*kB*T*sigma*d)/(np.sqrt((1 + (2*np.pi*um[i]*sigma*d*f)**2)))
+    for j in range(freqs.shape[0]):
+        f = freqs[j]
+        omega = 2*np.pi*f
         
-#        vec = vl[:,i]/w[i]
-#        vec *= np.sqrt(4*kB*T/(sigma*d))
-        vec = currents[i]*vl[:,i]
-        B[:,0] += (C[:,:,0]@vec)**2
-        B[:,1] += (C[:,:,1]@vec)**2
-        B[:,2] += (C[:,:,2]@vec)**2
+        Rk = 1/(sigma*d)
+        Rt = Rk/(Rk**2 + omega**2*um**2)
+        Rt = np.diag(Rt)
+        Lt = um/(Rk**2 + omega**2*um**2)
+        Lt = np.diag(Lt)
+        
+        eps = np.sqrt(4*kB*T*Rk)*np.ones((vl.shape[0]))
+        currents = -1*(vm@Rt@vm.T@eps + 1j*omega*vm@Lt@vm.T@eps)
+        
+        currents = np.abs(currents)
+        
+        
+        for i in range(vl.shape[0]):
+            vec = currents[i]*vl[:,i]
+            B[j,:,0] += (C[:,:,0]@vec)**2
+            B[j,:,1] += (C[:,:,1]@vec)**2
+            B[j,:,2] += (C[:,:,2]@vec)**2
+        print(f)
+        
     B = np.sqrt(B)
     
 #    np.mean(B, axis=0)
@@ -201,8 +193,8 @@ if __name__ == '__main__':
     Ban = mu0*np.sqrt(sigma*d*kB*T/(8*np.pi*z**2))*(1/(1+z**2/r**2))
     
     plt.figure()
-    plt.plot(z, Ban,label='Analytic')
-    plt.plot(z, B[:,2],'x',label='Numerical')
+    plt.semilogy(z, Ban,label='Analytic')
+    plt.semilogy(z, B[:,2],'x',label='Numerical')
     plt.legend()
     plt.xlabel('Distance d/R')
     plt.ylabel('DC noise Bz (fT/rHz)')

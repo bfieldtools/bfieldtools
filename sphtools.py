@@ -855,28 +855,28 @@ class plotsph:
 
 if __name__ == '__main__':
     
-    sph = sphbasis(40) 
+    sph = sphbasis(20) 
     plotsph = plotsph
     
-#    obj = plotsph.plotYlms(sph,8)
-#    obj = plotsph.plotYlm(sph,3,3)
+    obj = plotsph.plotYlms(sph,4)
+    obj = plotsph.plotYlm(sph,3,3)
     
-#    obj = plotsph.plotPsilm(sph,2,0)
+#    obj = plotsph.plotPsilm(sph,5,2)
 #    obj = plotsph.plotPhilm(sph,2,0)
      
-#    offset = np.array((0, 0, 0))
-#    mlab.figure()
-#    obj = plotsph.plotBPhilm_volume(sph,2,2, 1, 15,offset)
-#    
-#    mlab.figure()
-#    obj = plotsph.plotBPsilm_volume(sph,2,2, 1, 15,offset)
-#    
+    offset = np.array((0, 0, 2))
+    mlab.figure()
+    obj = plotsph.plotBPhilm_volume(sph,5,0, 1, 10,offset)
+    
+    mlab.figure()
+    obj = plotsph.plotBPsilm_volume(sph,5,0, 1, 10,offset)
     
     
     
-#    Psilm1 = sph.Psilm(1,0, sph.sqp[:,1], sph.sqp[:,2])
-#    Psilm2 = sph.Psilm(7,0, sph.sqp[:,1], sph.sqp[:,2])
-#    
+    
+    Psilm1 = sph.Psilm(1,0, sph.sqp[:,1], sph.sqp[:,2])
+    Psilm2 = sph.Psilm(7,0, sph.sqp[:,1], sph.sqp[:,2])
+    
 #    print(sph.innerproduct(Psilm1,Psilm2))
 #    
 #    Philm1 = sph.Philm(1,0, sph.sqp[:,1], sph.sqp[:,2])
@@ -900,26 +900,26 @@ if __name__ == '__main__':
 #    
 #    obj = plotsph.plotYlm(sph,5,3)
     
-    Np = 10
-    lim = 3
-    x, y, z = np.meshgrid(np.linspace(-lim,lim,Np),np.linspace(-lim,lim,Np),np.linspace(-lim,lim,Np))
-        
-    
-#    p = np.array((x.flatten(), y.flatten(), z.flatten())).T
-    
-    p = np.array((x.flatten(), y.flatten(), np.zeros(y.flatten().shape))).T
-    lmax = 2
-    acoeffs = np.zeros(lmax*(lmax+2))
-    bcoeffs = np.zeros(lmax*(lmax+2))
-    acoeffs[7] = 1
-#    bcoeffs[2] = 1
-    
-    pot = sph.potential(p, acoeffs,bcoeffs, lmax)
-    
-    pot = np.reshape(pot, x.shape)
-    
-    mlab.mesh(x[:,:,0], y[:,:,0] ,z[:,:,0] , scalars=pot[:,:,0], colormap='Spectral')
-    
+#    Np = 10
+#    lim = 3
+#    x, y, z = np.meshgrid(np.linspace(-lim,lim,Np),np.linspace(-lim,lim,Np),np.linspace(-lim,lim,Np))
+#        
+#    
+##    p = np.array((x.flatten(), y.flatten(), z.flatten())).T
+#    
+#    p = np.array((x.flatten(), y.flatten(), np.zeros(y.flatten().shape))).T
+#    lmax = 2
+#    acoeffs = np.zeros(lmax*(lmax+2))
+#    bcoeffs = np.zeros(lmax*(lmax+2))
+#    acoeffs[7] = 1
+##    bcoeffs[2] = 1
+#    
+#    pot = sph.potential(p, acoeffs,bcoeffs, lmax)
+#    
+#    pot = np.reshape(pot, x.shape)
+#    
+#    mlab.mesh(x[:,:,0], y[:,:,0] ,z[:,:,0] , scalars=pot[:,:,0], colormap='Spectral')
+#    
 #    coords = np.zeros((p.shape[0],p.shape[1],3))
 #    coords[:,:,0] = p
 #    coords[:,:,1] = p
