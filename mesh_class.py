@@ -198,7 +198,6 @@ if __name__ == '__main__':
     center_offset = np.array([0, 0, 0]) * scaling_factor
     standoff = np.array([0, 4, 0]) * scaling_factor
 
-
     #Create coil plane pairs
     coil_plus = trimesh.Trimesh(planemesh.vertices + center_offset + standoff,
                                  planemesh.faces, process=False)
@@ -206,7 +205,6 @@ if __name__ == '__main__':
     coil_minus = trimesh.Trimesh(planemesh.vertices + center_offset - standoff,
                              planemesh.faces, process=False)
 
-    #Join coil planes into single mesh
     joined_planes = coil_plus.union(coil_minus)
 
     #Create mesh class object
@@ -214,23 +212,40 @@ if __name__ == '__main__':
 
     #%% Set up target and stray field points
 
-    #Here, the target points are on a spherical surface centered on the origin
-    radius = 0.75 * scaling_factor
-    center = np.array([1.5, 0, 0]) * scaling_factor
+    #Here, the target points are on a volumetric grid within a sphere
 
-    target_points_mesh = trimesh.creation.icosphere(subdivisions=2, radius=radius)
-    target_points = target_points_mesh.vertices + center
+    center = np.array([0, 0, 0]) * scaling_factor
+
+    sidelength = 2 * scaling_factor
+    n = 6
+    xx = np.linspace(-sidelength/2, sidelength/2, n)
+    yy = np.linspace(-sidelength/2, sidelength/2, n)
+    zz = np.linspace(-sidelength/2, sidelength/2, n)
+    X, Y, Z = np.meshgrid(xx, yy, zz, indexing='ij')
+
+    x = X.ravel()
+    y = Y.ravel()
+    z = Z.ravel()
+
+    target_points = np.array([x, y, z]).T
+
+    #Turn cube into sphere by rejecting points "in the corners"
+    target_points = target_points[np.linalg.norm(target_points, axis=1) < sidelength/2]  + center
 
 
-    #Here, the stray field points are on a cylindrical surface
-    stray_radius = 15 * scaling_factor
-    stray_length = 20 * scaling_factor
 
-    stray_points = cylinder_points(radius=stray_radius,
-                                   length = stray_length,
-                                   nlength = 5,
-                                   nalpha = 30,
-                                   orientation=np.array([1, 0, 0]))
+#    #Here, the stray field points are on a spherical surface
+    stray_radius = 20 * scaling_factor
+#    stray_length = 20 * scaling_factor
+#
+#    stray_points = cylinder_points(radius=stray_radius,
+#                                   length = stray_length,
+#                                   nlength = 5,
+#                                   nalpha = 30,
+#                                   orientation=np.array([1, 0, 0]))
+#
+    stray_points_mesh = trimesh.creation.icosphere(subdivisions=2, radius=stray_radius)
+    stray_points = stray_points_mesh.vertices + center
 
     n_stray_points = len(stray_points)
 
@@ -244,13 +259,13 @@ if __name__ == '__main__':
 
     #The absolute target field amplitude is not of importance,
     # and it is scaled to match the C matrix in the optimization function
-    target_field = np.ones((target_points.shape[0], ))
+    target_field = np.ones(target_points.shape[0], )
 
 
     # The tolerance parameter will determine the spatial detail of the coil.
     # Smaller tolerance means better but more intricate patterns. Too small values
     # will not be solveable.
-    tolerance = 0.15
+    tolerance = 0.3
 
     I, sol = optimize_streamfunctions(coil, target_field,
                                  target_axis=0,
@@ -261,7 +276,7 @@ if __name__ == '__main__':
 
     #%% Plot coil windings and target points
 
-    mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                    size=(480, 480))
     mlab.clf()
 
