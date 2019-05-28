@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Mar 27 09:01:32 2019
-
-@author: makinea1
-"""
-
 import numpy as np
 from time import clock
 from utils import (get_quad_points, tri_normals_and_areas,

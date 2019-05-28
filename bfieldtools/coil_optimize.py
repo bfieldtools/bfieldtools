@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr  9 17:08:27 2019
-
-@author: Rasmus Zetter
-"""
-
 import numpy as np
 import cvxopt
 from cvxopt import matrix

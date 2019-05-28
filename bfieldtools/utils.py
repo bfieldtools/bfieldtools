@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Apr  1 17:59:56 2019
-
-@author: Antti Mäkinen
-"""
-
 import numpy as np
 import quadpy
 from numba import jit

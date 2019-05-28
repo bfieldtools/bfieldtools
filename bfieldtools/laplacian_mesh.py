@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Apr  1 09:37:22 2019
-
-@author: Antti Mäkinen
-"""
-
 import numpy as np
 from scipy.sparse import csr_matrix, spdiags
 from utils import tri_normals_and_areas, dual_areas

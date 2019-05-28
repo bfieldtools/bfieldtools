@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Mar 15 16:05:13 2019
-
-@author: Antti Mäkinen
-"""
-
 import numpy as np
 
 def mycross(r1,r2):

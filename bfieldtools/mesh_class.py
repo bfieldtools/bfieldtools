@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr  2 10:41:43 2019
-
-@author: Rasmus Zetter
-"""
-
 from mayavi import mlab
 import trimesh
 import numpy as np
@@ -179,7 +171,7 @@ if __name__ == '__main__':
 
     import numpy as np
     from utils import cylinder_points
-    from bringout_core import compute_C
+    from magnetic_field_mesh import compute_C
     from coil_optimize import optimize_streamfunctions
     import matplotlib.pyplot as plt
 

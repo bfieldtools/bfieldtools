@@ -105,7 +105,8 @@ def compute_L(verts, tris, basis=None,
               mu0=4*np.pi*1e-7,
               parallel=True):
     '''
-    Compute and return mutual inductance matrix.
+    Compute and return mutual inductance matrix. 
+    NB! This is not properly tested, use the implementation in mutual_inductance_mesh
     '''
 
     #Compute vertex links if not provided
@@ -184,7 +185,7 @@ def compute_L(verts, tris, basis=None,
 
 def _L_part(verts, vert_range, vert_links, tri_areas, r_quad, w_quad, basis_value, basis_A, basis_B, basis_C):
     '''
-    Computes part of
+    Computes part of inductance matrix, for parallelization
     '''
 
     n_verts = len(verts)
@@ -317,7 +318,7 @@ def compute_R(verts, tris, basis=None, vert_links=None, tri_areas=None, rho=1.68
 
 def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None, parallel=True):
     '''
-    Given a mesh, computes the "cn matrix", see eq. 5.13 in Michael Poole's thesis.
+    Given a mesh, computes the "cn matrix" or coupling matrix, see eq. 5.13 in Michael Poole's thesis.
 
     '''
     mu0 = 4 * np.pi * 1e-7
