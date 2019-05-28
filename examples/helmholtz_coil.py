@@ -5,6 +5,7 @@ Also some fancy visualization.
 """
 
 from mayavi import mlab
+import matplotlib.pyplot as plt
 import numpy as np
 
 from bfieldtools.utils import cylinder_points
@@ -74,7 +75,7 @@ vectors.glyph.mask_points.on_ratio = 2
 vcp = mlab.pipeline.vector_cut_plane(field)
 vcp.glyph.glyph.scale_factor=10*(X[1, 0, 0] - X[0, 0, 0])
 # For prettier picture:
-vcp.implicit_plane.widget.enabled = False
+vcp.implicit_plane.widget.enabled = True
 
 iso = mlab.pipeline.iso_surface(field,
                                 contours=10,

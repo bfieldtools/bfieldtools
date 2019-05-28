@@ -1,17 +1,18 @@
-""" 
+"""
 Example for calculating and plotting eigenmodes of Laplacian matrix of surface mesh
 """
+import numpy as np
 import matplotlib.pyplot as plt
 from scipy.linalg import eigh
 from mayavi import mlab
-import os
 import trimesh
 
-import bfieldtools
 from bfieldtools import utils
+from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix
 
+import pkg_resources
 
-mesh = trimesh.load(os.path.join(bfieldtools.__file__,  './example_meshes/10x10_plane_hires.obj'))
+mesh = trimesh.load(pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane.obj'))
 
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 

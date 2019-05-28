@@ -4,16 +4,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mayavi import mlab
-import os
 import trimesh
 
 
-import bfieldtools
 from bfieldtools.mesh_class import MeshWrapper
-from bfieldtools.utils import cylinder_points
 from bfieldtools.magnetic_field_mesh import compute_C
 from bfieldtools.coil_optimize import optimize_streamfunctions
 
+import pkg_resources
 
 
 #Set unit, e.g. meter or millimeter.
@@ -22,7 +20,7 @@ scaling_factor = 1e2
 
 
 #Load simple plane mesh that is centered on the origin
-planemesh = trimesh.load(file_obj=os.path.join(bfieldtools.__file__,  './example_meshes/10x10_plane_hires.obj'), process=False)
+planemesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane.obj'), process=False)
 
 planemesh.apply_scale(scaling_factor)
 

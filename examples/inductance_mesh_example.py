@@ -1,16 +1,16 @@
-""" 
+"""
 Example for calculating independent current modes in a wall with a door
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 from mayavi import mlab
 from matplotlib.tri import Triangulation
 from scipy.linalg import eigh
 
-import bfieldtools
+
 from bfieldtools.laplacian_mesh import laplacian_matrix
-from bfieldtools.mutual_inductance_mesh import self_inductance_mesh, mutual_inductance_mesh
+from bfieldtools.mutual_inductance_mesh import self_inductance_matrix
+from bfieldtools.utils import tri_normals_and_areas, dual_areas
 
 xx = np.linspace(0, 1, 50)
 X,Y = np.meshgrid(xx,xx,indexing='ij')
@@ -57,7 +57,6 @@ L = np.array(L.todense())
 w,v = eigh(-L[inner_inds[None,:], inner_inds[:,None]], Min)
 
 #%% Plot eigenmodes of surface currents on thin wall
-from mayavi import mlab
 mlab.figure()
 scalars = np.zeros(x.shape)
 Nmodes = 16

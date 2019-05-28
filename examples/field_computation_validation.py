@@ -4,17 +4,15 @@ Short example showing that the numerical field computation gives the same result
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.linalg import eigh
 from mayavi import mlab
 import trimesh
 
-import bfieldtools
 from bfieldtools import utils
 from bfieldtools.magnetic_field_mesh import compute_C
-from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix
 
-#    mesh = trimesh.load('./example_meshes/10x10_plane_hires.obj')
-mesh = trimesh.load(os.path.join(bfieldtools.__file__,  './example_meshes/unit_disc.stl'))
+import pkg_resources
+
+mesh = trimesh.load(pkg_resources.resource_filename('bfieldtools', 'example_meshes/unit_disc.stl'))
 
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)

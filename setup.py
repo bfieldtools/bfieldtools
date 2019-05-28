@@ -36,7 +36,8 @@ def main():
                      'Programming Language :: Python',
                      'Topic :: Software Development',
                      'Topic :: Scientific/Engineering'],
-        platforms='any'
+        platforms='any',
+	zip_safe=False
     )
 
 ### Authors, license etc. still need to be added
