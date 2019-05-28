@@ -239,7 +239,7 @@ if __name__ == '__main__':
         plt.plot(R, B[:,2],'x',label='Numerical')
         plt.legend()
         plt.xlabel('Sphere radius')
-        plt.ylabel('DC noise Bz (fT/rHz)')
+        plt.ylabel('DC noise Bz (T/rHz)')
         
         RE = np.abs((B[:,2]-Ban))/np.abs(Ban)*100
         plt.figure()
@@ -272,7 +272,7 @@ if __name__ == '__main__':
         plt.semilogy(z, B[:,2],'x',label='Numerical')
         plt.legend()
         plt.xlabel('Distance d/R')
-        plt.ylabel('DC noise Bz (fT/rHz)')
+        plt.ylabel('DC noise Bz (T/rHz)')
         
         
         plt.figure()
@@ -302,7 +302,7 @@ if __name__ == '__main__':
         plt.loglog(freqs,Bf[:,0,2],label = 'Numerical')
         plt.loglog(freqs, Ban*np.ones(freqs.shape), '--',label = 'Analytical, DC')
         plt.xlabel('Frequency (Hz)')
-        plt.ylabel('Field noise (fT/rHz)')
+        plt.ylabel('Field noise (T/rHz)')
         plt.legend()
         plt.grid(which='both')
         plt.tight_layout()
