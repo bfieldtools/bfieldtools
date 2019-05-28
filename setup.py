@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 import sys
-import os
+import codecs
 import numpy
 
 #First, prevent accidental upload to PyPI
@@ -23,13 +23,14 @@ def main():
     setup(
         name="bfieldtools",
 	description="Magnetic field modelling tools",
-        long_description=codecs.open('README.md', encoding='utf8').read()
+        long_description=codecs.open('README.md', encoding='utf8').read(),
         version_format='{tag}.dev{commitcount}+{gitsha}',
         setup_requires=['setuptools-git-version'],
-        install_requires=['numpy','scipy','matplotlib', 'mayavi', 'quadpy', 'trimesh', 'cvxopt', 'joblib', 'numba', 'multiprocessing'],
+        install_requires=['numpy','scipy','matplotlib', 'mayavi', 'quadpy', 'trimesh', 'cvxopt', 'joblib', 'numba'],
         packages=find_packages(),
 	include_dirs=[numpy.get_include()],
-        package_data={'bfieldtools': ['example_meshes/*.stl', 'example_meshes/*.obj']},
+	include_package_data=True,
+        #package_data={'bfieldtools': ['example_meshes/*.stl', 'example_meshes/*.obj']},
         classifiers=['Intended Audience :: Science/Research',
                      'Intended Audience :: Developers',
                      'Programming Language :: Python',

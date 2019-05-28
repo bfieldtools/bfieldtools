@@ -1,6 +1,6 @@
 import numpy as np
 from time import clock
-from utils import (get_quad_points, tri_normals_and_areas,
+from .utils import (get_quad_points, tri_normals_and_areas,
                    assemble_matrix, assemble_matrix2, dual_areas)
 
 

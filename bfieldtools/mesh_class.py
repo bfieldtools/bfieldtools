@@ -2,15 +2,17 @@ from mayavi import mlab
 import trimesh
 import numpy as np
 
-import utils
-from laplacian_mesh import laplacian_matrix, mass_matrix
-from mutual_inductance_mesh import self_inductance_matrix, mutual_inductance_matrix
+from . import utils
+from .laplacian_mesh import laplacian_matrix, mass_matrix
+from .mutual_inductance_mesh import self_inductance_matrix, mutual_inductance_matrix
 
 
 class LazyProperty():
     '''
     Implementation of lazily loading properties, see
     http://blog.pythonisito.com/2008/08/lazy-descriptors.html
+    On first invocation, a lazy property calls a function that populates
+    the property (acts as a method). Afterwards, it acts like a normal property. 
     '''
 
     def __init__(self, func):
@@ -25,15 +27,14 @@ class LazyProperty():
         return result
 
 
-class ToBeNamed:
+class MeshWrapper:
     '''
     Class that is used for surface mesh field calculations, e.g. coil design.
     Computation functions are typically external functions that are called
-    using method wrappers.
+    using lazy properties.
 
-    The mesh surface should typically consists of a single contiguous surface,
-    although multi-surface meshes should also work. To combine multiple objects
-    of this class, use the MultiSurface class (ToBeImplemented).
+    The mesh surface can consist of a single contiguous surface or several separate
+    surfaces within a single mesh object.
     '''
 
     def __init__(self, verts=None, tris=None, mesh_file=None):
@@ -66,7 +67,7 @@ class ToBeNamed:
     @LazyProperty
     def laplacian(self):
         '''
-        Compute and return surface laplacian matrix as well as mass matrix.
+        Compute and return surface laplacian matrix.
         '''
         laplacian = laplacian_matrix(self.verts, self.tris,
                                      self.tri_normals,
@@ -88,7 +89,7 @@ class ToBeNamed:
     @LazyProperty
     def inductance(self):
         '''
-        Compute and return mutual inductance matrix.
+        Compute and return mutual inductance matrix. If mesh consists of multiple separate sub-meshes, compute these separately.
         '''
 
         #If mesh corresponds of many submeshes, compute these separately to save memory
@@ -170,10 +171,13 @@ class ToBeNamed:
 if __name__ == '__main__':
 
     import numpy as np
+    import matplotlib.pyplot as plt
+    import os
+
     from utils import cylinder_points
     from magnetic_field_mesh import compute_C
     from coil_optimize import optimize_streamfunctions
-    import matplotlib.pyplot as plt
+    
 
 
     #Set unit, e.g. meter or millimeter.
@@ -182,7 +186,7 @@ if __name__ == '__main__':
 
 
     #Load simple plane mesh that is centered on the origin
-    planemesh = trimesh.load(file_obj='./example_meshes/10x10_plane_hires.obj', process=False)
+    planemesh = trimesh.load(file_obj=os.path.join(__file__,  './example_meshes/10x10_plane_hires.obj'), process=False)
 
     planemesh.apply_scale(scaling_factor)
 

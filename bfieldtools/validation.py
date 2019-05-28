@@ -6,10 +6,10 @@ if __name__ == '__main__':
     from scipy.linalg import eigh
     from mayavi import mlab
     import trimesh
-    import utils
-    
-    from bringout_core import compute_C
-    from laplacian_mesh import laplacian_matrix, mass_matrix
+
+    from . import utils
+    from .magnetic_field_mesh import compute_C
+    from .laplacian_mesh import laplacian_matrix, mass_matrix
 
 #    mesh = trimesh.load('./example_meshes/10x10_plane_hires.obj')
     mesh = trimesh.load('./example_meshes/unit_disc.stl')

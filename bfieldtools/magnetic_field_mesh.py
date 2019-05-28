@@ -4,7 +4,7 @@ from numba import njit, jit, prange
 from joblib import Parallel, delayed
 import multiprocessing
 
-from utils import tri_normals_and_areas, get_quad_points
+from .utils import tri_normals_and_areas, get_quad_points
 
 
 

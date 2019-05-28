@@ -2,10 +2,10 @@ import numpy as np
 from scipy.linalg import eigh
 from mayavi import mlab
 
-from bringout_core import compute_C
-from laplacian_mesh import laplacian_matrix, mass_matrix
-from mutual_inductance_mesh import self_inductance_matrix
-import utils
+from .magnetic_field_mesh import compute_C
+from .laplacian_mesh import laplacian_matrix, mass_matrix
+from .mutual_inductance_mesh import self_inductance_matrix
+from . import utils
 
 
 def compute_current_modes(mesh):
@@ -220,7 +220,7 @@ if __name__ == '__main__':
         
         B = np.zeros((Np,3))
         for i in range(Np):
-            mesh = trimesh.load('./example_meshes/unit_sphere.stl')
+            mesh = trimesh.load(os.path.join(__file__,  './example_meshes/unit_sphere.stl'))
             mesh.apply_scale(R[i])
             vl = compute_current_modes(mesh)
             
@@ -248,7 +248,7 @@ if __name__ == '__main__':
         plt.ylabel('Relative error (%)')
         
     elif example_name == 'unit_disc':
-        mesh = trimesh.load('./example_meshes/unit_disc.stl')
+        mesh = trimesh.load(os.path.join(__file__,  './example_meshes/unit_disc.stl'))
         mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
         mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
         
@@ -281,7 +281,7 @@ if __name__ == '__main__':
         plt.ylabel('Relative error (%)')
         
     elif example_name == 'AC':
-        mesh = trimesh.load('./example_meshes/unit_disc.stl')
+        mesh = trimesh.load(os.path.join(__file__,  './example_meshes/unit_disc.stl'))
         mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
         mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
         

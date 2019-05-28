@@ -90,8 +90,6 @@ def optimize_streamfunctions(meshobj, target_field, target_axis,
 
 
 
-
-
     print('Scaling matrices before optimization. This requires singular value computation, hold on.')
 
     if laplacian_smooth != 0:

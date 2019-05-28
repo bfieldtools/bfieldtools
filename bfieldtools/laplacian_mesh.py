@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.sparse import csr_matrix, spdiags
-from utils import tri_normals_and_areas, dual_areas
+from .utils import tri_normals_and_areas, dual_areas
 
 
 def laplacian_matrix(verts, tris, tri_normals=None, tri_areas=None):
@@ -74,11 +74,13 @@ if __name__ == '__main__':
     from matplotlib.tri import Triangulation
     from scipy.linalg import eigh
     from mayavi import mlab
+    import os
     import trimesh
-    import utils
+
+    from . import utils
 
 
-    mesh = trimesh.load('./example_meshes/10x10_plane_hires.obj')
+    mesh = trimesh.load(os.path.join(__file__,  './example_meshes/10x10_plane_hires.obj'))
 
     mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 
