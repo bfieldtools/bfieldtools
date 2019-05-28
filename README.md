@@ -6,7 +6,7 @@ This includes coil design, thermal noise simulation and spherical harmonics repr
 
 # Documentation
 
-For now, documentation is limited to function docstrings and comments. Most files also include a minimal example of their functionality when ran as scripts.
+For now, documentation is limited to function docstrings and comments. Some examples showcasing functionality are also included in the examples-folder.
 
 
 ## Installation instructions
