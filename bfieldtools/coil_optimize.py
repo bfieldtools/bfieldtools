@@ -5,6 +5,17 @@ from scipy.sparse.linalg import svds
 
 
 def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7):
+    '''
+    Minimize
+    (1/2) * x' * P * x + q' * x
+
+    subject to
+    G * x <= h
+
+    and
+    A * x = b
+    '''
+
     P = .5 * (P + P.T)  # make sure P is symmetric
     args = [matrix(P), matrix(q)]
     if G is not None:
@@ -15,7 +26,6 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7):
     cvxopt.solvers.options['abstol']=tolerance
     cvxopt.solvers.options['feastol']=tolerance
     cvxopt.solvers.options['reltol']=tolerance
-#    cvxopt.solvers.options['refinement']=7
 
     sol = cvxopt.solvers.qp(*args)
     if 'optimal' not in sol['status']:
@@ -34,15 +44,15 @@ def optimize_streamfunctions(meshobj, target_field, target_axis,
 
     '''
 
-#
+
     # Set lower and upper bound for stray field, all three axes
     lb_stray = np.repeat((-np.abs(np.repeat(target_field[0],len(meshobj.strayC), axis=0)) * target_error['stray'])[:, None], 3, axis=1).flatten()
     ub_stray = np.repeat((np.abs(np.repeat(target_field[0],len(meshobj.strayC), axis=0)) * target_error['stray'])[:, None], 3, axis=1).flatten()
-#
-#    #Limit stray field C matrix to inner vertices
+
+    #Limit stray field C matrix to inner vertices
     inner_strayC = meshobj.strayC[:, meshobj.inner_verts]
-#
-#    #Reshape so that values on axis 1 are x1, y1, z1, x2, y2, z2, etc.
+
+    #Reshape so that values on axis 1 are x1, y1, z1, x2, y2, z2, etc.
     inner_strayC = inner_strayC.transpose((1, 0, 2))
     inner_strayC = inner_strayC.reshape((inner_strayC.shape[0], -1)).T
 

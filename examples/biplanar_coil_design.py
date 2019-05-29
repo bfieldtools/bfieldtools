@@ -20,7 +20,7 @@ scaling_factor = 1e2
 
 
 #Load simple plane mesh that is centered on the origin
-planemesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane.obj'), process=False)
+planemesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane_hires.obj'), process=False)
 
 planemesh.apply_scale(scaling_factor)
 
@@ -82,8 +82,9 @@ n_stray_points = len(stray_points)
 
 
 #%% Compute C matrices that are used to compute the generated magnetic field
-coil.C = compute_C(coil.mesh, target_points)
-coil.strayC = compute_C(coil.mesh, stray_points)
+
+coil.C = compute_C(coil.mesh, target_points, parallel=False)
+coil.strayC = compute_C(coil.mesh, stray_points, parallel=False)
 
 #%% Specify target field and run solver
 
@@ -157,3 +158,5 @@ plt.grid(True, which='major', axis='y', color='k')
 plt.grid(True, which='major', axis='x')
 
 plt.legend()
+
+plt.show()

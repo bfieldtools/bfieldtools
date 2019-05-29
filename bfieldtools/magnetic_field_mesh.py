@@ -1,12 +1,10 @@
 import numpy as np
-from numba import njit, jit, prange
-
+from numba import jit
+import time
 from joblib import Parallel, delayed
 import multiprocessing
 
 from .utils import tri_normals_and_areas, get_quad_points
-
-
 
 
 def get_neighbour_vertices(vertices, edges):
@@ -105,9 +103,11 @@ def compute_L(verts, tris, basis=None,
               mu0=4*np.pi*1e-7,
               parallel=True):
     '''
-    Compute and return mutual inductance matrix. 
+    Compute and return mutual inductance matrix. See Michael Poole's thesis.
     NB! This is not properly tested, use the implementation in mutual_inductance_mesh
     '''
+
+    DeprecationWarning('Compute inductance matrix using implementation in mutual_inductance_mesh instead!')
 
     #Compute vertex links if not provided
     if vert_links is None:
@@ -248,9 +248,12 @@ def _L_part(verts, vert_range, vert_links, tri_areas, r_quad, w_quad, basis_valu
 
     return L_part
 
-@jit
+
 def compute_R(verts, tris, basis=None, vert_links=None, tri_areas=None, rho=1.68*1e-8, t=1e-4):
     '''
+
+    DEPRECATED, USE
+
     Computes resitivity matrix for surface mesh made of material with resistivity rho and thickness t
 
     Equation come from the thesis of Michael Poole "Improved Equipment and
@@ -261,6 +264,9 @@ def compute_R(verts, tris, basis=None, vert_links=None, tri_areas=None, rho=1.68
 
 
     '''
+
+    DeprecationWarning('Compute R matrix using Laplacian matrix instead!')
+
 
     n_verts = len(verts)
     #Initialize sparse matrix
@@ -318,14 +324,16 @@ def compute_R(verts, tris, basis=None, vert_links=None, tri_areas=None, rho=1.68
 
 def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None, parallel=True):
     '''
-    Given a mesh, computes the "cn matrix" or coupling matrix, see eq. 5.13 in Michael Poole's thesis.
-
+    Given a mesh, computes the "C matrix" which gives the magnetic field at
+    some target points due to currents (stream function) on a surface mesh.
+    See eq. 5.13 in Michael Poole's thesis.
     '''
     mu0 = 4 * np.pi * 1e-7
     coef = mu0 / (4 * np.pi)
 
 
-    print('Computing Cn matrix...')
+    print('Computing C matrix... ', end='')
+    start = time.time()
 
     if vert_links is None:
         vert_links = get_vert_links(mesh.vertices, mesh.faces)
@@ -346,49 +354,57 @@ def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None, parallel=Tru
 
     C = np.zeros((n_target_points, n_verts, 3))
 
-    # If specified, split C matrix computation into chunks done in parallel
-    if parallel:
+    #Convert nested list structures to numpy arrays, numba can't handle nested lists
+    vert_links_arr, n_links = make_2D_array(vert_links)
+    bval_arr, n_links = make_3D_array(basis['v'])
 
-        #Use all available cores
-        num_cores = multiprocessing.cpu_count()
+    C = _compute_C(mesh.vertices,
+                  vert_links_arr.astype(int),
+                  n_links,
+                  r,
+                  tri_areas,
+                  r_quad,
+                  w_quad,
+                  bval_arr)
 
-        #Determine the chunking of C
-        vert_ranges = []
-        for i in range(num_cores):
-            vert_ranges.append((int(n_verts/num_cores * i), int(n_verts/num_cores * (i+1))))
+    duration = time.time() - start
 
-        #Compute in parallel
-        Cn_parts = Parallel(n_jobs=num_cores,
-                            max_nbytes=1e9,
-                            verbose=51)(delayed(_Cn_part)(
-                                       mesh.vertices[vert_range[0]:vert_range[1]],
-                                       vert_links[vert_range[0]:vert_range[1]],
-                                       r,
-                                       tri_areas,
-                                       r_quad,
-                                       w_quad,
-                                       basis['v'][vert_range[0]:vert_range[1]]
-                                       ) for vert_range in vert_ranges)
-
-        #Assemble into whole matrix
-        for i in range(len(Cn_parts)):
-            C[:, vert_ranges[i][0]:vert_ranges[i][1]] = Cn_parts[i]
-
-    else:
-        C = _Cn_part(mesh.vertices,
-                      vert_links,
-                      r,
-                      tri_areas,
-                      r_quad,
-                      w_quad,
-                      basis['v'])
+    print('took %.2f seconds.'%duration)
 
     return coef * C
 
 
-def _Cn_part(verts, vert_links, r, tri_areas, r_quad, w_quad, basis_value):
+def make_2D_array(lis):
+    """
+    Function to get 2D array from a list of lists
+    """
+    n = len(lis)
+    lengths = np.array([len(x) for x in lis])
+    max_len = max(lengths)
+    arr = np.zeros((n, max_len))
+
+    for i in range(n):
+        arr[i, :lengths[i]] = lis[i]
+    return arr, lengths
+
+def make_3D_array(lis):
+    """
+    Function to get 3D [x, y, 3[ array from a list of lists of 3x1 vectors
+    """
+    n = len(lis)
+    lengths = np.array([len(x) for x in lis])
+    max_len = max(lengths)
+    arr = np.zeros((n, max_len, 3))
+
+    for i in range(n):
+        arr[i, :lengths[i]] = lis[i]
+    return arr, lengths
+
+
+@jit(nopython=True, parallel=True, fastmath=True, nogil=True)
+def _compute_C(verts, vert_links, n_links, r, tri_areas, r_quad, w_quad, basis_value):
     '''
-    Computes part of Cn matrix, used for parallelization.
+    C matrix computation backend, used numba for speed and parallelization.
     '''
 
     n_target_points = len(r)
@@ -396,6 +412,10 @@ def _Cn_part(verts, vert_links, r, tri_areas, r_quad, w_quad, basis_value):
     n_quad_points = len(w_quad)
 
     C_part = np.zeros((n_target_points, n_verts, 3))
+
+    #Initialize variables
+    element = np.array([0., 0., 0.])
+    denom = 0.
 
     #For each vertex
     for n in range(n_verts):
@@ -406,18 +426,19 @@ def _Cn_part(verts, vert_links, r, tri_areas, r_quad, w_quad, basis_value):
         for k in range(n_target_points):
 
             #For each triangle the vertex is used for
-            for i in range(len(vert_links[n])):
+            for i in range(n_links[n]):
 
-                element = 0.
+                element = np.array([0., 0., 0.])
 
                 #For each quadrature point of that triangle
                 for l in range(n_quad_points):
                     denom = np.linalg.norm(r[k] - r_quad[vert_links[n][i]][l])**3
-                    element += w_quad[l] * np.cross(-(r[k] - r_quad[vert_links[n][i]][l]) / denom, basis_value[n][i]).flatten()
+#                    element += w_quad[l] * mycross(-(r[k] - r_quad[vert_links[n][i]][l]) / denom, basis_value[n][i]).flatten()
 
-#                    C[k, n, 0] = w_quad[l] * ((-basis['v'][n][i][2]*(r[k, 1] - r_quad[vert_links[n][i]][l, 1]) + basis['v'][n][i][1] * (r[k, 2] - r_quad[vert_links[n][i]][l, 2]))) / denom
-#                    C[k, n, 1] = w_quad[l] * ((-basis['v'][n][i][0]*(r[k, 2] - r_quad[vert_links[n][i]][l, 2]) + basis['v'][n][i][2] * (r[k, 0] - r_quad[vert_links[n][i]][l, 0]))) / denom
-#                    C[k, n, 2] = w_quad[l] * ((-basis['v'][n][i][1]*(r[k, 0] - r_quad[vert_links[n][i]][l, 0]) + basis['v'][n][i][0] * (r[k, 1] - r_quad[vert_links[n][i]][l, 1]))) / denom
+                    #Faster to do component-wise than using vector, numba doesn't support numpy cross product
+                    element[0] += w_quad[l] * ((-basis_value[n][i][2]*(r[k, 1] - r_quad[vert_links[n][i]][l, 1]) + basis_value[n][i][1] * (r[k, 2] - r_quad[vert_links[n][i]][l, 2]))) / denom
+                    element[1] += w_quad[l] * ((-basis_value[n][i][0]*(r[k, 2] - r_quad[vert_links[n][i]][l, 2]) + basis_value[n][i][2] * (r[k, 0] - r_quad[vert_links[n][i]][l, 0]))) / denom
+                    element[2] += w_quad[l] * ((-basis_value[n][i][1]*(r[k, 0] - r_quad[vert_links[n][i]][l, 0]) + basis_value[n][i][0] * (r[k, 1] - r_quad[vert_links[n][i]][l, 1]))) / denom
 
                 #Area integral
                 C_part[k, n] += element * tri_areas[vert_links[n][i]]

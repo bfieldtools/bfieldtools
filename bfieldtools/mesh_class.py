@@ -12,7 +12,7 @@ class LazyProperty():
     Implementation of lazily loading properties, see
     http://blog.pythonisito.com/2008/08/lazy-descriptors.html
     On first invocation, a lazy property calls a function that populates
-    the property (acts as a method). Afterwards, it acts like a normal property. 
+    the property (acts as a method). Afterwards, it acts like a normal property.
     '''
 
     def __init__(self, func):
@@ -123,13 +123,10 @@ class MeshWrapper:
                     #Assign to full matrix
                     inductance[np.asarray(vertex_lookup[i])[:,None], vertex_lookup[j]] = sub_block
 
+                    #Fill in lower triangle, matrix is symmetric
                     if i != j:
                         inductance[np.asarray(vertex_lookup[j])[:,None], vertex_lookup[i]] = sub_block
 
-
-#            #Fill in lower triangle
-#            i_lower = np.tril_indices(inductance.shape[0], -1)
-#            inductance[i_lower] = inductance.T[i_lower]
         else:
             inductance = self_inductance_matrix(self.verts, self.tris)
 
