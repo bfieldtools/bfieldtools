@@ -192,3 +192,49 @@ def self_inductance_matrix(verts, tris, tri_normals=None, tri_areas=None, planar
     M = assemble_matrix(tris, verts.shape[0], tri_data)
     return M*1e-7
 
+def self_inductance_matrix_chunked(verts, tris, tri_normals=None,
+                                  tri_areas=None, planar=False,
+                                  Nchunks=1):
+    """ Calculate a self inductance matrix for hat basis functions
+        (stream functions) in the triangular mesh described by
+
+        verts: Nv x 3 array of mesh vertices (coordinates)
+        tris: Nt x 3 array of mesh triangles (indices to verts array)
+    """
+    R = verts[tris]  # Nt x 3 (corners) x 3 (xyz)
+    # Calculate edge vectors for each triangle
+    edges = np.roll(R, 1, -2) - np.roll(R, 2, -2)  # Nt x 3 (edges) x 3 (x,y,z)
+    # Calculate quadrature points
+    weights, quadpoints = get_quad_points(verts, tris, 'Centroid')
+    # Nt x Nquad x  3 (x,y,z)
+
+    # Triangle normals and areas, compute if not provided
+    if isinstance(tri_normals, type(None)) or isinstance(tri_areas, type(None)):
+        tri_normals, tri_areas = tri_normals_and_areas(verts, tris)
+
+    # Loop evaluation triangles (quadpoints) in chunks
+    tri_data = np.zeros((edges.shape[0], edges.shape[0],
+                         edges.shape[1], edges.shape[1]))
+    for n in range(Nchunks):
+        RR = quadpoints[n::Nchunks,:, None, None, :] - R[None, None, :, :, :]
+        print('Calculating potentials')
+        pots = triangle_potential(RR, tri_normals, planar=planar) # Ntri_eval, Nquad, Ntri_source
+        pots = np.sum(pots*weights[None,:,None], axis=1) # Ntri_eval, Ntri_source
+
+        tri_data[n::Nchunks] = np.sum(edges[None,:,None,:,:]*edges[n::Nchunks,None,:,None,:], axis=-1) # i,j,k,l
+        tri_data[n::Nchunks] /= (tri_areas[n::Nchunks,None]*tri_areas[None,:]*4)[:,:,None,None]
+        tri_data[n::Nchunks] *= (tri_areas[n::Nchunks, None]*pots)[:,:,None,None]
+    print('Inserting stuff into M-matrix')
+
+    # Non optimized version of the matrix assembly
+#    M = np.zeros((verts.shape[0], verts.shape[0]))
+#    for i, t1 in enumerate(tris):  # Eval triangles
+#        for j, t2 in enumerate(tris):  # Source triangles
+#            for k, v1 in enumerate(t1): # Eval triangle hats
+#                for l, v2 in enumerate(t2): # Source triangle hats
+##                    e1 = edges[i, k]
+##                    e2 = edges[j, l]
+##                    gradproduct = np.sum(e1*e2)/(a[i]*a[j]*4)
+##                    M[v1, v2] += pots[i, j]*a[i]*gradproduct
+    M = assemble_matrix(tris, verts.shape[0], tri_data)
+    return M*1e-7
