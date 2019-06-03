@@ -332,7 +332,7 @@ def compute_C(mesh, r, basis=None, vert_links=None, tri_areas=None, parallel=Tru
     coef = mu0 / (4 * np.pi)
 
 
-    print('Computing C matrix... ', end='')
+    print('Computing C matrix, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
     start = time.time()
 
     if vert_links is None:

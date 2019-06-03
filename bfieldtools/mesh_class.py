@@ -1,6 +1,8 @@
 from mayavi import mlab
 import trimesh
 import numpy as np
+from psutil import virtual_memory
+from time import time
 
 from . import utils
 from .laplacian_mesh import laplacian_matrix, mass_matrix
@@ -92,43 +94,58 @@ class MeshWrapper:
         Compute and return mutual inductance matrix. If mesh consists of multiple separate sub-meshes, compute these separately.
         '''
 
-        #If mesh corresponds of many submeshes, compute these separately to save memory
-        if self.mesh.body_count > 1:
+        #Available RAM in Gigabytes
+        mem = virtual_memory().available >> 30
 
+        #Estimate of memory use
+        mem_per_vertex = 6 / 2000
 
-            inductance = np.zeros((len(self.mesh.vertices), len(self.mesh.vertices)))
+        Nchunks = int(np.ceil(mem_per_vertex / mem * len(self.verts)))
 
-            #Split into separate sub-bodies
-            submeshes = self.mesh.split(only_watertight=False)
+        print('Computing inductance matrix in %d chunks since %d GiB memory is available...'%(Nchunks, mem))
 
-            n_submeshes = len(submeshes)
+        start = time()
+#        #If mesh corresponds of many submeshes, compute these separately to save memory
+#        if self.mesh.body_count > 1:
+#
+#
+#            inductance = np.zeros((len(self.mesh.vertices), len(self.mesh.vertices)))
+#
+#            #Split into separate sub-bodies
+#            submeshes = self.mesh.split(only_watertight=False)
+#
+#            n_submeshes = len(submeshes)
+#
+#            #Determine how submesh vertex indices correspond to full mesh vertex indices
+#            vertex_lookup = []
+#
+#            for i in range(n_submeshes):
+#                vertex_lookup.append([])
+#                for vert in submeshes[i].vertices:
+#                    vertex_lookup[i].append(np.where((self.mesh.vertices == vert).all(axis=1) == True)[0][0])
+#
+#            #Loop through block matrix components
+#            for i in range(n_submeshes):
+#                for j in range(i, n_submeshes):
+#                    if i==j:
+#                        sub_block = self_inductance_matrix(submeshes[i].vertices, submeshes[i].faces)
+#                    else:
+#                        sub_block = mutual_inductance_matrix(submeshes[i].vertices, submeshes[i].faces,
+#                                                 submeshes[j].vertices, submeshes[j].faces)
+#
+#                    #Assign to full matrix
+#                    inductance[np.asarray(vertex_lookup[i])[:,None], vertex_lookup[j]] = sub_block
+#
+#                    #Fill in lower triangle, matrix is symmetric
+#                    if i != j:
+#                        inductance[np.asarray(vertex_lookup[j])[:,None], vertex_lookup[i]] = sub_block
+#
+#        else:
 
-            #Determine how submesh vertex indices correspond to full mesh vertex indices
-            vertex_lookup = []
+        inductance = self_inductance_matrix(self.verts, self.tris, Nchunks=Nchunks)
 
-            for i in range(n_submeshes):
-                vertex_lookup.append([])
-                for vert in submeshes[i].vertices:
-                    vertex_lookup[i].append(np.where((self.mesh.vertices == vert).all(axis=1) == True)[0][0])
-
-            #Loop through block matrix components
-            for i in range(n_submeshes):
-                for j in range(i, n_submeshes):
-                    if i==j:
-                        sub_block = self_inductance_matrix(submeshes[i].vertices, submeshes[i].faces)
-                    else:
-                        sub_block = mutual_inductance_matrix(submeshes[i].vertices, submeshes[i].faces,
-                                                 submeshes[j].vertices, submeshes[j].faces)
-
-                    #Assign to full matrix
-                    inductance[np.asarray(vertex_lookup[i])[:,None], vertex_lookup[j]] = sub_block
-
-                    #Fill in lower triangle, matrix is symmetric
-                    if i != j:
-                        inductance[np.asarray(vertex_lookup[j])[:,None], vertex_lookup[i]] = sub_block
-
-        else:
-            inductance = self_inductance_matrix(self.verts, self.tris)
+        duration = time() - start
+        print('Inductance matrix computation took %.2f seconds.'%duration)
 
         return inductance
 

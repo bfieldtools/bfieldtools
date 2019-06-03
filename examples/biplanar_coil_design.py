@@ -20,7 +20,7 @@ scaling_factor = 1e2
 
 
 #Load simple plane mesh that is centered on the origin
-planemesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane_hires.obj'), process=False)
+planemesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane.obj'), process=False)
 
 planemesh.apply_scale(scaling_factor)
 
