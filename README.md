@@ -12,7 +12,8 @@ The toolbox currently includes tools for
 
 # Dependencies
 * [Trimesh](https://github.com/mikedh/trimesh)
-* [Cvxopt](https://cvxopt.org/)
+* [CVXOPT](https://cvxopt.org/)
+* [Quadpy](https://github.com/nschloe/quadpy/tree/master/quadpy)
 
 # Documentation
 
