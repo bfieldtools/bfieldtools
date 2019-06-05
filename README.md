@@ -11,9 +11,14 @@ The toolbox currently includes tools for
 
 
 # Dependencies
+* [Numpy](https://www.numpy.org/)
+* [Scipy](https://www.scipy.org/)
 * [Trimesh](https://github.com/mikedh/trimesh)
 * [CVXOPT](https://cvxopt.org/)
 * [Quadpy](https://github.com/nschloe/quadpy/tree/master/quadpy)
+* [Numba](https://numba.pydata.org/)
+* [Matplotlib](https://matplotlib.org/)
+* [Mayavi](https://docs.enthought.com/mayavi/mayavi/)
 
 # Documentation
 
