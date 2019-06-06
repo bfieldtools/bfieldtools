@@ -77,6 +77,39 @@ def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T):
     
     return B
 
+def compute_dc_Bnoise_covar(mesh, vl, fp, sigma, d, T):
+    '''
+    Computes the magnetic noise covariance at DC due to thermal motion of charge carriers (Jonhson-Nyquist noise)
+    in a relatively thin conductor.
+    
+    Parameters:
+        
+        mesh: mesh object - the surface mesh
+        vl: Nvertices x Nvertices array - the normalized eddy-current modes vl[:,i]
+        fp: Nfieldpoints x 3 array - coordinates of the fieldpoints
+        sigma: single - conductivity of the surface
+        d: single - thickness of the surface
+        T: single - temperature of the surface
+        
+    Returns:
+        
+        B: Nfieldpoints x Nfieldpoints x 3components array - magnetic noise covariance at DC
+    
+    '''
+    
+    kB = 1.38064852e-23 #Boltzmann constant
+    
+    C = compute_C(mesh, fp)
+    
+    eps = 4*kB*T*sigma*d*np.eye(vl.shape[0])
+    
+    B = np.zeros((fp.shape[0], fp.shape[0],3))
+    for i in range(3):
+        B[:,:,i] = C[:,:,i]@vl@eps@(vl.T)@(C[:,:,i].T)
+        
+    return B
+
+
 def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T):
     '''
     Computes the AC magnetic noise due to thermal motion of charge carriers (Jonhson-Nyquist noise)
@@ -194,5 +227,4 @@ def visualize_current_modes(mesh,vl, Nmodes, scale, contours=True):
     
 
     return s
-        
         
