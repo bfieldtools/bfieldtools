@@ -4,6 +4,9 @@ import quadpy
 
 from mayavi import mlab
 
+from .laplacian_mesh import gradient_matrix
+from .utils import tri_normals_and_areas
+
 class sphbasis:
     '''
     Class for constructing spherical harmonics (Ylms), their gradients
@@ -564,6 +567,36 @@ class sphbasis:
                 lind += 1
         return pot
     
+    def field(self,p, acoeffs, bcoeffs, lmax):
+        mu0=4*np.pi*1e-7
+        B = np.zeros(p.shape)
+        
+        sp = self.cartesian2spherical(p)
+        
+        idx = 0
+        for l in range(1,lmax+1):
+            for m in range(-1*l,l+1):
+                    Psilm = self.Psilm(l,m, sp[:,1],sp[:,2])
+                    Psilm *= np.sqrt(2*l**2 + l)
+                    Psilm[:,0] *= sp[:,0]**(l-1)
+                    Psilm[:,1] *= sp[:,0]**(l-1)
+                    Psilm[:,2] *= sp[:,0]**(l-1)
+                    Psilm *= acoeffs[idx]
+                    Psilm = self.sphvec2cart(sp, Psilm)
+                    B += Psilm
+                    
+                    Philm = self.Philm(l,m, sp[:,1],sp[:,2])
+                    Philm *= np.sqrt((2*l+1)*(l+1))
+                    Philm[:,0] *= sp[:,0]**(-l-2)
+                    Philm[:,1] *= sp[:,0]**(-l-2)
+                    Philm[:,2] *= sp[:,0]**(-l-2)
+                    Philm *= bcoeffs[idx]
+                    Philm = self.sphvec2cart(sp, Philm)
+                    B += Philm
+                    
+                    idx += 1
+        B *= mu0
+        return B
         
 class sphfittools:
     '''
@@ -850,4 +883,72 @@ class plotsph:
         obj = mlab.quiver3d(p[:,0],p[:,1],p[:,2], Philm[:,0], Philm[:,1], Philm[:,2])
         obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))        
         return obj
+    
+    
+def compute_sphcoeffs_mesh(mesh, lmax):
+    '''
+    Computes multipole moment (spherical harmonics coefficient) transformation 
+    from the mesh.
+    
+    Parameters:
+        
+        mesh: mesh object - the surface mesh
+        lmax: single - maximum degree l of the fit
+        
+    Returns:
+        
+        alm: (lmax*(lmax+2)xNvertices array - transformation from the mesh to alm coefficients (r**l-terms)
+        blm: (lmax*(lmax+2)xNvertices array - transformation from the mesh to blm coefficients (r**(-l)-terms)
+        
+    '''          
+    
+    Gx, Gy, Gz = gradient_matrix(mesh.vertices,mesh.faces, rotated = True)
+#    Gx = Gx.toarray()
+#    Gy = Gy.toarray()
+#    Gz = Gz.toarray()
+#    G = np.array([Gx, Gy, Gz])
+    
+    tri_normals, tri_areas = tri_normals_and_areas(mesh.vertices,mesh.faces)
+    sph = sphbasis(10)
+    
+    centers = np.mean(mesh.vertices[mesh.faces],axis = 1)
+    centers_sp = sph.cartesian2spherical(centers)
+    
+    alm = np.zeros((lmax*(lmax+2),mesh.vertices.shape[0]))
+    blm = np.zeros((lmax*(lmax+2),mesh.vertices.shape[0]))
+    
+    idx = 0
+    for l in range(1,lmax+1):
+        for m in range(-1*l,l+1):
+            derylm = np.sqrt(l*(l+1))*sph.Blm(l,m,centers_sp[:,1],centers_sp[:,2])
+            derylm = sph.sphvec2cart(centers_sp, derylm)
+    
+            crossp = np.cross(centers, derylm)
+            alm_terms = crossp.T*(centers_sp[:,0]**l)*tri_areas
+            blm_terms = crossp.T*(centers_sp[:,0]**(-l-1))*tri_areas
+#            integral_alm = np.sum(G*alm_terms[:,:,None], axis=(0,1))
+#            integral_blm = np.sum(G*blm_terms[:,:,None], axis=(0,1))
+            
+            integral_alm = alm_terms[0] @ Gx  + alm_terms[1] @ Gy  + alm_terms[2] @ Gz
+            integral_blm = blm_terms[0] @ Gx  + blm_terms[1] @ Gy  + blm_terms[2] @ Gz
+            
+            blm[idx] = -1/((2*l+1)*(l+1))*integral_blm
+            alm[idx] = 1/((2*l+1)*l)*integral_alm
+#            for i in range(mesh.vertices.shape[0]):
+#                G = np.zeros(crossp.shape)
+#                G[:,0] = Gx[:,i]
+#                G[:,1] = Gy[:,i]
+#                G[:,2] = Gz[:,i]
+#                dotp = np.sum(G*crossp,axis=1)
+#                integral_blm = np.sum(dotp*centers_sp[:,0]**l*tri_areas)
+#                blm[idx,i] = -1/((2*l+1)*(l+1))*integral_blm
+#                
+#                integral_alm = np.sum(dotp*centers_sp[:,0]**(-l-1)*tri_areas)
+#                alm[idx,i] = 1/((2*l+1)*l)*integral_alm                
+                
+            idx += 1
+        print("l = %d computed" % (l))
+        
+    return alm, blm
+            
     
