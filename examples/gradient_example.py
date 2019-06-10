@@ -25,14 +25,14 @@ vals = np.exp(-0.5*(r/r.max()))
 tri_centers = planemesh.vertices[planemesh.faces].mean(axis=1).T
 
 # Calculate the gradient (e.g., flow from potential)
-g = gradient(vals, planemesh.vertices, planemesh.faces, rotated=False)
+g = gradient(vals, planemesh, rotated=False)
 
 # Plot function and its gradient as arrows
 mlab.triangular_mesh(*planemesh.vertices.T, planemesh.faces, scalars=vals)
 mlab.quiver3d(*tri_centers, *g, colormap='viridis')
 
 # The same but rotated (e.g. current density from a stream function)
-g = gradient(vals, planemesh.vertices, planemesh.faces, rotated=True)
+g = gradient(vals, planemesh, rotated=True)
 
 # Plot function and its gradient as arrows
 mlab.figure()

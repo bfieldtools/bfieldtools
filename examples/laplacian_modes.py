@@ -18,8 +18,8 @@ mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 
 boundary_verts, inner_verts, boundary_tris, inner_tris = utils.find_mesh_boundaries(mesh.vertices, mesh.faces, mesh.edges)
 
-L = laplacian_matrix(mesh.vertices, mesh.faces)
-M = mass_matrix(mesh.vertices, mesh.faces)
+L = laplacian_matrix(mesh)
+M = mass_matrix(mesh)
 
 u, v = eigh(-L.todense()[inner_verts][:,inner_verts], M.todense()[inner_verts][:,inner_verts])
 

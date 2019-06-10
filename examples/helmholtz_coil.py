@@ -100,7 +100,7 @@ line1_points = np.vstack((x1, y1, z1)).T
 
 Bh_line1 = bfield_line_segments(c1_points, line1_points) + bfield_line_segments(c2_points, line1_points)
 
-plt.semilogy(z1, np.linalg.norm(Bh_line1, axis=1)/np.linalg.norm(Bh_line1, axis=1)[0], label='Helmholtz')
+plt.semilogy(z1, np.linalg.norm(Bh_line1, axis=1)/np.linalg.norm(Bh_line1, axis=1)[0], label='Helmholtz, z-axis')
 
 
 y2 = np.linspace(0, 30, 31)
@@ -112,7 +112,7 @@ line2_points = np.vstack((x2, y2, z2)).T
 Bh_line2 = bfield_line_segments(c1_points, line2_points) + bfield_line_segments(c2_points, line2_points)
 
 
-plt.semilogy(y2, np.linalg.norm(Bh_line2, axis=1)/np.linalg.norm(Bh_line2, axis=1)[0], label='Helmholtz')
+plt.semilogy(y2, np.linalg.norm(Bh_line2, axis=1)/np.linalg.norm(Bh_line2, axis=1)[0], label='Helmholtz, y-axis')
 plt.ylabel('Field amplitude (target field units)')
 plt.xlabel('Distance from origin')
 plt.grid(True, which='minor', axis='y')

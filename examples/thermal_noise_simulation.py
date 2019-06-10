@@ -11,9 +11,9 @@ import pkg_resources
 #   unit_disc: DC Bnoise of a unit disc at z-axis and comparison to analytical formula
 #   AC: AC Bnoise of a unit disc at one position
 
-example_name = 'unit_sphere'
+#example_name = 'unit_sphere'
 #    example_name = 'unit_disc'
-#    example_name = 'AC'
+example_name = 'AC'
 
 #Fix the simulation parameters
 d = 100e-6

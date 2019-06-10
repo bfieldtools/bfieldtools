@@ -83,8 +83,8 @@ n_stray_points = len(stray_points)
 
 #%% Compute C matrices that are used to compute the generated magnetic field
 
-coil.C = compute_C(coil.mesh, target_points, parallel=False)
-coil.strayC = compute_C(coil.mesh, stray_points, parallel=False)
+coil.C = compute_C(coil.mesh, target_points)
+coil.strayC = compute_C(coil.mesh, stray_points)
 
 #%% Specify target field and run solver
 
@@ -111,7 +111,7 @@ f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(480, 480))
 mlab.clf()
 
-surface = mlab.pipeline.triangular_mesh_source(*coil.verts.T, coil.tris,scalars=I)
+surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=I)
 
 windings = mlab.pipeline.contour_surface(surface, contours=8)
 

@@ -6,7 +6,7 @@ from time import time
 
 from . import utils
 from .laplacian_mesh import laplacian_matrix, mass_matrix
-from .mutual_inductance_mesh import self_inductance_matrix, mutual_inductance_matrix
+from .mutual_inductance_mesh import self_inductance_matrix
 
 
 class LazyProperty():
@@ -39,30 +39,43 @@ class MeshWrapper:
     surfaces within a single mesh object.
     '''
 
-    def __init__(self, verts=None, tris=None, mesh_file=None):
+    def __init__(self, verts=None, tris=None, mesh_file=None, mesh_obj=None, process=False):
+        '''
+        Initialize MeshWrapper object.
+        First priority is to use given Trimesh object.
+        Second priority is to load mesh from file.
+        Third priority is to use given verts and tris arrays.
 
-        if mesh_file: #First, check if mesh_file passed
-            self.mesh = trimesh.load(mesh_file, process=False)
+        Parameters:
+            verts: array-like (Nv, 3)
+            tris: array-like  (Nt, 3)
 
+            mesh_obj: Trimesh mesh object
+            mesh_file: String describing the file path of a mesh file.
+
+            process: Boolean switch if Trimesh should pre-process the mesh.
+
+        '''
+
+        if mesh_obj: #First, if Trimesh object is given as parameter then use that directly
+            self.mesh = mesh_obj
+
+        elif mesh_file: #Second, check if mesh_file passed and load mesh as Trimesh object
+            self.mesh = trimesh.load(mesh_file, process=process)
 
         else: #Fall back on verts, tris parameters
             if isinstance(verts, type(None)) or isinstance(tris, type(None)):
-                ValueError('You must provide either verts and tris or a mesh file')
-            self.mesh = trimesh.Trimesh(verts, tris, process=False)
+                ValueError('You must provide either verts and tris, a mesh object or a mesh file')
 
-        self.verts = self.mesh.vertices
-        self.tris = self.mesh.faces
-
-        self.tri_areas = self.mesh.area_faces
-        self.tri_normals = self.mesh.face_normals
+            self.mesh = trimesh.Trimesh(verts, tris, process=process)
 
 
         #Useful mesh metrics etc, more can be added
-        self.dual_areas = utils.dual_areas(self.tris, self.tri_areas)
+        self.dual_areas = utils.dual_areas(self.mesh.faces, self.mesh.area_faces)
 
         self.boundary_verts, self.inner_verts,\
-        self.boundary_tris, self.inner_tris = utils.find_mesh_boundaries(self.verts,
-                                                                         self.tris,
+        self.boundary_tris, self.inner_tris = utils.find_mesh_boundaries(self.mesh.vertices,
+                                                                         self.mesh.faces,
                                                                          self.mesh.edges)
 
 
@@ -71,9 +84,7 @@ class MeshWrapper:
         '''
         Compute and return surface laplacian matrix.
         '''
-        laplacian = laplacian_matrix(self.verts, self.tris,
-                                     self.tri_normals,
-                                     self.tri_areas)
+        laplacian = laplacian_matrix(self.mesh)
 
         return laplacian
 
@@ -83,7 +94,7 @@ class MeshWrapper:
         '''
         Compute and return mesh mass matrix.
         '''
-        mass = mass_matrix(self.verts, self.tris, self.tri_areas, self.dual_areas)
+        mass = mass_matrix(self.mesh, self.dual_areas)
 
         return mass
 
@@ -100,49 +111,13 @@ class MeshWrapper:
         #Estimate of memory use
         mem_per_vertex = 6 / 2000
 
-        Nchunks = int(np.ceil(mem_per_vertex / mem * len(self.verts)))
+        Nchunks = int(np.ceil(mem_per_vertex / mem * len(self.mesh.vertices)))
 
         print('Computing inductance matrix in %d chunks since %d GiB memory is available...'%(Nchunks, mem))
 
         start = time()
-#        #If mesh corresponds of many submeshes, compute these separately to save memory
-#        if self.mesh.body_count > 1:
-#
-#
-#            inductance = np.zeros((len(self.mesh.vertices), len(self.mesh.vertices)))
-#
-#            #Split into separate sub-bodies
-#            submeshes = self.mesh.split(only_watertight=False)
-#
-#            n_submeshes = len(submeshes)
-#
-#            #Determine how submesh vertex indices correspond to full mesh vertex indices
-#            vertex_lookup = []
-#
-#            for i in range(n_submeshes):
-#                vertex_lookup.append([])
-#                for vert in submeshes[i].vertices:
-#                    vertex_lookup[i].append(np.where((self.mesh.vertices == vert).all(axis=1) == True)[0][0])
-#
-#            #Loop through block matrix components
-#            for i in range(n_submeshes):
-#                for j in range(i, n_submeshes):
-#                    if i==j:
-#                        sub_block = self_inductance_matrix(submeshes[i].vertices, submeshes[i].faces)
-#                    else:
-#                        sub_block = mutual_inductance_matrix(submeshes[i].vertices, submeshes[i].faces,
-#                                                 submeshes[j].vertices, submeshes[j].faces)
-#
-#                    #Assign to full matrix
-#                    inductance[np.asarray(vertex_lookup[i])[:,None], vertex_lookup[j]] = sub_block
-#
-#                    #Fill in lower triangle, matrix is symmetric
-#                    if i != j:
-#                        inductance[np.asarray(vertex_lookup[j])[:,None], vertex_lookup[i]] = sub_block
-#
-#        else:
 
-        inductance = self_inductance_matrix(self.verts, self.tris, Nchunks=Nchunks)
+        inductance = self_inductance_matrix(self.mesh, Nchunks=Nchunks)
 
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)
@@ -174,7 +149,7 @@ class MeshWrapper:
         Simply plot the mesh surface in mayavi.
         '''
 
-        mesh = mlab.triangular_mesh(*self.verts.T, self.tris,
+        mesh = mlab.triangular_mesh(*self.mesh.vertices.T, self.mesh.faces,
                                     representation='wireframe', color=(0, 0, 0))
 
         return mesh
