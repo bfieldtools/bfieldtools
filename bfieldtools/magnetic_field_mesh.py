@@ -217,3 +217,57 @@ def _compute_C(verts, vert_links, n_links, r, tri_areas, r_quad, w_quad, basis_v
                 C_part[k, n] += element * tri_areas[vert_links[n][i]]
 
     return C_part
+
+def compute_C2(mesh, r, basis=None, vert_links=None, Nchunks=None):
+    '''
+    Given a mesh, computes the "C matrix" which gives the magnetic field at
+    some target points due to currents (stream function) on a surface mesh.
+
+    THIS IS A VECTORIZED COMPUTATION FOR COMPARISON
+
+    Parameters:
+        mesh: Trimesh mesh object describing mesh
+        r: target points (N, 3)
+
+    '''
+    from bfieldtools.laplacian_mesh import gradient_matrix
+    mu0 = 4 * np.pi * 1e-7
+    coef = mu0 / (4 * np.pi)
+
+    print('Computing C matrix, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
+    start = time.time()
+
+    w_quad, r_quad = get_quad_points(mesh.vertices, mesh.faces, method='Centroid')
+
+    # Rotated gradients (currents)
+    Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
+
+    # Init C-matrix
+    n_target_points = len(r)
+    n_verts = len(mesh.vertices)
+    C = np.zeros((n_target_points, n_verts, 3))
+
+    if Nchunks is None:
+        if r.shape[0] > 1000:
+            Nchunks = r.shape[0]//100
+        else:
+            Nchunks = 1
+
+    for n in range(Nchunks):
+        # Diffence vectors (Neval, Ntri, Nquad, 3)
+        RR = r_quad[None, :, :, :] - r[n::Nchunks, None, None, :]
+        # RR/norm(RR)**3 "Gradient of Green's function"
+        g = - RR/((np.linalg.norm(RR, axis=-1)**3)[:, :, :, None])
+        # Sum over quad points and multiply by triangle area
+        g = (g*w_quad[:,None]).sum(axis=-2)
+        g *= mesh.area_faces[:,None]
+        # Cross product RR/norm(RR)
+        C[n::Nchunks, :, 0] = g[:, :, 2] @ Gy - g[:, :, 1] @ Gz
+        C[n::Nchunks, :, 1] = g[:, :, 0] @ Gz - g[:, :, 2] @ Gx
+        C[n::Nchunks, :, 2] = g[:, :, 1] @ Gx - g[:, :, 0] @ Gy
+
+
+    duration = time.time() - start
+    print('took %.2f seconds.'%duration)
+
+    return coef * C

@@ -8,7 +8,7 @@ from mayavi import mlab
 import trimesh
 
 from bfieldtools import utils
-from bfieldtools.magnetic_field_mesh import compute_C
+from bfieldtools.magnetic_field_mesh import compute_C, compute_C2
 
 import pkg_resources
 
@@ -30,7 +30,6 @@ mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
 mlab.points3d(*fp.T)
 
 C = compute_C(mesh, fp)
-
 k = 1
 
 #    plt.figure()
@@ -62,3 +61,15 @@ plt.plot(z, Ban/np.max(Ban))
 
 plt.figure()
 plt.plot(z, np.abs((B[:,2]-Ban))/np.abs(Ban)*100)
+
+#%% Compare computation times between the looped and compiled version
+# and the vectorized version
+Np = 100
+z = np.linspace(0.1, 10, Np)
+fp = np.array((np.zeros(z.shape), np.zeros(z.shape), z)).T
+
+print('Looped')
+C1 = compute_C(mesh, fp)
+print('Vectorized')
+C2 = compute_C2(mesh, fp)
+
