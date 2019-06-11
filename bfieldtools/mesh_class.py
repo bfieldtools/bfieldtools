@@ -3,6 +3,7 @@ import trimesh
 import numpy as np
 from psutil import virtual_memory
 from time import time
+import pickle
 
 from . import utils
 from .laplacian_mesh import laplacian_matrix, mass_matrix
@@ -109,7 +110,7 @@ class MeshWrapper:
         mem = virtual_memory().available >> 30
 
         #Estimate of memory use
-        mem_per_vertex = 6 / 2000
+        mem_per_vertex = 8 / 2000
 
         Nchunks = int(np.ceil(mem_per_vertex / mem * len(self.mesh.vertices)))
 
@@ -153,3 +154,41 @@ class MeshWrapper:
                                     representation='wireframe', color=(0, 0, 0))
 
         return mesh
+
+
+    def save_pickle(self, target_file):
+        """
+        Save the MeshWrapper object using a pickled Python file
+
+        Parameters:
+            target_file: str, file name or file object to save to
+        """
+
+        pickle.dump(obj=self, file=open(target_file, 'wb'))
+
+
+def save_pickle(obj, target_file):
+    """
+    Save the MeshWrapper object using a pickled Python file
+
+    Parameters:
+        obj: object to save to file
+        target_file: str, file name or file object to save to
+    """
+
+    pickle.dump(obj=obj, file=open(target_file, 'wb'))
+
+
+def load_pickle(target_file):
+    """
+    Load pickled MeshWrapper object from file
+
+    Parameters:
+        target_file: str, file name or file object to load from
+    Returns:
+        obj: loaded MeshWrapper object
+    """
+
+    obj = pickle.load(open(target_file, 'rb'))
+
+    return obj
