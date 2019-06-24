@@ -92,7 +92,7 @@ def create_basis(mesh, centre=np.array([0, 0, 0])):
     return dict(v=vmi, A=A, B=B, C=C)
 
 
-def compute_C(mesh, r, basis=None, vert_links=None):
+def compute_C_loops(mesh, r, basis=None, vert_links=None):
     '''
     Given a mesh, computes the "C matrix" which gives the magnetic field at
     some target points due to currents (stream function) on a surface mesh.
@@ -131,7 +131,7 @@ def compute_C(mesh, r, basis=None, vert_links=None):
     vert_links_arr, n_links = make_2D_array(vert_links)
     bval_arr, n_links = make_3D_array(basis['v'])
 
-    C = _compute_C(mesh.vertices,
+    C = _compute_C_loops(mesh.vertices,
                   vert_links_arr.astype(int),
                   n_links,
                   r,
@@ -175,7 +175,7 @@ def make_3D_array(lis):
 
 
 @jit(nopython=True, parallel=True, fastmath=True, nogil=True)
-def _compute_C(verts, vert_links, n_links, r, tri_areas, r_quad, w_quad, basis_value):
+def _compute_C_loops(verts, vert_links, n_links, r, tri_areas, r_quad, w_quad, basis_value):
     '''
     C matrix computation backend, uses numba for speed and parallelization.
     '''
@@ -218,7 +218,7 @@ def _compute_C(verts, vert_links, n_links, r, tri_areas, r_quad, w_quad, basis_v
 
     return C_part
 
-def compute_C2(mesh, r, basis=None, vert_links=None, Nchunks=None):
+def compute_C(mesh, r, basis=None, vert_links=None, Nchunks=None):
     '''
     Given a mesh, computes the "C matrix" which gives the magnetic field at
     some target points due to currents (stream function) on a surface mesh.
