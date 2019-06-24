@@ -206,3 +206,45 @@ def cylinder_points(radius=1, length=1, nlength=10, alpha=360, nalpha=10, center
 
     R = rotation_matrix(oaxis, rot)
     return points.dot(R)
+
+
+def fix_normals(mesh, origin = np.array([0, 0, 0])):
+    '''
+    Attempts to fix face windings and normals such that normals are always "pointing out"
+    from the origin.
+
+    Parameters:
+        mesh: Trimesh mesh object
+
+    '''
+
+    for tri_idx, tri in enumerate(mesh.faces):
+
+
+        dotprod = np.dot(mesh.face_normals[tri_idx], mesh.triangles_center[tri_idx] - origin)
+
+        #If dotprod is < 0, normal is pointing "inwards" towards the origin
+        if dotprod < 0:
+
+            #Flip normal
+            mesh.face_normals[tri_idx] *= -1
+
+            #Check whether the triangle winding should also be flipped
+
+
+            edge1 = mesh.vertices[mesh.faces[tri_idx,1]] - mesh.vertices[mesh.faces[tri_idx,0]]
+
+            #If is negative winding-normal-relation does not follow right-hand rule
+            if np.dot(np.cross(mesh.face_normals[tri_idx], edge1),
+                       mesh.triangles_center[tri_idx] - origin):
+
+                 #Fip face winding
+                 mesh.faces[tri_idx] = mesh.faces[tri_idx, ::-1]
+
+    return mesh
+
+
+
+
+
+
