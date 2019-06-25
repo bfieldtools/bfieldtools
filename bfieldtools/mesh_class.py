@@ -40,7 +40,7 @@ class MeshWrapper:
     surfaces within a single mesh object.
     '''
 
-    def __init__(self, verts=None, tris=None, mesh_file=None, mesh_obj=None, process=False):
+    def __init__(self, verts=None, tris=None, mesh_file=None, mesh_obj=None, process=False, fix_normals=True):
         '''
         Initialize MeshWrapper object.
         First priority is to use given Trimesh object.
@@ -55,6 +55,7 @@ class MeshWrapper:
             mesh_file: String describing the file path of a mesh file.
 
             process: Boolean switch if Trimesh should pre-process the mesh.
+            fix_normals: Boolean switch if normals+winding should be set so that they always point "out" from the origin.
 
         '''
 
@@ -69,6 +70,9 @@ class MeshWrapper:
                 ValueError('You must provide either verts and tris, a mesh object or a mesh file')
 
             self.mesh = trimesh.Trimesh(verts, tris, process=process)
+
+        if fix_normals:
+            self.mesh = utils.fix_normals(self.mesh)
 
 
         #Useful mesh metrics etc, more can be added
