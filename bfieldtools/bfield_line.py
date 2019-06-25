@@ -48,7 +48,31 @@ def bfield_line_segments(vertices, points):
 
     return field.T*1e-7
 
+def vectorpot_line_segments(vertices, points):
+    """ Compute vector potential of a segmented line current
 
+        Returns:
+            Vector potential (Npoints, Nvertices-1, 3)
+
+    """
+    segments = vertices[1:] - vertices[:-1]
+    RR = points[:, None, :] - vertices[None, 1:, :]
+    lengths2 = (segments**2).sum(axis=-1)
+    # Normalize segments
+    segments = segments/np.sqrt(lengths2)[:, None]
+    # Distance vectors with directions of segments projected out
+    dists = - np.cross(segments, np.cross(segments, RR))
+    # Segment lengths squared over distances squared
+    dists = lengths2/(dists**2).sum(axis=-1)
+    return 1e-7*np.log(dists+1)[:, :, None]*segments
+
+def flux_line_segments(vertices, vertices_loop):
+    """ Compute magnetic flux created by a segmented line current
+        on a another (closed loop) segmented current
+
+        In other words, calculate mutual inductance of the currents
+    """
+    pass
 
 if __name__ == "__main__":
     """ Plot field of a circular current path
