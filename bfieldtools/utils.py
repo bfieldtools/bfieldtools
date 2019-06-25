@@ -244,7 +244,26 @@ def fix_normals(mesh, origin = np.array([0, 0, 0])):
     return mesh
 
 
+def fix_normals_simple(mesh, origin = np.array([0, 0, 0])):
+    '''
+    Attempts to fix face windings and normals such that normals are always "pointing out"
+    from the origin.
 
+    Parameters:
+        mesh: Trimesh mesh object
+
+    '''
+
+    # Dot product of all face normals and the corresponding triangle centers
+    dotprods = np.sum(mesh.face_normals, mesh.triangles_center - origin, axis=-1)
+    # Flip windings for normals pointing inwards
+    mesh.faces[dotprods < 0] = mesh.faces[dotprods < 0, ::-1]
+    # old_cache = {'key': mesh.cache.value, ...} # Could save some old values...
+    # Clear cached values
+    mesh.cache.clear()
+    # Could update the cache with values that don't change when flipping triangles
+    # self._cache.update(old_cache)
+    return mesh
 
 
 
