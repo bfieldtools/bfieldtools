@@ -1,7 +1,6 @@
 import numpy as np
-from time import clock
-from .utils import (get_quad_points, tri_normals_and_areas,
-                   assemble_matrix, assemble_matrix2, dual_areas)
+from .utils import (get_quad_points,
+                   assemble_matrix, assemble_matrix_chunk, assemble_matrix2)
 
 
 def gamma0(R, reg=1e-13, symmetrize=True):
@@ -153,29 +152,25 @@ def self_inductance_matrix(mesh, planar=False,
     weights, quadpoints = get_quad_points(mesh.vertices, mesh.faces, 'Centroid')
     # Nt x Nquad x  3 (x,y,z)
 
-    # Loop evaluation triangles (quadpoints) in chunks
-    tri_data = np.zeros((edges.shape[0], edges.shape[0],
-                         edges.shape[1], edges.shape[1]))
+
+    M = np.zeros((mesh.vertices.shape[0], mesh.vertices.shape[0]))
+
     for n in range(Nchunks):
+
         RR = quadpoints[n::Nchunks,:, None, None, :] - R[None, None, :, :, :]
-        print('Calculating potentials')
+
+        # Loop evaluation triangles (quadpoints) in chunks
+        tri_data = np.zeros((len(quadpoints[n::Nchunks]), edges.shape[0],
+                             edges.shape[1], edges.shape[1]))
+
+        print('Calculating potentials, chunk %d/%d' % (n + 1, Nchunks))
         pots = triangle_potential(RR, mesh.face_normals, planar=planar) # Ntri_eval, Nquad, Ntri_source
         pots = np.sum(pots*weights[None,:,None], axis=1) # Ntri_eval, Ntri_source
 
-        tri_data[n::Nchunks] = np.sum(edges[None,:,None,:,:]*edges[n::Nchunks,None,:,None,:], axis=-1) # i,j,k,l
-        tri_data[n::Nchunks] /= (mesh.area_faces[n::Nchunks,None]*mesh.area_faces[None,:]*4)[:,:,None,None]
-        tri_data[n::Nchunks] *= (mesh.area_faces[n::Nchunks, None]*pots)[:,:,None,None]
-    print('Inserting stuff into M-matrix')
+        tri_data = np.sum(edges[None,:,None,:,:]*edges[n::Nchunks,None,:,None,:], axis=-1) # i,j,k,l
+        tri_data /= (mesh.area_faces[n::Nchunks,None]*mesh.area_faces[None,:]*4)[:,:,None,None]
+        tri_data *= (mesh.area_faces[n::Nchunks, None]*pots)[:,:,None,None]
 
-    # Non optimized version of the matrix assembly
-#    M = np.zeros((verts.shape[0], verts.shape[0]))
-#    for i, t1 in enumerate(tris):  # Eval triangles
-#        for j, t2 in enumerate(tris):  # Source triangles
-#            for k, v1 in enumerate(t1): # Eval triangle hats
-#                for l, v2 in enumerate(t2): # Source triangle hats
-##                    e1 = edges[i, k]
-##                    e2 = edges[j, l]
-##                    gradproduct = np.sum(e1*e2)/(a[i]*a[j]*4)
-##                    M[v1, v2] += pots[i, j]*a[i]*gradproduct
-    M = assemble_matrix(mesh.faces, mesh.vertices.shape[0], tri_data)
+        M += assemble_matrix_chunk(mesh.faces, mesh.vertices.shape[0], tri_data, n, Nchunks)
+
     return M*1e-7
