@@ -33,10 +33,14 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7):
         return None
     return np.array(sol['x']).reshape((P.shape[1],)), sol
 
-def optimize_streamfunctions(meshobj, target_field, target_axis,
-                             target_error={'on_axis':0.05, 'off_axis':0.05, 'stray':0.05},
+def optimize_streamfunctions(meshobj, bfield_specification,
                              laplacian_smooth=0.1,
                              tolerance=0.1):
+
+#def optimize_streamfunctions(meshobj, target_field, target_axis,
+#                             target_error={'on_axis':0.05, 'off_axis':0.05, 'stray':0.05},
+#                             laplacian_smooth=0.1,
+#                             tolerance=0.1):
     '''
     Quadratic optimization of coil stream function according to minimal field energy,
     while keeping specified target field at target points within bounds.
@@ -45,64 +49,50 @@ def optimize_streamfunctions(meshobj, target_field, target_axis,
 
     '''
 
+    #Initialize inequality constraint matrix and product
+    constraint_matrix = np.zeros((0, len(meshobj.inner_verts)))
+    constraint_product = np.zeros((0, ))
 
-    # Set lower and upper bound for stray field, all three axes
-    lb_stray = np.repeat((-np.abs(np.repeat(target_field[0], len(meshobj.strayC), axis=0))
-                          * target_error['stray'])[:, None], 3, axis=1).flatten()
+    #Populate inequality constraints with bfield specifications
+    for spec in bfield_specification:
 
-    ub_stray = np.repeat((np.abs(np.repeat(target_field[0], len(meshobj.strayC), axis=0))
-                          * target_error['stray'])[:, None], 3, axis=1).flatten()
+        #Limit C matrix to inner vertices (boundaries are kept at zero)
+        inner_C = spec['C'][:, meshobj.inner_verts]
 
-    #Limit stray field C matrix to inner vertices
-    inner_strayC = meshobj.strayC[:, meshobj.inner_verts]
+        #Reshape so that values on axis 1 are x1, y1, z1, x2, y2, z2, etc.
+        inner_C = inner_C.transpose((1, 0, 2))
+        inner_C = inner_C.reshape((inner_C.shape[0], -1)).T
 
-    #Reshape so that values on axis 1 are x1, y1, z1, x2, y2, z2, etc.
-    inner_strayC = inner_strayC.transpose((1, 0, 2))
-    inner_strayC = inner_strayC.reshape((inner_strayC.shape[0], -1)).T
+        if spec['error_type'] == 'relative':
+            upper_bound = spec['target_field'] * (1 + np.sign(spec['target_field']) * spec['error'])
+            lower_bound = spec['target_field'] * (1 - np.sign(spec['target_field']) * spec['error'])
 
-    # Set lower and upper bounds on target axis
-    lb_on_axis = target_field * (1 - np.sign(target_field) * target_error['on_axis'])
-    ub_on_axis = target_field * (1 + np.sign(target_field) * target_error['on_axis'])
-
-    # Set bounds on non-target axes
-    lb_off_axis = -np.abs(target_field) * target_error['off_axis']
-    ub_off_axis = np.abs(target_field) * target_error['off_axis']
-
-
-    #Collect on-axis and off-axis bounds
-    lb = np.full((lb_on_axis.shape[0], 3), fill_value=np.nan)
-    ub = np.full((lb_on_axis.shape[0], 3), fill_value=np.nan)
-
-    for ax in range(3):
-        if ax is target_axis:
-            lb[:, ax] = lb_on_axis
-            ub[:, ax] = ub_on_axis
+        elif spec['error_type'] == 'absolute':
+            upper_bound = spec['target_field'] + spec['error']
+            lower_bound = spec['target_field'] - spec['error']
         else:
-            lb[:, ax] = lb_off_axis
-            ub[:, ax] = ub_off_axis
+            raise ValueError("Specification error type needs to be 'relative' or 'absolute'")
 
-    #Reshape so that values are x1, y1, z1, x2, y2, z2, etc.
-    lb = lb.flatten()
-    ub = ub.flatten()
+        #Flatten to match C matrix
+        upper_bound = upper_bound.flatten()
+        lower_bound = lower_bound.flatten()
 
-    #Limit C matrix to inner vertices
-    inner_C = meshobj.C[:, meshobj.inner_verts]
 
-    #Reshape so that values on axis 1 are x1, y1, z1, x2, y2, z2, etc.
-    inner_C = inner_C.transpose((1, 0, 2))
-    inner_C = inner_C.reshape((inner_C.shape[0], -1)).T
+        #Stack upper and lower bounds into a single constraint
+        stacked_bounds = np.hstack((lower_bound, -upper_bound))
+        stacked_inner_C = np.vstack((-inner_C, inner_C))
 
-    # Stack to turn upper and lower bound constraints into single constraint
-    stacked_bounds = np.hstack((lb, -ub, lb_stray, -ub_stray))
-    stacked_inner_C = np.vstack((-inner_C, inner_C, -inner_strayC, inner_strayC))
+        # Append specification to constraint matrix and product
+        constraint_matrix = np.append(constraint_matrix, stacked_inner_C, axis=0)
+        constraint_product = np.append(constraint_product, stacked_bounds, axis=0)
+
 
     #Limit L matrix to inner vertices
     inner_L = meshobj.inductance[meshobj.inner_verts][:, meshobj.inner_verts]
 
+
     #Linear part of QP problem not used, set to zero
     linear_part = np.zeros((len(meshobj.inner_verts), ))
-
-
 
     print('Scaling matrices before optimization. This requires singular value computation, hold on.')
 
@@ -115,7 +105,7 @@ def optimize_streamfunctions(meshobj, target_field, target_axis,
         lapl_eigs = np.linalg.eigvalsh(-inner_lapl)
         L_eigs = np.linalg.eigvalsh(inner_L)
 
-        scaled_lapl = np.max(np.abs(L_eigs))/np.max(np.abs(lapl_eigs))*-inner_lapl
+        scaled_lapl = np.max(np.abs(L_eigs)) / np.max(np.abs(lapl_eigs)) * -inner_lapl
 
         quadratic_term = (inner_L + laplacian_smooth * scaled_lapl)
 
@@ -128,15 +118,15 @@ def optimize_streamfunctions(meshobj, target_field, target_axis,
 
 
     #Compute, scale C matrix according to largest singular value
-    u, s, vt = svds(stacked_inner_C, k=1)
+    u, s, vt = svds(constraint_matrix, k=1)
 
     #Also, scale constraints so max value is 1
 
     print('Solving quadratic programming problem using cvxopt...')
     I_inner, sol = cvxopt_solve_qp(P=quadratic_term,
                                    q=linear_part,
-                                   G=stacked_inner_C / s[0],
-                                   h=stacked_bounds / np.max(target_field),
+                                   G=constraint_matrix / s[0],
+                                   h=constraint_product / np.max(constraint_product),
                                    tolerance=tolerance)
 
     #Build final I vector with zeros on boundary elements, scale by same singular value
