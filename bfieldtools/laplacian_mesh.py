@@ -59,7 +59,7 @@ def mass_matrix(mesh, da=None):
     if da is None:
         da = dual_areas(mesh.faces, mesh.area_faces)
 
-    A =spdiags(da, 0, mesh.vertices.shape[0], mesh.vertices.shape[0]).tocsr()
+    A = spdiags(da, 0, mesh.vertices.shape[0], mesh.vertices.shape[0]).tocsr()
 
     return A
 
@@ -85,7 +85,7 @@ def gradient_matrix(mesh, rotated=False):
     tri_data = edges/(2*mesh.area_faces[:, None, None])
     if not rotated:
         # Rotate 90 degrees CW to get the original gradient
-        tri_data = np.cross(mesh.face_normals[:,None,:], tri_data, axis=-1)
+        tri_data = np.cross(mesh.face_normals[:, None, :], tri_data, axis=-1)
 
     tri_data = tri_data.reshape(-1, 3).T
     ii = np.array([[i]*3 for i in range(len(mesh.faces))]).ravel()  # [0,0,0,1,1,1,...]
@@ -113,6 +113,3 @@ def gradient(vals, mesh, rotated=False):
     """
     Gx, Gy, Gz = gradient_matrix(mesh, rotated)
     return np.array([Gx @ vals, Gy @ vals, Gz @ vals])
-
-
-

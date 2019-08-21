@@ -1,6 +1,5 @@
 import numpy as np
-from .utils import (get_quad_points,
-                   assemble_matrix, assemble_matrix_chunk, assemble_matrix2)
+from .utils import (get_quad_points, assemble_matrix_chunk, assemble_matrix2)
 
 
 def gamma0(R, reg=1e-13, symmetrize=True):
@@ -30,14 +29,14 @@ def gamma0(R, reg=1e-13, symmetrize=True):
     # Regularize s.t. neither the denominator or the numerator can be zero
     # Avoid numerical issues directly at the edge
     res = np.log((np.roll(n, 2, -1)*dn + dotprods2 + reg)
-               / (np.roll(n, 1, -1)*dn + dotprods1 + reg))
+                 / (np.roll(n, 1, -1)*dn + dotprods1 + reg))
 
     # Symmetrize the result since on the negative extension of the edge
     # there's division of two small values resulting numerical instabilities
     # (also incompatible with adding the reg value)
     if symmetrize:
         res2 = -np.log((np.roll(n, 2, -1)*dn - dotprods2 + reg)
-                     / (np.roll(n, 1, -1)*dn - dotprods1 + reg))
+                       / (np.roll(n, 1, -1)*dn - dotprods1 + reg))
         res = np.where(dotprods1+dotprods2 > 0, res, res2)
     res /= dn
     return res
@@ -79,7 +78,7 @@ def omega(R):
     return sa
 
 
-def triangle_potential(R, tn, planar = False):
+def triangle_potential(R, tn, planar=False):
     """ 1/r potential of a uniform triangle
 
         Parameters:
@@ -96,7 +95,7 @@ def triangle_potential(R, tn, planar = False):
     else:
         tn_ax = tn
     summands = gamma0(R)*np.sum(tn_ax*np.cross(np.roll(R, 1, -2),
-                                np.roll(R, 2, -2), axis=-1), axis=-1)
+                                               np.roll(R, 2, -2), axis=-1), axis=-1)
     if not planar:
         csigned = np.sum(np.take(R, 0, -2)*tn, axis=-1)
         result = np.sum(summands, axis=-1) - csigned*omega(R)
@@ -121,25 +120,25 @@ def mutual_inductance_matrix(mesh1, mesh2, planar=False):
     weights, quadpoints = get_quad_points(mesh2.vertices, mesh2.faces, 'Centroid')
     # Nt x Nquad x  3 (x,y,z)
 
-    RR = quadpoints[:,:, None, None, :] - R[None, None, :, :, :]
+    RR = quadpoints[:, :, None, None, :] - R[None, None, :, :, :]
     print('Calculating potentials')
     pots = triangle_potential(RR, mesh1.face_normals, planar=planar) # Ntri_eval, Nquad, Ntri_source
-    pots = np.sum(pots*weights[None,:,None], axis=1) # Ntri_eval, Ntri_source
+    pots = np.sum(pots * weights[None, :, None], axis=1) # Ntri_eval, Ntri_source
 
     # Calculate edge vectors for each triangle
     edges1 = np.roll(R, 1, -2) - np.roll(R, 2, -2)  # Nt x 3 (edges) x 3 (x,y,z)
     edges2 = np.roll(mesh2.vertices[mesh2.faces], 1, -2) - np.roll(mesh2.vertices[mesh2.faces], 2, -2)  # Nt x 3 (edges) x 3 (x,y,z)
-    tri_data = np.sum(edges1[None,:,None,:,:]*edges2[:,None,:,None,:], axis=-1) # i,j,k,l
-    tri_data /= (mesh2.area_faces[:,None]*mesh1.area_faces[None,:]*4)[:,:,None,None]
-    tri_data *= (mesh2.area_faces[:, None]*pots)[:,:,None,None]
+
+    tri_data = np.sum(edges1[None, :, None, :, :] * edges2[:, None, :, None, :], axis=-1) # i,j,k,l
+    tri_data /= (mesh2.area_faces[:, None] * mesh1.area_faces[None, :] * 4)[:, :, None, None]
+    tri_data *= (mesh2.area_faces[:, None] * pots)[:, :, None, None]
     print('Inserting stuff into M-matrix')
 
     M = assemble_matrix2(mesh1.faces, mesh2.faces, mesh1.vertices.shape[0], mesh2.vertices.shape[0], tri_data)
-    return M*1e-7
+    return M * 1e-7
 
 
-def self_inductance_matrix(mesh, planar=False,
-                                  Nchunks=1):
+def self_inductance_matrix(mesh, planar=False, Nchunks=1):
     """ Calculate a self inductance matrix for hat basis functions
         (stream functions) in the triangular mesh described by
 
@@ -157,7 +156,7 @@ def self_inductance_matrix(mesh, planar=False,
 
     for n in range(Nchunks):
 
-        RR = quadpoints[n::Nchunks,:, None, None, :] - R[None, None, :, :, :]
+        RR = quadpoints[n::Nchunks, :, None, None, :] - R[None, None, :, :, :]
 
         # Loop evaluation triangles (quadpoints) in chunks
         tri_data = np.zeros((len(quadpoints[n::Nchunks]), edges.shape[0],
@@ -165,12 +164,12 @@ def self_inductance_matrix(mesh, planar=False,
 
         print('Calculating potentials, chunk %d/%d' % (n + 1, Nchunks))
         pots = triangle_potential(RR, mesh.face_normals, planar=planar) # Ntri_eval, Nquad, Ntri_source
-        pots = np.sum(pots*weights[None,:,None], axis=1) # Ntri_eval, Ntri_source
+        pots = np.sum(pots*weights[None, :, None], axis=1) # Ntri_eval, Ntri_source
 
-        tri_data = np.sum(edges[None,:,None,:,:]*edges[n::Nchunks,None,:,None,:], axis=-1) # i,j,k,l
-        tri_data /= (mesh.area_faces[n::Nchunks,None]*mesh.area_faces[None,:]*4)[:,:,None,None]
-        tri_data *= (mesh.area_faces[n::Nchunks, None]*pots)[:,:,None,None]
+        tri_data = np.sum(edges[None, :, None, :, :] * edges[n::Nchunks, None, :, None, :], axis=-1) # i,j,k,l
+        tri_data /= (mesh.area_faces[n::Nchunks, None] * mesh.area_faces[None, :] * 4)[:, :, None, None]
+        tri_data *= (mesh.area_faces[n::Nchunks, None] * pots)[:, :, None, None]
 
         M += assemble_matrix_chunk(mesh.faces, mesh.vertices.shape[0], tri_data, n, Nchunks)
 
-    return M*1e-7
+    return M * 1e-7

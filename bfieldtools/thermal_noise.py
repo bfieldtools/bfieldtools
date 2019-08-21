@@ -33,12 +33,12 @@ def compute_current_modes(mesh):
     L = laplacian_matrix(mesh)
     M = mass_matrix(mesh)
 
-    u, v = eigh(-L.todense()[inner_verts][:,inner_verts], M.todense()[inner_verts][:,inner_verts])
+    u, v = eigh(-L.todense()[inner_verts][:, inner_verts], M.todense()[inner_verts][:, inner_verts])
 
     #Normalize the laplacien eigenvectors
     vl = np.zeros(M.shape)
     for i in range(v.shape[1]):
-        vl[inner_verts,i] = v[:, i]/np.sqrt(u[i])
+        vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
 
     return vl
 
@@ -68,10 +68,10 @@ def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T):
 
     B = np.zeros(fp.shape)
     for i in range(vl.shape[1]):
-        vec = vl[:,i]*np.sqrt(4*kB*T*sigma*d)
-        B[:,0] += (C[:,:,0]@vec)**2
-        B[:,1] += (C[:,:,1]@vec)**2
-        B[:,2] += (C[:,:,2]@vec)**2
+        vec = vl[:, i] * np.sqrt(4 * kB * T * sigma * d)
+        B[:, 0] += (C[:, :, 0] @ vec)**2
+        B[:, 1] += (C[:, :, 1] @ vec)**2
+        B[:, 2] += (C[:, :, 2] @ vec)**2
 
     B = np.sqrt(B) #RMS
 
@@ -103,9 +103,9 @@ def compute_dc_Bnoise_covar(mesh, vl, fp, sigma, d, T):
 
     eps = 4*kB*T*sigma*d*np.eye(vl.shape[0])
 
-    B = np.zeros((fp.shape[0], fp.shape[0],3))
+    B = np.zeros((fp.shape[0], fp.shape[0], 3))
     for i in range(3):
-        B[:,:,i] = C[:,:,i]@vl@eps@(vl.T)@(C[:,:,i].T)
+        B[:, :, i] = C[:, :, i] @ vl @ eps @ (vl.T) @ (C[:, :, i].T)
 
     return B
 
@@ -146,22 +146,22 @@ def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T):
     #Eigendecomposition of M
     um_t, vm_t = eigh(Mind_lap)
     um_t = np.flip(um_t)
-    vm_t = np.flip(vm_t,axis=1)
+    vm_t = np.flip(vm_t, axis=1)
 
     #Let's take just the "99% variance" components to avoid numerical issues
     um = np.zeros(um_t.shape)
     vm = np.zeros(vm_t.shape)
 
-    csum = np.cumsum(um_t**2)/np.sum(um_t**2)
+    csum = np.cumsum(um_t**2) / np.sum(um_t**2)
     Ncomps = np.max(np.where(csum < 0.99))
 
     um[0:Ncomps] = um_t[0:Ncomps]
-    vm[0:Ncomps,0:Ncomps] = vm_t[0:Ncomps,0:Ncomps]
+    vm[0:Ncomps, 0:Ncomps] = vm_t[0:Ncomps, 0:Ncomps]
 
     #Compute B as a function of frequency
-    B = np.zeros((freqs.shape[0], fp.shape[0],fp.shape[1]))
+    B = np.zeros((freqs.shape[0], fp.shape[0], fp.shape[1]))
 
-    Rk = 1/(sigma*d)
+    Rk = 1 / (sigma * d)
     eps = np.sqrt(4*kB*T*Rk)*np.ones((vl.shape[0]))
 
     for j in range(freqs.shape[0]):
@@ -180,17 +180,17 @@ def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T):
         currents = np.abs(currents)
 
         for i in range(vl.shape[0]):
-            vec = currents[i]*vl[:,i]
-            B[j,:,0] += (C[:,:,0]@vec)**2
-            B[j,:,1] += (C[:,:,1]@vec)**2
-            B[j,:,2] += (C[:,:,2]@vec)**2
+            vec = currents[i] * vl[:, i]
+            B[j, :, 0] += (C[:, :, 0] @vec)**2
+            B[j, :, 1] += (C[:, :, 1] @ vec)**2
+            B[j, :, 2] += (C[:, :, 2] @ vec)**2
         print("Frequency %f computed" % (f))
 
     B = np.sqrt(B) #RMS
 
     return B
 
-def visualize_current_modes(mesh,vl, Nmodes, scale, contours=True):
+def visualize_current_modes(mesh, vl, Nmodes, scale, contours=True, colormap='bwr'):
     '''
     Visualizes current modes up to Nmodes.
     TODO: make this more flexible.
@@ -202,9 +202,10 @@ def visualize_current_modes(mesh,vl, Nmodes, scale, contours=True):
         Nmodes: single - Number of modes to be plotted
         scale: single - scaling factor
         contours: boolean - Show contours?
+        colormap: string - Colormap to use
 
     '''
-    verts= mesh.vertices
+    verts = mesh.vertices
     tris = mesh.faces
 
     for ii in range(Nmodes):
@@ -212,13 +213,13 @@ def visualize_current_modes(mesh,vl, Nmodes, scale, contours=True):
         i = ii % n
         j = int(ii/n)
 
-        x = scale*verts[:,0] + i*12
-        y = scale*verts[:,1]+ j*12
-        z = scale*verts[:,2]
+        x = scale*verts[:, 0] + i*12
+        y = scale*verts[:, 1]+ j*12
+        z = scale*verts[:, 2]
 
-        limit = np.max(np.abs(vl[:,ii]))
+        limit = np.max(np.abs(vl[:, ii]))
 
-        s=mlab.triangular_mesh(x,y,z, tris, scalars=vl[:,ii], colormap = 'bwr')
+        s = mlab.triangular_mesh(x, y, z, tris, scalars=vl[:, ii], colormap=colormap)
 
         s.module_manager.scalar_lut_manager.number_of_colors = 256
         s.module_manager.scalar_lut_manager.data_range = np.array([-limit,limit])

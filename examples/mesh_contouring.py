@@ -55,7 +55,7 @@ for c in contours:
     # Calculate points linearly interpolated from vertices
     points = mesh.vertices[mesh.edges_unique[edge_inds]]
     points = points[:,0]*w0[:, None] + points[:,1]*w1[:, None]
-    
+
     # Determine adjacency
     c_edges_in_faces = edge_inds[mesh.faces_unique_edges]
     c_faces = np.any(c_edges_in_faces,axis=1)
@@ -79,7 +79,7 @@ for c in contours:
     while k<kmax:
         sorted_inds.append(c_edge_inds.index(val))
         c_edges_in_c_faces[ii] =-1
-        print(key)
+#        print(key)
         ii,jj = np.nonzero(c_edges_in_c_faces==key)
         if len(ii)==0:
             # Next edge not found in the adjacency list, contour must be closed now
@@ -103,7 +103,7 @@ for c in contours:
         k+=1
         if k==kmax:
             raise RuntimeWarning('Something wrong with the contours, number of max iterations exceeded')
-        
+
 1
 
 #%%
@@ -131,13 +131,18 @@ def simplify_contour(c, min_edge=1e-3, angle_threshold=2e-2, smooth=True):
             Nc = c.shape[0]
             c = spsolve(speye(Nc, Nc) + 1.0*spdiags(lengths,0,Nc,Nc)@(D.T @ DD), c)
     return c
-    
-contour_polys = [simplify_contour(c) for c in contour_polys]
+
+
+for c_idx, c in enumerate(contour_polys):
+    print(c_idx)
+    contour_polys[c_idx] = simplify_contour(c, min_edge=1e-5, angle_threshold=0.1)
+#
+#contour_polys = [simplify_contour(c) for c in contour_polys]
 contour_polys = [c for c in contour_polys if c is not None]
 
 #%% Plot contours
 for c in contour_polys:
-    mlab.plot3d(*c[list(range(c.shape[0]))+[0]].T, color=(1,0,0), tube_radius=None)
+        mlab.plot3d(*c[list(range(c.shape[0]))+[0]].T, color=(1,0,0), tube_radius=None)
 
 #%%
 #g = gradient(scalars, mesh, rotated=True)

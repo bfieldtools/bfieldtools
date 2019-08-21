@@ -132,13 +132,13 @@ def compute_C_loops(mesh, r, basis=None, vert_links=None):
     bval_arr, n_links = make_3D_array(basis['v'])
 
     C = _compute_C_loops(mesh.vertices,
-                  vert_links_arr.astype(int),
-                  n_links,
-                  r,
-                  mesh.area_faces,
-                  r_quad,
-                  w_quad,
-                  bval_arr)
+                         vert_links_arr.astype(int),
+                         n_links,
+                         r,
+                         mesh.area_faces,
+                         r_quad,
+                         w_quad,
+                         bval_arr)
 
     duration = time.time() - start
 
@@ -218,7 +218,7 @@ def _compute_C_loops(verts, vert_links, n_links, r, tri_areas, r_quad, w_quad, b
 
     return C_part
 
-def compute_C(mesh, r, basis=None, vert_links=None, Nchunks=None):
+def compute_C(mesh, r, Nchunks=None):
     '''
     Given a mesh, computes the "C matrix" which gives the magnetic field at
     some target points due to currents (stream function) on a surface mesh.
@@ -242,7 +242,7 @@ def compute_C(mesh, r, basis=None, vert_links=None, Nchunks=None):
     # Rotated gradients (currents)
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
 
-    # Init C-matrix
+    # Initialize C-matrix
     n_target_points = len(r)
     n_verts = len(mesh.vertices)
     C = np.zeros((n_target_points, n_verts, 3))
@@ -256,11 +256,14 @@ def compute_C(mesh, r, basis=None, vert_links=None, Nchunks=None):
     for n in range(Nchunks):
         # Diffence vectors (Neval, Ntri, Nquad, 3)
         RR = r_quad[None, :, :, :] - r[n::Nchunks, None, None, :]
+
         # RR/norm(RR)**3 "Gradient of Green's function"
         g = - RR/((np.linalg.norm(RR, axis=-1)**3)[:, :, :, None])
+
         # Sum over quad points and multiply by triangle area
-        g = (g*w_quad[:,None]).sum(axis=-2)
-        g *= mesh.area_faces[:,None]
+        g = (g*w_quad[:, None]).sum(axis=-2)
+        g *= mesh.area_faces[:, None]
+
         # Cross product RR/norm(RR)
         C[n::Nchunks, :, 0] = g[:, :, 2] @ Gy - g[:, :, 1] @ Gz
         C[n::Nchunks, :, 1] = g[:, :, 0] @ Gz - g[:, :, 2] @ Gx

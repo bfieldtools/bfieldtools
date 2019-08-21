@@ -34,8 +34,8 @@ def get_quad_points(verts, tris, method='SevenPoint', index=None):
                 print('The method requires index (check quadpy documentation)')
                 raise error
     else:
-        raise ValueError('method: '+method+' not in the following')
-        print(methods)
+        raise ValueError('method: '+method+' not in the available list of methods: ' + methods)
+
     x = rule.points
     w = rule.weights
 
@@ -130,7 +130,7 @@ def find_mesh_boundaries(verts, tris, edges):
                                                  return_counts=True)
 
     #If edge only used in one triangle, it is a boundary edge
-    boundary_edges = edges[unique_idx[np.where(unique_count==1)]]
+    boundary_edges = edges[unique_idx[np.where(unique_count == 1)]]
 
     #Create index arrays for boundary vertices
     boundary_verts = np.unique(boundary_edges.flatten())
@@ -149,7 +149,7 @@ def find_mesh_boundaries(verts, tris, edges):
 
 
 
-def fibonacci_sphere(samples=10, center=np.array([0, 0, 0]), radius = 1, randomize=True):
+def fibonacci_sphere(samples=10, center=np.array([0, 0, 0]), radius=1, randomize=True):
     '''
     Generates a set of points approximately evenly distributed on a sphere,
     with adjustable center and radius. Uses spherical Fibonacci Lattice.
@@ -161,7 +161,7 @@ def fibonacci_sphere(samples=10, center=np.array([0, 0, 0]), radius = 1, randomi
 
     points = np.zeros((samples, 3))
     offset = 2. / samples
-    increment = np.pi * (3. - np.sqrt(5.));
+    increment = np.pi * (3. - np.sqrt(5.))
 
     for i in range(samples):
         points[i, 1] = ((i * offset) - 1) + (offset / 2)
@@ -198,7 +198,7 @@ def cylinder_points(radius=1, length=1, nlength=10, alpha=360, nalpha=10, center
     px = np.repeat(X, nlength)
     py = np.repeat(Y, nlength)
 
-    points = np.vstack(( pz, px, py )).T
+    points = np.vstack((pz, px, py)).T
 
     #Shift to center
     shift = np.array(center) - np.mean(points, axis=0)
@@ -206,10 +206,9 @@ def cylinder_points(radius=1, length=1, nlength=10, alpha=360, nalpha=10, center
 
     #Orient tube to new vector
 
-    #Grabbed from an old unutbu answer
-    def rotation_matrix(axis,theta):
-        a = np.cos(theta/2)
-        b,c,d = -axis*np.sin(theta/2)
+    def rotation_matrix(axis, theta):
+        a = np.cos(theta / 2)
+        b,c,d = -axis * np.sin(theta / 2)
         return np.array([[a*a+b*b-c*c-d*d, 2*(b*c-a*d), 2*(b*d+a*c)],
                          [2*(b*c+a*d), a*a+c*c-b*b-d*d, 2*(c*d-a*b)],
                          [2*(b*d-a*c), 2*(c*d+a*b), a*a+d*d-b*b-c*c]])
@@ -251,6 +250,3 @@ def fix_normals(mesh, origin = np.array([0, 0, 0])):
     # Could update the cache with values that don't change when flipping triangles
     # self._cache.update(old_cache)
     return mesh
-
-
-

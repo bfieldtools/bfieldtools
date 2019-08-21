@@ -23,9 +23,10 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7):
         if A is not None:
             args.extend([matrix(A), matrix(b)])
 
-    cvxopt.solvers.options['abstol']=tolerance
-    cvxopt.solvers.options['feastol']=tolerance
-    cvxopt.solvers.options['reltol']=tolerance
+    #For now, use rough tolerance setting, i.e. just set all arguments to be the same
+    cvxopt.solvers.options['abstol'] = tolerance
+    cvxopt.solvers.options['feastol'] = tolerance
+    cvxopt.solvers.options['reltol'] = tolerance
 
     sol = cvxopt.solvers.qp(*args)
     if 'optimal' not in sol['status']:
@@ -46,8 +47,11 @@ def optimize_streamfunctions(meshobj, target_field, target_axis,
 
 
     # Set lower and upper bound for stray field, all three axes
-    lb_stray = np.repeat((-np.abs(np.repeat(target_field[0],len(meshobj.strayC), axis=0)) * target_error['stray'])[:, None], 3, axis=1).flatten()
-    ub_stray = np.repeat((np.abs(np.repeat(target_field[0],len(meshobj.strayC), axis=0)) * target_error['stray'])[:, None], 3, axis=1).flatten()
+    lb_stray = np.repeat((-np.abs(np.repeat(target_field[0], len(meshobj.strayC), axis=0))
+                          * target_error['stray'])[:, None], 3, axis=1).flatten()
+
+    ub_stray = np.repeat((np.abs(np.repeat(target_field[0], len(meshobj.strayC), axis=0))
+                          * target_error['stray'])[:, None], 3, axis=1).flatten()
 
     #Limit stray field C matrix to inner vertices
     inner_strayC = meshobj.strayC[:, meshobj.inner_verts]
@@ -130,10 +134,10 @@ def optimize_streamfunctions(meshobj, target_field, target_axis,
 
     print('Solving quadratic programming problem using cvxopt...')
     I_inner, sol = cvxopt_solve_qp(P=quadratic_term,
-                   q=linear_part,
-                   G=stacked_inner_C/s[0],
-                   h=stacked_bounds/np.max(target_field),
-                   tolerance=tolerance)
+                                   q=linear_part,
+                                   G=stacked_inner_C / s[0],
+                                   h=stacked_bounds / np.max(target_field),
+                                   tolerance=tolerance)
 
     #Build final I vector with zeros on boundary elements, scale by same singular value
     I = np.zeros((meshobj.inductance.shape[0], ))

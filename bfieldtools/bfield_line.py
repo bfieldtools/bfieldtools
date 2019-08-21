@@ -1,12 +1,12 @@
 import numpy as np
 
-def mycross(r1,r2):
-    """ Cross without overhead
+def mycross(r1, r2):
+    """ Cross product without overhead
     """
     result = np.zeros(r1.shape)
-    result[0] = r1[1]*r2[2] - r1[2]*r2[1]
-    result[1] = r1[2]*r2[0] - r1[0]*r2[2]
-    result[2] = r1[0]*r2[1] - r1[1]*r2[0]
+    result[0] = r1[1] * r2[2] - r1[2] * r2[1]
+    result[1] = r1[2] * r2[0] - r1[0] * r2[2]
+    result[2] = r1[0] * r2[1] - r1[1] * r2[0]
     return result
 
 def bfield_line_segments(vertices, points):
@@ -25,28 +25,28 @@ def bfield_line_segments(vertices, points):
         on page 217 (3rd edition)
     """
     field = np.zeros(points.T.shape)
-    for i in range(len(vertices)-1):
+    for i in range(len(vertices) - 1):
         r1 = vertices[i]
-        r2 = vertices[i+1]
-        d = ((r2-r1)/((r1-r2)**2).sum()).reshape(3,1)
+        r2 = vertices[i + 1]
+        d = ((r2 - r1)/((r1 - r2)**2).sum()).reshape(3, 1)
         # Vectors between vertices and field points
-        a1 = points.T - r1.reshape(3,1)
-        a2 = points.T - r2.reshape(3,1)
+        a1 = points.T - r1.reshape(3, 1)
+        a2 = points.T - r2.reshape(3, 1)
 
         # Direction of the field
         f = mycross(a1, d)
         # Sine factor
-        sinefactor = (d*a2).sum(axis=0)/np.sqrt((a2**2).sum(axis=0))
-        sinefactor = sinefactor - (d*a1).sum(axis=0)/np.sqrt((a1**2).sum(axis=0))
+        sinefactor = (d * a2).sum(axis=0) / np.sqrt((a2**2).sum(axis=0))
+        sinefactor = sinefactor - (d * a1).sum(axis=0) / np.sqrt((a1**2).sum(axis=0))
         # Normalize direction field and divide by cylindrical distance
         s2 = (f**2).sum(axis=0)
         s2[s2 == 0] = 1e-12 # Regularize for points directly at the
                             # continuation of the line segment
-        f *= (sinefactor/s2)
+        f *= (sinefactor / s2)
 
         field = field + f
 
-    return field.T*1e-7
+    return field.T * 1e-7
 
 def vectorpot_line_segments(vertices, points, loops=None,
                             reg=1e-12, symmetrize=True):
@@ -74,28 +74,31 @@ def vectorpot_line_segments(vertices, points, loops=None,
     """
     if loops is None:
         loops = np.array([np.arange(len(vertices))])
-    loops2=np.roll(loops,-1,1)
-    loops1=loops
+
+    loops2 = np.roll(loops, -1, 1)
+    loops1 = loops
     segments = vertices[loops2] - vertices[loops1]
     RR = vertices[:, None, :] - points[None, :, :]
-    dotprods2 = np.sum(RR[loops2]*segments[...,None,:], axis=-1)
-    dotprods1 = np.sum(RR[loops1]*segments[...,None,:], axis=-1)
+    dotprods2 = np.sum(RR[loops2] * segments[..., None, :], axis=-1)
+    dotprods1 = np.sum(RR[loops1] * segments[..., None, :], axis=-1)
     ss = np.linalg.norm(segments, axis=-1)
     segments /= ss[..., None]
     rr = np.linalg.norm(RR, axis=-1)
+
     # Regularize s.t. neither the denominator or the numerator can be zero
     # Avoid numerical issues directly at the edge
-    res = np.log((rr[loops2]*ss[...,None] + dotprods2 + reg)
-               / (rr[loops1]*ss[...,None] + dotprods1 + reg))
+    res = np.log((rr[loops2] * ss[..., None] + dotprods2 + reg)
+                 / (rr[loops1] * ss[..., None] + dotprods1 + reg))
+
     # Symmetrize the result since on the negative extension of the edge
     # there's division of two small values resulting numerical instabilities
     # (also incompatible with adding the reg value)
     if symmetrize:
-        res2 = -np.log((rr[loops2]*ss[...,None] - dotprods2 + reg)
-                     / (rr[loops1]*ss[...,None] - dotprods1 + reg))
-        res = np.where(dotprods1+dotprods2 > 0, res, res2)
+        res2 = -np.log((rr[loops2] * ss[..., None] - dotprods2 + reg)
+                       / (rr[loops1] * ss[..., None] - dotprods1 + reg))
+        res = np.where(dotprods1 + dotprods2 > 0, res, res2)
 
-    return 1e-7*np.sum(res[...,None]*segments[...,None,:],axis=1)
+    return 1e-7 * np.sum(res[..., None] * segments[..., None, :], axis=1)
 
 def flux_line_segments(vertices, loops, vertices_other, Nquad=2):
     """ Compute magnetic flux created by a segmented line current loops
@@ -126,21 +129,27 @@ def flux_line_segments(vertices, loops, vertices_other, Nquad=2):
     """
     # Calculate quadrature points linearly spaced on the line segments
     # of the other loop
-    t = np.linspace(0, 1, Nquad+1)
-    sides = vertices_other[1:]-vertices_other[1:]
-    segments = (t[1:,None,None]-t[:-1,None,None])*sides/Nquad
-    t = 0.5*(t[1:]+t[:-1]) # Nquad points on the segments
+    t = np.linspace(0, 1, Nquad + 1)
+    sides = vertices_other[1:] - vertices_other[1:]
+    segments = (t[1:, None, None] - t[:-1, None, None]) * sides / Nquad
+
+    t = 0.5 * (t[1:] + t[:-1]) # Nquad points on the segments
+
     # Nquad, Nsegments, 3
-    points = vertices_other[:-1] + t[:,None,None]*sides
+    points = vertices_other[:-1] + t[:, None, None] * sides
     shape = points.shape
+
     # Nloops, Nquad*Nsegments, 3
-    a = vectorpot_line_segments(vertices, points.reshape(-1,3), loops)
+    a = vectorpot_line_segments(vertices, points.reshape(-1, 3), loops)
+
     # Nloops, Nquad, Nsegments, 3
-    a = a.reshape(a.shape[0:1]+shape)
+    a = a.reshape(a.shape[0:1] + shape)
+
     # Take dot product between vector potential and the line segments
     # corresponding to each quadrature points (axis=3) and sum over the
     # segemnts (axis=2) and quadrature points on each segment (axis=1)
-    return np.sum(a*segments, axis=(1,2,3))
+
+    return np.sum(a * segments, axis=(1, 2, 3))
 
 
 
@@ -152,15 +161,15 @@ if __name__ == "__main__":
     """
     x = np.linspace(-1, 1, 200)
     Ntheta = 5
-    theta = np.linspace(0, 2*np.pi, Ntheta)
-    vertices = np.zeros((Ntheta,3), dtype=np.float64)
-    vertices[:,0] = np.cos(theta)*0.1
-    vertices[:,1] = np.sin(theta)*0.1
-    vertices[:,2] = 0.01
+    theta = np.linspace(0, 2 * np.pi, Ntheta)
+    vertices = np.zeros((Ntheta, 3), dtype=np.float64)
+    vertices[:, 0] = np.cos(theta) * 0.1
+    vertices[:, 1] = np.sin(theta) * 0.1
+    vertices[:, 2] = 0.01
 
     X, Y = np.meshgrid(x, x, indexing='ij')
 
-    points = np.zeros((3,X.size), dtype=np.float64)
+    points = np.zeros((3, X.size), dtype=np.float64)
     points[0] = X.flatten()
     points[1] = Y.flatten()
 
@@ -170,7 +179,7 @@ if __name__ == "__main__":
     q = mlab.quiver3d(*points, *b1.T)
     q.glyph.glyph_source.glyph_position = 'center'
 
-    loops = np.array([np.arange(len(vertices)),np.array([4,3,2,1,0])])
+    loops = np.array([np.arange(len(vertices)), np.array([4, 3, 2, 1, 0])])
     a1 = vectorpot_line_segments(vertices, points.T, loops)[1]
     q = mlab.quiver3d(*points, *a1.T, colormap='viridis')
     q.glyph.glyph_source.glyph_position = 'center'

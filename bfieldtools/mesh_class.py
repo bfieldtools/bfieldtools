@@ -1,9 +1,10 @@
+from time import time
+import pickle
+
 from mayavi import mlab
 import trimesh
 import numpy as np
 from psutil import virtual_memory
-from time import time
-import pickle
 
 from . import utils
 from .laplacian_mesh import laplacian_matrix, mass_matrix
@@ -43,9 +44,9 @@ class MeshWrapper:
     def __init__(self, verts=None, tris=None, mesh_file=None, mesh_obj=None, process=False, fix_normals=True):
         '''
         Initialize MeshWrapper object.
-        First priority is to use given Trimesh object.
-        Second priority is to load mesh from file.
-        Third priority is to use given verts and tris arrays.
+        First priority is to use given Trimesh object (mesh_obj).
+        Second priority is to load mesh from file (mesh_file).
+        Third priority is to use given verts and tris arrays (verts, tris).
 
         Parameters:
             verts: array-like (Nv, 3)
@@ -116,13 +117,13 @@ class MeshWrapper:
         #Estimate of memory use
         mem_per_vertex = 8 / 2000
 
-        Nchunks = int(np.ceil(mem_per_vertex / mem * len(self.mesh.vertices)))
+        n_chunks = int(np.ceil(mem_per_vertex / mem * len(self.mesh.vertices)))
 
-        print('Computing inductance matrix in %d chunks since %d GiB memory is available...'%(Nchunks, mem))
+        print('Computing inductance matrix in %d chunks since %d GiB memory is available...'%(n_chunks, mem))
 
         start = time()
 
-        inductance = self_inductance_matrix(self.mesh, Nchunks=Nchunks)
+        inductance = self_inductance_matrix(self.mesh, Nchunks=n_chunks)
 
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)
@@ -140,8 +141,7 @@ class MeshWrapper:
         Alternatively, this LazyProperty could be turned into a method.
         '''
 
-        R = resistivity / thickness
-        resistance = R * self.laplacian.todense()
+        resistance = resistivity / thickness * self.laplacian.todense()
 
         #Set boundary vertices to zero
         resistance[self.boundary_verts, :][:, self.boundary_verts] = 0
