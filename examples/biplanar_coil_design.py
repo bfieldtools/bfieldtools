@@ -86,23 +86,28 @@ n_stray_points = len(stray_points)
 coil.C = compute_C(coil.mesh, target_points)
 coil.strayC = compute_C(coil.mesh, stray_points)
 
-#%% Specify target field and run solver
+
+#%% Create bfield specifications used when optimizing the coil geometry
 
 #The absolute target field amplitude is not of importance,
 # and it is scaled to match the C matrix in the optimization function
-target_field = np.ones(target_points.shape[0], )
+target_field = np.zeros(target_points.shape)
+target_field[:, 0] = target_field[:, 0] + 1
 
+target_spec = {'C':coil.C, 'error_type':'relative', 'error':0.01, 'target_field':target_field}
+stray_spec = {'C':coil.strayC, 'error_type':'absolute', 'error':0.01, 'target_field':np.zeros((n_stray_points, 3))}
+
+#%% Run QP solver
 
 # The tolerance parameter will determine the spatial detail of the coil.
 # Smaller tolerance means better but more intricate patterns. Too small values
 # will not be solveable.
-tolerance = 0.2
+tolerance = 0.1
 
-coil.I, coil.sol = optimize_streamfunctions(coil, target_field,
-                         target_axis=0,
-                         target_error={'on_axis':0.01, 'off_axis':0.01, 'stray':0.01},
-                         laplacian_smooth=0,
-                         tolerance=tolerance)
+coil.I, coil.sol = optimize_streamfunctions(coil,
+                                            [target_spec, stray_spec],
+                                            laplacian_smooth=0,
+                                            tolerance=tolerance)
 
 
 #%% Plot coil windings and target points
@@ -116,9 +121,7 @@ surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.
 windings = mlab.pipeline.contour_surface(surface, contours=10)
 
 
-B_target = np.vstack((coil.C[:, :, 0].dot(coil.I),
-                  coil.C[:, :, 1].dot(coil.I),
-                  coil.C[:, :, 2].dot(coil.I))).T
+B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
 
 mlab.quiver3d(*target_points.T, *B_target.T)
@@ -136,7 +139,7 @@ line1_points = np.vstack((x1, y1, z1)).T
 
 line1_C = compute_C(coil.mesh, r=line1_points)
 
-B_line1 = np.vstack((line1_C[:, :, 0].dot(coil.I), line1_C[:, :, 1].dot(coil.I), line1_C[:, :, 2].dot(coil.I))).T
+B_line1 = line1_C.transpose([0, 2, 1]) @ coil.I
 
 plt.semilogy(z1 / scaling_factor, np.linalg.norm(B_line1, axis=1)/np.mean(np.abs(target_field)), label='Z')
 
@@ -148,7 +151,7 @@ line2_points = np.vstack((x2, y2, z2)).T
 
 line2_C = compute_C(coil.mesh, r=line2_points)
 
-B_line2 = np.vstack((line2_C[:, :, 0].dot(coil.I), line2_C[:, :, 1].dot(coil.I), line2_C[:, :, 2].dot(coil.I))).T
+B_line2 = line2_C.transpose([0, 2, 1]) @ coil.I
 
 plt.semilogy(y2 / scaling_factor, np.linalg.norm(B_line2, axis=1)/np.mean(np.abs(target_field)), label='Y')
 plt.ylabel('Field amplitude (target field units)')
