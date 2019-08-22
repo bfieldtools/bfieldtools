@@ -50,6 +50,9 @@ def optimize_streamfunctions(meshobj, bfield_specification,
                 target_field: n_r x 3
                 abs_error: float
                 rel_error: float
+        laplacian_smooth: float
+        tolerance: float
+
 
     '''
 
