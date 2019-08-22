@@ -91,7 +91,7 @@ coil.plot_mesh()
 
 coil.C = compute_C(coil.mesh, target_points)
 
-target_spec = {'C':coil.C, 'error_type':'relative', 'error':0.01, 'target_field':target_field}
+target_spec = {'C':coil.C, 'rel_error':0.01, 'abs_error':0, 'target_field':target_field}
 
 #%% Run QP solver
 

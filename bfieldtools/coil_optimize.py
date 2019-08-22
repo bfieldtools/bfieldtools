@@ -36,16 +36,20 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7):
 def optimize_streamfunctions(meshobj, bfield_specification,
                              laplacian_smooth=0.1,
                              tolerance=0.1):
-
-#def optimize_streamfunctions(meshobj, target_field, target_axis,
-#                             target_error={'on_axis':0.05, 'off_axis':0.05, 'stray':0.05},
-#                             laplacian_smooth=0.1,
-#                             tolerance=0.1):
     '''
     Quadratic optimization of coil stream function according to minimal field energy,
     while keeping specified target field at target points within bounds.
 
     Optional Laplacian smoothing of inductance matrix.
+
+    Parameters:
+        meshobj: MeshWrapper object
+        bfield_specification: list in which element is a dictionary containing a field specification
+            each dict contains:
+                C: Coupling matrix n_verts x n_verts
+                target_field: n_r x 3
+                abs_error: float
+                rel_error: float
 
     '''
 
@@ -63,15 +67,16 @@ def optimize_streamfunctions(meshobj, bfield_specification,
         inner_C = inner_C.transpose((1, 0, 2))
         inner_C = inner_C.reshape((inner_C.shape[0], -1)).T
 
-        if spec['error_type'] == 'relative':
-            upper_bound = spec['target_field'] * (1 + np.sign(spec['target_field']) * spec['error'])
-            lower_bound = spec['target_field'] * (1 - np.sign(spec['target_field']) * spec['error'])
+        #Apply relative error to bounds
+        if spec['rel_error'] != 0:
+            upper_bound = spec['target_field'] * (1 + np.sign(spec['target_field']) * spec['rel_error'])
+            lower_bound = spec['target_field'] * (1 - np.sign(spec['target_field']) * spec['rel_error'])
 
-        elif spec['error_type'] == 'absolute':
-            upper_bound = spec['target_field'] + spec['error']
-            lower_bound = spec['target_field'] - spec['error']
-        else:
-            raise ValueError("Specification error type needs to be 'relative' or 'absolute'")
+        #Apply absolute error to bounds
+        if spec['abs_error'] != 0:
+            upper_bound = spec['target_field'] + spec['abs_error']
+            lower_bound = spec['target_field'] - spec['abs_error']
+
 
         #Flatten to match C matrix
         upper_bound = upper_bound.flatten()

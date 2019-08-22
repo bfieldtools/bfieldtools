@@ -94,8 +94,8 @@ coil.strayC = compute_C(coil.mesh, stray_points)
 target_field = np.zeros(target_points.shape)
 target_field[:, 0] = target_field[:, 0] + 1
 
-target_spec = {'C':coil.C, 'error_type':'relative', 'error':0.01, 'target_field':target_field}
-stray_spec = {'C':coil.strayC, 'error_type':'absolute', 'error':0.01, 'target_field':np.zeros((n_stray_points, 3))}
+target_spec = {'C':coil.C, 'rel_error':0.01, 'abs_error':0, 'target_field':target_field}
+stray_spec = {'C':coil.strayC, 'abs_error':0.01, 'rel_error':0, 'target_field':np.zeros((n_stray_points, 3))}
 
 #%% Run QP solver
 
