@@ -46,7 +46,7 @@ shield = MeshWrapper(mesh_file=pkg_resources.resource_filename('bfieldtools', 'e
 
 center = np.array([0, 0, 3])
 
-sidelength = 1.0 * scaling_factor
+sidelength = 0.75 * scaling_factor
 n = 12
 xx = np.linspace(-sidelength/2, sidelength/2, n)
 yy = np.linspace(-sidelength/2, sidelength/2, n)
@@ -89,22 +89,22 @@ secondary_C = (shield.C.transpose((0,2,1)) @ shield.coupling).transpose((0,2,1))
 #The absolute target field amplitude is not of importance,
 # and it is scaled to match the C matrix in the optimization function
 target_field = np.zeros(target_points.shape)
-target_field[:, 2] = target_field[:, 2] + 1 # Homogeneous Z-field
+target_field[:, 1] = target_field[:, 1] + 1 # Homogeneous Z-field
 
 target_spec = {'C':coil.C, 'rel_error':0.01, 'abs_error':0, 'target_field':target_field}
 
 
-induction_spec = {'C':secondary_C, 'abs_error':0.01, 'target_field':np.zeros(target_field.shape)}
+induction_spec = {'C':secondary_C, 'abs_error':0.1, 'rel_error':0, 'target_field':np.zeros(target_field.shape)}
 
 #%% Run QP solver
 
 # The tolerance parameter will determine the spatial detail of the coil.
 # Smaller tolerance means better but more intricate patterns. Too small values
 # will not be solveable.
-tolerance = 0.1
+tolerance = 0.5
 
 coil.I, coil.sol = optimize_streamfunctions(coil,
-                                            [target_spec],
+                                            [target_spec, induction_spec],
                                             laplacian_smooth=0,
                                             tolerance=tolerance)
 
@@ -119,9 +119,9 @@ mlab.clf()
 
 surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
 
-windings = mlab.pipeline.contour_surface(surface, contours=10,)
-windings.module_manager.scalar_lut_manager.number_of_colors = 2
-windings.module_manager.scalar_lut_manager.reverse_lut = True
+windings = mlab.pipeline.contour_surface(surface, contours=20)
+windings.module_manager.scalar_lut_manager.number_of_colors = 2 #Color windings according to current direction
+windings.module_manager.scalar_lut_manager.reverse_lut = True #Flip LUT for the colors to correspond to RdBu colormap
 
 shield_surface = mlab.pipeline.triangular_mesh_source(*shield.mesh.vertices.T, shield.mesh.faces,scalars=shield.induced_I)
 
