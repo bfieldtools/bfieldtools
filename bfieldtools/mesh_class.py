@@ -180,7 +180,7 @@ def save_pickle(obj, target_file):
         target_file: str, file name or file object to save to
     """
 
-    pickle.dump(obj=obj, file=open(target_file, 'wb'))
+    pickle.dump(obj=obj, file=open(target_file, 'wb'), protcol=-1)
 
 
 def load_pickle(target_file):

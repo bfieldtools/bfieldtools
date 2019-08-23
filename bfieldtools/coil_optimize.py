@@ -52,8 +52,6 @@ def optimize_streamfunctions(meshobj, bfield_specification,
                 rel_error: float
         laplacian_smooth: float
         tolerance: float
-
-
     '''
 
     #Initialize inequality constraint matrix and product
