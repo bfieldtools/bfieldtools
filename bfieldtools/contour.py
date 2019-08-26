@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Jun 28 21:01:36 2019
-
-@author: Antti
-"""
-
-#import sys
-#path = 'C:/Users/Antti/Documents/Python Scripts/bfieldtools'
-#if path not in sys.path:
-#    sys.path.insert(0,path)
-
 import numpy as np
 from mayavi import mlab
 
@@ -153,7 +141,11 @@ def scalar_contour(mesh, scalars, N_contours=10):
 
 def simplify_contour(c, min_edge=1e-3, angle_threshold=2e-2, smooth=True):
     '''
-    Simplifies 
+    Simplifies contours by merging small (short) segments and 
+    with only a small angle difference.
+    
+    Optionally applies smoothing to contour shape.
+    
     '''
     # Remove small edges by threshold
     vals = [np.ones(c.shape[0]), -np.ones(c.shape[0]), np.ones(c.shape[0])]
@@ -162,11 +154,13 @@ def simplify_contour(c, min_edge=1e-3, angle_threshold=2e-2, smooth=True):
     c = c[np.linalg.norm(edges, axis=1) > min_edge]
     if len(c)==0:
         return None
-    # Remove nodes on straigh lines
+    
+    # Remove nodes on straight lines
     D = spdiags(vals, [1,0,-c.shape[0]+1], c.shape[0], c.shape[0])
     H = spdiags(1/np.linalg.norm(D @ c, axis=1), 0, c.shape[0],c.shape[0])
     DD = H @ D
     c = c[np.linalg.norm(D.T @ DD @ c,axis=-1 ) > angle_threshold]
+    
     if smooth:
             D = spdiags(vals, [1,0,-c.shape[0]+1], c.shape[0], c.shape[0])
             H = spdiags(1/np.linalg.norm(D @ c, axis=1), 0, c.shape[0],c.shape[0])
@@ -207,10 +201,9 @@ if __name__ == "__main__":
     
 
     for c_idx, c in enumerate(contour_polys):
-        contour_polys[c_idx] = simplify_contour(c, min_edge=1e-5, angle_threshold=0.01)
+        contour_polys[c_idx] = simplify_contour(c, min_edge=1e-5, angle_threshold=0.05)
 
 
-    #contour_polys = [simplify_contour(c) for c in contour_polys]
     contour_polys = [c for c in contour_polys if c is not None]
     
     # Plot contours on top of scalars and gradient
