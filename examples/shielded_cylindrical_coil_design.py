@@ -132,3 +132,44 @@ shield_surface_render.actor.property.frontface_culling = True
 B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
 mlab.quiver3d(*target_points.T, *B_target.T)
+
+mlab.title('Coils which minimize the transient effects of conductive shield')
+
+
+#%% For comparison, let's see how the coils look when we ignore the conducting shield
+
+
+# The tolerance parameter will determine the spatial detail of the coil.
+# Smaller tolerance means better but more intricate patterns. Too small values
+# will not be solveable.
+tolerance = 0.5
+
+coil.unshielded_I, coil.unshielded_sol = optimize_streamfunctions(coil,
+                                            [target_spec],
+                                            laplacian_smooth=0,
+                                            tolerance=tolerance)
+
+shield.unshielded_induced_I = shield.coupling @ coil.unshielded_I
+
+f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+           size=(480, 480))
+mlab.clf()
+
+surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.unshielded_I)
+
+windings = mlab.pipeline.contour_surface(surface, contours=20)
+windings.module_manager.scalar_lut_manager.number_of_colors = 2 #Color windings according to current direction
+windings.module_manager.scalar_lut_manager.reverse_lut = True #Flip LUT for the colors to correspond to RdBu colormap
+
+shield_surface = mlab.pipeline.triangular_mesh_source(*shield.mesh.vertices.T, shield.mesh.faces,scalars=shield.unshielded_induced_I)
+
+shield_surface_render = mlab.pipeline.surface(shield_surface, colormap='RdBu')
+
+shield_surface_render.actor.property.frontface_culling = True
+
+B_target = coil.C.transpose([0, 2, 1]) @ coil.unshielded_I
+
+mlab.quiver3d(*target_points.T, *B_target.T)
+
+mlab.title('Coils which ignore the conductive shield')
+
