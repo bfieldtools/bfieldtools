@@ -34,18 +34,29 @@ u, v = eigh(-L.todense()[inner_verts][:,inner_verts], M.todense()[inner_verts][:
 from scipy.sparse import eye as speye
 from scipy.sparse.linalg import spsolve
 scalars = np.zeros(mesh.vertices.shape[0])
-scalars[inner_verts] = v[:,45]
+scalars[inner_verts] = v[:,12]
 # Solve one-step of diffusion equation
 #scalars2 = M @ spsolve(M - 0.001*L, scalars)
 #scalars=scalars2
 mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars)
 
 #%%
-N = 10
-contours=np.linspace(scalars.min(),scalars.max(),N)
+
+# Compute rotated gradient of scalars (e.g. current density from a stream function)
+g = gradient(scalars, mesh, rotated=True)
+
+
+N = 6
+
+#N evenly spaced contours that do not contain the point-like max and min contours
+contours=np.linspace(scalars.min(),scalars.max(),2*N+1)[1::2]
+
 edge_vals = scalars[mesh.edges_unique]
 contour_polys = []
-for c in contours:
+
+contour_poly_winding = []
+
+for c_idx, c in enumerate(contours):
     # Get edges that contain the contour values
     edge_inds = (edge_vals.min(axis=1) <= c)*(edge_vals.max(axis=1) >= c)
     c_edge_vals = edge_vals[edge_inds]
@@ -68,9 +79,34 @@ for c in contours:
     c_edges_in_c_faces = np.array([a[b] for a,b in zip(edges_in_c_faces, c_edges_in_faces[c_faces])])
     # Contour edges (indices pointing to the unique edge list)
     c_edge_inds = list(np.flatnonzero(edge_inds))
-    # Init loop variables
-    key=c_edges_in_c_faces[0,0]
-    val=c_edges_in_c_faces[0,1]
+
+    #Indices of faces used in contour
+    c_face_inds = np.flatnonzero(c_faces)
+
+    #Check gradient of stream function in first (could be any) triangle
+    c_face_gradient = g[:, c_face_inds[0]]
+
+    #Vector between two edges in first face used for contour
+    vec = points[c_edge_inds.index(c_edges_in_c_faces[0, 0])] - \
+          points[c_edge_inds.index(c_edges_in_c_faces[0, 1])]
+
+    # Create loop such that it is in the same direction as gradient
+
+    if c_face_gradient.dot(vec) >= 0:
+            # Init loop variables
+            key=c_edges_in_c_faces[0,0]
+            val=c_edges_in_c_faces[0,1]
+
+            contour_poly_winding.append(0)
+
+    else:
+            print('contour %d, Other way around!'%c_idx)
+             # Init loop variables
+            key=c_edges_in_c_faces[0,1]
+            val=c_edges_in_c_faces[0,0]
+
+            contour_poly_winding.append(1)
+
     ii=0
     sorted_inds=[]
     kmax=len(c_edge_inds)
@@ -81,6 +117,8 @@ for c in contours:
         c_edges_in_c_faces[ii] =-1
 #        print(key)
         ii,jj = np.nonzero(c_edges_in_c_faces==key)
+
+
         if len(ii)==0:
             # Next edge not found in the adjacency list, contour must be closed now
             # Sort points containing contours by adjacency of the edges
@@ -89,22 +127,45 @@ for c in contours:
             # Break the loop if all edges have been visited
             if np.all(c_edges_in_c_faces==-1):
                 break
+
             # Else find a starting point in another contour at the same level
             sorted_inds=[]
+
             ii = np.flatnonzero(c_edges_in_c_faces[:,0] >= 0)[0]
             jj = 0
+
+            #Compute gradient in face
+            c_face_gradient = g[:, c_face_inds[ii]]
+
+            #once again, check winding direction
+            vec = points[c_edge_inds.index(c_edges_in_c_faces[ii, 0])] - \
+                  points[c_edge_inds.index(c_edges_in_c_faces[ii, 1])]
+
+            if c_face_gradient.dot(vec) >= 0:
+                jj = 0
+
+                contour_poly_winding.append(0)
+            else:
+                print('contour %d, Other way around, not first!'%c_idx)
+                jj = 1
+
+                contour_poly_winding.append(1)
+
+
         else:
             # Edge found
             ii=ii[0]
             jj=jj[0]
+
         # Update key and value
         val = c_edges_in_c_faces[ii,jj]
         key = c_edges_in_c_faces[ii,(jj+1)%2]
+
         k+=1
+
         if k==kmax:
             raise RuntimeWarning('Something wrong with the contours, number of max iterations exceeded')
 
-1
 
 #%%
 from scipy.sparse import spdiags
@@ -141,8 +202,24 @@ for c_idx, c in enumerate(contour_polys):
 contour_polys = [c for c in contour_polys if c is not None]
 
 #%% Plot contours
-for c in contour_polys:
-        mlab.plot3d(*c[list(range(c.shape[0]))+[0]].T, color=(1,0,0), tube_radius=None)
+
+tri_centers = mesh.vertices[mesh.faces].mean(axis=1).T
+
+
+mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars)
+mlab.quiver3d(*tri_centers, *g, colormap='RdBu')
+
+
+colors = [(1, 0, 0), (0, 1, 0)]
+for c_idx, c in enumerate(contour_polys):
+        #mlab.plot3d(*c[list(range(c.shape[0]))+[0]].T, color=(1,0,0), tube_radius=None)
+
+        mlab.quiver3d(*c[0:-1,:].T,
+                      *(c[0:-1,:].T - c[1:,:].T),
+                      mode='cone',
+                      vmax=1,
+                      vmin=-1,
+                      color=colors[contour_poly_winding[c_idx]])
 
 #%%
 #g = gradient(scalars, mesh, rotated=True)
