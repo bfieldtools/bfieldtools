@@ -122,7 +122,7 @@ def mutual_inductance_matrix(mesh1, mesh2, planar=False):
     """
     R = mesh1.vertices[mesh1.faces]  # Nt x 3 (corners) x 3 (xyz)
     # Calculate quadrature points
-    weights, quadpoints = get_quad_points(mesh2.vertices, mesh2.faces, 'Centroid')
+    weights, quadpoints = get_quad_points(mesh2.vertices, mesh2.faces, 'centroid')
     # Nt x Nquad x  3 (x,y,z)
 
     RR = quadpoints[:, :, None, None, :] - R[None, None, :, :, :]
@@ -153,7 +153,7 @@ def self_inductance_matrix(mesh, planar=False, Nchunks=1):
     # Calculate edge vectors for each triangle
     edges = np.roll(R, 1, -2) - np.roll(R, 2, -2)  # Nt x 3 (edges) x 3 (x,y,z)
     # Calculate quadrature points
-    weights, quadpoints = get_quad_points(mesh.vertices, mesh.faces, 'Centroid')
+    weights, quadpoints = get_quad_points(mesh.vertices, mesh.faces, 'centroid')
     # Nt x Nquad x  3 (x,y,z)
 
 

@@ -27,7 +27,7 @@ def get_quad_points(verts, tris, method='SevenPoint', index=None):
         w: weights (Nquad)
         qp: quadrature points in each triangle (Ntris, Nquad)
     """
-    methods = [k for k in quadpy.triangle.__dict__.keys() if k[0].isupper()]
+    methods = [k for k in quadpy.triangle.__dict__.keys()]# if k[0].isupper()]
     if method in methods:
         try:
             rule = quadpy.triangle.__dict__[method]()
@@ -40,7 +40,7 @@ def get_quad_points(verts, tris, method='SevenPoint', index=None):
     else:
         raise ValueError('method: '+method+' not in the available list of methods: ' + methods)
 
-    x = rule.points
+    x = rule.points[:, 0:2]
     w = rule.weights
 
     qp = np.zeros((tris.shape[0], len(w), 3))

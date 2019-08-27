@@ -8,10 +8,22 @@ SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = .
 BUILDDIR      = _build
 
+# Remove sphinx-gallery output when cleaning as well
+clean:
+	rm -rf $(BUILDDIR)/*
+	rm -rf auto_examples/
+
 # Put it first so that "make" without argument is like "make help".
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
+
+#Build gallery without running examples
+html-noplot:
+	$(SPHINXBUILD) -D plot_gallery=0 -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	@echo
+	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+	
 .PHONY: help Makefile
 
 # Catch-all target: route all unknown targets to Sphinx using the new
