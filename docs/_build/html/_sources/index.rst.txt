@@ -1,14 +1,28 @@
-Welcome to bfieldtools's documentation!
-=======================================
+bfieldtools
+==================
+
+.. title:: bfieldtools
+
+.. container:: row limitedwidth table-like
+
+    Open-source Python software for exploring, visualizing, and
+    analyzing human neurophysiological data: MEG, EEG, sEEG, ECoG,
+    and more.
 
 .. automodule:: bfieldtools
     :members:
-
+    
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    readme
+   
+   literature
+   
+   tutorials
+   
+   source/modules
 
 
 Indices and tables

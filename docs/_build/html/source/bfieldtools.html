@@ -122,7 +122,7 @@ defined as loops = np.array([[0,1,2,3,0]])</p></li>
 <dl class="function">
 <dt id="bfieldtools.coil_optimize.cvxopt_solve_qp">
 <code class="sig-prename descclassname">bfieldtools.coil_optimize.</code><code class="sig-name descname">cvxopt_solve_qp</code><span class="sig-paren">(</span><em class="sig-param">P</em>, <em class="sig-param">q</em>, <em class="sig-param">G=None</em>, <em class="sig-param">h=None</em>, <em class="sig-param">A=None</em>, <em class="sig-param">b=None</em>, <em class="sig-param">tolerance=1e-07</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.cvxopt_solve_qp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Minimize
+<dd><p>Use cvxopt to minimize
 (1/2) * x’ * P * x + q’ * x</p>
 <p>subject to
 G * x &lt;= h</p>
@@ -140,15 +140,11 @@ while keeping specified target field at target points within bounds.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>meshobj</strong> – MeshWrapper object</p></li>
-<li><p><strong>bfield_specification</strong> – <p>list in which element is a dictionary containing a field specification
-each dict contains:</p>
-<blockquote>
-<div><p>C: Coupling matrix n_verts x n_verts
+<li><p><strong>bfield_specification</strong> – list in which element is a dictionary containing a field specification. Each dict contains:
+C: Coupling matrix n_verts x n_verts
 target_field: n_r x 3
 abs_error: float
-rel_error: float</p>
-</div></blockquote>
-</p></li>
+rel_error: float</p></li>
 <li><p><strong>laplacian_smooth</strong> – float</p></li>
 <li><p><strong>tolerance</strong> – float</p></li>
 </ul>
@@ -159,8 +155,8 @@ rel_error: float</p>
 </div>
 <div class="section" id="module-bfieldtools.contour">
 <span id="bfieldtools-contour-module"></span><h2>bfieldtools.contour module<a class="headerlink" href="#module-bfieldtools.contour" title="Permalink to this headline">¶</a></h2>
-<p>Created on Fri Jun 28 21:01:36 2019</p>
-<p>&#64;author: Antti</p>
+<p>This module includes functions for creating contours (isolines) of a scalar function
+defined on a triangle mesh surface. Also contains functions for modifying the generated contours.</p>
 <dl class="function">
 <dt id="bfieldtools.contour.scalar_contour">
 <code class="sig-prename descclassname">bfieldtools.contour.</code><code class="sig-name descname">scalar_contour</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">scalars</em>, <em class="sig-param">N_contours=10</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.contour.scalar_contour" title="Permalink to this definition">¶</a></dt>
@@ -179,6 +175,8 @@ with only a small angle difference.</p>
 </div>
 <div class="section" id="module-bfieldtools.laplacian_mesh">
 <span id="bfieldtools-laplacian-mesh-module"></span><h2>bfieldtools.laplacian_mesh module<a class="headerlink" href="#module-bfieldtools.laplacian_mesh" title="Permalink to this headline">¶</a></h2>
+<p>Contains functions for computing geometric quantities of triangle surface meshes,
+such as the Laplacian, mass and gradient matrices.</p>
 <dl class="function">
 <dt id="bfieldtools.laplacian_mesh.gradient">
 <code class="sig-prename descclassname">bfieldtools.laplacian_mesh.</code><code class="sig-name descname">gradient</code><span class="sig-paren">(</span><em class="sig-param">vals</em>, <em class="sig-param">mesh</em>, <em class="sig-param">rotated=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.laplacian_mesh.gradient" title="Permalink to this definition">¶</a></dt>
@@ -251,6 +249,8 @@ of gradient at triangles</p>
 </div>
 <div class="section" id="module-bfieldtools.magnetic_field_mesh">
 <span id="bfieldtools-magnetic-field-mesh-module"></span><h2>bfieldtools.magnetic_field_mesh module<a class="headerlink" href="#module-bfieldtools.magnetic_field_mesh" title="Permalink to this headline">¶</a></h2>
+<p>Contains functions for calculating the coupling of surface current density in a
+triangle mesh to magnetic field.</p>
 <dl class="function">
 <dt id="bfieldtools.magnetic_field_mesh.compute_C">
 <code class="sig-prename descclassname">bfieldtools.magnetic_field_mesh.</code><code class="sig-name descname">compute_C</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">r</em>, <em class="sig-param">Nchunks=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.magnetic_field_mesh.compute_C" title="Permalink to this definition">¶</a></dt>
@@ -323,6 +323,8 @@ See eq. 5.13 in Michael Poole’s thesis.</p>
 </div>
 <div class="section" id="module-bfieldtools.mesh_class">
 <span id="bfieldtools-mesh-class-module"></span><h2>bfieldtools.mesh_class module<a class="headerlink" href="#module-bfieldtools.mesh_class" title="Permalink to this headline">¶</a></h2>
+<p>Contains a class used for wrapping a mesh (in the form of a Trimesh object) together with
+some convinient functions and properties.</p>
 <dl class="class">
 <dt id="bfieldtools.mesh_class.LazyProperty">
 <em class="property">class </em><code class="sig-prename descclassname">bfieldtools.mesh_class.</code><code class="sig-name descname">LazyProperty</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.LazyProperty" title="Permalink to this definition">¶</a></dt>
@@ -415,6 +417,8 @@ surfaces within a single mesh object.</p>
 </div>
 <div class="section" id="module-bfieldtools.mutual_inductance_mesh">
 <span id="bfieldtools-mutual-inductance-mesh-module"></span><h2>bfieldtools.mutual_inductance_mesh module<a class="headerlink" href="#module-bfieldtools.mutual_inductance_mesh" title="Permalink to this headline">¶</a></h2>
+<p>Contains functions for computing the inductance matrices of triangle surface meshes,
+including both self- and mutual-inductance.</p>
 <dl class="function">
 <dt id="bfieldtools.mutual_inductance_mesh.gamma0">
 <code class="sig-prename descclassname">bfieldtools.mutual_inductance_mesh.</code><code class="sig-name descname">gamma0</code><span class="sig-paren">(</span><em class="sig-param">R</em>, <em class="sig-param">reg=1e-13</em>, <em class="sig-param">symmetrize=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mutual_inductance_mesh.gamma0" title="Permalink to this definition">¶</a></dt>
@@ -1175,6 +1179,7 @@ nrmse: single - normalized rms error in percents between the data and fit</p>
 </div>
 <div class="section" id="module-bfieldtools.thermal_noise">
 <span id="bfieldtools-thermal-noise-module"></span><h2>bfieldtools.thermal_noise module<a class="headerlink" href="#module-bfieldtools.thermal_noise" title="Permalink to this headline">¶</a></h2>
+<p>Contains functions for computing thermal noise in conductive thin objects.</p>
 <dl class="function">
 <dt id="bfieldtools.thermal_noise.compute_ac_Bnoise">
 <code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">compute_ac_Bnoise</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">vl</em>, <em class="sig-param">fp</em>, <em class="sig-param">freqs</em>, <em class="sig-param">sigma</em>, <em class="sig-param">d</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.compute_ac_Bnoise" title="Permalink to this definition">¶</a></dt>
@@ -1296,6 +1301,7 @@ TODO: make this more flexible.</p>
 </div>
 <div class="section" id="module-bfieldtools.utils">
 <span id="bfieldtools-utils-module"></span><h2>bfieldtools.utils module<a class="headerlink" href="#module-bfieldtools.utils" title="Permalink to this headline">¶</a></h2>
+<p>This module contains miscellaneous utility functions used across bfieldtools.</p>
 <dl class="function">
 <dt id="bfieldtools.utils.assemble_matrix">
 <code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix</code><span class="sig-paren">(</span><em class="sig-param">tris</em>, <em class="sig-param">Nverts</em>, <em class="sig-param">triangle_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix" title="Permalink to this definition">¶</a></dt>
