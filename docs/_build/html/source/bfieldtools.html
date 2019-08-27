@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <title>bfieldtools package &#8212; bfieldtools 0.1 documentation</title>
-    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -15,24 +15,23 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="API Reference" href="modules.html" /> 
-  </head><body>
-      <div class="header" role="banner"><h1 class="heading"><a href="../index.html">
-          <span>bfieldtools 0.1 documentation</span></a></h1>
-        <h2 class="heading"><span>bfieldtools package</span></h2>
-      </div>
-      <div class="topnav" role="navigation" aria-label="top navigation">
-      
-        <p>
-        «&#160;&#160;<a href="modules.html">API Reference</a>
-        &#160;&#160;::&#160;&#160;
-        <a class="uplink" href="../index.html">Contents</a>
-        </p>
+    <link rel="prev" title="API Reference" href="modules.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-      </div>
-      <div class="content" role="main">
-        
-        
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
   <div class="section" id="bfieldtools-package">
 <h1>bfieldtools package<a class="headerlink" href="#bfieldtools-package" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="submodules">
@@ -472,7 +471,7 @@ or number of triangles for the same evaluation points</p>
 
 <dl class="function">
 <dt id="bfieldtools.mutual_inductance_mesh.self_inductance_matrix">
-<code class="sig-prename descclassname">bfieldtools.mutual_inductance_mesh.</code><code class="sig-name descname">self_inductance_matrix</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">planar=False</em>, <em class="sig-param">Nchunks=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mutual_inductance_mesh.self_inductance_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bfieldtools.mutual_inductance_mesh.</code><code class="sig-name descname">self_inductance_matrix</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">planar=False</em>, <em class="sig-param">Nchunks=1</em>, <em class="sig-param">approx=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mutual_inductance_mesh.self_inductance_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate a self inductance matrix for hat basis functions
 (stream functions) in the triangular mesh described by</p>
 <p>mesh: Trimesh mesh object</p>
@@ -489,7 +488,27 @@ or number of triangles for the same evaluation points</p>
 (Neval, …., Ntri_verts, xyz)</p>
 <p>These are displacement vectors</p>
 </p></li>
-<li><p><strong>tn</strong> – ((Ntri), 3) array of points (Ntri, dir)</p></li>
+<li><p><strong>tn</strong> – ((Ntri), 3) array of triangle normals (Ntri, dir)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="bfieldtools.mutual_inductance_mesh.triangle_potential_approx">
+<code class="sig-prename descclassname">bfieldtools.mutual_inductance_mesh.</code><code class="sig-name descname">triangle_potential_approx</code><span class="sig-paren">(</span><em class="sig-param">R</em>, <em class="sig-param">ta</em>, <em class="sig-param">planar=False</em>, <em class="sig-param">reg=1e-12</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mutual_inductance_mesh.triangle_potential_approx" title="Permalink to this definition">¶</a></dt>
+<dd><p>1/r potential of a uniform triangle using centroid approximation</p>
+<p>Calculates 1/R potentials for triangle centroids
+(The singular at the centroid is handled with the very small
+reg value, but anyway the values close to the centroid are inexact)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>R</strong> – <p>(N, (Ntri), 3, 3) array of displacement vectors
+(Neval, …., Ntri_verts, xyz)</p>
+<p>These are displacement vectors</p>
+</p></li>
+<li><p><strong>ta</strong> – (Ntri) array of triangles areas</p></li>
 </ul>
 </dd>
 </dl>
@@ -1300,27 +1319,27 @@ TODO: make this more flexible.</p>
 <div class="section" id="module-bfieldtools.utils">
 <span id="bfieldtools-utils-module"></span><h2>bfieldtools.utils module<a class="headerlink" href="#module-bfieldtools.utils" title="Permalink to this headline">¶</a></h2>
 <p>This module contains miscellaneous utility functions used across bfieldtools.</p>
-<dl class="attribute">
+<dl class="function">
 <dt id="bfieldtools.utils.assemble_matrix">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix</code><a class="headerlink" href="#bfieldtools.utils.assemble_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix</code><span class="sig-paren">(</span><em class="sig-param">tris</em>, <em class="sig-param">Nverts</em>, <em class="sig-param">triangle_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimized  assembly of finite element matrix for
 precomputed triangle data</p>
 <p>Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
 for the nodes neighbouring the triangle</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="function">
 <dt id="bfieldtools.utils.assemble_matrix2">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix2</code><a class="headerlink" href="#bfieldtools.utils.assemble_matrix2" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix2</code><span class="sig-paren">(</span><em class="sig-param">tris1</em>, <em class="sig-param">tris2</em>, <em class="sig-param">Nverts1</em>, <em class="sig-param">Nverts2</em>, <em class="sig-param">triangle_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimized  assembly of finite element matrix for
 precomputed triangle data for separate meshes 1 and 2</p>
 <p>Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
 for the nodes neighbouring the triangle</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="function">
 <dt id="bfieldtools.utils.assemble_matrix_chunk">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix_chunk</code><a class="headerlink" href="#bfieldtools.utils.assemble_matrix_chunk" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix_chunk</code><span class="sig-paren">(</span><em class="sig-param">tris</em>, <em class="sig-param">Nverts</em>, <em class="sig-param">triangle_data</em>, <em class="sig-param">n</em>, <em class="sig-param">Nchunks</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix_chunk" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimized  assembly of finite element matrix for
 precomputed triangle data. Version for computation in which eval points
 are chunked smaller, less memory-intensive parts</p>
@@ -1334,9 +1353,9 @@ for the nodes neighbouring the triangle</p>
 <dd><p>Generate and return a set of points on a cylindrical surface.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="function">
 <dt id="bfieldtools.utils.dual_areas">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">dual_areas</code><a class="headerlink" href="#bfieldtools.utils.dual_areas" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">dual_areas</code><span class="sig-paren">(</span><em class="sig-param">tris</em>, <em class="sig-param">ta</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.dual_areas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate (dual) areas for each node in inds</p>
 <p>Dual area == area summed over the neighbouring triangles divide by 3</p>
 </dd></dl>
@@ -1390,20 +1409,92 @@ triangle indices (tri)</p>
 </div>
 
 
+          </div>
+          
+        </div>
       </div>
-      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
-      
-        <p>
-        «&#160;&#160;<a href="modules.html">API Reference</a>
-        &#160;&#160;::&#160;&#160;
-        <a class="uplink" href="../index.html">Contents</a>
-        </p>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">bfieldtools</a></h1>
 
-      </div>
 
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2019, Rasmus Zetter, Antti Mäkinen, Joonas Iivanainen.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../literature.html">Literature</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Example gallery</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">bfieldtools package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bfieldtools.bfield_line">bfieldtools.bfield_line module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bfieldtools.coil_optimize">bfieldtools.coil_optimize module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bfieldtools.contour">bfieldtools.contour module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bfieldtools.laplacian_mesh">bfieldtools.laplacian_mesh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bfieldtools.magnetic_field_mesh">bfieldtools.magnetic_field_mesh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bfieldtools.mesh_class">bfieldtools.mesh_class module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bfieldtools.mutual_inductance_mesh">bfieldtools.mutual_inductance_mesh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bfieldtools.sphtools">bfieldtools.sphtools module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bfieldtools.thermal_noise">bfieldtools.thermal_noise module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-bfieldtools.utils">bfieldtools.utils module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">API Reference</a><ul>
+      <li>Previous: <a href="modules.html" title="previous chapter">API Reference</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
     </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Rasmus Zetter, Antti Mäkinen, Joonas Iivanainen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/source/bfieldtools.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
   </body>
 </html>

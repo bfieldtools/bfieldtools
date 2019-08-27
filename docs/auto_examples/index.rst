@@ -4,7 +4,7 @@
 
 .. _sphx_glr_auto_examples:
 
-Examples
+Example gallery
 =======================
 
 Below are a number of examples meant to familiarize you with the functionality of bfieldtools.
