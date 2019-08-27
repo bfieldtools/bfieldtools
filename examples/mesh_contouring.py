@@ -144,6 +144,8 @@ contour_polys = [c for c in contour_polys if c is not None]
 for c in contour_polys:
         mlab.plot3d(*c[list(range(c.shape[0]))+[0]].T, color=(1,0,0), tube_radius=None)
 
+        mlab.quiver3d(*c[0:-1].T, *(c[0:-1].T - c[1:].T), mode='cone')
+
 #%%
 #g = gradient(scalars, mesh, rotated=True)
 #q = mlab.quiver3d(*mesh.triangles_center.T, *g, color=(0,0,1))
