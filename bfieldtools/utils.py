@@ -1,3 +1,7 @@
+'''
+This module contains miscellaneous utility functions used across bfieldtools.
+'''
+
 import numpy as np
 import quadpy
 from numba import jit

@@ -1,3 +1,8 @@
+'''
+Contains functions for computing the inductance matrices of triangle surface meshes,
+including both self- and mutual-inductance.
+'''
+
 import numpy as np
 from .utils import (get_quad_points, assemble_matrix_chunk, assemble_matrix2)
 

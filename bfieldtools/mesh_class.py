@@ -1,3 +1,9 @@
+'''
+Contains a class used for wrapping a mesh (in the form of a Trimesh object) together with 
+some convinient functions and properties.
+
+'''
+
 from time import time
 import pickle
 

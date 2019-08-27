@@ -6,7 +6,7 @@ from scipy.sparse.linalg import svds
 
 def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7):
     '''
-    Minimize
+    Use cvxopt to minimize
     (1/2) * x' * P * x + q' * x
 
     subject to
@@ -44,8 +44,7 @@ def optimize_streamfunctions(meshobj, bfield_specification,
 
     Parameters:
         meshobj: MeshWrapper object
-        bfield_specification: list in which element is a dictionary containing a field specification
-            each dict contains:
+        bfield_specification: list in which element is a dictionary containing a field specification. Each dict contains:
                 C: Coupling matrix n_verts x n_verts
                 target_field: n_r x 3
                 abs_error: float

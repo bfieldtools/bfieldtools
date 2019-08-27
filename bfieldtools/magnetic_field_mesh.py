@@ -1,3 +1,9 @@
+'''
+Contains functions for calculating the coupling of surface current density in a 
+triangle mesh to magnetic field.
+
+'''
+
 import numpy as np
 from numba import jit
 import time
