@@ -1,3 +1,8 @@
+'''
+Contains functions for computing geometric quantities of triangle surface meshes,
+such as the Laplacian, mass and gradient matrices.
+'''
+
 import numpy as np
 from scipy.sparse import csr_matrix, spdiags
 from .utils import dual_areas

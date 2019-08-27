@@ -23,7 +23,7 @@ def main():
     setup(
         name="bfieldtools",
 	description="Magnetic field modelling tools",
-        long_description=codecs.open('README.md', encoding='utf8').read(),
+        long_description=codecs.open('README.rst', encoding='utf8').read(),
         version_format='{tag}.dev{commitcount}+{gitsha}',
         setup_requires=['setuptools-git-version'],
         install_requires=['numpy','scipy','matplotlib', 'mayavi', 'quadpy', 'trimesh', 'cvxopt', 'joblib', 'numba'],

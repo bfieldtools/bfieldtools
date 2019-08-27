@@ -1,3 +1,9 @@
+'''
+Contains a class used for wrapping a mesh (in the form of a Trimesh object) together with 
+some convinient functions and properties.
+
+'''
+
 from time import time
 import pickle
 
@@ -180,7 +186,7 @@ def save_pickle(obj, target_file):
         target_file: str, file name or file object to save to
     """
 
-    pickle.dump(obj=obj, file=open(target_file, 'wb'))
+    pickle.dump(obj=obj, file=open(target_file, 'wb'), protocol=-1)
 
 
 def load_pickle(target_file):
