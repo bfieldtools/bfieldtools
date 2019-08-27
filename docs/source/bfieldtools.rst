@@ -83,12 +83,3 @@ bfieldtools.utils module
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: bfieldtools
-   :members:
-   :undoc-members:
-   :show-inheritance:
