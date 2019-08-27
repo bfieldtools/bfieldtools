@@ -23,7 +23,7 @@ Requires Python 3 (to be safe, use 3.5 or newer).
  - `Scipy <https://www.scipy.org/>`_
  - `Trimesh <https://github.com/mikedh/trimesh>`_
  - `CVXOPT <https://cvxopt.org/>`_
- - `Quadpy <https://github.com/nschloe/quadpy/tree/master/quadpy>`_
+ - `Quadpy>=0.13 <https://github.com/nschloe/quadpy/tree/master/quadpy>`_
  - `Numba <https://numba.pydata.org/>`_
  - `Matplotlib <https://matplotlib.org/>`_
  - `Mayavi <https://docs.enthought.com/mayavi/mayavi/>`_
@@ -80,7 +80,7 @@ License
 
 bfieldtools is **BSD-licenced** (3 clause):
 
-    Copyright (c) 2011-2019, authors of bfieldtools.
+    Copyright (c) 2019, authors of bfieldtools.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without
