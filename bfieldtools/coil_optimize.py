@@ -34,6 +34,7 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7):
     return np.array(sol['x']).reshape((P.shape[1],)), sol
 
 def optimize_streamfunctions(meshobj, bfield_specification,
+                             objective='minimum_inductive_energy',
                              laplacian_smooth=0.1,
                              tolerance=0.1):
     '''
@@ -50,9 +51,17 @@ def optimize_streamfunctions(meshobj, bfield_specification,
                 target_field: n_r x 3
                 abs_error: float
                 rel_error: float
+        objective: string or dict
+            if string, either 'minimum_inductive_energy' or 'minimum_resistive_energy'
+            if tuple, should contain: (a, b), where a and b are floats 0-1 describing the inductive and resitive weighting factors
         laplacian_smooth: float
         tolerance: float
     '''
+
+    if objective == 'minimum_inductive_energy':
+        objective = (1, 0)
+    elif objective == 'minimum_resistive_energy':
+        objective = (0, 1)
 
     #Initialize inequality constraint matrix and product
     constraint_matrix = np.zeros((0, len(meshobj.inner_verts)))
@@ -96,6 +105,9 @@ def optimize_streamfunctions(meshobj, bfield_specification,
     #Limit L matrix to inner vertices
     inner_L = meshobj.inductance[meshobj.inner_verts][:, meshobj.inner_verts]
 
+    #Limit R matrix to inner vertices
+    inner_R = meshobj.resistance[meshobj.inner_verts][:, meshobj.inner_verts]
+
 
     #Linear part of QP problem not used, set to zero
     linear_part = np.zeros((len(meshobj.inner_verts), ))
@@ -107,9 +119,12 @@ def optimize_streamfunctions(meshobj, bfield_specification,
         #Limit Laplacian matrix to inner vertices (if used)
         inner_lapl = meshobj.laplacian.todense()[meshobj.inner_verts][:, meshobj.inner_verts]
 
-        #Scale Laplacian matrix to same magnitude as inductance i.e. L
+        #Scale Laplacian matrix to same magnitude as L matrix and R matrix
         lapl_eigs = np.linalg.eigvalsh(-inner_lapl)
+
         L_eigs = np.linalg.eigvalsh(inner_L)
+
+        R_eigs = np.linalg.eigvalsh(inner_R)
 
         scaled_lapl = np.max(np.abs(L_eigs)) / np.max(np.abs(lapl_eigs)) * -inner_lapl
 
