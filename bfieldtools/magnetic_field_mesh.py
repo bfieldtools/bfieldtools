@@ -1,3 +1,9 @@
+'''
+Contains functions for calculating the coupling of surface current density in a 
+triangle mesh to magnetic field.
+
+'''
+
 import numpy as np
 from numba import jit
 import time
@@ -118,7 +124,7 @@ def compute_C_loops(mesh, r, basis=None, vert_links=None):
         basis = create_basis(mesh)
 
 
-    w_quad, r_quad = get_quad_points(mesh.vertices, mesh.faces, method='Centroid')
+    w_quad, r_quad = get_quad_points(mesh.vertices, mesh.faces, method='centroid')
 #    n_quad_points = len(w_quad)
 
     n_target_points = len(r)
@@ -237,7 +243,7 @@ def compute_C(mesh, r, Nchunks=None):
     print('Computing C matrix, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
     start = time.time()
 
-    w_quad, r_quad = get_quad_points(mesh.vertices, mesh.faces, method='Centroid')
+    w_quad, r_quad = get_quad_points(mesh.vertices, mesh.faces, method='centroid')
 
     # Rotated gradients (currents)
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)

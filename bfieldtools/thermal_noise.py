@@ -1,3 +1,8 @@
+'''
+Contains functions for computing thermal noise in conductive thin objects.
+
+'''
+
 import numpy as np
 from scipy.linalg import eigh
 from mayavi import mlab

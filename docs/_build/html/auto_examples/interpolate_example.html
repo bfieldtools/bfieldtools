@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Interpolate stream function &#8212; bfieldtools 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Thermal noise computation" href="thermal_noise_simulation.html" />
+    <link rel="prev" title="Gradient computation example" href="gradient_example.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-interpolate-example-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="interpolate-stream-function">
+<span id="sphx-glr-auto-examples-interpolate-example-py"></span><h1>Interpolate stream function<a class="headerlink" href="#interpolate-stream-function" title="Permalink to this headline">¶</a></h1>
+<p>Minimal example showing how to subdivide a mesh and interpolate a scalar function
+defined on that mesh to match.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvtk.api</span> <span class="k">import</span> <span class="n">tvtk</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
+<span class="kn">import</span> <span class="nn">trimesh</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="k">import</span> <span class="n">eigh</span>
+
+<span class="kn">from</span> <span class="nn">bfieldtools.laplacian_mesh</span> <span class="k">import</span> <span class="n">laplacian_matrix</span><span class="p">,</span> <span class="n">mass_matrix</span>
+<span class="kn">from</span> <span class="nn">bfieldtools</span> <span class="k">import</span> <span class="n">utils</span>
+
+<span class="kn">import</span> <span class="nn">pkg_resources</span>
+
+
+<span class="c1">#%% Load a simple mesh and compute an example scalar function on it.</span>
+<span class="c1">#   In this case, the scalar function is an eigenvector of a generalized eigenvalue decomposition</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;bfieldtools&#39;</span><span class="p">,</span> <span class="s1">&#39;example_meshes/10x10_plane.obj&#39;</span><span class="p">))</span>
+
+
+<span class="n">boundary_verts</span><span class="p">,</span> <span class="n">inner_verts</span><span class="p">,</span> <span class="n">boundary_tris</span><span class="p">,</span> <span class="n">inner_tris</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">find_mesh_boundaries</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+
+<span class="n">L</span> <span class="o">=</span> <span class="n">laplacian_matrix</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">mass_matrix</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+
+<span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">eigh</span><span class="p">(</span><span class="o">-</span><span class="n">L</span><span class="o">.</span><span class="n">todense</span><span class="p">()[</span><span class="n">inner_verts</span><span class="p">][:,</span><span class="n">inner_verts</span><span class="p">],</span> <span class="n">M</span><span class="o">.</span><span class="n">todense</span><span class="p">()[</span><span class="n">inner_verts</span><span class="p">][:,</span><span class="n">inner_verts</span><span class="p">])</span>
+
+<span class="n">scalars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">scalars</span><span class="p">[</span><span class="n">inner_verts</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[:,</span><span class="mi">12</span><span class="p">]</span>
+
+
+
+
+<span class="n">original_scalars</span> <span class="o">=</span> <span class="n">scalars</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">original_mesh</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="c1">#Plot original scalars and mesh</span>
+
+<span class="n">ug</span> <span class="o">=</span> <span class="n">tvtk</span><span class="o">.</span><span class="n">UnstructuredGrid</span><span class="p">(</span><span class="n">points</span><span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span>
+
+<span class="n">ug</span><span class="o">.</span><span class="n">set_cells</span><span class="p">(</span><span class="n">tvtk</span><span class="o">.</span><span class="n">Triangle</span><span class="p">()</span><span class="o">.</span><span class="n">cell_type</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">)</span>
+<span class="n">ug</span><span class="o">.</span><span class="n">point_data</span><span class="o">.</span><span class="n">scalars</span> <span class="o">=</span> <span class="n">scalars</span>
+<span class="n">ug</span><span class="o">.</span><span class="n">point_data</span><span class="o">.</span><span class="n">scalars</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;scalars&#39;</span>
+
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">original_mesh</span><span class="o">.</span><span class="n">subdivide</span><span class="p">()</span><span class="o">.</span><span class="n">subdivide</span><span class="p">()</span>
+<span class="n">scalars</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">probe_data</span><span class="p">(</span><span class="n">ug</span><span class="p">,</span> <span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+<span class="c1">#Plot subdivided mesh and interpolated scalars</span>
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.110 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-interpolate-example-py">
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/c1c71e8a1c0df0a7248c00d90d5b9c59/interpolate_example.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">interpolate_example.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/7e581cfef0c4961bf253a54f305d6d6c/interpolate_example.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">interpolate_example.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">bfieldtools</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../literature.html">Literature</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Example gallery</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="gradient_example.html">Gradient computation example</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Interpolate stream function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="thermal_noise_simulation.html">Thermal noise computation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mamba_coil_design.html">MAMBA coil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="shielded_cylindrical_coil_design.html">Shielded cylindrical coil</a></li>
+<li class="toctree-l2"><a class="reference internal" href="biplanar_coil_design.html">Biplanar coil design</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../source/modules.html">API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Example gallery</a><ul>
+      <li>Previous: <a href="gradient_example.html" title="previous chapter">Gradient computation example</a></li>
+      <li>Next: <a href="thermal_noise_simulation.html" title="next chapter">Thermal noise computation</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Rasmus Zetter, Antti Mäkinen, Joonas Iivanainen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/auto_examples/interpolate_example.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
