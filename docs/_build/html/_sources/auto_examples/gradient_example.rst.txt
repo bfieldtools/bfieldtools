@@ -13,6 +13,7 @@ Gradient computation example
 Minimal example visualizing the gradient of a scalar function on a mesh
 
 
+
 .. code-block:: default
 
 
@@ -39,6 +40,18 @@ Minimal example visualizing the gradient of a scalar function on a mesh
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    shapely.geometry.Polygon not available!
+    Traceback (most recent call last):
+      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py", line 22, in <module>
+        from shapely.geometry import Polygon
+    ModuleNotFoundError: No module named 'shapely'
+
 
 
 Calculate the gradient (e.g., flow from potential)
@@ -49,6 +62,10 @@ Calculate the gradient (e.g., flow from potential)
     g = gradient(vals, planemesh, rotated=False)
 
     # Plot function and its gradient as arrows
+
+    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                   size=(800, 800))
+
     mlab.triangular_mesh(*planemesh.vertices.T, planemesh.faces, scalars=vals)
     mlab.quiver3d(*tri_centers, *g, colormap='viridis')
 
@@ -69,7 +86,9 @@ The same but rotated (e.g. current density from a stream function)
     g = gradient(vals, planemesh, rotated=True)
 
     # Plot function and its gradient as arrows
-    mlab.figure()
+    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                   size=(800, 800))
+
     mlab.triangular_mesh(*planemesh.vertices.T, planemesh.faces, scalars=vals)
     mlab.quiver3d(*tri_centers, *g, colormap='viridis')
 
@@ -84,7 +103,7 @@ The same but rotated (e.g. current density from a stream function)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.506 seconds)
+   **Total running time of the script:** ( 0 minutes  1.993 seconds)
 
 
 .. _sphx_glr_download_auto_examples_gradient_example.py:

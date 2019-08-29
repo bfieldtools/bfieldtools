@@ -15,6 +15,7 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 
 
+
 # -- Project information -----------------------------------------------------
 
 project = 'bfieldtools'
@@ -32,8 +33,9 @@ release = '0.1'
 # ones.
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.coverage',
-              'sphinx.ext.napoleon',
-              'sphinx_gallery.gen_gallery']
+              'numpydoc',
+              'sphinx_gallery.gen_gallery',
+              'sphinx_bootstrap_theme']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -43,7 +45,7 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-#External imports 
+#External imports
 autodoc_mock_imports = ["numpy", "scipy", "trimesh", "mayavi", "quadpy", "cvxopt", "numba", "psutil"]
 
 #Configure sphinx-gallery
@@ -71,19 +73,33 @@ sphinx_gallery_conf = {
 }
 
 
+numpydoc_show_class_members = False
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
 
-html_theme = 'alabaster'
+html_theme = 'bootstrap'
 
 html_theme_options = {
-#    'logo': 'logo.png',
-#    'github_user': 'bitprophet',
-#    'github_repo': 'alabaster',
-    'page_width': 'auto'
+#    'navbar_title': ' ',  # we replace this with an image
+    'source_link_position': "nav",  # default
+    'bootswatch_theme': "flatly",  # yeti paper lumen
+    'navbar_sidebarrel': False,  # Render the next/prev links in navbar?
+    'navbar_pagenav': False,
+    'navbar_class': "navbar",
+    'bootstrap_version': "3",  # default
+    'navbar_links': [
+        ("Readme", "readme")
+#        ("Documentation", "documentation"),
+#        ("API", "python_reference"),
+#        ("Glossary", "glossary"),
+#        ("Examples", "auto_examples/index"),
+#        ("Tutorials", "auto_tutorials/index"),
+#        ("Contribute", "install/contributing"),
+    ],
 }
 
 

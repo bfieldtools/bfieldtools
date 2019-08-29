@@ -40,8 +40,7 @@ due to inductive interaction with the shield is minimized
 
     coilmesh.apply_scale(0.75)
 
-
-    #coilmesh.vertices, coilmesh.faces = trimesh.remesh.subdivide(coilmesh.vertices, coilmesh.faces)
+    coilmesh.vertices, coilmesh.faces = trimesh.remesh.subdivide(coilmesh.vertices, coilmesh.faces)
 
     #Specify offset from origin
     center_offset = np.array([0, 0, 0.75])
@@ -99,6 +98,10 @@ Set up target  points and plot geometry
 
 
     #Plot coil, shield and target points
+
+    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                    size=(800, 800))
+
     coil.plot_mesh()
     shield.plot_mesh()
     mlab.points3d(*target_points.T)
@@ -142,14 +145,13 @@ Compute C matrices that are used to compute the generated magnetic field
 
  .. code-block:: none
 
-    Computing C matrix, 904 vertices by 672 target points... took 0.29 seconds.
-    Computing C matrix, 904 vertices by 672 target points... took 0.25 seconds.
+    Computing C matrix, 3536 vertices by 672 target points... took 1.17 seconds.
+    Computing C matrix, 904 vertices by 672 target points... took 0.24 seconds.
     Calculating potentials
     Inserting stuff into M-matrix
-    Computing inductance matrix in 2 chunks since 3 GiB memory is available...
-    Calculating potentials, chunk 1/2
-    Calculating potentials, chunk 2/2
-    Inductance matrix computation took 6.56 seconds.
+    Computing inductance matrix in 1 chunks since 8 GiB memory is available...
+    Calculating potentials, chunk 1/1
+    Inductance matrix computation took 6.03 seconds.
 
 
 
@@ -204,21 +206,19 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 2 chunks since 3 GiB memory is available...
+    Computing inductance matrix in 2 chunks since 8 GiB memory is available...
     Calculating potentials, chunk 1/2
     Calculating potentials, chunk 2/2
-    Inductance matrix computation took 6.53 seconds.
+    Inductance matrix computation took 99.05 seconds.
     Scaling matrices before optimization. This requires singular value computation, hold on.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
-     0:  7.0329e+01  8.5233e+02  1e+04  3e+00  4e-14
-     1:  1.1200e+02  1.3006e+03  4e+03  9e-01  3e-14
-     2:  8.8397e+02  3.5543e+03  4e+03  7e-01  1e-13
-     3:  1.0167e+03  4.1404e+03  4e+03  6e-01  1e-13
-     4:  1.4675e+03  5.7429e+03  4e+03  6e-01  2e-13
-     5:  1.4551e+03  6.0872e+03  4e+03  6e-01  2e-13
-     6:  1.5981e+03  8.9223e+03  4e+03  5e-01  3e-13
-     7:  8.8022e+03  2.2771e+04  8e+03  3e-01  2e-12
+     0:  4.5366e+01  7.7593e+02  1e+04  3e+00  4e-14
+     1:  1.0096e+02  1.1497e+03  3e+03  9e-01  3e-14
+     2:  5.6082e+02  2.4779e+03  3e+03  6e-01  9e-14
+     3:  5.7943e+02  2.6428e+03  3e+03  6e-01  9e-14
+     4:  1.0195e+03  5.8843e+03  3e+03  5e-01  2e-13
+     5:  2.6725e+03  1.0689e+04  4e+03  4e-01  4e-13
     Optimal solution found.
 
 
@@ -230,7 +230,7 @@ Plot coil windings and target points
 
 
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-               size=(480, 480))
+               size=(800, 800))
     mlab.clf()
 
     surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
@@ -281,7 +281,7 @@ For comparison, let's see how the coils look when we ignore the conducting shiel
     shield.unshielded_induced_I = shield.coupling @ coil.unshielded_I
 
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-               size=(480, 480))
+                    size=(800, 800))
     mlab.clf()
 
     surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.unshielded_I)
@@ -318,12 +318,11 @@ For comparison, let's see how the coils look when we ignore the conducting shiel
     Scaling matrices before optimization. This requires singular value computation, hold on.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
-     0:  7.8331e+01  1.1868e+02  5e+03  2e+00  4e-14
-     1:  1.0259e+02  1.2234e+02  3e+02  1e-01  2e-14
-     2:  1.1076e+02  1.5789e+02  2e+02  6e-02  3e-14
-     3:  1.1541e+02  1.7315e+02  2e+02  5e-02  3e-14
-     4:  1.3966e+02  2.1608e+02  1e+02  3e-02  7e-14
-     5:  1.5223e+02  2.8576e+02  8e+01  2e-02  1e-13
+     0:  4.3937e+01  6.6183e+01  5e+03  2e+00  4e-14
+     1:  5.0479e+01  6.8140e+01  2e+02  1e-01  2e-14
+     2:  6.1947e+01  9.9187e+01  1e+02  4e-02  3e-14
+     3:  6.7204e+01  1.2054e+02  1e+02  3e-02  5e-14
+     4:  7.3748e+01  1.8486e+02  7e+01  2e-02  1e-13
     Optimal solution found.
 
 
@@ -331,7 +330,7 @@ For comparison, let's see how the coils look when we ignore the conducting shiel
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  25.364 seconds)
+   **Total running time of the script:** ( 2 minutes  54.561 seconds)
 
 
 .. _sphx_glr_download_auto_examples_shielded_cylindrical_coil_design.py:

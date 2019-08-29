@@ -8,22 +8,22 @@ from .utils import (get_quad_points, assemble_matrix_chunk, assemble_matrix2)
 
 
 def gamma0(R, reg=1e-13, symmetrize=True):
-    """ Integrals over the edges of a triangle called gamma_0
+    """ Integrals over the edges of a triangle called gamma_0 (line charge potentials).
 
-       (line charge potentials)
+        **NOTE: MAY NOT BE VERY PRECISE FOR POINTS DIRECTLY AT TRIANGLE
+        EDGES.**
 
-        Parameters:
+        Parameters
+        ----------
+        R : (N, 3, 3) array of points (Neval, Nverts, xyz)
 
-            R : (N, 3, 3) array of points (Neval, Nverts, xyz)
-
-        Returns:
-
+        Returns
+        -------
+        res: array (Neval, Nverts)
             The analytic integrals for each vertex/edge
 
-            array (Neval, Nverts)
 
-        NOTE: MAY NOT BE VERY PRECISE FOR POINTS DIRECTLY AT TRIANGLE
-        EDGES.
+
     """
     diffs = np.roll(R, 1, -2) - np.roll(R, 2, -2)
     dotprods1 = np.sum(np.roll(R, 1, -2)*diffs, axis=-1)
@@ -53,19 +53,19 @@ def omega(R):
         IEEE TRANSACTIONS ON BIOMEDICAL ENGINEERING,
         VOL. BME-30, NO. 2, 1983
 
-        Parameters:
+        Parameters
+        ----------
+        R : (N, ..., 3, 3) array of points (Neval, ..., Nverts, xyz)
+            Points correspond to relative coordinates (x,y,z) of
+            N triangles/evaluation points for
+            the 3 corners of the triangles/triangle.
 
-            R : (N, ..., 3, 3) array of points (Neval, ..., Nverts, xyz)
+            Neval can be number of evaluation points for the same triangle
+            or number of triangles for the same evaluation points
 
-        Points correspond to relative coordinates (x,y,z) of
-        N triangles/evaluation points for
-        the 3 corners of the triangles/triangle
-
-        Neval can be number of evaluation points for the same triangle
-        or number of triangles for the same evaluation points
-
-        Returns:
-
+        Returns
+        -------
+        sa: (Neval, 3) ???
             Solid angles of triangle(s) at evaluation points
     """
     # Distances
@@ -86,14 +86,21 @@ def omega(R):
 def triangle_potential(R, tn, planar=False):
     """ 1/r potential of a uniform triangle
 
-        Parameters:
+        Parameters
+        ----------
 
-            R : (N, (Ntri), 3, 3) array of displacement vectors
-               (Neval, ...., Ntri_verts, xyz)
+        R : (N, (Ntri), 3, 3) array
+            Displacement vectors (Neval, ...., Ntri_verts, xyz)
+        tn : ((Ntri), 3) array
+            Triangle normals (Ntri, dir)
+        planar: boolean
+            If True, use planar geometry assumption for speed
 
-               These are displacement vectors
+        Returns
+        -------
+        result:  array
+            Resultant 1/r potential
 
-            tn : ((Ntri), 3) array of triangle normals (Ntri, dir)
     """
     if len(R.shape) > 3:
         tn_ax = tn[:, None, :]
@@ -117,24 +124,42 @@ def triangle_potential_approx(R, ta, planar=False, reg=1e-12):
         (The singular at the centroid is handled with the very small
         reg value, but anyway the values close to the centroid are inexact)
 
-        Parameters:
+        Parameters
+        ----------
+        R : (N, (Ntri), 3, 3) array
+            Displacement vectors (Neval, ...., Ntri_verts, xyz)
+        ta : (Ntri) array
+            Triangle areas
+        planar: boolean
+            If True, use planar geometry assumption for speed
+        reg: float
+            Regularization value used in approximation
 
-            R : (N, (Ntri), 3, 3) array of displacement vectors
-               (Neval, ...., Ntri_verts, xyz)
+        Returns
+        -------
+        result: array
+            Resultant 1/r potential
 
-               These are displacement vectors
-
-            ta : (Ntri) array of triangles areas
     """
     result = 1/(np.linalg.norm(np.mean(R, axis=-2), axis=-1) + reg)*ta
     return result
 
 def mutual_inductance_matrix(mesh1, mesh2, planar=False):
     """ Calculate a mutual inductance matrix for hat basis functions
-        (stream functions) in the triangular meshes described by
+        (stream functions) between two surface meshes
+
+        Parameters
+        ----------
 
         mesh1: Trimesh mesh object for mesh 1
         mesh2: Trimesh mesh object for mesh 2
+        planar: boolean
+            If True, use planar assumption when calculating
+
+        Returns
+        -------
+        M: (Nvertices1 x Nvertices2) array
+            Mutual inductance matrix between mesh1 and mesh2
 
     """
     R = mesh1.vertices[mesh1.faces]  # Nt x 3 (corners) x 3 (xyz)
@@ -164,7 +189,14 @@ def self_inductance_matrix(mesh, planar=False, Nchunks=1, approx=False):
     """ Calculate a self inductance matrix for hat basis functions
         (stream functions) in the triangular mesh described by
 
+        Parameters
+        ----------
         mesh: Trimesh mesh object
+
+        Returns
+        -------
+        M: (Nvertices x Nvertices) array
+            Self.inductance matrix of `mesh`
     """
     R = mesh.vertices[mesh.faces]  # Nt x 3 (corners) x 3 (xyz)
     # Calculate edge vectors for each triangle

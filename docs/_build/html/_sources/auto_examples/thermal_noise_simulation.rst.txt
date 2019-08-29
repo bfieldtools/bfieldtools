@@ -16,6 +16,7 @@ Three different examples:
    AC: AC Bnoise of a unit disc at one position
 
 
+
 .. code-block:: default
 
 
@@ -111,30 +112,34 @@ Unit sphere
 
  .. code-block:: none
 
-    /home/rzetter/Documents/bfieldtools/bfieldtools/thermal_noise.py:46: RuntimeWarning: invalid value encountered in sqrt
+    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-    /home/rzetter/Documents/bfieldtools/bfieldtools/thermal_noise.py:46: RuntimeWarning: invalid value encountered in sqrt
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-    /home/rzetter/Documents/bfieldtools/bfieldtools/thermal_noise.py:46: RuntimeWarning: invalid value encountered in sqrt
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-    /home/rzetter/Documents/bfieldtools/bfieldtools/thermal_noise.py:46: RuntimeWarning: invalid value encountered in sqrt
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-    Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-    /home/rzetter/Documents/bfieldtools/bfieldtools/thermal_noise.py:46: RuntimeWarning: invalid value encountered in sqrt
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-    /home/rzetter/Documents/bfieldtools/bfieldtools/thermal_noise.py:46: RuntimeWarning: invalid value encountered in sqrt
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-    /home/rzetter/Documents/bfieldtools/bfieldtools/thermal_noise.py:46: RuntimeWarning: invalid value encountered in sqrt
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.11 seconds.
-    Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-    Computing C matrix, 2562 vertices by 1 target points... took 0.11 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
+      vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
+      vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
 
 
 
@@ -203,7 +208,7 @@ Unit disc, DC noise
 
  .. code-block:: none
 
-    Computing C matrix, 1207 vertices by 30 target points... took 0.07 seconds.
+    Computing C matrix, 1207 vertices by 30 target points... took 0.04 seconds.
 
 
 
@@ -289,7 +294,7 @@ Unit disc, AC mode
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  13.467 seconds)
+   **Total running time of the script:** ( 1 minutes  4.571 seconds)
 
 
 .. _sphx_glr_download_auto_examples_thermal_noise_simulation.py:

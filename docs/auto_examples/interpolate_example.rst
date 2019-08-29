@@ -15,10 +15,6 @@ defined on that mesh to match.
 
 
 
-
-
-
-
 .. code-block:: default
 
 
@@ -31,12 +27,22 @@ defined on that mesh to match.
 
     from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix
     from bfieldtools import utils
-    
+
     import pkg_resources
 
 
-    #%% Load a simple mesh and compute an example scalar function on it.
-    #   In this case, the scalar function is an eigenvector of a generalized eigenvalue decomposition
+
+
+
+
+
+
+Load a simple mesh and compute an example scalar function on it.
+In this case, the scalar function is an eigenvector of a generalized eigenvalue decomposition
+
+
+.. code-block:: default
+
 
     mesh = trimesh.load(pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane.obj'))
 
@@ -57,7 +63,41 @@ defined on that mesh to match.
     original_scalars = scalars.copy()
     original_mesh = mesh.copy()
 
-    #Plot original scalars and mesh
+
+
+
+
+
+
+Plot original scalars and mesh
+
+
+.. code-block:: default
+
+
+    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                   size=(800, 800))
+
+    mlab.triangular_mesh(*original_mesh.vertices.T, original_mesh.faces, scalars=original_scalars,
+                         representation='wireframe')
+
+
+
+
+
+
+.. image:: /auto_examples/images/sphx_glr_interpolate_example_001.png
+    :class: sphx-glr-single-img
+
+
+
+
+Now, interpolate scalars
+
+
+.. code-block:: default
+
+
 
     ug = tvtk.UnstructuredGrid(points= mesh.vertices)
 
@@ -69,13 +109,36 @@ defined on that mesh to match.
     mesh = original_mesh.subdivide().subdivide()
     scalars = mlab.pipeline.probe_data(ug, *mesh.vertices.T)
 
-    #Plot subdivided mesh and interpolated scalars
+
+
+
+
+
+
+
+Plot subdivided mesh and interpolated scalars
+
+
+.. code-block:: default
+
+
+    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                   size=(800, 800))
+
+    mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars,
+                         representation='wireframe')
+
+
+.. image:: /auto_examples/images/sphx_glr_interpolate_example_002.png
+    :class: sphx-glr-single-img
+
+
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.110 seconds)
+   **Total running time of the script:** ( 0 minutes  0.993 seconds)
 
 
 .. _sphx_glr_download_auto_examples_interpolate_example.py:

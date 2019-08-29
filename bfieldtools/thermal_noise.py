@@ -23,13 +23,15 @@ def compute_current_modes(mesh):
     of the current modes are R_k = 1/(sigma*d), sigma = conductivity, d = thickness.
     See Zevenhoven et al. (2014).
 
-    Parameters:
+    Parameters
+    ----------
+    mesh: Trimesh mesh object
+        The surface mesh
 
-        mesh: mesh object - the surface mesh
-
-    Returns:
-
-        vl: Nvertices x Nvertices array - the normalized eddy-current modes vl[:,i]
+    Returns
+    -------
+    vl: Nvertices x Nvertices array
+        The normalized eddy-current modes vl[:,i]
 
     '''
 
@@ -52,18 +54,24 @@ def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T):
     Computes the magnetic noise at DC due to thermal motion of charge carriers (Jonhson-Nyquist noise)
     in a relatively thin conductor.
 
-    Parameters:
+    Parameters
+    ----------
+    mesh: Trimesh mesh object - the surface mesh
+    vl: Nvertices x Nvertices array
+        The normalized eddy-current modes vl[:,i]
+    fp: Nfieldpoints x 3 array
+        Coordinates of the fieldpoints
+    sigma: float
+        Conductivity of the surface
+    d: float
+        Thickness of the surface
+    T: float
+        Temperature of the surface
 
-        mesh: mesh object - the surface mesh
-        vl: Nvertices x Nvertices array - the normalized eddy-current modes vl[:,i]
-        fp: Nfieldpoints x 3 array - coordinates of the fieldpoints
-        sigma: single - conductivity of the surface
-        d: single - thickness of the surface
-        T: single - temperature of the surface
-
-    Returns:
-
-        B: Nfieldpoints x 3components array - magnetic RMS noise at DC
+    Returns
+    -------
+    B: Nfieldpoints x 3components array
+        magnetic RMS noise at DC
 
     '''
 
@@ -87,18 +95,24 @@ def compute_dc_Bnoise_covar(mesh, vl, fp, sigma, d, T):
     Computes the magnetic noise covariance at DC due to thermal motion of charge carriers (Jonhson-Nyquist noise)
     in a relatively thin conductor.
 
-    Parameters:
+    Parameters
+    ----------
+    mesh: Trimesh mesh object - the surface mesh
+    vl: Nvertices x Nvertices array
+        The normalized eddy-current modes vl[:,i]
+    fp: Nfieldpoints x 3 array
+        Coordinates of the fieldpoints
+    sigma: float
+        Conductivity of the surface
+    d: float
+        Thickness of the surface
+    T: float
+        Temperature of the surface
 
-        mesh: mesh object - the surface mesh
-        vl: Nvertices x Nvertices array - the normalized eddy-current modes vl[:,i]
-        fp: Nfieldpoints x 3 array - coordinates of the fieldpoints
-        sigma: single - conductivity of the surface
-        d: single - thickness of the surface
-        T: single - temperature of the surface
-
-    Returns:
-
-        B: Nfieldpoints x Nfieldpoints x 3components array - magnetic noise covariance at DC
+    Returns
+    -------
+    B: Nfieldpoints x Nfieldpoints x 3components array
+        magnetic noise covariance at DC
 
     '''
 
@@ -120,19 +134,24 @@ def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T):
     Computes the AC magnetic noise due to thermal motion of charge carriers (Jonhson-Nyquist noise)
     in a relatively thin conductor.
 
-    Parameters:
+    Parameters
+    ----------
+    mesh: Trimesh mesh object - the surface mesh
+    vl: Nvertices x Nvertices array
+        The normalized eddy-current modes vl[:,i]
+    fp: Nfieldpoints x 3 array
+        Coordinates of the fieldpoints
+    sigma: float
+        Conductivity of the surface
+    d: float
+        Thickness of the surface
+    T: float
+        Temperature of the surface
 
-        mesh: mesh object - the surface mesh
-        vl: Nvertices x Nvertices array - the normalized eddy-current modes vl[:,i]
-        fp: Nfieldpoints x 3 array - coordinates of the fieldpoints
-        freqs: Nfrequencies x 1 array - frequencies of interest
-        sigma: single - conductivity of the surface
-        d: single - thickness of the surface
-        T: single - temperature of the surface
-
-    Returns:
-
-        B: Nfrequencies x Nfieldpoints x 3components array - magnetic RMS noise
+    Returns
+    -------
+    B: Nfrequencies x Nfieldpoints x 3components array
+        magnetic RMS noise across frequencies
 
     '''
 
@@ -200,14 +219,20 @@ def visualize_current_modes(mesh, vl, Nmodes, scale, contours=True, colormap='bw
     Visualizes current modes up to Nmodes.
     TODO: make this more flexible.
 
-    Parameters:
-
-        mesh: mesh object - the surface mesh
-        vl: Nvertices x Nvertices array - the normalized eddy-current modes vl[:,i]
-        Nmodes: single - Number of modes to be plotted
-        scale: single - scaling factor
-        contours: boolean - Show contours?
-        colormap: string - Colormap to use
+    Parameters
+    ----------
+    mesh: Trimesh mesh object
+        The surface mesh
+    vl: Nvertices x Nvertices array
+        The normalized eddy-current modes vl[:,i]
+    Nmodes: int
+        Number of modes to be plotted
+    scale: float
+        Scaling factor
+    contours: boolean
+        If True, show contours
+    colormap: string
+        Which (matplotlib) colormap to use
 
     '''
     verts = mesh.vertices

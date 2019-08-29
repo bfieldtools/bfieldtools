@@ -1,6 +1,6 @@
 '''
 
-This module includes functions for creating contours (isolines) of a scalar function 
+This module includes functions for creating contours (isolines) of a scalar function
 defined on a triangle mesh surface. Also contains functions for modifying the generated contours.
 
 '''
@@ -18,65 +18,83 @@ import trimesh
 from bfieldtools.laplacian_mesh import gradient
 
 
-def scalar_contour(mesh, scalars, N_contours=10):
+def scalar_contour(mesh, scalars, N_contours=10, contours=None):
     '''
     Computes contour loops (isolines) for a scalar function defined on a mesh.
     The winding direction of the loops is defined according to the rotated gradient of the scalar
-    
+
+    Parameters
+    ----------
+    mesh: Trimesh object
+        Trimesh object containing the mesh on which the scalar function is defined
+    scalars: array-like
+        Vector containing the values of the scalar function at each of the mesh vertices
+    N_contours: int
+        Number of contours to generate
+    contours: array-like
+        Optional argument for manual input of contour levels. Overrides `N_contours`
+
+    Returns
+    -------
+    contour_polys: list
+        list with length `N_contours`. Each list element is anumpy array containing the
+        coordinats of each polygon vertex.
+    contours: array-like
+        Vector containing the scalar function values of each contour line
     '''
-        
+
     # Compute rotated gradient of scalars (e.g. current density from a stream function)
     g = gradient(scalars, mesh, rotated=True)
-    
-    
-    #N evenly spaced contours that do not contain the point-like max and min contours
-    contours=np.linspace(scalars.min(),scalars.max(),2*N_contours+1)[1::2]
-    
+
+    if contours is None:
+        #N evenly spaced contours that do not contain the point-like max and min contours
+        contours=np.linspace(scalars.min(),scalars.max(),2*N_contours+1)[1::2]
+
     edge_vals = scalars[mesh.edges_unique]
     contour_polys = []
-    
-    
-    #Loop through 
+
+
+    #Loop through
     for c_idx, c in enumerate(contours):
-        
+
         # Get edges that contain the contour values
         edge_inds = (edge_vals.min(axis=1) <= c)*(edge_vals.max(axis=1) >= c)
         c_edge_vals = edge_vals[edge_inds]
-        
+
         # Solve weights (barycentric coordinates) for each edge
         w0 = (c  - c_edge_vals[:,1])/(c_edge_vals[:,0]-c_edge_vals[:,1])
         w1 = (-c + c_edge_vals[:,0])/(c_edge_vals[:,0]-c_edge_vals[:,1])
-        
+
         # Calculate points linearly interpolated from vertices
         points = mesh.vertices[mesh.edges_unique[edge_inds]]
         points = points[:,0]*w0[:, None] + points[:,1]*w1[:, None]
-    
+
         # Determine adjacency
         c_edges_in_faces = edge_inds[mesh.faces_unique_edges]
         c_faces = np.any(c_edges_in_faces,axis=1)
         edges_in_c_faces = mesh.faces_unique_edges[c_faces]
-        
+
         if len(edges_in_c_faces)==0:
             print('No contours at f=', c)
             continue
-        
+
         # Each element of this array corresponds to a face containing the contour
         # The two values in the element are the edges (indices) adjacent to the face
         c_edges_in_c_faces = np.array([a[b] for a,b in zip(edges_in_c_faces, c_edges_in_faces[c_faces])])
-        
+
         # Contour edges (indices pointing to the unique edge list)
         c_edge_inds = list(np.flatnonzero(edge_inds))
-    
+
         #Indices of faces used in contour
         c_face_inds = np.flatnonzero(c_faces)
-    
+
         #Check gradient of stream function in first (could be any) triangle
         c_face_gradient = g[:, c_face_inds[0]]
-    
+
         #Vector between two edges in first face used for contour
         vec = points[c_edge_inds.index(c_edges_in_c_faces[0, 0])] - \
               points[c_edge_inds.index(c_edges_in_c_faces[0, 1])]
-    
+
         # Create loop such that it is in the same direction as gradient
         if c_face_gradient.dot(vec) >= 0:
                 # Init loop variables
@@ -91,68 +109,84 @@ def scalar_contour(mesh, scalars, N_contours=10):
         sorted_inds=[]
         kmax=len(c_edge_inds)
         k=0
-        
+
         # Loop over c_edges´by essentially solving a linked list from c_edges_in_c_faces
         while k<kmax:
             sorted_inds.append(c_edge_inds.index(val))
             c_edges_in_c_faces[ii] =-1
             ii,jj = np.nonzero(c_edges_in_c_faces==key)
-    
-    
+
+
             if len(ii)==0:
                 # Next edge not found in the adjacency list, contour must be closed now
                 # Sort points containing contours by adjacency of the edges
                 # and append to contour_polys
-                
+
                 contour_polys.append(points[sorted_inds])
-                
+
                 # Break the loop if all edges have been visited
                 if np.all(c_edges_in_c_faces==-1):
                     break
-    
+
                 # Else find a starting point in another contour at the same level
                 sorted_inds=[]
-    
+
                 ii = np.flatnonzero(c_edges_in_c_faces[:,0] >= 0)[0]
                 jj = 0
-    
+
                 #Compute gradient in face
                 c_face_gradient = g[:, c_face_inds[ii]]
-    
+
                 #once again, check winding direction
                 vec = points[c_edge_inds.index(c_edges_in_c_faces[ii, 0])] - \
                       points[c_edge_inds.index(c_edges_in_c_faces[ii, 1])]
-    
+
                 if c_face_gradient.dot(vec) >= 0:
                     jj = 0
                 else:
                     jj = 1
-    
+
             else:
                 # Edge found
                 ii=ii[0]
                 jj=jj[0]
-    
+
             # Update key and value
             val = c_edges_in_c_faces[ii,jj]
             key = c_edges_in_c_faces[ii,(jj+1)%2]
-    
+
             k+=1
-    
+
             if k==kmax:
                 raise RuntimeWarning('Something wrong with the contours, number of max iterations exceeded')
-    
-    return contour_polys
+
+    return contour_polys, contours
 
 
 
 def simplify_contour(c, min_edge=1e-3, angle_threshold=2e-2, smooth=True):
     '''
-    Simplifies contours by merging small (short) segments and 
+    Simplifies contours by merging small (short) segments and
     with only a small angle difference.
-    
+
     Optionally applies smoothing to contour shape.
-    
+
+    Parameters
+    ----------
+    c: list
+        List of polygons describing closed loops.
+    min_edge: float
+        Minimum edge length. Edges shorter than this are merged.
+    angle_threshold: float
+        Minimum angle. Edges with smaller angle differences are merged.
+    smooth: bool
+        If True, apply smoothing to the polygon shapes.
+
+    Returns
+    -------
+    c: list
+        Modified list of polygons
+
     '''
     # Remove small edges by threshold
     vals = [np.ones(c.shape[0]), -np.ones(c.shape[0]), np.ones(c.shape[0])]
@@ -161,13 +195,13 @@ def simplify_contour(c, min_edge=1e-3, angle_threshold=2e-2, smooth=True):
     c = c[np.linalg.norm(edges, axis=1) > min_edge]
     if len(c)==0:
         return None
-    
+
     # Remove nodes on straight lines
     D = spdiags(vals, [1,0,-c.shape[0]+1], c.shape[0], c.shape[0])
     H = spdiags(1/np.linalg.norm(D @ c, axis=1), 0, c.shape[0],c.shape[0])
     DD = H @ D
     c = c[np.linalg.norm(D.T @ DD @ c,axis=-1 ) > angle_threshold]
-    
+
     if smooth:
             D = spdiags(vals, [1,0,-c.shape[0]+1], c.shape[0], c.shape[0])
             H = spdiags(1/np.linalg.norm(D @ c, axis=1), 0, c.shape[0],c.shape[0])
@@ -177,25 +211,25 @@ def simplify_contour(c, min_edge=1e-3, angle_threshold=2e-2, smooth=True):
 #            c = c - 0.2*lengths[:,None]*(D.T @ DD @ c)
             Nc = c.shape[0]
             c = spsolve(speye(Nc, Nc) + 1.0*spdiags(lengths,0,Nc,Nc)@(D.T @ DD), c)
-            
+
     return c
 
 if __name__ == "__main__":
-    
+
     from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix
     from bfieldtools import utils
-        
+
     import pkg_resources
-    
+
     mesh = trimesh.load(pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane.obj'))
-    
+
     mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
-    
+
     boundary_verts, inner_verts, boundary_tris, inner_tris = utils.find_mesh_boundaries(mesh.vertices, mesh.faces, mesh.edges)
-    
+
     L = laplacian_matrix(mesh)
     M = mass_matrix(mesh)
-    
+
     u, v = eigh(-L.todense()[inner_verts][:,inner_verts], M.todense()[inner_verts][:,inner_verts])
 
     scalars = np.zeros(mesh.vertices.shape[0])
@@ -203,30 +237,30 @@ if __name__ == "__main__":
 
 
     mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars)
-    
+
     contour_polys = scalar_contour(mesh, scalars, N_contours=12)
-    
+
 
     for c_idx, c in enumerate(contour_polys):
         contour_polys[c_idx] = simplify_contour(c, min_edge=1e-5, angle_threshold=0.05)
 
 
     contour_polys = [c for c in contour_polys if c is not None]
-    
+
     # Plot contours on top of scalars and gradient
-    
+
     mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars)
-    
+
     g = gradient(scalars, mesh, rotated=True)
-    
+
     tri_centers = mesh.vertices[mesh.faces].mean(axis=1).T
-    
+
     mlab.quiver3d(*tri_centers, *g, scale_mode='none', scale_factor=0.1)
-    
-    
-    
+
+
+
     for c_idx, c in enumerate(contour_polys):
-        
+
             mlab.quiver3d(*c[0:-1,:].T,
                           *(c[0:-1,:].T - c[1:,:].T),
                           mode='cone', scale_mode='none',

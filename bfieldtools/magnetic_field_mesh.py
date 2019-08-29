@@ -1,5 +1,5 @@
 '''
-Contains functions for calculating the coupling of surface current density in a 
+Contains functions for calculating the coupling of surface current density in a
 triangle mesh to magnetic field.
 
 '''
@@ -46,8 +46,14 @@ def create_basis(mesh, centre=np.array([0, 0, 0])):
     '''
     Calculate "hat" basis functions for each vertex in a given mesh, see Michael Poole's thesis.
 
-    Parameters:
-        mesh: Trimesh mesh object
+    Parameters
+    ----------
+    mesh: Trimesh mesh object
+
+    Returns
+    -------
+    basis: dict
+        dict containing basis functions for each vertex
     '''
     n_verts = len(mesh.vertices)
 
@@ -104,11 +110,21 @@ def compute_C_loops(mesh, r, basis=None, vert_links=None):
     some target points due to currents (stream function) on a surface mesh.
     See eq. 5.13 in Michael Poole's thesis.
 
-    Parameters:
-        mesh: Trimesh mesh object describing mesh
-        r: target points (N, 3)
-        basis: basis functions used in computation can be given as parameter (dict)
-        vert_links: list of lists describing the neighborhood for each vertex
+    Parameters
+    -----------
+    mesh: Trimesh mesh object describing mesh
+    r: (Np, 3) array
+        Field evaluation points
+    basis: dict
+        basis functions used in computation can be given as parameter
+    vert_links: list of lists
+        Describes the neighborhood for each vertex
+
+    Returns
+    -------
+    C: (Np, Nvertices, 3) array
+        Coupling matrix for surface current in the mesh to the evaluation points
+
     '''
     mu0 = 4 * np.pi * 1e-7
     coef = mu0 / (4 * np.pi)
@@ -231,9 +247,16 @@ def compute_C(mesh, r, Nchunks=None):
 
     THIS IS A VECTORIZED COMPUTATION FOR COMPARISON
 
-    Parameters:
-        mesh: Trimesh mesh object describing mesh
-        r: target points (N, 3)
+    Parameters
+    ----------
+
+    mesh: Trimesh mesh object describing mesh
+    r: target points (Np, 3)
+
+    Returns
+    -------
+    C: (Np, Nvertices, 3) array
+        Coupling matrix for surface current in the mesh to the evaluation points)
 
     '''
     from bfieldtools.laplacian_mesh import gradient_matrix

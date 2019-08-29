@@ -30,7 +30,7 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7):
 
     sol = cvxopt.solvers.qp(*args)
     if 'optimal' not in sol['status']:
-        return None
+        return None, sol
     return np.array(sol['x']).reshape((P.shape[1],)), sol
 
 def optimize_streamfunctions(meshobj, bfield_specification,
@@ -43,18 +43,31 @@ def optimize_streamfunctions(meshobj, bfield_specification,
 
     Optional Laplacian smoothing of inductance matrix.
 
-    Parameters:
-        meshobj: MeshWrapper object
-        bfield_specification: list in which element is a dictionary containing a field specification. Each dict contains:
-                C: Coupling matrix n_verts x n_verts
-                target_field: n_r x 3
-                abs_error: float
-                rel_error: float
-        objective: string or dict
-            if string, either 'minimum_inductive_energy' or 'minimum_resistive_energy'
-            if tuple, should contain: (a, b), where a and b are floats 0-1 describing the inductive and resitive weighting factors
-        laplacian_smooth: float
-        tolerance: float
+    Parameters
+    ----------
+    meshobj: MeshWrapper object
+        Contains Trimesh mesh
+    bfield_specification: list
+        List in which element is a dictionary containing a field specification.
+        Each dict contains:
+        C: Coupling matrix n_verts x n_verts
+        target_field: n_r x 3
+        abs_error: float
+        rel_error: float
+    objective: string or dict
+        if string, either 'minimum_inductive_energy' or 'minimum_resistive_energy'
+        if tuple, should contain: (a, b), where a and b are floats 0-1 describing the inductive and resitive weighting factors
+    laplacian_smooth: float
+    tolerance: float
+
+    Returns
+    -------
+    I: vector
+        Vector with length len(`meshobj.mesh.vertices`), containing the optimized current density values
+        at each mesh vertex
+    sol: dict
+        Dict containing solution info and diagnostics supplied by cvxopt
+
     '''
 
     if objective == 'minimum_inductive_energy':

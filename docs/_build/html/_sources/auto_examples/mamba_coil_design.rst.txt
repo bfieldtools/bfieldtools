@@ -14,6 +14,7 @@ Compact example of a biplanar coil producing homogeneous field in a number of ta
 regions arranged in a grid.
 
 
+
 .. code-block:: default
 
 
@@ -63,6 +64,18 @@ regions arranged in a grid.
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    shapely.geometry.Polygon not available!
+    Traceback (most recent call last):
+      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py", line 22, in <module>
+        from shapely.geometry import Polygon
+    ModuleNotFoundError: No module named 'shapely'
+
 
 
 Set up target and stray field points. Here, the target points are on a planar
@@ -107,7 +120,20 @@ Set up target and stray field points. Here, the target points are on a planar
 
     target_field = np.array([np.zeros((len(target_field),)), target_field, np.zeros((len(target_field),))]).T
 
-    #Plot target points and mesh
+
+
+
+
+
+
+Plot target points and mesh
+
+
+.. code-block:: default
+
+    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                   size=(800, 800))
+
     mlab.quiver3d(*target_points.T, *target_field.T)
     coil.plot_mesh()
 
@@ -141,7 +167,7 @@ Compute C matrices that are used to compute the generated magnetic field, create
 
  .. code-block:: none
 
-    Computing C matrix, 3184 vertices by 512 target points... took 0.84 seconds.
+    Computing C matrix, 3184 vertices by 512 target points... took 0.81 seconds.
 
 
 
@@ -173,23 +199,20 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 5 chunks since 3 GiB memory is available...
-    Calculating potentials, chunk 1/5
-    Calculating potentials, chunk 2/5
-    Calculating potentials, chunk 3/5
-    Calculating potentials, chunk 4/5
-    Calculating potentials, chunk 5/5
-    Inductance matrix computation took 79.38 seconds.
+    Computing inductance matrix in 2 chunks since 9 GiB memory is available...
+    Calculating potentials, chunk 1/2
+    Calculating potentials, chunk 2/2
+    Inductance matrix computation took 72.86 seconds.
     Scaling matrices before optimization. This requires singular value computation, hold on.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
-     0:  1.6068e+01  2.8227e+01  5e+03  4e+00  3e-14
+     0:  1.6068e+01  2.8227e+01  5e+03  4e+00  2e-14
      1:  2.1506e+01  3.1514e+01  4e+02  3e-01  2e-14
-     2:  3.2340e+01  5.2495e+01  2e+02  1e-01  4e-14
-     3:  3.7329e+01  6.8586e+01  2e+02  1e-01  1e-13
-     4:  6.5414e+01  1.2704e+02  2e+02  7e-02  1e-12
+     2:  3.2340e+01  5.2495e+01  2e+02  1e-01  3e-14
+     3:  3.7329e+01  6.8586e+01  2e+02  1e-01  9e-14
+     4:  6.5414e+01  1.2704e+02  2e+02  7e-02  9e-13
      5:  7.9337e+01  1.5876e+02  1e+02  5e-02  2e-12
-     6:  8.4357e+01  2.2902e+02  1e+02  4e-02  6e-12
+     6:  8.4357e+01  2.2902e+02  1e+02  4e-02  4e-12
      7:  8.6149e+01  4.0152e+02  2e+02  4e-02  6e-12
     Optimal solution found.
 
@@ -202,7 +225,7 @@ Plot coil windings and target points
 
 
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-               size=(480, 480))
+               size=(800, 800))
     mlab.clf()
 
     surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
@@ -228,7 +251,7 @@ Plot coil windings and target points
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  31.093 seconds)
+   **Total running time of the script:** ( 1 minutes  29.448 seconds)
 
 
 .. _sphx_glr_download_auto_examples_mamba_coil_design.py:

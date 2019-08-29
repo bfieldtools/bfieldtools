@@ -30,6 +30,10 @@ tri_centers = planemesh.vertices[planemesh.faces].mean(axis=1).T
 g = gradient(vals, planemesh, rotated=False)
 
 # Plot function and its gradient as arrows
+
+scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+               size=(800, 800))
+
 mlab.triangular_mesh(*planemesh.vertices.T, planemesh.faces, scalars=vals)
 mlab.quiver3d(*tri_centers, *g, colormap='viridis')
 
@@ -38,6 +42,8 @@ mlab.quiver3d(*tri_centers, *g, colormap='viridis')
 g = gradient(vals, planemesh, rotated=True)
 
 # Plot function and its gradient as arrows
-mlab.figure()
+scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+               size=(800, 800))
+
 mlab.triangular_mesh(*planemesh.vertices.T, planemesh.faces, scalars=vals)
 mlab.quiver3d(*tri_centers, *g, colormap='viridis')

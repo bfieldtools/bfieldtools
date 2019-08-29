@@ -29,8 +29,7 @@ coilmesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 
 
 coilmesh.apply_scale(0.75)
 
-
-#coilmesh.vertices, coilmesh.faces = trimesh.remesh.subdivide(coilmesh.vertices, coilmesh.faces)
+coilmesh.vertices, coilmesh.faces = trimesh.remesh.subdivide(coilmesh.vertices, coilmesh.faces)
 
 #Specify offset from origin
 center_offset = np.array([0, 0, 0.75])
@@ -70,6 +69,10 @@ target_points = target_points[np.linalg.norm(target_points, axis=1) < sidelength
 
 
 #Plot coil, shield and target points
+
+f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                size=(800, 800))
+
 coil.plot_mesh()
 shield.plot_mesh()
 mlab.points3d(*target_points.T)
@@ -124,7 +127,7 @@ shield.induced_I = shield.coupling @ coil.I
 # Plot coil windings and target points
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-           size=(480, 480))
+           size=(800, 800))
 mlab.clf()
 
 surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
@@ -163,7 +166,7 @@ coil.unshielded_I, coil.unshielded_sol = optimize_streamfunctions(coil,
 shield.unshielded_induced_I = shield.coupling @ coil.unshielded_I
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-           size=(480, 480))
+                size=(800, 800))
 mlab.clf()
 
 surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.unshielded_I)

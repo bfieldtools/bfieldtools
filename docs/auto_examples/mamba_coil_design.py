@@ -49,7 +49,7 @@ joined_planes = coil_plus.union(coil_minus)
 #Create mesh class object
 coil = MeshWrapper(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
 
-############################################################### 
+###############################################################
 # Set up target and stray field points. Here, the target points are on a planar
 # 4x4 grid slightly smaller than the coil dimensions.
 
@@ -88,7 +88,11 @@ target_field = np.asarray(target_field).reshape((-1,))
 
 target_field = np.array([np.zeros((len(target_field),)), target_field, np.zeros((len(target_field),))]).T
 
-#Plot target points and mesh
+###############################################################
+# Plot target points and mesh
+scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+               size=(800, 800))
+
 mlab.quiver3d(*target_points.T, *target_field.T)
 coil.plot_mesh()
 
@@ -119,7 +123,7 @@ coil.I, coil.sol = optimize_streamfunctions(coil,
 # Plot coil windings and target points
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-           size=(480, 480))
+           size=(800, 800))
 mlab.clf()
 
 surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)

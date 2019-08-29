@@ -18,14 +18,22 @@ def tri_normals_and_areas(r, tri):
     return n, a
 
 
-def get_quad_points(verts, tris, method='SevenPoint', index=None):
+def get_quad_points(verts, tris, method='sevenpoint', index=None):
     """ Get quad points and weights from quadrature rules implemented in
         quadpy
 
-        Returns:
+        Parameters
+        ----------
+        verts: array-like [Nverts x 3]
+        tris: array-like [Ntris x 3]
 
-        w: weights (Nquad)
-        qp: quadrature points in each triangle (Ntris, Nquad)
+        Returns
+        -------
+        w: array-like  (Nquad, )
+            quadrature weights
+        qp: array-like (Ntris, Nquad)
+            quadrature points in each triangle
+
     """
     methods = [k for k in quadpy.triangle.__dict__.keys()]# if k[0].isupper()]
     if method in methods:
@@ -111,7 +119,7 @@ def assemble_matrix2(tris1, tris2, Nverts1, Nverts2, triangle_data):
 def dual_areas(tris, ta):
     """ Calculate (dual) areas for each node in inds
 
-        Dual area == area summed over the neighbouring triangles divide by 3
+        Dual area == area summed over the neighbouring triangles divided by 3
     """
     areas = np.zeros(np.max(tris)+1)
     for i in range(tris.shape[0]):
@@ -127,6 +135,20 @@ def find_mesh_boundaries(verts, tris, edges):
     belong to a single triangle. Returns an index array of inner vertices
     and triangles that do not touch the outer boundary.
     Takes edge parameter for convenience.
+
+    Parameters
+    ----------
+    verts
+    tris
+    edges
+
+    Returns
+    -------
+    boundary_verts
+    inner_verts
+    boundary_tris
+    inner_tris
+
     '''
 
     unique, unique_idx, unique_count = np.unique(np.sort(edges, axis=-1), axis=0,
@@ -239,8 +261,16 @@ def fix_normals(mesh, origin = np.array([0, 0, 0])):
     Attempts to fix face windings and normals such that normals are always "pointing out"
     from the origin.
 
-    Parameters:
-        mesh: Trimesh mesh object
+    Parameters
+    ----------
+    mesh: Trimesh mesh object
+    origin: array-like (3, )
+        Specified from where the normals should "point out"
+
+    Returns
+    -------
+    mesh: modified Trimesh object
+
 
     '''
 

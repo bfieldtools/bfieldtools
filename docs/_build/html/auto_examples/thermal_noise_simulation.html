@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
     <title>Thermal noise computation &#8212; bfieldtools 0.1 documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,22 +16,86 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="MAMBA coil" href="mamba_coil_design.html" />
     <link rel="prev" title="Interpolate stream function" href="interpolate_example.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
-  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          bfieldtools</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
 
-          <div class="body" role="main">
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
             
+                <li><a href="../readme.html">Readme</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../literature.html">Literature</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Example gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/modules.html">API Reference</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/auto_examples/thermal_noise_simulation.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-thermal-noise-simulation-py"><span class="std std-ref">here</span></a> to download the full example code</p>
@@ -107,30 +170,34 @@ AC: AC Bnoise of a unit disc at one position</p>
 </ul>
 <img alt="../_images/sphx_glr_thermal_noise_simulation_003.png" class="sphx-glr-single-img" src="../_images/sphx_glr_thermal_noise_simulation_003.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/rzetter/Documents/bfieldtools/bfieldtools/thermal_noise.py:46: RuntimeWarning: invalid value encountered in sqrt
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-/home/rzetter/Documents/bfieldtools/bfieldtools/thermal_noise.py:46: RuntimeWarning: invalid value encountered in sqrt
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+/l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-/home/rzetter/Documents/bfieldtools/bfieldtools/thermal_noise.py:46: RuntimeWarning: invalid value encountered in sqrt
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+/l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-/home/rzetter/Documents/bfieldtools/bfieldtools/thermal_noise.py:46: RuntimeWarning: invalid value encountered in sqrt
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+/l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-/home/rzetter/Documents/bfieldtools/bfieldtools/thermal_noise.py:46: RuntimeWarning: invalid value encountered in sqrt
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+/l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-/home/rzetter/Documents/bfieldtools/bfieldtools/thermal_noise.py:46: RuntimeWarning: invalid value encountered in sqrt
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+/l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-/home/rzetter/Documents/bfieldtools/bfieldtools/thermal_noise.py:46: RuntimeWarning: invalid value encountered in sqrt
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+/l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.11 seconds.
-Computing C matrix, 2562 vertices by 1 target points... took 0.10 seconds.
-Computing C matrix, 2562 vertices by 1 target points... took 0.11 seconds.
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+/l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
+  vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+/l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
+  vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
 </pre></div>
 </div>
 </div>
@@ -177,7 +244,7 @@ Computing C matrix, 2562 vertices by 1 target points... took 0.11 seconds.
 </ul>
 <img alt="../_images/sphx_glr_thermal_noise_simulation_006.png" class="sphx-glr-single-img" src="../_images/sphx_glr_thermal_noise_simulation_006.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 1207 vertices by 30 target points... took 0.07 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 1207 vertices by 30 target points... took 0.04 seconds.
 </pre></div>
 </div>
 </div>
@@ -246,13 +313,13 @@ Frequency 788.046282 computed
 Frequency 1000.000000 computed
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  13.467 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  4.571 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-thermal-noise-simulation-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/14916049361764c5f9c58b54f5386dab/thermal_noise_simulation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">thermal_noise_simulation.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/341674340c412e0adbe2d5121a09a9a2/thermal_noise_simulation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">thermal_noise_simulation.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/724928980d3dc452dd763eac6ec73b3f/thermal_noise_simulation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">thermal_noise_simulation.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/90300a945ea493f34e07109a0b371496/thermal_noise_simulation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">thermal_noise_simulation.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -260,90 +327,21 @@ Frequency 1000.000000 computed
 </div>
 
 
-          </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">bfieldtools</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../readme.html">Readme</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../literature.html">Literature</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Example gallery</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="gradient_example.html">Gradient computation example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="interpolate_example.html">Interpolate stream function</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Thermal noise computation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#unit-sphere">Unit sphere</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#unit-disc-dc-noise">Unit disc, DC noise</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#unit-disc-ac-mode">Unit disc, AC mode</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="mamba_coil_design.html">MAMBA coil</a></li>
-<li class="toctree-l2"><a class="reference internal" href="shielded_cylindrical_coil_design.html">Shielded cylindrical coil</a></li>
-<li class="toctree-l2"><a class="reference internal" href="biplanar_coil_design.html">Biplanar coil design</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../source/modules.html">API Reference</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">Example gallery</a><ul>
-      <li>Previous: <a href="interpolate_example.html" title="previous chapter">Interpolate stream function</a></li>
-      <li>Next: <a href="mamba_coil_design.html" title="next chapter">MAMBA coil</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
     </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2019, Rasmus Zetter, Antti Mäkinen, Joonas Iivanainen.
       
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
       
-      |
-      <a href="../_sources/auto_examples/thermal_noise_simulation.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
-    
-
-    
+    </p>
+    <p>
+        &copy; Copyright 2019, Rasmus Zetter, Antti Mäkinen, Joonas Iivanainen.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+    </p>
+  </div>
+</footer>
   </body>
 </html>

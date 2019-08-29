@@ -14,6 +14,7 @@ Example showing a basic biplanar coil producing homogeneous field in a target
 region between the two coil planes.
 
 
+
 .. code-block:: default
 
 
@@ -27,6 +28,7 @@ region between the two coil planes.
     from bfieldtools.mesh_class import MeshWrapper
     from bfieldtools.magnetic_field_mesh import compute_C
     from bfieldtools.coil_optimize import optimize_streamfunctions
+    from bfieldtools.contour import scalar_contour
 
     import pkg_resources
 
@@ -60,6 +62,18 @@ region between the two coil planes.
 
 
 
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    shapely.geometry.Polygon not available!
+    Traceback (most recent call last):
+      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py", line 22, in <module>
+        from shapely.geometry import Polygon
+    ModuleNotFoundError: No module named 'shapely'
 
 
 
@@ -134,8 +148,8 @@ Compute C matrices that are used to compute the generated magnetic field
 
  .. code-block:: none
 
-    Computing C matrix, 3184 vertices by 672 target points... took 1.04 seconds.
-    Computing C matrix, 3184 vertices by 2562 target points... took 2.47 seconds.
+    Computing C matrix, 3184 vertices by 672 target points... took 0.95 seconds.
+    Computing C matrix, 3184 vertices by 2562 target points... took 2.64 seconds.
 
 
 
@@ -147,11 +161,13 @@ Create bfield specifications used when optimizing the coil geometry
 
     #The absolute target field amplitude is not of importance,
     # and it is scaled to match the C matrix in the optimization function
+
     target_field = np.zeros(target_points.shape)
     target_field[:, 0] = target_field[:, 0] + 1
 
     target_spec = {'C':coil.C, 'rel_error':0.01, 'abs_error':0, 'target_field':target_field}
     stray_spec = {'C':coil.strayC, 'abs_error':0.01, 'rel_error':0, 'target_field':np.zeros((n_stray_points, 3))}
+
 
 
 
@@ -186,27 +202,22 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 7 chunks since 2 GiB memory is available...
-    Calculating potentials, chunk 1/7
-    Calculating potentials, chunk 2/7
-    Calculating potentials, chunk 3/7
-    Calculating potentials, chunk 4/7
-    Calculating potentials, chunk 5/7
-    Calculating potentials, chunk 6/7
-    Calculating potentials, chunk 7/7
-    Inductance matrix computation took 79.51 seconds.
+    Computing inductance matrix in 2 chunks since 9 GiB memory is available...
+    Calculating potentials, chunk 1/2
+    Calculating potentials, chunk 2/2
+    Inductance matrix computation took 77.44 seconds.
     Scaling matrices before optimization. This requires singular value computation, hold on.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
-     0:  1.0500e+02  3.7757e+02  3e+04  5e+00  6e-14
-     1:  1.5336e+02  4.0199e+02  3e+03  6e-01  5e-14
-     2:  4.4248e+02  9.2422e+02  1e+03  1e-01  9e-14
-     3:  4.6255e+02  1.0365e+03  1e+03  1e-01  1e-13
-     4:  5.3592e+02  1.4638e+03  9e+02  8e-02  2e-13
+     0:  1.0500e+02  3.7757e+02  3e+04  5e+00  3e-14
+     1:  1.5336e+02  4.0199e+02  3e+03  6e-01  3e-14
+     2:  4.4248e+02  9.2422e+02  1e+03  1e-01  7e-14
+     3:  4.6255e+02  1.0365e+03  1e+03  1e-01  7e-14
+     4:  5.3592e+02  1.4638e+03  9e+02  8e-02  1e-13
      5:  5.6696e+02  3.6612e+03  1e+03  8e-02  3e-13
-     6:  5.6809e+02  3.7241e+03  1e+03  8e-02  4e-13
-     7:  5.7281e+02  3.9155e+03  1e+03  8e-02  6e-13
-     8:  6.2388e+02  5.2786e+03  1e+03  8e-02  3e-12
+     6:  5.6809e+02  3.7241e+03  1e+03  8e-02  3e-13
+     7:  5.7281e+02  3.9155e+03  1e+03  8e-02  5e-13
+     8:  6.2388e+02  5.2786e+03  1e+03  8e-02  2e-12
     Optimal solution found.
 
 
@@ -218,7 +229,7 @@ Plot coil windings and target points
 
 
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-               size=(480, 480))
+               size=(800, 800))
     mlab.clf()
 
     surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
@@ -296,98 +307,53 @@ Plot field falloff on two axes
 
  .. code-block:: none
 
-    Computing C matrix, 3184 vertices by 101 target points... took 0.20 seconds.
-    Computing C matrix, 3184 vertices by 101 target points... took 0.18 seconds.
-    /home/rzetter/Documents/bfieldtools/examples/biplanar_coil_design.py:178: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+    Computing C matrix, 3184 vertices by 101 target points... took 0.17 seconds.
+    Computing C matrix, 3184 vertices by 101 target points... took 0.16 seconds.
+    /l/bfieldtools/examples/biplanar_coil_design.py:181: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
       plt.show()
 
 
 
-Extract stream function isosurfaces/contours as polygons
+Extract stream function isosurfaces/contours as polygons,
+plot with current directions
 
 
 .. code-block:: default
 
 
     scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                   size=(480, 480))
+                   size=(800, 800))
     mlab.clf()
 
-    surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
-
-    #Compute contour values
-    n_contours = 10
-    #
-    #    contours = []
-    #
-    #    I_max = np.max(coil[stack].I)
-    #    I_min  = np.min(coil[stack].I)
-    #    for contour_idx in range(1, n_contours+1):
-    #        contours.append(I_min + (2 * contour_idx - 1) * (I_max - I_min) / (2 * n_contours))
-    #
+    N_contours = 10
 
 
-    windings = mlab.pipeline.contour_surface(surface, contours=n_contours)
-    scene.scene.isometric_view()
+    contour_polys = scalar_contour(coil.mesh, coil.I, N_contours=N_contours)
 
 
-    #Squeeze out the data from the contour plot. Ugly, I know.
-    c=windings.trait_get('contour')['contour'].get_output_dataset()
+    for loop in contour_polys:
+        mlab.plot3d(*loop.T,
+                    color=(1,0,0), tube_radius=None)
 
-    #points on the contour loops
-    points = c.points.to_array()
-
-    #contour line scalar value, sets current direction
-    scalars = c.point_data.scalars.to_array()
-
-    #Ugly, crappy structure containing continuous triangle edges for which
-    # the second edge in the triangle is the edge of a loop.
-    # These are not ordered in any sensible manner. Blergh.
-    lines = c.lines.to_array()
-    larr = np.asarray(lines).reshape([-1, 3])[:,1:]
-
-
-    #Start by finding the separate loops
-    loops = trimesh.graph.connected_components(larr)
-
-    n_loops = len(loops)
-
-    loop_polygons = []
-
-    #Now go through the edges in each loop, one by one
-    for loop_idx, loop in enumerate(loops):
-
-        loop_polygons.append([])
-        node_idx = loop[0] #Start with the first node we know is present in the loop
-
-        #Build a table of used nodes so we don't go around infinitely
-        node_used = [False]*len(points)
-
-        #Start looping
-        while node_idx < len(points):
-
-            if node_used[node_idx]:
-
-    #                print('Encountered used node, stopping')
-
-                #Close loop by adding initial node
-                loop_polygons[loop_idx].append(node_idx)
-                break
-            else:
-                node_used[node_idx] = True
-                loop_polygons[loop_idx].append(node_idx)
-
-                #For which edge is our current node the FIRST node?
-                edge_idx = np.where(larr[:, 0] == node_idx)[0][0]
-
-                #Now take the SECOND node from that edge, that is our new current node
-                node_idx = larr[edge_idx, 1]
+        mlab.quiver3d(*loop[0,:].T,
+                  *(loop[0,:].T - loop[1,:].T),
+                  mode='cone', scale_mode='none',
+                  scale_factor=0.5,
+                  color=(1, 0, 0))
 
 
 
 
-.. image:: /auto_examples/images/sphx_glr_biplanar_coil_design_003.png
-    :class: sphx-glr-single-img
+.. code-block:: pytb
+
+    Traceback (most recent call last):
+      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 480, in _memory_usage
+        out = func()
+      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 465, in __call__
+        exec(self.code, self.globals)
+      File "/l/bfieldtools/examples/biplanar_coil_design.py", line 199, in <module>
+        mlab.plot3d(*loop.T,
+    AttributeError: 'list' object has no attribute 'T'
 
 
 
@@ -397,6 +363,7 @@ Compute magnetic field from discrete current line segments
 
 .. code-block:: default
 
+
     Bseg_target = np.zeros(B_target.shape)
 
     Bseg_line1 = np.zeros(B_line1.shape)
@@ -404,14 +371,14 @@ Compute magnetic field from discrete current line segments
 
     from bfieldtools.bfield_line import bfield_line_segments
 
-    for loop_idx in range(n_loops):
-        Bseg_target += bfield_line_segments(points[loop_polygons[loop_idx]],
+    for loop in contour_polys:
+        Bseg_target += bfield_line_segments(loop,
                              target_points)
 
-        Bseg_line1 += bfield_line_segments(points[loop_polygons[loop_idx]],
+        Bseg_line1 += bfield_line_segments(loop,
                              np.array([x1, y1, z1]).T)
 
-        Bseg_line2 += bfield_line_segments(points[loop_polygons[loop_idx]],
+        Bseg_line2 += bfield_line_segments(loop,
                          np.array([x2, y2, z2]).T)
 
 
@@ -435,32 +402,14 @@ Compute magnetic field from discrete current line segments
     plt.grid(True, which='minor', axis='y')
     plt.grid(True, which='major', axis='y', color='k')
     plt.grid(True, which='major', axis='x')
-    plt.title('Field from discrete line segments, N_contours: %d'%n_contours)
+    plt.title('Field from discrete line segments, N_contours: %d'%N_contours)
 
     plt.legend()
 
 
-
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image:: /auto_examples/images/sphx_glr_biplanar_coil_design_004.png
-            :class: sphx-glr-multi-img
-
-    *
-
-      .. image:: /auto_examples/images/sphx_glr_biplanar_coil_design_005.png
-            :class: sphx-glr-multi-img
-
-
-
-
-
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  9.576 seconds)
+   **Total running time of the script:** ( 2 minutes  2.298 seconds)
 
 
 .. _sphx_glr_download_auto_examples_biplanar_coil_design.py:

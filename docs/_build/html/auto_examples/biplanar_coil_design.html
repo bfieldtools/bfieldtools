@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
     <title>Biplanar coil design &#8212; bfieldtools 0.1 documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,22 +16,86 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="API Reference" href="../source/modules.html" />
     <link rel="prev" title="Shielded cylindrical coil" href="shielded_cylindrical_coil_design.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
-  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          bfieldtools</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
 
-          <div class="body" role="main">
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
             
+                <li><a href="../readme.html">Readme</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../literature.html">Literature</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Example gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/modules.html">API Reference</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/auto_examples/biplanar_coil_design.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-biplanar-coil-design-py"><span class="std std-ref">here</span></a> to download the full example code</p>
@@ -50,6 +113,7 @@ region between the two coil planes.</p>
 <span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">MeshWrapper</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.magnetic_field_mesh</span> <span class="k">import</span> <span class="n">compute_C</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="k">import</span> <span class="n">optimize_streamfunctions</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="k">import</span> <span class="n">scalar_contour</span>
 
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 
@@ -79,6 +143,14 @@ region between the two coil planes.</p>
 
 <span class="c1">#Create mesh class object</span>
 <span class="n">coil</span> <span class="o">=</span> <span class="n">MeshWrapper</span><span class="p">(</span><span class="n">verts</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">tris</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>shapely.geometry.Polygon not available!
+Traceback (most recent call last):
+  File &quot;/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py&quot;, line 22, in &lt;module&gt;
+    from shapely.geometry import Polygon
+ModuleNotFoundError: No module named &#39;shapely&#39;
 </pre></div>
 </div>
 <p>Set up target and stray field points</p>
@@ -126,13 +198,14 @@ region between the two coil planes.</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3184 vertices by 672 target points... took 1.04 seconds.
-Computing C matrix, 3184 vertices by 2562 target points... took 2.47 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3184 vertices by 672 target points... took 0.95 seconds.
+Computing C matrix, 3184 vertices by 2562 target points... took 2.64 seconds.
 </pre></div>
 </div>
 <p>Create bfield specifications used when optimizing the coil geometry</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#The absolute target field amplitude is not of importance,</span>
 <span class="c1"># and it is scaled to match the C matrix in the optimization function</span>
+
 <span class="n">target_field</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">target_points</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="n">target_field</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">target_field</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
 
@@ -153,33 +226,28 @@ Computing C matrix, 3184 vertices by 2562 target points... took 2.47 seconds.
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 7 chunks since 2 GiB memory is available...
-Calculating potentials, chunk 1/7
-Calculating potentials, chunk 2/7
-Calculating potentials, chunk 3/7
-Calculating potentials, chunk 4/7
-Calculating potentials, chunk 5/7
-Calculating potentials, chunk 6/7
-Calculating potentials, chunk 7/7
-Inductance matrix computation took 79.51 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 2 chunks since 9 GiB memory is available...
+Calculating potentials, chunk 1/2
+Calculating potentials, chunk 2/2
+Inductance matrix computation took 77.44 seconds.
 Scaling matrices before optimization. This requires singular value computation, hold on.
 Solving quadratic programming problem using cvxopt...
      pcost       dcost       gap    pres   dres
- 0:  1.0500e+02  3.7757e+02  3e+04  5e+00  6e-14
- 1:  1.5336e+02  4.0199e+02  3e+03  6e-01  5e-14
- 2:  4.4248e+02  9.2422e+02  1e+03  1e-01  9e-14
- 3:  4.6255e+02  1.0365e+03  1e+03  1e-01  1e-13
- 4:  5.3592e+02  1.4638e+03  9e+02  8e-02  2e-13
+ 0:  1.0500e+02  3.7757e+02  3e+04  5e+00  3e-14
+ 1:  1.5336e+02  4.0199e+02  3e+03  6e-01  3e-14
+ 2:  4.4248e+02  9.2422e+02  1e+03  1e-01  7e-14
+ 3:  4.6255e+02  1.0365e+03  1e+03  1e-01  7e-14
+ 4:  5.3592e+02  1.4638e+03  9e+02  8e-02  1e-13
  5:  5.6696e+02  3.6612e+03  1e+03  8e-02  3e-13
- 6:  5.6809e+02  3.7241e+03  1e+03  8e-02  4e-13
- 7:  5.7281e+02  3.9155e+03  1e+03  8e-02  6e-13
- 8:  6.2388e+02  5.2786e+03  1e+03  8e-02  3e-12
+ 6:  5.6809e+02  3.7241e+03  1e+03  8e-02  3e-13
+ 7:  5.7281e+02  3.9155e+03  1e+03  8e-02  5e-13
+ 8:  6.2388e+02  5.2786e+03  1e+03  8e-02  2e-12
 Optimal solution found.
 </pre></div>
 </div>
 <p>Plot coil windings and target points</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-           <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">480</span><span class="p">,</span> <span class="mi">480</span><span class="p">))</span>
+           <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
 <span class="n">mlab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 
 <span class="n">surface</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">triangular_mesh_source</span><span class="p">(</span><span class="o">*</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span><span class="n">scalars</span><span class="o">=</span><span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
@@ -233,89 +301,45 @@ Optimal solution found.
 </div>
 <img alt="../_images/sphx_glr_biplanar_coil_design_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_biplanar_coil_design_002.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3184 vertices by 101 target points... took 0.20 seconds.
-Computing C matrix, 3184 vertices by 101 target points... took 0.18 seconds.
-/home/rzetter/Documents/bfieldtools/examples/biplanar_coil_design.py:178: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3184 vertices by 101 target points... took 0.17 seconds.
+Computing C matrix, 3184 vertices by 101 target points... took 0.16 seconds.
+/l/bfieldtools/examples/biplanar_coil_design.py:181: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
   plt.show()
 </pre></div>
 </div>
-<p>Extract stream function isosurfaces/contours as polygons</p>
+<p>Extract stream function isosurfaces/contours as polygons,
+plot with current directions</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scene</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-               <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">480</span><span class="p">,</span> <span class="mi">480</span><span class="p">))</span>
+               <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
 <span class="n">mlab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 
-<span class="n">surface</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">triangular_mesh_source</span><span class="p">(</span><span class="o">*</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span><span class="n">scalars</span><span class="o">=</span><span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
-
-<span class="c1">#Compute contour values</span>
-<span class="n">n_contours</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="c1">#</span>
-<span class="c1">#    contours = []</span>
-<span class="c1">#</span>
-<span class="c1">#    I_max = np.max(coil[stack].I)</span>
-<span class="c1">#    I_min  = np.min(coil[stack].I)</span>
-<span class="c1">#    for contour_idx in range(1, n_contours+1):</span>
-<span class="c1">#        contours.append(I_min + (2 * contour_idx - 1) * (I_max - I_min) / (2 * n_contours))</span>
-<span class="c1">#</span>
+<span class="n">N_contours</span> <span class="o">=</span> <span class="mi">10</span>
 
 
-<span class="n">windings</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">contour_surface</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">contours</span><span class="o">=</span><span class="n">n_contours</span><span class="p">)</span>
-<span class="n">scene</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">isometric_view</span><span class="p">()</span>
+<span class="n">contour_polys</span> <span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="n">N_contours</span><span class="p">)</span>
 
 
-<span class="c1">#Squeeze out the data from the contour plot. Ugly, I know.</span>
-<span class="n">c</span><span class="o">=</span><span class="n">windings</span><span class="o">.</span><span class="n">trait_get</span><span class="p">(</span><span class="s1">&#39;contour&#39;</span><span class="p">)[</span><span class="s1">&#39;contour&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get_output_dataset</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">loop</span> <span class="ow">in</span> <span class="n">contour_polys</span><span class="p">:</span>
+    <span class="n">mlab</span><span class="o">.</span><span class="n">plot3d</span><span class="p">(</span><span class="o">*</span><span class="n">loop</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+                <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">tube_radius</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
-<span class="c1">#points on the contour loops</span>
-<span class="n">points</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">to_array</span><span class="p">()</span>
-
-<span class="c1">#contour line scalar value, sets current direction</span>
-<span class="n">scalars</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">point_data</span><span class="o">.</span><span class="n">scalars</span><span class="o">.</span><span class="n">to_array</span><span class="p">()</span>
-
-<span class="c1">#Ugly, crappy structure containing continuous triangle edges for which</span>
-<span class="c1"># the second edge in the triangle is the edge of a loop.</span>
-<span class="c1"># These are not ordered in any sensible manner. Blergh.</span>
-<span class="n">lines</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">to_array</span><span class="p">()</span>
-<span class="n">larr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])[:,</span><span class="mi">1</span><span class="p">:]</span>
-
-
-<span class="c1">#Start by finding the separate loops</span>
-<span class="n">loops</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">larr</span><span class="p">)</span>
-
-<span class="n">n_loops</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">loops</span><span class="p">)</span>
-
-<span class="n">loop_polygons</span> <span class="o">=</span> <span class="p">[]</span>
-
-<span class="c1">#Now go through the edges in each loop, one by one</span>
-<span class="k">for</span> <span class="n">loop_idx</span><span class="p">,</span> <span class="n">loop</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">loops</span><span class="p">):</span>
-
-    <span class="n">loop_polygons</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
-    <span class="n">node_idx</span> <span class="o">=</span> <span class="n">loop</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1">#Start with the first node we know is present in the loop</span>
-
-    <span class="c1">#Build a table of used nodes so we don&#39;t go around infinitely</span>
-    <span class="n">node_used</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
-
-    <span class="c1">#Start looping</span>
-    <span class="k">while</span> <span class="n">node_idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">):</span>
-
-        <span class="k">if</span> <span class="n">node_used</span><span class="p">[</span><span class="n">node_idx</span><span class="p">]:</span>
-
-<span class="c1">#                print(&#39;Encountered used node, stopping&#39;)</span>
-
-            <span class="c1">#Close loop by adding initial node</span>
-            <span class="n">loop_polygons</span><span class="p">[</span><span class="n">loop_idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node_idx</span><span class="p">)</span>
-            <span class="k">break</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">node_used</span><span class="p">[</span><span class="n">node_idx</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">loop_polygons</span><span class="p">[</span><span class="n">loop_idx</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node_idx</span><span class="p">)</span>
-
-            <span class="c1">#For which edge is our current node the FIRST node?</span>
-            <span class="n">edge_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">larr</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">node_idx</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-
-            <span class="c1">#Now take the SECOND node from that edge, that is our new current node</span>
-            <span class="n">node_idx</span> <span class="o">=</span> <span class="n">larr</span><span class="p">[</span><span class="n">edge_idx</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">loop</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+              <span class="o">*</span><span class="p">(</span><span class="n">loop</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">loop</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span><span class="p">),</span>
+              <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;cone&#39;</span><span class="p">,</span> <span class="n">scale_mode</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span>
+              <span class="n">scale_factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+              <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 </pre></div>
 </div>
-<img alt="../_images/sphx_glr_biplanar_coil_design_003.png" class="sphx-glr-single-img" src="../_images/sphx_glr_biplanar_coil_design_003.png" />
+<div class="highlight-pytb notranslate"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;</span>, line <span class="m">480</span>, in <span class="n">_memory_usage</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
+  File <span class="nb">&quot;/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;</span>, line <span class="m">465</span>, in <span class="n">__call__</span>
+    <span class="k">exec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">globals</span><span class="p">)</span>
+  File <span class="nb">&quot;/l/bfieldtools/examples/biplanar_coil_design.py&quot;</span>, line <span class="m">199</span>, in <span class="n">&lt;module&gt;</span>
+    <span class="n">mlab</span><span class="o">.</span><span class="n">plot3d</span><span class="p">(</span><span class="o">*</span><span class="n">loop</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+<span class="gr">AttributeError</span>: <span class="n">&#39;list&#39; object has no attribute &#39;T&#39;</span>
+</pre></div>
+</div>
 <p>Compute magnetic field from discrete current line segments</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Bseg_target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">B_target</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
@@ -324,14 +348,14 @@ Computing C matrix, 3184 vertices by 101 target points... took 0.18 seconds.
 
 <span class="kn">from</span> <span class="nn">bfieldtools.bfield_line</span> <span class="k">import</span> <span class="n">bfield_line_segments</span>
 
-<span class="k">for</span> <span class="n">loop_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_loops</span><span class="p">):</span>
-    <span class="n">Bseg_target</span> <span class="o">+=</span> <span class="n">bfield_line_segments</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="n">loop_polygons</span><span class="p">[</span><span class="n">loop_idx</span><span class="p">]],</span>
+<span class="k">for</span> <span class="n">loop</span> <span class="ow">in</span> <span class="n">contour_polys</span><span class="p">:</span>
+    <span class="n">Bseg_target</span> <span class="o">+=</span> <span class="n">bfield_line_segments</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span>
                          <span class="n">target_points</span><span class="p">)</span>
 
-    <span class="n">Bseg_line1</span> <span class="o">+=</span> <span class="n">bfield_line_segments</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="n">loop_polygons</span><span class="p">[</span><span class="n">loop_idx</span><span class="p">]],</span>
+    <span class="n">Bseg_line1</span> <span class="o">+=</span> <span class="n">bfield_line_segments</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span>
                          <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">z1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 
-    <span class="n">Bseg_line2</span> <span class="o">+=</span> <span class="n">bfield_line_segments</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="n">loop_polygons</span><span class="p">[</span><span class="n">loop_idx</span><span class="p">]],</span>
+    <span class="n">Bseg_line2</span> <span class="o">+=</span> <span class="n">bfield_line_segments</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span>
                      <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">z2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 
 
@@ -355,109 +379,39 @@ Computing C matrix, 3184 vertices by 101 target points... took 0.18 seconds.
 <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;minor&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Field from discrete line segments, N_contours: </span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">n_contours</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Field from discrete line segments, N_contours: </span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">N_contours</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 </pre></div>
 </div>
-<ul class="sphx-glr-horizontal">
-<li><img alt="../_images/sphx_glr_biplanar_coil_design_004.png" class="sphx-glr-multi-img" src="../_images/sphx_glr_biplanar_coil_design_004.png" />
-</li>
-<li><img alt="../_images/sphx_glr_biplanar_coil_design_005.png" class="sphx-glr-multi-img" src="../_images/sphx_glr_biplanar_coil_design_005.png" />
-</li>
-</ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  9.576 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  2.298 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-biplanar-coil-design-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/f46ee08e8c6fefd4cc9d8326ba24a178/biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">biplanar_coil_design.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/cc09500477f4c96df3dcc6a77d56c0ae/biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">biplanar_coil_design.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/7f0af4ea1e16a62651f7d1125f6be3f5/biplanar_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">biplanar_coil_design.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/2d65a7ebb1b4afcccc9561256e4d1eb4/biplanar_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">biplanar_coil_design.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
 
 
-          </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">bfieldtools</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../readme.html">Readme</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../literature.html">Literature</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Example gallery</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="gradient_example.html">Gradient computation example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="interpolate_example.html">Interpolate stream function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="thermal_noise_simulation.html">Thermal noise computation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mamba_coil_design.html">MAMBA coil</a></li>
-<li class="toctree-l2"><a class="reference internal" href="shielded_cylindrical_coil_design.html">Shielded cylindrical coil</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Biplanar coil design</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../source/modules.html">API Reference</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">Example gallery</a><ul>
-      <li>Previous: <a href="shielded_cylindrical_coil_design.html" title="previous chapter">Shielded cylindrical coil</a></li>
-      <li>Next: <a href="../source/modules.html" title="next chapter">API Reference</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
     </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2019, Rasmus Zetter, Antti Mäkinen, Joonas Iivanainen.
       
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
       
-      |
-      <a href="../_sources/auto_examples/biplanar_coil_design.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
-    
-
-    
+    </p>
+    <p>
+        &copy; Copyright 2019, Rasmus Zetter, Antti Mäkinen, Joonas Iivanainen.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+    </p>
+  </div>
+</footer>
   </body>
 </html>

@@ -12,13 +12,13 @@ def laplacian_matrix(mesh):
     """
     Sparse Laplace(-Beltrami) operator
 
-    Parameters:
+    Parameters
+    ----------
+    mesh: Trimesh Mesh object
 
-        mesh: Trimesh Mesh object
-
-    Returns:
-
-        Cotangent weights: w_ij = - 0.5* (cot(alpha) + cot(beta))
+    Returns
+    -------
+    Cotangent weights: w_ij = - 0.5* (cot(alpha) + cot(beta))
 
     """
     N = mesh.vertices.shape[0]
@@ -54,12 +54,14 @@ def mass_matrix(mesh, da=None):
     '''
     Computes mass matrix of mesh.
 
-    Parameters:
+    Parameters
+    ----------
+    mesh: Trimesh Mesh object
 
-        mesh: Trimesh Mesh object
+    Returns
+    -------
+    Mesh mass matrix (Nvertices, Nvertices)
 
-    Returns:
-        Mesh mass matrix (Nvertices, Nvertices)
     '''
     if da is None:
         da = dual_areas(mesh.faces, mesh.area_faces)
@@ -73,14 +75,16 @@ def gradient_matrix(mesh, rotated=False):
     Calculate a (rotated) gradient matrix for hat basis functions
     (stream functions) in the triangular mesh described by
 
-    Parameters:
+    Parameters
+    ----------
+    mesh: Trimesh mesh object
+    rotated: boolean
+        If True, rotate gradient 90 degrees
 
-        mesh: Trimesh mesh object
-        rotated: Boolean argument describing whether the gradient should be rotated 90 degrees
-
-    Returns:
-        Gx ,Gy, Gx (Ntris, Nverts) matrices for calculating the components
-        of gradient at triangles
+    Returns
+    -------
+    Gx ,Gy, Gx (Ntris, Nverts) matrices
+        for calculating the components of gradient at triangles
     """
     R = mesh.vertices[mesh.faces]  # Nt x 3 (corners) x 3 (xyz)
     # Calculate edge vectors for each triangle
@@ -108,12 +112,15 @@ def gradient(vals, mesh, rotated=False):
     Applies mesh (rotated) gradient matrix operator on vector that is
     defined in the vertex locations of the mesh
 
-    Parameters:
-        vals: Nv x 1 array of data to compute the gradient of
-        mesh: Trimesh object describing the triangular mesh
-        rotated: Boolean argument describing whether the gradient should be rotated 90 degrees
+    Parameters
+    ----------
+    vals: Nv x 1 array of scalar data to compute the gradient of
+    mesh: Trimesh object describing the triangular mesh
+    rotated: boolean
+        If True, rotate gradient 90 degrees
 
-    returns:
+    Returns
+    -------
         gradient (3, Ntris)
     """
     Gx, Gy, Gz = gradient_matrix(mesh, rotated)

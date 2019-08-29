@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
     <title>Shielded cylindrical coil &#8212; bfieldtools 0.1 documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,22 +16,86 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Biplanar coil design" href="biplanar_coil_design.html" />
     <link rel="prev" title="MAMBA coil" href="mamba_coil_design.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
-  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          bfieldtools</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
 
-          <div class="body" role="main">
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
             
+                <li><a href="../readme.html">Readme</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../literature.html">Literature</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Example gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/modules.html">API Reference</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/auto_examples/shielded_cylindrical_coil_design.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-shielded-cylindrical-coil-design-py"><span class="std std-ref">here</span></a> to download the full example code</p>
@@ -64,8 +127,7 @@ due to inductive interaction with the shield is minimized</p>
 
 <span class="n">coilmesh</span><span class="o">.</span><span class="n">apply_scale</span><span class="p">(</span><span class="mf">0.75</span><span class="p">)</span>
 
-
-<span class="c1">#coilmesh.vertices, coilmesh.faces = trimesh.remesh.subdivide(coilmesh.vertices, coilmesh.faces)</span>
+<span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">coilmesh</span><span class="o">.</span><span class="n">faces</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">remesh</span><span class="o">.</span><span class="n">subdivide</span><span class="p">(</span><span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">coilmesh</span><span class="o">.</span><span class="n">faces</span><span class="p">)</span>
 
 <span class="c1">#Specify offset from origin</span>
 <span class="n">center_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">])</span>
@@ -109,6 +171,10 @@ face_normals didn&#39;t match triangles, ignoring!
 
 
 <span class="c1">#Plot coil, shield and target points</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+                <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
+
 <span class="n">coil</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">()</span>
 <span class="n">shield</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">()</span>
 <span class="n">mlab</span><span class="o">.</span><span class="n">points3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
@@ -129,14 +195,13 @@ face_normals didn&#39;t match triangles, ignoring!
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 904 vertices by 672 target points... took 0.29 seconds.
-Computing C matrix, 904 vertices by 672 target points... took 0.25 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3536 vertices by 672 target points... took 1.17 seconds.
+Computing C matrix, 904 vertices by 672 target points... took 0.24 seconds.
 Calculating potentials
 Inserting stuff into M-matrix
-Computing inductance matrix in 2 chunks since 3 GiB memory is available...
-Calculating potentials, chunk 1/2
-Calculating potentials, chunk 2/2
-Inductance matrix computation took 6.56 seconds.
+Computing inductance matrix in 1 chunks since 8 GiB memory is available...
+Calculating potentials, chunk 1/1
+Inductance matrix computation took 6.03 seconds.
 </pre></div>
 </div>
 <p>Create bfield specifications used when optimizing the coil geometry</p>
@@ -166,27 +231,25 @@ Inductance matrix computation took 6.56 seconds.
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 2 chunks since 3 GiB memory is available...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 2 chunks since 8 GiB memory is available...
 Calculating potentials, chunk 1/2
 Calculating potentials, chunk 2/2
-Inductance matrix computation took 6.53 seconds.
+Inductance matrix computation took 99.05 seconds.
 Scaling matrices before optimization. This requires singular value computation, hold on.
 Solving quadratic programming problem using cvxopt...
      pcost       dcost       gap    pres   dres
- 0:  7.0329e+01  8.5233e+02  1e+04  3e+00  4e-14
- 1:  1.1200e+02  1.3006e+03  4e+03  9e-01  3e-14
- 2:  8.8397e+02  3.5543e+03  4e+03  7e-01  1e-13
- 3:  1.0167e+03  4.1404e+03  4e+03  6e-01  1e-13
- 4:  1.4675e+03  5.7429e+03  4e+03  6e-01  2e-13
- 5:  1.4551e+03  6.0872e+03  4e+03  6e-01  2e-13
- 6:  1.5981e+03  8.9223e+03  4e+03  5e-01  3e-13
- 7:  8.8022e+03  2.2771e+04  8e+03  3e-01  2e-12
+ 0:  4.5366e+01  7.7593e+02  1e+04  3e+00  4e-14
+ 1:  1.0096e+02  1.1497e+03  3e+03  9e-01  3e-14
+ 2:  5.6082e+02  2.4779e+03  3e+03  6e-01  9e-14
+ 3:  5.7943e+02  2.6428e+03  3e+03  6e-01  9e-14
+ 4:  1.0195e+03  5.8843e+03  3e+03  5e-01  2e-13
+ 5:  2.6725e+03  1.0689e+04  4e+03  4e-01  4e-13
 Optimal solution found.
 </pre></div>
 </div>
 <p>Plot coil windings and target points</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-           <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">480</span><span class="p">,</span> <span class="mi">480</span><span class="p">))</span>
+           <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
 <span class="n">mlab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 
 <span class="n">surface</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">triangular_mesh_source</span><span class="p">(</span><span class="o">*</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span><span class="n">scalars</span><span class="o">=</span><span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
@@ -223,7 +286,7 @@ Optimal solution found.
 <span class="n">shield</span><span class="o">.</span><span class="n">unshielded_induced_I</span> <span class="o">=</span> <span class="n">shield</span><span class="o">.</span><span class="n">coupling</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">unshielded_I</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-           <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">480</span><span class="p">,</span> <span class="mi">480</span><span class="p">))</span>
+                <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
 <span class="n">mlab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 
 <span class="n">surface</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">pipeline</span><span class="o">.</span><span class="n">triangular_mesh_source</span><span class="p">(</span><span class="o">*</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span><span class="n">scalars</span><span class="o">=</span><span class="n">coil</span><span class="o">.</span><span class="n">unshielded_I</span><span class="p">)</span>
@@ -250,107 +313,42 @@ Optimal solution found.
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Scaling matrices before optimization. This requires singular value computation, hold on.
 Solving quadratic programming problem using cvxopt...
      pcost       dcost       gap    pres   dres
- 0:  7.8331e+01  1.1868e+02  5e+03  2e+00  4e-14
- 1:  1.0259e+02  1.2234e+02  3e+02  1e-01  2e-14
- 2:  1.1076e+02  1.5789e+02  2e+02  6e-02  3e-14
- 3:  1.1541e+02  1.7315e+02  2e+02  5e-02  3e-14
- 4:  1.3966e+02  2.1608e+02  1e+02  3e-02  7e-14
- 5:  1.5223e+02  2.8576e+02  8e+01  2e-02  1e-13
+ 0:  4.3937e+01  6.6183e+01  5e+03  2e+00  4e-14
+ 1:  5.0479e+01  6.8140e+01  2e+02  1e-01  2e-14
+ 2:  6.1947e+01  9.9187e+01  1e+02  4e-02  3e-14
+ 3:  6.7204e+01  1.2054e+02  1e+02  3e-02  5e-14
+ 4:  7.3748e+01  1.8486e+02  7e+01  2e-02  1e-13
 Optimal solution found.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  25.364 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  54.561 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-shielded-cylindrical-coil-design-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/9b068ec22d1e36cb62c8358c11686bfe/shielded_cylindrical_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">shielded_cylindrical_coil_design.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/1296a30d1741fb47b73d60bc79d0a6ad/shielded_cylindrical_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">shielded_cylindrical_coil_design.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/8add351c0ba8c5a1618d931bebd8acd9/shielded_cylindrical_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">shielded_cylindrical_coil_design.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/40af644e4e3447804af90a853c08f57c/shielded_cylindrical_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">shielded_cylindrical_coil_design.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
 
 
-          </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">bfieldtools</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../readme.html">Readme</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../literature.html">Literature</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Example gallery</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="gradient_example.html">Gradient computation example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="interpolate_example.html">Interpolate stream function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="thermal_noise_simulation.html">Thermal noise computation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mamba_coil_design.html">MAMBA coil</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Shielded cylindrical coil</a></li>
-<li class="toctree-l2"><a class="reference internal" href="biplanar_coil_design.html">Biplanar coil design</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../source/modules.html">API Reference</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">Example gallery</a><ul>
-      <li>Previous: <a href="mamba_coil_design.html" title="previous chapter">MAMBA coil</a></li>
-      <li>Next: <a href="biplanar_coil_design.html" title="next chapter">Biplanar coil design</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
     </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2019, Rasmus Zetter, Antti Mäkinen, Joonas Iivanainen.
       
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
       
-      |
-      <a href="../_sources/auto_examples/shielded_cylindrical_coil_design.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
-    
-
-    
+    </p>
+    <p>
+        &copy; Copyright 2019, Rasmus Zetter, Antti Mäkinen, Joonas Iivanainen.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+    </p>
+  </div>
+</footer>
   </body>
 </html>

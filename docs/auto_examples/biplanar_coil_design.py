@@ -17,6 +17,7 @@ import trimesh
 from bfieldtools.mesh_class import MeshWrapper
 from bfieldtools.magnetic_field_mesh import compute_C
 from bfieldtools.coil_optimize import optimize_streamfunctions
+from bfieldtools.contour import scalar_contour
 
 import pkg_resources
 
@@ -101,11 +102,13 @@ coil.strayC = compute_C(coil.mesh, stray_points)
 
 #The absolute target field amplitude is not of importance,
 # and it is scaled to match the C matrix in the optimization function
+
 target_field = np.zeros(target_points.shape)
 target_field[:, 0] = target_field[:, 0] + 1
 
 target_spec = {'C':coil.C, 'rel_error':0.01, 'abs_error':0, 'target_field':target_field}
 stray_spec = {'C':coil.strayC, 'abs_error':0.01, 'rel_error':0, 'target_field':np.zeros((n_stray_points, 3))}
+
 
 ##############################################################
 # Run QP solver
@@ -125,7 +128,7 @@ coil.I, coil.sol = optimize_streamfunctions(coil,
 # Plot coil windings and target points
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-           size=(480, 480))
+           size=(800, 800))
 mlab.clf()
 
 surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
@@ -179,84 +182,32 @@ plt.show()
 
 
 ##############################################################
-# Extract stream function isosurfaces/contours as polygons
+# Extract stream function isosurfaces/contours as polygons,
+# plot with current directions
 
 scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-               size=(480, 480))
+               size=(800, 800))
 mlab.clf()
 
-surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
-
-#Compute contour values
-n_contours = 10
-#
-#    contours = []
-#
-#    I_max = np.max(coil[stack].I)
-#    I_min  = np.min(coil[stack].I)
-#    for contour_idx in range(1, n_contours+1):
-#        contours.append(I_min + (2 * contour_idx - 1) * (I_max - I_min) / (2 * n_contours))
-#
+N_contours = 10
 
 
-windings = mlab.pipeline.contour_surface(surface, contours=n_contours)
-scene.scene.isometric_view()
+contour_polys = scalar_contour(coil.mesh, coil.I, N_contours=N_contours)
 
 
-#Squeeze out the data from the contour plot. Ugly, I know.
-c=windings.trait_get('contour')['contour'].get_output_dataset()
+for loop in contour_polys:
+    mlab.plot3d(*loop.T,
+                color=(1,0,0), tube_radius=None)
 
-#points on the contour loops
-points = c.points.to_array()
-
-#contour line scalar value, sets current direction
-scalars = c.point_data.scalars.to_array()
-
-#Ugly, crappy structure containing continuous triangle edges for which
-# the second edge in the triangle is the edge of a loop.
-# These are not ordered in any sensible manner. Blergh.
-lines = c.lines.to_array()
-larr = np.asarray(lines).reshape([-1, 3])[:,1:]
-
-
-#Start by finding the separate loops
-loops = trimesh.graph.connected_components(larr)
-
-n_loops = len(loops)
-
-loop_polygons = []
-
-#Now go through the edges in each loop, one by one
-for loop_idx, loop in enumerate(loops):
-
-    loop_polygons.append([])
-    node_idx = loop[0] #Start with the first node we know is present in the loop
-
-    #Build a table of used nodes so we don't go around infinitely
-    node_used = [False]*len(points)
-
-    #Start looping
-    while node_idx < len(points):
-
-        if node_used[node_idx]:
-
-#                print('Encountered used node, stopping')
-
-            #Close loop by adding initial node
-            loop_polygons[loop_idx].append(node_idx)
-            break
-        else:
-            node_used[node_idx] = True
-            loop_polygons[loop_idx].append(node_idx)
-
-            #For which edge is our current node the FIRST node?
-            edge_idx = np.where(larr[:, 0] == node_idx)[0][0]
-
-            #Now take the SECOND node from that edge, that is our new current node
-            node_idx = larr[edge_idx, 1]
+    mlab.quiver3d(*loop[0,:].T,
+              *(loop[0,:].T - loop[1,:].T),
+              mode='cone', scale_mode='none',
+              scale_factor=0.5,
+              color=(1, 0, 0))
 
 ##############################################################
 # Compute magnetic field from discrete current line segments
+
 Bseg_target = np.zeros(B_target.shape)
 
 Bseg_line1 = np.zeros(B_line1.shape)
@@ -264,14 +215,14 @@ Bseg_line2 = np.zeros(B_line2.shape)
 
 from bfieldtools.bfield_line import bfield_line_segments
 
-for loop_idx in range(n_loops):
-    Bseg_target += bfield_line_segments(points[loop_polygons[loop_idx]],
+for loop in contour_polys:
+    Bseg_target += bfield_line_segments(loop,
                          target_points)
 
-    Bseg_line1 += bfield_line_segments(points[loop_polygons[loop_idx]],
+    Bseg_line1 += bfield_line_segments(loop,
                          np.array([x1, y1, z1]).T)
 
-    Bseg_line2 += bfield_line_segments(points[loop_polygons[loop_idx]],
+    Bseg_line2 += bfield_line_segments(loop,
                      np.array([x2, y2, z2]).T)
 
 
@@ -295,6 +246,6 @@ plt.xlabel('Distance from origin')
 plt.grid(True, which='minor', axis='y')
 plt.grid(True, which='major', axis='y', color='k')
 plt.grid(True, which='major', axis='x')
-plt.title('Field from discrete line segments, N_contours: %d'%n_contours)
+plt.title('Field from discrete line segments, N_contours: %d'%N_contours)
 
 plt.legend()

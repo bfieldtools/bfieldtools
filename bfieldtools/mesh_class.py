@@ -1,5 +1,5 @@
 '''
-Contains a class used for wrapping a mesh (in the form of a Trimesh object) together with 
+Contains a class used for wrapping a mesh (in the form of a Trimesh object) together with
 some convinient functions and properties.
 
 '''
@@ -54,15 +54,19 @@ class MeshWrapper:
         Second priority is to load mesh from file (mesh_file).
         Third priority is to use given verts and tris arrays (verts, tris).
 
-        Parameters:
-            verts: array-like (Nv, 3)
-            tris: array-like  (Nt, 3)
-
-            mesh_obj: Trimesh mesh object
-            mesh_file: String describing the file path of a mesh file.
-
-            process: Boolean switch if Trimesh should pre-process the mesh.
-            fix_normals: Boolean switch if normals+winding should be set so that they always point "out" from the origin.
+        Parameters
+        ----------
+        verts: array-like (Nv, 3)
+            Array of mesh vertices
+        tris: array-like  (Nt, 3)
+            Array of mesh faces
+        mesh_obj: Trimesh mesh object
+        mesh_file: string
+            String describing the file path of a mesh file.
+        process: boolean
+            If True,  Trimesh will pre-process the mesh.
+        fix_normals: boolean
+            If True,  normals+winding should be set so that they always point "out" from the origin.
 
         '''
 
@@ -170,8 +174,10 @@ class MeshWrapper:
         """
         Save the MeshWrapper object using a pickled Python file
 
-        Parameters:
-            target_file: str, file name or file object to save to
+        Parameters
+        ----------
+        target_file: str
+            File name or file object to save to
         """
 
         pickle.dump(obj=self, file=open(target_file, 'wb'))
@@ -181,9 +187,11 @@ def save_pickle(obj, target_file):
     """
     Save the MeshWrapper object using a pickled Python file
 
-    Parameters:
-        obj: object to save to file
-        target_file: str, file name or file object to save to
+    Parameters
+    ----------
+    obj: object to save to file
+    target_file: str
+        file name or file object to save to
     """
 
     pickle.dump(obj=obj, file=open(target_file, 'wb'), protocol=-1)
@@ -193,10 +201,14 @@ def load_pickle(target_file):
     """
     Load pickled MeshWrapper object from file
 
-    Parameters:
-        target_file: str, file name or file object to load from
-    Returns:
-        obj: loaded MeshWrapper object
+    Parameters
+    -----------
+    target_file: str
+        File name or file object to load from
+    Returns
+    -------
+    obj: loaded MeshWrapper object
+
     """
 
     obj = pickle.load(open(target_file, 'rb'))
