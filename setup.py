@@ -26,7 +26,7 @@ def main():
         long_description=codecs.open('README.rst', encoding='utf8').read(),
         version_format='{tag}.dev{commitcount}+{gitsha}',
         setup_requires=['setuptools-git-version'],
-        install_requires=['numpy','scipy','matplotlib', 'mayavi', 'quadpy', 'trimesh', 'cvxopt', 'joblib', 'numba'],
+        install_requires=['numpy','scipy','matplotlib', 'mayavi', 'quadpy>=0.13', 'trimesh', 'cvxopt', 'joblib', 'numba'],
         packages=find_packages(),
 	include_dirs=[numpy.get_include()],
 	include_package_data=True,
