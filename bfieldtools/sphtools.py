@@ -22,23 +22,31 @@ class sphbasis:
     Has also lot of functions for spherical <-> cartesian transformations.
 
     TODO: mu0 might be missing!!!
-    '''
 
+    Properties
+    ----------
+    sp: Nx3 array
+        spherical coordinates of the points [r, theta, phi]
+    p: Nx3 array
+        cartesian coordinates
+    qp: Mx3 array
+        cartesian quadrature points
+    sqp: Mx3 array
+        spherical quadrature points
+    '''
     def __init__(self, Np):
         '''
         Initialises the sphbasis object.
 
-        Parameters:
+        Parameters
+        ----------
+        Np: int
+            Mumber of points along theta and phi in spherical coordinates
 
-            Np: single, number of points along theta and phi in spherical coordinates
+        Returns
+        -------
+        self: sphbasis object
 
-        Returns:
-
-            sphbasis object with fields:
-                sp: Nx3 array - spherical coordinates of the points [r, theta, phi]
-                p: Nx3 array - cartesian coordinates
-                qp: Mx3 array - cartesian quadrature points
-                sqp: Mx3 array - spherical quadrature points
         '''
 
         theta = np.linspace(0.01, np.pi-0.01, Np)
@@ -57,6 +65,7 @@ class sphbasis:
 
         self.initqp()
 
+
     def initqp(self):
         '''
         Initialises quadrature points on the sphere.
@@ -64,21 +73,24 @@ class sphbasis:
         Default points are McLaren(10) so that we avoid singularities.
         '''
 
-        self.qp = quadpy.sphere.McLaren(10)
+        self.qp = quadpy.sphere.mclaren_10()
         sp = self.cartesian2spherical(self.qp.points)
         self.sqp = sp
+
 
     def cartesian2spherical(self, p):
         '''
         Maps cartesian coordinates to spherical.
 
-        Parameters:
+        Parameters
+        ----------
+        p: Nx3 array
+            cartesian coordinates
 
-            p: Nx3 array - cartesian coordinates
-
-        Returns:
-
-            sp: Nx3 array - spherical coordinates [r, theta, phi]
+        Returns
+        -------
+        sp: Nx3 array
+            spherical coordinates [r, theta, phi]
 
         '''
 
@@ -90,17 +102,20 @@ class sphbasis:
 
         return sp
 
+
     def spherical2cartesian(self,sp):
         '''
         Maps spherical coordinates to cartesian.
 
-        Parameters:
+        Parameters
+        ----------
+        sp: Nx3 array
+            spherical coordinates [r, theta, phi]
 
-            sp: Nx3 array - spherical coordinates [r, theta, phi]
-
-        Returns:
-
-            p: Nx3 array - cartesian croodinates
+        Returns
+        -------
+        p: Nx3 array
+            cartesian croodinates
         '''
 
         X = sp[:,0] * np.sin(sp[:,1]) * np.cos(sp[:,2])
@@ -115,13 +130,15 @@ class sphbasis:
         '''
         Constructs rotation matrix from cartesian coordinates to spherical.
 
-        Parameters:
+        Parameters
+        ----------
+        sp: Nx3 array
+            spherical coordinates [r, theta, phi]
 
-            sp: Nx3 array - spherical coordinates [r, theta, phi]
-
-        Returns:
-
-            vmat: 3x3 array - rotation matrix from cartesian to spherical.
+        Returns
+        -------
+        vmat: 3x3 array
+            rotation matrix from cartesian to spherical.
         '''
 
         vmat = np.zeros((3,3))
@@ -137,18 +154,22 @@ class sphbasis:
 
         return vmat
 
+
     def cartvec2sph(self,sp,vec):
         '''
         Transforms cartesian vector to spherical coordinates.
 
-        Parameters:
+        Parameters
+        ----------
+        sp: Nx3 array
+            spherical coordinates [r, theta, phi]
+        vec: Nx3 array
+            vector in cartesian coordinates [e_x, e_y, e_z]
 
-            sp: Nx3 array - spherical coordinates [r, theta, phi]
-            vec: Nx3 array - vector in cartesian coordinates [e_x, e_y, e_z]
-
-        Returns:
-
-            svec: Nx3 array - vector in spherical coordinates [e_r, e_theta, e_phi]
+        Returns
+        -------
+        svec: Nx3 array
+            vector in spherical coordinates [e_r, e_theta, e_phi]
 
         '''
 
@@ -158,18 +179,22 @@ class sphbasis:
             svec[i] = vmat@vec[i]
         return svec
 
+
     def sphvec2cart(self,sp,vec):
         '''
         Transforms cartesian vector to spherical coordinates.
 
-        Parameters:
+        Parameters
+        ----------
+        sp: Nx3 array
+            spherical coordinates [r, theta, phi]
+        vec: Nx3 array
+            vector in spherical coordinates [e_r, e_theta, e_phi]
 
-            sp: Nx3 array - spherical coordinates [r, theta, phi]
-            vec: Nx3 array - vector in spherical coordinates [e_r, e_theta, e_phi]
-
-        Returns:
-
-            svec: Nx3 array - vector in cartesian coordinates [e_x, e_y, e_z]
+        Returns
+        -------
+        svec: Nx3 array
+            vector in cartesian coordinates [e_x, e_y, e_z]
 
         '''
 
@@ -180,19 +205,25 @@ class sphbasis:
 
         return svec
 
+
     def lpmn_em(self,l,m,x):
         '''
         Computes associated Legendre function (Plm) of the first kind of order m and degree l.
 
-        Parameters:
+        Parameters
+        ----------
 
-            l: single - degree of Plm
-            m: single - order of Plm
-            x: Nx1 array - evaluation points
+        l: int
+            degree of Plm
+        m: int
+            order of Plm
+        x: Nx1 array
+            evaluation points
 
-        Returns:
-
-            lp: Nx1 array - Plm at x
+        Returns
+        -------
+        lp: Nx1 array
+            Plm at `x`
 
         '''
 
@@ -202,20 +233,25 @@ class sphbasis:
             lp[i] = a[np.abs(m),l]
         return lp
 
+
     def derlpmn_em(self,l,m,x):
         '''
         Computes derivative of associated Legendre function (Plm) of the first kind of order m and degree l
         with respect to the argument x.
 
-        Parameters:
+        Parameters
+        ----------
+        l: int
+            degree of Plm
+        m: int
+            order of Plm
+        x: Nx1 array
+            evaluation points
 
-            l: single - degree of Plm
-            m: single - order of Plm
-            x: Nx1 array - evaluation points
-
-        Returns:
-
-            derlp: Nx1 array - dPlm/dx at x
+        Returns
+        -------
+        derlp: Nx1 array
+            dPlm/dx at `x`
 
         '''
 
@@ -225,21 +261,26 @@ class sphbasis:
             derlp[i] = b[np.abs(m),l]
         return derlp
 
+
     def xlm(self, l, m, theta):
         '''
         Xlm-function used in the definition of spherical harmonics (Ylm).
         Follows notation of Plattner and Simons (2014);
         see Eqs. 1--3 in https://arxiv.org/pdf/1306.3201.pdf.
 
-        Parameters:
+        Parameters
+        ----------
+        l: int
+            degree of Xlm
+        m: int
+            order of Xlm
+        theta: Nx1 array
+            evaluation points, theta at spherical coordinates
 
-            l: single - degree of Xlm
-            m: single - order of Xlm
-            theta: Nx1 array - evaluation points, theta at spherical coordinates
-
-        Returns:
-
-            Xlm: Nx1 array - Xlm at theta
+        Returns
+        -------
+        Xlm: Nx1 array
+            Xlm at theta
 
         '''
 
@@ -247,21 +288,27 @@ class sphbasis:
         xlm *= self.lpmn_em(l,m,np.cos(theta))
         return xlm
 
+
     def ylm(self, l, m, theta, phi):
         '''
         Real spherical harmonics as defined by Plattner and Simons (2014);
         see Eqs. 1--3 in https://arxiv.org/pdf/1306.3201.pdf.
 
-        Parameters:
+        Parameters
+        ----------
+        l: int
+            degree of Ylm
+        m: int
+            order of Ylm
+        theta: Nx1 array
+            evaluation points, theta at spherical coordinates
+        phi: Nx1 array
+            evaluation points, phi at spherical coordinates
 
-            l: single - degree of Ylm
-            m: single - order of Ylm
-            theta: Nx1 array - evaluation points, theta at spherical coordinates
-            phi: Nx1 array - evaluation points, phi at spherical coordinates
-
-        Returns:
-
-            Ylm: Nx1 array - Ylm at (theta,phi)
+        Returns
+        -------
+        Ylm: Nx1 array
+            Ylm at (theta,phi)
 
         '''
 
@@ -279,15 +326,19 @@ class sphbasis:
         '''
         Derivative of Xlm with respect to theta.
 
-        Parameters:
+        Parameters
+        ----------
+        l: int
+            degree of Xlm
+        m: int
+            order of Xlm
+        theta: Nx1 array
+            evaluation points, theta at spherical coordinates
 
-            l: single - degree of Xlm
-            m: single - order of Xlm
-            theta: Nx1 array - evaluation points, theta at spherical coordinates
-
-        Returns:
-
-            derxlm: Nx1 array - dXlm/dtheta at theta
+        Returns
+        -------
+        derxlm: Nx1 array
+            dXlm/dtheta at theta
 
         '''
 
@@ -296,19 +347,24 @@ class sphbasis:
         derxlm *= -1*np.sin(theta) #this comes from dXlm(cos(theta))/dtheta = dXlm(cos(theta))/dcos(theta)*(-sin(theta))
         return derxlm
 
+
     def sinxlm(self, l, m, theta):
         '''
         Computes m/(sin(theta))*Xlm.
 
-        Parameters:
+        Parameters
+        ----------
+        l: int
+            degree of Xlm
+        m: int
+            order of Xlm
+        theta: Nx1 array
+            evaluation points, theta at spherical coordinates
 
-            l: single - degree of Xlm
-            m: single - order of Xlm
-            theta: Nx1 array - evaluation points, theta at spherical coordinates
-
-        Returns:
-
-            sinxlm: Nx1 array - m/(sin(theta))*Xlm at theta
+        Returns
+        -------
+        sinxlm: Nx1 array
+            m/(sin(theta))*Xlm at theta
 
         '''
 
@@ -319,16 +375,21 @@ class sphbasis:
         '''
         Derivative of Ylm with respect to theta dYlm/dtheta.
 
-        Parameters:
+        Parameters
+        ----------
+        l: int
+            degree of Ylm
+        m: int
+            order of Ylm
+        theta: Nx1 array
+            evaluation points, theta at spherical coordinates
+        phi: Nx1 array
+            evaluation points, phi at spherical coordinates
 
-            l: single - degree of Ylm
-            m: single - order of Ylm
-            theta: Nx1 array - evaluation points, theta at spherical coordinates
-            phi: Nx1 array - evaluation points, phi at spherical coordinates
-
-        Returns:
-
-            dthylm: Nx1 array - dYlm/dtheta at (theta, phi).
+        Returns
+        -------
+        dthylm: Nx1 array
+            dYlm/dtheta at (theta, phi).
 
         '''
 
@@ -345,16 +406,21 @@ class sphbasis:
         '''
         Derivative of Ylm with respect to phi dYlm/dphi.
 
-        Parameters:
+        Parameters
+        ----------
+        l: int
+            degree of Ylm
+        m: int
+            order of Ylm
+        theta: Nx1 array
+            evaluation points, theta at spherical coordinates
+        phi: Nx1 array
+            evaluation points, phi at spherical coordinates
 
-            l: single - degree of Ylm
-            m: single - order of Ylm
-            theta: Nx1 array - evaluation points, theta at spherical coordinates
-            phi: Nx1 array - evaluation points, phi at spherical coordinates
-
-        Returns:
-
-            dphiylm: Nx1 array - dYlm/dphi at (theta, phi).
+        Returns
+        -------
+        dphiylm: Nx1 array
+            dYlm/dphi at (theta, phi).
 
         '''
 
@@ -371,16 +437,20 @@ class sphbasis:
         '''
         Plm vector function (see Eq. 18 Plattner and Simons (2014)).
 
-        Parameters:
-
-            l: single - degree of Plm
-            m: single - order of Plm
-            theta: Nx1 array - evaluation points, theta at spherical coordinates
-            phi: Nx1 array - evaluation points, phi at spherical coordinates
-
-        Returns:
-
-            Plm: Nx3 array - Plm at (theta, phi).
+        Parameters
+        ----------
+        l: int
+            degree of Plm
+        m: int
+            order of Plm
+        theta: Nx1 array
+            evaluation points, theta at spherical coordinates
+        phi: Nx1 array
+            evaluation points, phi at spherical coordinates
+        Returns
+        -------
+        Plm: Nx3 array
+            Plm at (theta, phi).
 
         '''
 
@@ -392,16 +462,20 @@ class sphbasis:
         '''
         Blm vector function (see Eq. 19 Plattner and Simons (2014)).
 
-        Parameters:
-
-            l: single - degree of Plm
-            m: single - order of Plm
-            theta: Nx1 array - evaluation points, theta at spherical coordinates
-            phi: Nx1 array - evaluation points, phi at spherical coordinates
-
-        Returns:
-
-            Blm: Nx3 array - Blm at (theta, phi).
+        Parameters
+        ----------
+        l: int
+            degree of Plm
+        m: int
+            order of Plm
+        theta: Nx1 array
+            evaluation points, theta at spherical coordinates
+        phi: Nx1 array
+            evaluation points, phi at spherical coordinates
+        Returns
+        -------
+        Blm: Nx3 array
+            Blm at (theta, phi).
 
         '''
 
@@ -419,16 +493,20 @@ class sphbasis:
         Vector basis function (Psilm) for r**l component of the magnetic field.
         Normalization <Psilm,Psikn> = delta_lk,mn.
 
-        Parameters:
-
-            l: single - degree of Psilm
-            m: single - order of Psilm
-            theta: Nx1 array - evaluation points, theta at spherical coordinates
-            phi: Nx1 array - evaluation points, phi at spherical coordinates
-
-        Returns:
-
-            Psilm: Nx3 array - Psilm at (theta, phi).
+        Parameters
+        ----------
+        l: int
+            degree of Psilm
+        m: int
+            order of Psilm
+        theta: Nx1 array
+            evaluation points, theta at spherical coordinates
+        phi: Nx1 array
+            evaluation points, phi at spherical coordinates
+        Returns
+        -------
+        Psilm: Nx3 array
+            Psilm at (theta, phi).
 
         '''
 
@@ -441,16 +519,21 @@ class sphbasis:
         Vector basis function (Philm) for r**(-l) component of the magnetic field.
         Normalization <Philm,Phikn> = delta_lk,mn.
 
-        Parameters:
+        Parameters
+        ----------
+        l: int
+            degree of Philm
+        m: int
+            order of Philm
+        theta: Nx1 array
+            evaluation points, theta at spherical coordinates
+        phi: Nx1 array
+            evaluation points, phi at spherical coordinates
 
-            l: single - degree of Philm
-            m: single - order of Philm
-            theta: Nx1 array - evaluation points, theta at spherical coordinates
-            phi: Nx1 array - evaluation points, phi at spherical coordinates
-
-        Returns:
-
-            Philm: Nx3 array - Philm at (theta, phi).
+        Returns
+        -------
+        Philm: Nx3 array
+            Philm at (theta, phi).
 
         '''
 
@@ -464,14 +547,17 @@ class sphbasis:
         Defined as integration over a surface of unit sphere <C,D> = int C dot D dOmega.
         Quadrature rule defined in qp is used.
 
-        Parameters:
+        Parameters
+        ----------
+        fun1: Nx3 array
+            vector function 1
+        fun2: Nx3 array
+            vector function 2
 
-            fun1: Nx3 array - vector function
-            fun2: Nx3 array - vector function
-
-        Returns:
-
-            dotp: single - inner product of fun1 and fun2
+        Returns
+        -------
+        dotp: int
+            inner product of fun1 and fun2
 
         '''
 
@@ -483,14 +569,17 @@ class sphbasis:
         Calculate the l,m-spectra (over r**l-terms) of vector function defined in quadrature points
         using the inner product.
 
-        Parameters:
+        Parameters
+        ----------
+        fun: Nx3 array
+            vector function computed at quadrature points self.sqp
+        lmax: int
+            maximum degree l for which the spectra is computed
 
-            fun: Nx3 array - vector function computed at quadrature points self.sqp
-            lmax: single - maximum degree l for which the spectra is computed
-
-        Returns:
-
-            coeffs: lmax*(lmax+2)x1 array - spectral coefficients
+        Returns
+        -------
+        coeffs: lmax*(lmax+2)x1 arrays
+            spectral coefficients
 
         '''
 
@@ -512,14 +601,17 @@ class sphbasis:
         Calculate the l,m-spectra (over r**(-l)-terms) of vector function defined in quadrature points
         using the inner product.
 
-        Parameters:
+        Parameters
+        ----------
+        fun: Nx3 array
+            vector function computed at quadrature points self.sqp
+        lmax: int
+            maximum degree l for which the spectra is computed
 
-            fun: Nx3 array - vector function computed at quadrature points self.sqp
-            lmax: single - maximum degree l for which the spectra is computed
-
-        Returns:
-
-            coeffs: lmax*(lmax+2)x1 array - spectral coefficients
+        Returns
+        -------
+        coeffs: lmax*(lmax+2)x1 arrays
+            spectral coefficients
 
         '''
 
@@ -541,16 +633,21 @@ class sphbasis:
         Computes magnetic scalar potential from the sph coefficients.
         Ignores the 'DC' component l=0.
 
-        Parameters:
+        Parameters
+        ----------
+        p: Nx3 array
+            coordinates in which the potential is computed
+        acoeffs: lmax*(lmax+2)x1 array
+            spectral coefficients of r**l terms
+        bcoeffs: lmax*(lmax+2)x1 array
+            spectral coefficients of r**(-l) terms
+        lmax: int
+            maximum degree l which is used in computing
 
-            p: Nx3 array - coordinates in which the potential is computed
-            acoeffs: lmax*(lmax+2)x1 array - spectral coefficients of r**l terms
-            bcoeffs: lmax*(lmax+2)x1 array - spectral coefficients of r**(-l) terms
-            lmax: single - maximum degree l which is used in computing
-
-        Returns:
-
-            pot: Nx1 array - magnetic scalar potential at p
+        Returns
+        -------
+        pot: Nx1 array
+            magnetic scalar potential at p
 
         '''
 
@@ -567,6 +664,27 @@ class sphbasis:
         return pot
 
     def field(self,p, acoeffs, bcoeffs, lmax):
+        '''
+        Computes magnetic field from the sph coefficients.
+        Ignores the 'DC' component l=0.
+
+        Parameters
+        ----------
+        p: Nx3 array
+            coordinates in which the field is computed
+        acoeffs: lmax*(lmax+2)x1 array
+            spectral coefficients of r**l terms
+        bcoeffs: lmax*(lmax+2)x1 array
+            spectral coefficients of r**(-l) terms
+        lmax: int
+            maximum degree l which is used in computing
+
+        Returns
+        -------
+        field: Nx3 array
+            magnetic field at p
+
+        '''
         mu0=4*np.pi*1e-7
         B = np.zeros(p.shape)
 
@@ -608,19 +726,25 @@ class sphfittools:
         '''
         Fits spherical harmonics representation (r**l) to measured data.
 
-        Parameters:
-
-            sph: spherical harmonics analysis object
-            coords: Nx3x3 array - measurement coordinates, each measured field direction
+        Parameters
+        ----------
+        sph: spherical harmonics analysis object
+        coords: Nx3x3 array
+            measurement coordinates, each measured field direction
             in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-components.
-            Bmeas: Nx3 array - the measured field values along different directions (x,y,z)
-            lmax: single - maximum degree l for which the fit is done
+        Bmeas: Nx3 array
+            the measured field values along different directions (x,y,z)
+        lmax: int
+            maximum degree l for which the fit is done
 
-        Returns:
-
-            coeffs: lmax*(lmax+2)x1 array - the unnormalized coefficients
-            coeffs2: lmax*(lmax+2)x1 array - the 'properly' normalized squared coefficients
-            nrmse: single - normalized rms error in percents between the data and fit
+        Returns
+        -------
+        coeffs: lmax*(lmax+2)x1 array
+            the unnormalized coefficients
+        coeffs2: lmax*(lmax+2)x1 array
+            the 'properly' normalized squared coefficients
+        nrmse: float
+            normalized rms error in percents between the data and fit
 
         '''
 
@@ -669,16 +793,20 @@ class sphfittools:
         '''
         Reconstructs the magnetic field using the spherical harmonics coefficients.
 
-        Parameters:
+        Parameters
+        ----------
+        sph: spherical harmonics analysis object
+        p: Nx3 array
+            coordinates where B is reconstructed
+        coeffs: lmax*(lmax+2)x1 array
+            the unnormalized l,m-coefficients
+        lmax:int
+            maximum degree l of the fit
 
-            sph: spherical harmonics analysis object
-            p: Nx3 array - coordinates where B is reconstructed
-            coeffs: lmax*(lmax+2)x1 array - the unnormalized l,m-coefficients
-            lmax: single - maximum degree l of the fit
-
-        Returns:
-
-            B: Nx3 array - reconstructed magnetic field at p
+        Returns
+        -------
+        B: Nx3 array
+            reconstructed magnetic field at p
 
         '''
 
@@ -708,10 +836,11 @@ class plotsph:
         Plots real spherical harmonics up to lmax.
         Inspired by https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html.
 
-        Parameters:
-
-            sph: spherical harmonics analysis object
-            lmax: single - maximum degree l
+        Parameters
+        ----------
+        sph: spherical harmonics analysis object
+        lmax: int
+            maximum degree l
 
         '''
 
@@ -741,11 +870,13 @@ class plotsph:
         Plots real spherical harmonics of order m and degree l.
         Inspired by https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html
 
-        Parameters:
-
-            sph: spherical harmonics analysis object
-            l: single - degree l
-            m: single - order m
+        Parameters
+        ----------
+        sph: spherical harmonics analysis object
+        l: int
+            degree l
+        m: int
+            order m
 
         '''
 
@@ -770,15 +901,17 @@ class plotsph:
         '''
         Plots magnetic field basis function 'Psilm' (r**l) over a sphere.
 
-        Parameters:
+        Parameters
+        ----------
+        sph: spherical harmonics analysis object
+        l: int
+            degree l
+        m: int
+            order m
 
-            sph: spherical harmonics analysis object
-            l: single - degree l
-            m: single - order m
-
-        Returns:
-
-            obj: mayavi object
+        Returns
+        -------
+        obj: mayavi object
 
         '''
 
@@ -792,17 +925,22 @@ class plotsph:
         '''
         Plots magnetic field basis function 'Psilm' (r**l) over a 3D volume.
 
-        Parameters:
+        Parameters
+        ----------
+        sph: spherical harmonics analysis object
+        l: int
+            degree l
+        m: int
+            order m
+        lim: float
+            limits for coordinates, e.g., xmin = -lim, xmax = lim
+        Np: int
+            number of points along different coordinates
+        offset: 1x3 array
+            offset of the volume in which Psilm is plotted
 
-            sph: spherical harmonics analysis object
-            l: single - degree l
-            m: single - order m
-            lim: single - limits for coordinates, e.g., xmin = -lim, xmax = lim
-            Np: single - number of points along different coordinates
-            offset: 1x3 array - offset of the volume in which Psilm is plotted
-
-        Returns:
-
+        Returns
+        -------
             obj: mayavi object
 
         '''
@@ -829,15 +967,17 @@ class plotsph:
         '''
         Plots magnetic field basis function 'Philm' (r**(-l)) over a sphere.
 
-        Parameters:
+        Parameters
+        ----------
+        sph: spherical harmonics analysis object
+        l: int
+            degree l
+        m: int
+            order m
 
-            sph: spherical harmonics analysis object
-            l: single - degree l
-            m: single - order m
-
-        Returns:
-
-            obj: mayavi object
+        Returns
+        -------
+        obj: mayavi object
 
         '''
 
@@ -851,18 +991,23 @@ class plotsph:
         '''
         Plots magnetic field basis function 'Philm' (r**(-l)) over a 3D volume.
 
-        Parameters:
+        Parameters
+        ----------
+        sph: spherical harmonics analysis object
+        l: int
+            degree l
+        m: int
+            order m
+        lim: float
+            limits for coordinates, e.g., xmin = -lim, xmax = lim
+        Np: int
+            number of points along different coordinates
+        offset: 1x3 array
+            offset of the volume in which Philm is plotted
 
-            sph: spherical harmonics analysis object
-            l: single - degree l
-            m: single - order m
-            lim: single - limits for coordinates, e.g., xmin = -lim, xmax = lim
-            Np: single - number of points along different coordinates
-            offset: 1x3 array - offset of the volume in which Philm is plotted
-
-        Returns:
-
-            obj: mayavi object
+        Returns
+        -------
+        obj: mayavi object
 
         '''
 
@@ -889,15 +1034,18 @@ def compute_sphcoeffs_mesh(mesh, lmax):
     Computes multipole moment (spherical harmonics coefficient) transformation
     from the mesh.
 
-    Parameters:
+    Parameters
+    ----------
+    mesh: mesh object - the surface mesh
+    lmax: int
+        maximum degree l of the fit
 
-        mesh: mesh object - the surface mesh
-        lmax: single - maximum degree l of the fit
-
-    Returns:
-
-        alm: (lmax*(lmax+2)xNvertices array - transformation from the mesh to alm coefficients (r**l-terms)
-        blm: (lmax*(lmax+2)xNvertices array - transformation from the mesh to blm coefficients (r**(-l)-terms)
+    Returns
+    -------
+    alm: (lmax*(lmax+2)xNvertices array
+          transformation from the mesh to alm coefficients (r**l-terms)
+    blm: (lmax*(lmax+2)xNvertices array
+          transformation from the mesh to blm coefficients (r**(-l)-terms)
 
     '''
 
