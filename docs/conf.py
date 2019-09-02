@@ -19,8 +19,8 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'bfieldtools'
-copyright = '2019, Rasmus Zetter, Antti Mäkinen, Joonas Iivanainen'
-author = 'Rasmus Zetter, Antti Mäkinen, Joonas Iivanainen'
+copyright = '2019, bfieldtools developers'
+author = 'bfieldtools developers'
 
 # The full version, including alpha/beta/rc tags
 release = '0.1'
@@ -106,3 +106,7 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# If true, links to the reST sources are added to the pages.
+html_show_sourcelink = False
+html_copy_source = False

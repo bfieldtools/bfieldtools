@@ -14,7 +14,7 @@
     <script type="text/javascript" src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="../validation/validate_linear_dipole.html" />
+    <link rel="next" title="Thin-film heater noise" href="thermal_noise_platinum_heater.html" />
     <link rel="prev" title="Biplanar coil design" href="../coil_design/biplanar_coil_design.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -76,11 +76,7 @@
             
             
             
-              <li class="hidden-sm">
-<div id="sourcelink">
-  <a href="../../_sources/auto_examples/thermal_noise/thermal_noise_simulation.rst.txt"
-     rel="nofollow">Source</a>
-</div></li>
+              <li class="hidden-sm"></li>
             
           </ul>
 
@@ -117,6 +113,7 @@ AC: AC Bnoise of a unit disc at one position</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
 
 <span class="kn">from</span> <span class="nn">bfieldtools.thermal_noise</span> <span class="k">import</span> <span class="n">compute_current_modes</span><span class="p">,</span> <span class="n">visualize_current_modes</span><span class="p">,</span> <span class="n">compute_dc_Bnoise</span><span class="p">,</span> <span class="n">compute_ac_Bnoise</span>
 
@@ -130,6 +127,14 @@ AC: AC Bnoise of a unit disc at one position</p>
 <span class="n">T</span> <span class="o">=</span> <span class="mi">300</span>
 <span class="n">kB</span> <span class="o">=</span> <span class="mf">1.38064852e-23</span>
 <span class="n">mu0</span> <span class="o">=</span> <span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">1e-7</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>shapely.geometry.Polygon not available!
+Traceback (most recent call last):
+  File &quot;/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py&quot;, line 22, in &lt;module&gt;
+    from shapely.geometry import Polygon
+ModuleNotFoundError: No module named &#39;shapely&#39;
 </pre></div>
 </div>
 <div class="section" id="unit-sphere">
@@ -178,32 +183,32 @@ AC: AC Bnoise of a unit disc at one position</p>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
 /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
-Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
 /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
 /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
 /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
 /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
 /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
 /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
 /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
   vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
 </pre></div>
 </div>
 </div>
@@ -215,6 +220,8 @@ Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
 
 <span class="n">vl</span> <span class="o">=</span> <span class="n">compute_current_modes</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
 
+<span class="n">scene</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+               <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
 
 <span class="n">visualize_current_modes</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="n">vl</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 
@@ -260,6 +267,9 @@ Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
 <span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">remesh</span><span class="o">.</span><span class="n">subdivide</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">)</span>
 <span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">remesh</span><span class="o">.</span><span class="n">subdivide</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">)</span>
 
+
+<span class="n">scene</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+               <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
 <span class="n">vl</span> <span class="o">=</span> <span class="n">compute_current_modes</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
 
 <span class="n">fp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
@@ -284,6 +294,7 @@ Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_thermal_noise_simulation_007.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_thermal_noise_simulation_007.png" />
+<img alt="../../_images/sphx_glr_thermal_noise_simulation_008.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_thermal_noise_simulation_008.png" />
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 1207 vertices by 1 target points... took 0.06 seconds.
 Calculating potentials, chunk 1/1
@@ -319,7 +330,8 @@ Frequency 788.046282 computed
 Frequency 1000.000000 computed
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  7.686 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  6.984 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2173 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-thermal-noise-thermal-noise-simulation-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/4a2f9be34f31e70b8c9691657fba83df/thermal_noise_simulation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">thermal_noise_simulation.py</span></code></a></p>
@@ -344,7 +356,7 @@ Frequency 1000.000000 computed
       
     </p>
     <p>
-        &copy; Copyright 2019, Rasmus Zetter, Antti Mäkinen, Joonas Iivanainen.<br/>
+        &copy; Copyright 2019, bfieldtools developers.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>

@@ -24,6 +24,7 @@ Three different examples:
     import numpy as np
     import matplotlib.pyplot as plt
     import trimesh
+    from mayavi import mlab
 
     from bfieldtools.thermal_noise import compute_current_modes, visualize_current_modes, compute_dc_Bnoise, compute_ac_Bnoise
 
@@ -43,6 +44,18 @@ Three different examples:
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    shapely.geometry.Polygon not available!
+    Traceback (most recent call last):
+      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py", line 22, in <module>
+        from shapely.geometry import Polygon
+    ModuleNotFoundError: No module named 'shapely'
+
 
 
 Unit sphere
@@ -51,8 +64,8 @@ Unit sphere
 
 .. code-block:: default
 
-    
-    
+
+
     Np = 10
     R = np.linspace(0.1, 1, Np)
     fp = np.zeros((1,3))
@@ -114,32 +127,32 @@ Unit sphere
 
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
 
 
 
@@ -156,6 +169,8 @@ Unit disc, DC noise
 
     vl = compute_current_modes(mesh)
 
+    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                   size=(800, 800))
 
     visualize_current_modes(mesh,vl, 40, 5)
 
@@ -223,6 +238,9 @@ Unit disc, AC mode
     mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
     mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 
+
+    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                   size=(800, 800))
     vl = compute_current_modes(mesh)
 
     fp = np.zeros((1,3))
@@ -247,6 +265,9 @@ Unit disc, AC mode
 
 
 .. image:: /auto_examples/thermal_noise/images/sphx_glr_thermal_noise_simulation_007.png
+    :class: sphx-glr-single-img
+
+.. image:: /auto_examples/thermal_noise/images/sphx_glr_thermal_noise_simulation_008.png
     :class: sphx-glr-single-img
 
 
@@ -294,7 +315,9 @@ Unit disc, AC mode
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  7.686 seconds)
+   **Total running time of the script:** ( 1 minutes  6.984 seconds)
+
+**Estimated memory usage:**  2173 MB
 
 
 .. _sphx_glr_download_auto_examples_thermal_noise_thermal_noise_simulation.py:

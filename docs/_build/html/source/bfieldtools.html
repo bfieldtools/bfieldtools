@@ -75,11 +75,7 @@
             
             
             
-              <li class="hidden-sm">
-<div id="sourcelink">
-  <a href="../_sources/source/bfieldtools.rst.txt"
-     rel="nofollow">Source</a>
-</div></li>
+              <li class="hidden-sm"></li>
             
           </ul>
 
@@ -257,7 +253,7 @@ at each mesh vertex</p>
 defined on a triangle mesh surface. Also contains functions for modifying the generated contours.</p>
 <dl class="function">
 <dt id="bfieldtools.contour.scalar_contour">
-<code class="descclassname">bfieldtools.contour.</code><code class="descname">scalar_contour</code><span class="sig-paren">(</span><em>mesh</em>, <em>scalars</em>, <em>N_contours=10</em>, <em>contour_values=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.contour.scalar_contour" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.contour.</code><code class="descname">scalar_contour</code><span class="sig-paren">(</span><em>mesh</em>, <em>scalars</em>, <em>N_contours=10</em>, <em>contours=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.contour.scalar_contour" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes contour loops (isolines) for a scalar function defined on a mesh.
 The winding direction of the loops is defined according to the rotated gradient of the scalar</p>
 <dl class="field-list simple">
@@ -278,7 +274,7 @@ The winding direction of the loops is defined according to the rotated gradient 
 <dt><strong>contour_polys: list</strong></dt><dd><p>list with length <cite>N_contours</cite>. Each list element is anumpy array containing the
 coordinats of each polygon vertex.</p>
 </dd>
-<dt><strong>contours: array-like</strong></dt><dd><p>Vector containing the scalar function values of each contour line</p>
+<dt><strong>contour_values: array-like</strong></dt><dd><p>Vector containing the scalar function value for each contour line</p>
 </dd>
 </dl>
 </dd>
@@ -1574,27 +1570,27 @@ TODO: make this more flexible.</p>
 <div class="section" id="module-bfieldtools.utils">
 <span id="bfieldtools-utils-module"></span><h2>bfieldtools.utils module<a class="headerlink" href="#module-bfieldtools.utils" title="Permalink to this headline">¶</a></h2>
 <p>This module contains miscellaneous utility functions used across bfieldtools.</p>
-<dl class="attribute">
+<dl class="function">
 <dt id="bfieldtools.utils.assemble_matrix">
-<code class="descclassname">bfieldtools.utils.</code><code class="descname">assemble_matrix</code><a class="headerlink" href="#bfieldtools.utils.assemble_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">assemble_matrix</code><span class="sig-paren">(</span><em>tris</em>, <em>Nverts</em>, <em>triangle_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimized  assembly of finite element matrix for
 precomputed triangle data</p>
 <p>Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
 for the nodes neighbouring the triangle</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="function">
 <dt id="bfieldtools.utils.assemble_matrix2">
-<code class="descclassname">bfieldtools.utils.</code><code class="descname">assemble_matrix2</code><a class="headerlink" href="#bfieldtools.utils.assemble_matrix2" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">assemble_matrix2</code><span class="sig-paren">(</span><em>tris1</em>, <em>tris2</em>, <em>Nverts1</em>, <em>Nverts2</em>, <em>triangle_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimized  assembly of finite element matrix for
 precomputed triangle data for separate meshes 1 and 2</p>
 <p>Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
 for the nodes neighbouring the triangle</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="function">
 <dt id="bfieldtools.utils.assemble_matrix_chunk">
-<code class="descclassname">bfieldtools.utils.</code><code class="descname">assemble_matrix_chunk</code><a class="headerlink" href="#bfieldtools.utils.assemble_matrix_chunk" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">assemble_matrix_chunk</code><span class="sig-paren">(</span><em>tris</em>, <em>Nverts</em>, <em>triangle_data</em>, <em>n</em>, <em>Nchunks</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix_chunk" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimized  assembly of finite element matrix for
 precomputed triangle data. Version for computation in which eval points
 are chunked smaller, less memory-intensive parts</p>
@@ -1608,9 +1604,9 @@ for the nodes neighbouring the triangle</p>
 <dd><p>Generate and return a set of points on a cylindrical surface.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="function">
 <dt id="bfieldtools.utils.dual_areas">
-<code class="descclassname">bfieldtools.utils.</code><code class="descname">dual_areas</code><a class="headerlink" href="#bfieldtools.utils.dual_areas" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">dual_areas</code><span class="sig-paren">(</span><em>tris</em>, <em>ta</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.dual_areas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate (dual) areas for each node in inds</p>
 <p>Dual area == area summed over the neighbouring triangles divided by 3</p>
 </dd></dl>
@@ -1714,7 +1710,7 @@ triangle indices (tri)</p>
       
     </p>
     <p>
-        &copy; Copyright 2019, Rasmus Zetter, Antti Mäkinen, Joonas Iivanainen.<br/>
+        &copy; Copyright 2019, bfieldtools developers.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>

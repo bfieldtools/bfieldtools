@@ -193,7 +193,27 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Triangle potential validation">
+    <div class="sphx-glr-thumbcontainer" tooltip="Test and validation of potential of uniformaly distributed charge density">
+
+.. only:: html
+
+    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_uniform_triangle_thumb.png
+
+        :ref:`sphx_glr_auto_examples_validation_validate_uniform_triangle.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/validation/validate_uniform_triangle
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Test and validation of potential of linearly distributed dipolar density">
 
 .. only:: html
 
