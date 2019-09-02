@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Created on Mon Sep  2 09:28:52 2019
 
@@ -17,6 +15,7 @@ from bfieldtools.integrals import triangle_potential_dipole_linear
 from bfieldtools.integrals import omega
 from bfieldtools.utils import tri_normals_and_areas
 
+#########################################################
 #%% Test potential shape slightly above the surface
 points = np.array([[0,0,0],
                    [1,0,0],
@@ -44,6 +43,7 @@ for i in range(3):
     plt.sca(ax[i])
     plt.imshow(pot[:,0,i].reshape(Nx, Nx))
 
+#########################################################
 #%% Test summation formula
 pot_sum = triangle_potential_dipole_linear(RR, tn, ta, False).sum(axis=-1)
 solid_angle = omega(RR)
@@ -63,6 +63,7 @@ plt.imshow((solid_angle[:,0]-pot_sum[:,0]).reshape(Nx, Nx),
 plt.axis('image')
 
 
+#########################################################
 #%% Test asymptotic behavour
 def dip_potential(Reval, Rdip, moment):
     R  = Reval - Rdip
@@ -79,6 +80,9 @@ p_eval2 = np.zeros((Neval, 3))
 z = np.linspace(0,100, Neval)
 p_eval2[:,2] = np.linspace(0,100, Neval)
 p_eval2 += Rdip
+
+
+plt.figure()
 
 # Plot dipole field approximating uniform dipolar density
 plt.plot(z, dip_potential(p_eval2, Rdip, m))
