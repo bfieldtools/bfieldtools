@@ -39,8 +39,8 @@ def scalar_contour(mesh, scalars, N_contours=10, contours=None):
     contour_polys: list
         list with length `N_contours`. Each list element is anumpy array containing the
         coordinats of each polygon vertex.
-    contours: array-like
-        Vector containing the scalar function values of each contour line
+    contour_values: array-like
+        Vector containing the scalar function value for each contour line
     '''
 
     # Compute rotated gradient of scalars (e.g. current density from a stream function)
@@ -52,6 +52,8 @@ def scalar_contour(mesh, scalars, N_contours=10, contours=None):
 
     edge_vals = scalars[mesh.edges_unique]
     contour_polys = []
+
+    contour_values = []
 
 
     #Loop through
@@ -123,6 +125,7 @@ def scalar_contour(mesh, scalars, N_contours=10, contours=None):
                 # and append to contour_polys
 
                 contour_polys.append(points[sorted_inds])
+                contour_values.append(c)
 
                 # Break the loop if all edges have been visited
                 if np.all(c_edges_in_c_faces==-1):
@@ -160,7 +163,7 @@ def scalar_contour(mesh, scalars, N_contours=10, contours=None):
             if k==kmax:
                 raise RuntimeWarning('Something wrong with the contours, number of max iterations exceeded')
 
-    return contour_polys, contours
+    return contour_polys, contour_values
 
 
 
