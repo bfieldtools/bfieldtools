@@ -193,7 +193,7 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
+    <div class="sphx-glr-thumbcontainer" tooltip="Triangle potential validation">
 
 .. only:: html
 

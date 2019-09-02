@@ -7,9 +7,8 @@
 .. _sphx_glr_auto_examples_validation_validate_linear_dipole.py:
 
 
-Created on Mon Sep  2 09:28:52 2019
-
-@author: makinea1
+Triangle potential validation
+=============================
 
 
 .. code-block:: default
@@ -25,11 +24,6 @@ Created on Mon Sep  2 09:28:52 2019
     from bfieldtools.integrals import triangle_potential_dipole_linear
     from bfieldtools.integrals import omega
     from bfieldtools.utils import tri_normals_and_areas
-
-
-
-
-
 
 
 %% Test potential shape slightly above the surface
@@ -64,14 +58,6 @@ Created on Mon Sep  2 09:28:52 2019
         plt.imshow(pot[:,0,i].reshape(Nx, Nx))
 
 
-
-
-.. image:: /auto_examples/validation/images/sphx_glr_validate_linear_dipole_001.png
-    :class: sphx-glr-single-img
-
-
-
-
 %% Test summation formula
 
 
@@ -93,14 +79,6 @@ Created on Mon Sep  2 09:28:52 2019
     plt.imshow((solid_angle[:,0]-pot_sum[:,0]).reshape(Nx, Nx),
                vmin=0, vmax=pot_sum.max())
     plt.axis('image')
-
-
-
-
-
-.. image:: /auto_examples/validation/images/sphx_glr_validate_linear_dipole_002.png
-    :class: sphx-glr-single-img
-
 
 
 
@@ -139,26 +117,11 @@ Created on Mon Sep  2 09:28:52 2019
 
 
 
-
-.. image:: /auto_examples/validation/images/sphx_glr_validate_linear_dipole_003.png
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    /l/bfieldtools/examples/validation/validate_linear_dipole.py:71: RuntimeWarning: invalid value encountered in true_divide
-      return (moment*R).sum(axis=1)/r**3
-
-
-
-
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.553 seconds)
+   **Total running time of the script:** ( 0 minutes  0.000 seconds)
+
+**Estimated memory usage:**  0 MB
 
 
 .. _sphx_glr_download_auto_examples_validation_validate_linear_dipole.py:

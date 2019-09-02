@@ -195,11 +195,6 @@ region between the two coil planes.</p>
 <span class="n">coil</span><span class="o">.</span><span class="n">strayC</span> <span class="o">=</span> <span class="n">compute_C</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">stray_points</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3184 vertices by 672 target points... took 0.90 seconds.
-Computing C matrix, 3184 vertices by 2562 target points... took 2.65 seconds.
-</pre></div>
-</div>
 <p>Create bfield specifications used when optimizing the coil geometry</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#The absolute target field amplitude is not of importance,</span>
 <span class="c1"># and it is scaled to match the C matrix in the optimization function</span>
@@ -223,26 +218,6 @@ Computing C matrix, 3184 vertices by 2562 target points... took 2.65 seconds.
                                             <span class="n">tolerance</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 2 chunks since 9 GiB memory is available...
-Calculating potentials, chunk 1/2
-Calculating potentials, chunk 2/2
-Inductance matrix computation took 72.89 seconds.
-Scaling matrices before optimization. This requires singular value computation, hold on.
-Solving quadratic programming problem using cvxopt...
-     pcost       dcost       gap    pres   dres
- 0:  1.0500e+02  3.7757e+02  3e+04  5e+00  3e-14
- 1:  1.5336e+02  4.0199e+02  3e+03  6e-01  3e-14
- 2:  4.4248e+02  9.2422e+02  1e+03  1e-01  7e-14
- 3:  4.6255e+02  1.0365e+03  1e+03  1e-01  7e-14
- 4:  5.3592e+02  1.4638e+03  9e+02  8e-02  1e-13
- 5:  5.6696e+02  3.6612e+03  1e+03  8e-02  3e-13
- 6:  5.6809e+02  3.7241e+03  1e+03  8e-02  3e-13
- 7:  5.7281e+02  3.9155e+03  1e+03  8e-02  5e-13
- 8:  6.2388e+02  5.2786e+03  1e+03  8e-02  2e-12
-Optimal solution found.
-</pre></div>
-</div>
 <p>Plot coil windings and target points</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
            <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
@@ -259,7 +234,6 @@ Optimal solution found.
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B_target</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../../_images/sphx_glr_biplanar_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_biplanar_coil_design_001.png" />
 <p>Plot field falloff on two axes</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 
@@ -297,14 +271,6 @@ Optimal solution found.
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="../../_images/sphx_glr_biplanar_coil_design_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_biplanar_coil_design_002.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3184 vertices by 101 target points... took 0.17 seconds.
-Computing C matrix, 3184 vertices by 101 target points... took 0.16 seconds.
-/l/bfieldtools/examples/coil_design/biplanar_coil_design.py:181: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
-  plt.show()
-</pre></div>
-</div>
 <p>Extract stream function isosurfaces/contours as polygons,
 plot with current directions</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scene</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
@@ -329,16 +295,6 @@ plot with current directions</p>
               <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;cone&#39;</span><span class="p">,</span> <span class="n">scale_mode</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span>
               <span class="n">scale_factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
               <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="nb">int</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">contours</span><span class="p">[</span><span class="n">loop_idx</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
-</pre></div>
-</div>
-<div class="highlight-pytb notranslate"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
-  File <span class="nb">&quot;/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;</span>, line <span class="m">480</span>, in <span class="n">_memory_usage</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
-  File <span class="nb">&quot;/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;</span>, line <span class="m">465</span>, in <span class="n">__call__</span>
-    <span class="k">exec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">globals</span><span class="p">)</span>
-  File <span class="nb">&quot;/l/bfieldtools/examples/coil_design/biplanar_coil_design.py&quot;</span>, line <span class="m">202</span>, in <span class="n">&lt;module&gt;</span>
-    <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="nb">int</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">contours</span><span class="p">[</span><span class="n">loop_idx</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span>
-<span class="gr">IndexError</span>: <span class="n">index 10 is out of bounds for axis 0 with size 10</span>
 </pre></div>
 </div>
 <p>Compute magnetic field from discrete current line segments</p>
@@ -385,7 +341,8 @@ plot with current directions</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  58.045 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  0 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-biplanar-coil-design-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/bfe43e86311a239427cae232e794e54a/biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">biplanar_coil_design.py</span></code></a></p>

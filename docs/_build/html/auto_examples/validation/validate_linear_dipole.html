@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>&lt;no title&gt; &#8212; bfieldtools 0.1 documentation</title>
+    <title>Triangle potential validation &#8212; bfieldtools 0.1 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
@@ -59,13 +59,13 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../literature.html">Literature</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Example gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html#coil-design">Coil design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html#thermal-noise-computation">Thermal noise computation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../index.html#validation">Validation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html#validation">Validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/modules.html">API Reference</a></li>
 </ul>
 </ul>
@@ -106,8 +106,8 @@
 <p class="admonition-title">Note</p>
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-validation-validate-linear-dipole-py"><span class="std std-ref">here</span></a> to download the full example code</p>
 </div>
-<p class="sphx-glr-example-title" id="sphx-glr-auto-examples-validation-validate-linear-dipole-py">Created on Mon Sep  2 09:28:52 2019</p>
-<p>&#64;author: makinea1</p>
+<div class="sphx-glr-example-title section" id="triangle-potential-validation">
+<span id="sphx-glr-auto-examples-validation-validate-linear-dipole-py"></span><h1>Triangle potential validation<a class="headerlink" href="#triangle-potential-validation" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="c1">#import sys</span>
@@ -148,7 +148,6 @@
     <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">pot</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Nx</span><span class="p">))</span>
 </pre></div>
 </div>
-<img alt="../../_images/sphx_glr_validate_linear_dipole_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_linear_dipole_001.png" />
 <p>%% Test summation formula</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pot_sum</span> <span class="o">=</span> <span class="n">triangle_potential_dipole_linear</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">tn</span><span class="p">,</span> <span class="n">ta</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">solid_angle</span> <span class="o">=</span> <span class="n">omega</span><span class="p">(</span><span class="n">RR</span><span class="p">)</span>
@@ -168,7 +167,6 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;image&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../../_images/sphx_glr_validate_linear_dipole_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_linear_dipole_002.png" />
 <p>%% Test asymptotic behavour</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">dip_potential</span><span class="p">(</span><span class="n">Reval</span><span class="p">,</span> <span class="n">Rdip</span><span class="p">,</span> <span class="n">moment</span><span class="p">):</span>
     <span class="n">R</span>  <span class="o">=</span> <span class="n">Reval</span> <span class="o">-</span> <span class="n">Rdip</span>
@@ -197,13 +195,8 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">z</span><span class="p">,</span>  <span class="n">pot</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)[:,</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
-<img alt="../../_images/sphx_glr_validate_linear_dipole_003.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_linear_dipole_003.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/l/bfieldtools/examples/validation/validate_linear_dipole.py:71: RuntimeWarning: invalid value encountered in true_divide
-  return (moment*R).sum(axis=1)/r**3
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.553 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  0 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-validation-validate-linear-dipole-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/0e7ff67138b044efb6fa96295f625776/validate_linear_dipole.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">validate_linear_dipole.py</span></code></a></p>
@@ -213,6 +206,7 @@
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
 
 
     </div>
