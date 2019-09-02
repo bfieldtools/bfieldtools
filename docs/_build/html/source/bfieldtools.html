@@ -254,7 +254,7 @@ at each mesh vertex</p>
 defined on a triangle mesh surface. Also contains functions for modifying the generated contours.</p>
 <dl class="function">
 <dt id="bfieldtools.contour.scalar_contour">
-<code class="descclassname">bfieldtools.contour.</code><code class="descname">scalar_contour</code><span class="sig-paren">(</span><em>mesh</em>, <em>scalars</em>, <em>N_contours=10</em>, <em>contours=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.contour.scalar_contour" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.contour.</code><code class="descname">scalar_contour</code><span class="sig-paren">(</span><em>mesh</em>, <em>scalars</em>, <em>N_contours=10</em>, <em>contour_values=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.contour.scalar_contour" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes contour loops (isolines) for a scalar function defined on a mesh.
 The winding direction of the loops is defined according to the rotated gradient of the scalar</p>
 <dl class="field-list simple">
@@ -596,27 +596,6 @@ surfaces within a single mesh object.</p>
 <p>Contains functions for computing the inductance matrices of triangle surface meshes,
 including both self- and mutual-inductance.</p>
 <dl class="function">
-<dt id="bfieldtools.mutual_inductance_mesh.gamma0">
-<code class="descclassname">bfieldtools.mutual_inductance_mesh.</code><code class="descname">gamma0</code><span class="sig-paren">(</span><em>R</em>, <em>reg=1e-13</em>, <em>symmetrize=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mutual_inductance_mesh.gamma0" title="Permalink to this definition">¶</a></dt>
-<dd><p>Integrals over the edges of a triangle called gamma_0 (line charge potentials).</p>
-<p><strong>NOTE: MAY NOT BE VERY PRECISE FOR POINTS DIRECTLY AT TRIANGLE
-EDGES.</strong></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>R</strong><span class="classifier">(N, 3, 3) array of points (Neval, Nverts, xyz)</span></dt><dd></dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>res: array (Neval, Nverts)</strong></dt><dd><p>The analytic integrals for each vertex/edge</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
 <dt id="bfieldtools.mutual_inductance_mesh.mutual_inductance_matrix">
 <code class="descclassname">bfieldtools.mutual_inductance_mesh.</code><code class="descname">mutual_inductance_matrix</code><span class="sig-paren">(</span><em>mesh1</em>, <em>mesh2</em>, <em>planar=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mutual_inductance_mesh.mutual_inductance_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate a mutual inductance matrix for hat basis functions
@@ -640,33 +619,6 @@ EDGES.</strong></p>
 </dd></dl>
 
 <dl class="function">
-<dt id="bfieldtools.mutual_inductance_mesh.omega">
-<code class="descclassname">bfieldtools.mutual_inductance_mesh.</code><code class="descname">omega</code><span class="sig-paren">(</span><em>R</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mutual_inductance_mesh.omega" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the solid angle of a triangles using
-A. Van Oosterom and J. Strackee
-IEEE TRANSACTIONS ON BIOMEDICAL ENGINEERING,
-VOL. BME-30, NO. 2, 1983</p>
-<dl class="field-list">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl>
-<dt><strong>R</strong><span class="classifier">(N, …, 3, 3) array of points (Neval, …, Nverts, xyz)</span></dt><dd><p>Points correspond to relative coordinates (x,y,z) of
-N triangles/evaluation points for
-the 3 corners of the triangles/triangle.</p>
-<p>Neval can be number of evaluation points for the same triangle
-or number of triangles for the same evaluation points</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>sa: (Neval, 3) ???</strong></dt><dd><p>Solid angles of triangle(s) at evaluation points</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
 <dt id="bfieldtools.mutual_inductance_mesh.self_inductance_matrix">
 <code class="descclassname">bfieldtools.mutual_inductance_mesh.</code><code class="descname">self_inductance_matrix</code><span class="sig-paren">(</span><em>mesh</em>, <em>planar=False</em>, <em>Nchunks=1</em>, <em>approx=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mutual_inductance_mesh.self_inductance_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate a self inductance matrix for hat basis functions
@@ -680,59 +632,6 @@ or number of triangles for the same evaluation points</p>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>M: (Nvertices x Nvertices) array</strong></dt><dd><p>Self.inductance matrix of <cite>mesh</cite></p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="bfieldtools.mutual_inductance_mesh.triangle_potential">
-<code class="descclassname">bfieldtools.mutual_inductance_mesh.</code><code class="descname">triangle_potential</code><span class="sig-paren">(</span><em>R</em>, <em>tn</em>, <em>planar=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mutual_inductance_mesh.triangle_potential" title="Permalink to this definition">¶</a></dt>
-<dd><p>1/r potential of a uniform triangle</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>R</strong><span class="classifier">(N, (Ntri), 3, 3) array</span></dt><dd><p>Displacement vectors (Neval, …., Ntri_verts, xyz)</p>
-</dd>
-<dt><strong>tn</strong><span class="classifier">((Ntri), 3) array</span></dt><dd><p>Triangle normals (Ntri, dir)</p>
-</dd>
-<dt><strong>planar: boolean</strong></dt><dd><p>If True, use planar geometry assumption for speed</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>result:  array</strong></dt><dd><p>Resultant 1/r potential</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="bfieldtools.mutual_inductance_mesh.triangle_potential_approx">
-<code class="descclassname">bfieldtools.mutual_inductance_mesh.</code><code class="descname">triangle_potential_approx</code><span class="sig-paren">(</span><em>R</em>, <em>ta</em>, <em>planar=False</em>, <em>reg=1e-12</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mutual_inductance_mesh.triangle_potential_approx" title="Permalink to this definition">¶</a></dt>
-<dd><p>1/r potential of a uniform triangle using centroid approximation</p>
-<p>Calculates 1/R potentials for triangle centroids
-(The singular at the centroid is handled with the very small
-reg value, but anyway the values close to the centroid are inexact)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>R</strong><span class="classifier">(N, (Ntri), 3, 3) array</span></dt><dd><p>Displacement vectors (Neval, …., Ntri_verts, xyz)</p>
-</dd>
-<dt><strong>ta</strong><span class="classifier">(Ntri) array</span></dt><dd><p>Triangle areas</p>
-</dd>
-<dt><strong>planar: boolean</strong></dt><dd><p>If True, use planar geometry assumption for speed</p>
-</dd>
-<dt><strong>reg: float</strong></dt><dd><p>Regularization value used in approximation</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>result: array</strong></dt><dd><p>Resultant 1/r potential</p>
 </dd>
 </dl>
 </dd>

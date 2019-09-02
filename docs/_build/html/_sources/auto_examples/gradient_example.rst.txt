@@ -103,7 +103,7 @@ The same but rotated (e.g. current density from a stream function)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.993 seconds)
+   **Total running time of the script:** ( 0 minutes  2.505 seconds)
 
 
 .. _sphx_glr_download_auto_examples_gradient_example.py:
