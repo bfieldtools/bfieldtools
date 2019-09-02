@@ -1,7 +1,6 @@
 """
-Created on Mon Sep  2 09:28:52 2019
-
-@author: makinea1
+Triangle potential validation
+=============================
 """
 
 import numpy as np
