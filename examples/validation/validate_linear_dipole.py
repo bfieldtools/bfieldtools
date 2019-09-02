@@ -1,15 +1,22 @@
 """
-Created on Mon Sep  2 09:28:52 2019
+Test and validation of potential of linearly distributed dipolar density
 
-@author: makinea1
+For the math see:
+        J. C. de Munck, "A linear discretization of the volume conductor
+        boundary integral equation using analytically integrated elements
+        (electrophysiology application),"
+        in IEEE Transactions on Biomedical Engineering,
+        vol. 39, no. 9, pp. 986-990, Sept. 1992.
+        doi: 10.1109/10.256433
+
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
-#import sys
-#path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
-#if path not in sys.path:
-#    sys.path.insert(0,path)
+import sys
+path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
+if path not in sys.path:
+    sys.path.insert(0,path)
 
 from bfieldtools.integrals import triangle_potential_dipole_linear
 from bfieldtools.integrals import omega
@@ -41,7 +48,12 @@ pot = triangle_potential_dipole_linear(RR, tn, ta, False)
 f, ax = plt.subplots(1, 3)
 for i in range(3):
     plt.sca(ax[i])
-    plt.imshow(pot[:,0,i].reshape(Nx, Nx))
+    plt.imshow(pot[:,0,i].reshape(Nx, Nx), extent=(xx.min(),xx.max(),
+                                                   xx.max(),xx.min()))
+    plt.colorbar(orientation='horizontal')
+    if i==0:
+        plt.ylabel('x')
+        plt.xlabel('y')
 
 #########################################################
 #%% Test summation formula
@@ -53,14 +65,19 @@ f, ax = plt.subplots(1, 3)
 plt.sca(ax[0])
 plt.title('Sum of potentials')
 plt.imshow(pot_sum[:,0].reshape(Nx, Nx), vmin=0, vmax=pot_sum.max())
+plt.colorbar(orientation='horizontal')
 plt.sca(ax[1])
 plt.title('Solid angle')
 plt.imshow(solid_angle[:,0].reshape(Nx, Nx), vmin=0, vmax=pot_sum.max())
+plt.colorbar(orientation='horizontal')
 plt.sca(ax[2])
-plt.title('Difference')
-plt.imshow((solid_angle[:,0]-pot_sum[:,0]).reshape(Nx, Nx),
-           vmin=0, vmax=pot_sum.max())
+plt.title('Abs difference')
+plt.imshow(abs((solid_angle[:,0]-pot_sum[:,0])).reshape(Nx, Nx),
+           vmin=0, vmax=pot_sum.max()/1e16)
+plt.colorbar(orientation='horizontal', pad=-0.2)
 plt.axis('image')
+
+plt.tight_layout()
 
 
 #########################################################
@@ -77,19 +94,19 @@ m = ta*tn
 # Eval points
 Neval = 100
 p_eval2 = np.zeros((Neval, 3))
-z = np.linspace(0,100, Neval)
-p_eval2[:,2] = np.linspace(0,100, Neval)
+z = np.linspace(0.01,100, Neval)
+p_eval2[:,2] = z
 p_eval2 += Rdip
 
 
 plt.figure()
 
 # Plot dipole field approximating uniform dipolar density
-plt.plot(z, dip_potential(p_eval2, Rdip, m))
+plt.semilogy(z, dip_potential(p_eval2, Rdip, m))
 # Plot sum of the linear dipoles
 RR = p_eval2[:,None,None,:] - p_tris[None,:,:,:]
 pot = triangle_potential_dipole_linear(RR, tn, ta, False)
-plt.plot(z,  pot.sum(axis=-1)[:,0])
+plt.semilogy(z,  pot.sum(axis=-1)[:,0])
 
 
 
