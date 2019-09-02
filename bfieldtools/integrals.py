@@ -200,6 +200,7 @@ def triangle_potential_dipole_linear(R, tn, ta, planar=False):
     result *= det/(2*ta[..., :, None])
     if not planar:
         # First part of the integral
+        # Note: tn normalized version of n-vector in de Munck
         lin_coeffs = np.sum(tn_ax*np.cross(np.roll(R, 2, -2),
                                            np.roll(R, 1, -2), axis=-1), axis=-1)
         result += lin_coeffs*omega(R)[..., :, None]
