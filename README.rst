@@ -31,8 +31,7 @@ Requires Python 3 (to be safe, use 3.5 or newer).
 Documentation
 ^^^^^^^^^^^^^
 
-For now, documentation is limited to function docstrings and comments. Some examples showcasing functionality are also included in the examples-folder.
-
+For now, documentation including an API reference and examples can be found in docs/_build/index.html. This shall be hosted somewehere available, e.g. ReadTheDocs.
 
 Installing bfieldtools
 ^^^^^^^^^^^^^^^^^^^^^^
