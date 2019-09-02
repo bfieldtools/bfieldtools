@@ -76,11 +76,7 @@
             
             
             
-              <li class="hidden-sm">
-<div id="sourcelink">
-  <a href="../../_sources/auto_examples/coil_design/biplanar_coil_design.rst.txt"
-     rel="nofollow">Source</a>
-</div></li>
+              <li class="hidden-sm"></li>
             
           </ul>
 
@@ -151,6 +147,14 @@ region between the two coil planes.</p>
 <span class="n">coil</span> <span class="o">=</span> <span class="n">MeshWrapper</span><span class="p">(</span><span class="n">verts</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">tris</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>shapely.geometry.Polygon not available!
+Traceback (most recent call last):
+  File &quot;/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py&quot;, line 22, in &lt;module&gt;
+    from shapely.geometry import Polygon
+ModuleNotFoundError: No module named &#39;shapely&#39;
+</pre></div>
+</div>
 <p>Set up target and stray field points</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#Here, the target points are on a volumetric grid within a sphere</span>
 
@@ -195,6 +199,11 @@ region between the two coil planes.</p>
 <span class="n">coil</span><span class="o">.</span><span class="n">strayC</span> <span class="o">=</span> <span class="n">compute_C</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">stray_points</span><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3184 vertices by 672 target points... took 0.95 seconds.
+Computing C matrix, 3184 vertices by 2562 target points... took 2.69 seconds.
+</pre></div>
+</div>
 <p>Create bfield specifications used when optimizing the coil geometry</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#The absolute target field amplitude is not of importance,</span>
 <span class="c1"># and it is scaled to match the C matrix in the optimization function</span>
@@ -218,6 +227,26 @@ region between the two coil planes.</p>
                                             <span class="n">tolerance</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 2 chunks since 8 GiB memory is available...
+Calculating potentials, chunk 1/2
+Calculating potentials, chunk 2/2
+Inductance matrix computation took 76.50 seconds.
+Scaling matrices before optimization. This requires singular value computation, hold on.
+Solving quadratic programming problem using cvxopt...
+     pcost       dcost       gap    pres   dres
+ 0:  1.0500e+02  3.7757e+02  3e+04  5e+00  3e-14
+ 1:  1.5336e+02  4.0199e+02  3e+03  6e-01  3e-14
+ 2:  4.4248e+02  9.2422e+02  1e+03  1e-01  7e-14
+ 3:  4.6255e+02  1.0365e+03  1e+03  1e-01  7e-14
+ 4:  5.3592e+02  1.4638e+03  9e+02  8e-02  1e-13
+ 5:  5.6696e+02  3.6612e+03  1e+03  8e-02  3e-13
+ 6:  5.6809e+02  3.7241e+03  1e+03  8e-02  3e-13
+ 7:  5.7281e+02  3.9155e+03  1e+03  8e-02  5e-13
+ 8:  6.2388e+02  5.2786e+03  1e+03  8e-02  2e-12
+Optimal solution found.
+</pre></div>
+</div>
 <p>Plot coil windings and target points</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
            <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
@@ -234,6 +263,7 @@ region between the two coil planes.</p>
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B_target</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
+<img alt="../../_images/sphx_glr_biplanar_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_biplanar_coil_design_001.png" />
 <p>Plot field falloff on two axes</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 
@@ -271,6 +301,14 @@ region between the two coil planes.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+<img alt="../../_images/sphx_glr_biplanar_coil_design_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_biplanar_coil_design_002.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3184 vertices by 101 target points... took 0.19 seconds.
+Computing C matrix, 3184 vertices by 101 target points... took 0.18 seconds.
+/l/bfieldtools/examples/coil_design/biplanar_coil_design.py:181: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+  plt.show()
+</pre></div>
+</div>
 <p>Extract stream function isosurfaces/contours as polygons,
 plot with current directions</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scene</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
@@ -280,23 +318,24 @@ plot with current directions</p>
 <span class="n">N_contours</span> <span class="o">=</span> <span class="mi">10</span>
 
 
-<span class="n">contour_polys</span><span class="p">,</span> <span class="n">contours</span> <span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="n">N_contours</span><span class="p">)</span>
+<span class="n">contour_polys</span><span class="p">,</span> <span class="n">contour_values</span> <span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="n">N_contours</span><span class="p">)</span>
 
 
-<span class="n">colors</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
 
 <span class="k">for</span> <span class="n">loop_idx</span><span class="p">,</span> <span class="n">loop</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">contour_polys</span><span class="p">):</span>
     <span class="n">mlab</span><span class="o">.</span><span class="n">plot3d</span><span class="p">(</span><span class="o">*</span><span class="n">loop</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
-                <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="nb">int</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">contours</span><span class="p">[</span><span class="n">loop_idx</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span>
+                <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="nb">int</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">contour_values</span><span class="p">[</span><span class="n">loop_idx</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span>
                 <span class="n">tube_radius</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">loop</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
               <span class="o">*</span><span class="p">(</span><span class="n">loop</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">loop</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span><span class="p">),</span>
               <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;cone&#39;</span><span class="p">,</span> <span class="n">scale_mode</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span>
               <span class="n">scale_factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-              <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="nb">int</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">contours</span><span class="p">[</span><span class="n">loop_idx</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
+              <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="nb">int</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">contour_values</span><span class="p">[</span><span class="n">loop_idx</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
 </pre></div>
 </div>
+<img alt="../../_images/sphx_glr_biplanar_coil_design_003.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_biplanar_coil_design_003.png" />
 <p>Compute magnetic field from discrete current line segments</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Bseg_target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">B_target</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
@@ -341,8 +380,14 @@ plot with current directions</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  0 MB</p>
+<ul class="sphx-glr-horizontal">
+<li><img alt="../../_images/sphx_glr_biplanar_coil_design_004.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_biplanar_coil_design_004.png" />
+</li>
+<li><img alt="../../_images/sphx_glr_biplanar_coil_design_005.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_biplanar_coil_design_005.png" />
+</li>
+</ul>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  6.147 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  9133 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-biplanar-coil-design-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/bfe43e86311a239427cae232e794e54a/biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">biplanar_coil_design.py</span></code></a></p>
@@ -366,7 +411,7 @@ plot with current directions</p>
       
     </p>
     <p>
-        &copy; Copyright 2019, Rasmus Zetter, Antti Mäkinen, Joonas Iivanainen.<br/>
+        &copy; Copyright 2019, bfieldtools developers.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>

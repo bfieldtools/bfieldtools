@@ -192,21 +192,21 @@ mlab.clf()
 N_contours = 10
 
 
-contour_polys, contours = scalar_contour(coil.mesh, coil.I, N_contours=N_contours)
+contour_polys, contour_values = scalar_contour(coil.mesh, coil.I, N_contours=N_contours)
 
 
-colors = [(1, 0, 0), (0, 1, 0)]
+colors = [(1, 0, 0), (0, 0, 1)]
 
 for loop_idx, loop in enumerate(contour_polys):
     mlab.plot3d(*loop.T,
-                color=colors[int((np.sign(contours[loop_idx])+1)/2)],
+                color=colors[int((np.sign(contour_values[loop_idx])+1)/2)],
                 tube_radius=None)
 
     mlab.quiver3d(*loop[0,:].T,
               *(loop[0,:].T - loop[1,:].T),
               mode='cone', scale_mode='none',
               scale_factor=0.5,
-              color=colors[int((np.sign(contours[loop_idx])+1)/2)])
+              color=colors[int((np.sign(contour_values[loop_idx])+1)/2)])
 
 ##############################################################
 # Compute magnetic field from discrete current line segments

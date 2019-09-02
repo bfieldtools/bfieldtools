@@ -13,6 +13,7 @@ Three different examples:
 import numpy as np
 import matplotlib.pyplot as plt
 import trimesh
+from mayavi import mlab
 
 from bfieldtools.thermal_noise import compute_current_modes, visualize_current_modes, compute_dc_Bnoise, compute_ac_Bnoise
 
@@ -31,8 +32,8 @@ mu0 = 4*np.pi*1e-7
 ##############################################################################
 #Unit sphere
 #------------
-    
-    
+
+
 Np = 10
 R = np.linspace(0.1, 1, Np)
 fp = np.zeros((1,3))
@@ -76,6 +77,8 @@ mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 
 vl = compute_current_modes(mesh)
 
+scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+               size=(800, 800))
 
 visualize_current_modes(mesh,vl, 40, 5)
 
@@ -110,6 +113,9 @@ mesh = trimesh.load(pkg_resources.resource_filename('bfieldtools', 'example_mesh
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 
+
+scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+               size=(800, 800))
 vl = compute_current_modes(mesh)
 
 fp = np.zeros((1,3))
