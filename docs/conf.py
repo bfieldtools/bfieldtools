@@ -92,10 +92,10 @@ html_theme_options = {
     'navbar_class': "navbar",
     'bootstrap_version': "3",  # default
     'navbar_links': [
-        ("Readme", "readme")
-#        ("Documentation", "documentation"),
-#        ("API", "python_reference"),
-#        ("Glossary", "glossary"),
+        ("Readme", "readme"),
+        ("Literature", "literature"),
+        ("Example gallery", "auto_examples/index"),
+        ("API Reference", "source/modules")
 #        ("Examples", "auto_examples/index"),
 #        ("Tutorials", "auto_tutorials/index"),
 #        ("Contribute", "install/contributing"),

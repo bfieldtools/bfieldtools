@@ -149,7 +149,7 @@ Compute C matrices that are used to compute the generated magnetic field
  .. code-block:: none
 
     Computing C matrix, 3184 vertices by 672 target points... took 0.95 seconds.
-    Computing C matrix, 3184 vertices by 2562 target points... took 2.64 seconds.
+    Computing C matrix, 3184 vertices by 2562 target points... took 2.76 seconds.
 
 
 
@@ -202,10 +202,10 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 2 chunks since 9 GiB memory is available...
+    Computing inductance matrix in 2 chunks since 8 GiB memory is available...
     Calculating potentials, chunk 1/2
     Calculating potentials, chunk 2/2
-    Inductance matrix computation took 77.44 seconds.
+    Inductance matrix computation took 73.89 seconds.
     Scaling matrices before optimization. This requires singular value computation, hold on.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
@@ -409,7 +409,7 @@ Compute magnetic field from discrete current line segments
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  2.298 seconds)
+   **Total running time of the script:** ( 1 minutes  59.650 seconds)
 
 
 .. _sphx_glr_download_auto_examples_biplanar_coil_design.py:

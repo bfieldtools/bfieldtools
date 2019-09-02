@@ -44,6 +44,9 @@
           <ul class="nav navbar-nav">
             
                 <li><a href="../readme.html">Readme</a></li>
+                <li><a href="../literature.html">Literature</a></li>
+                <li><a href="../auto_examples/index.html">Example gallery</a></li>
+                <li><a href="modules.html">API Reference</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -744,16 +747,23 @@ reg value, but anyway the values close to the centroid are inexact)</p>
 <code class="descclassname">bfieldtools.sphtools.</code><code class="descname">compute_sphcoeffs_mesh</code><span class="sig-paren">(</span><em>mesh</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.compute_sphcoeffs_mesh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes multipole moment (spherical harmonics coefficient) transformation
 from the mesh.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>mesh: mesh object - the surface mesh
-lmax: single - maximum degree l of the fit</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>alm: (lmax*(lmax+2)xNvertices array - transformation from the mesh to alm coefficients (r**l-terms)
-blm: (lmax*(lmax+2)xNvertices array - transformation from the mesh to blm coefficients (r**(-l)-terms)</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mesh: mesh object - the surface mesh</strong></dt><dd></dd>
+<dt><strong>lmax: int</strong></dt><dd><p>maximum degree l of the fit</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>alm: (lmax*(lmax+2)xNvertices array</strong></dt><dd><p>transformation from the mesh to alm coefficients (r**l-terms)</p>
+</dd>
+<dt><strong>blm: (lmax*(lmax+2)xNvertices array</strong></dt><dd><p>transformation from the mesh to blm coefficients (r**(-l)-terms)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
@@ -765,70 +775,100 @@ blm: (lmax*(lmax+2)xNvertices array - transformation from the mesh to blm coeffi
 <dt id="bfieldtools.sphtools.plotsph.plotBPhilm_volume">
 <code class="descname">plotBPhilm_volume</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>lim</em>, <em>Np</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotsph.plotBPhilm_volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots magnetic field basis function ‘Philm’ (r**(-l)) over a 3D volume.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>sph: spherical harmonics analysis object
-l: single - degree l
-m: single - order m
-lim: single - limits for coordinates, e.g., xmin = -lim, xmax = lim
-Np: single - number of points along different coordinates
-offset: 1x3 array - offset of the volume in which Philm is plotted</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>obj: mayavi object</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sph: spherical harmonics analysis object</strong></dt><dd></dd>
+<dt><strong>l: int</strong></dt><dd><p>degree l</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order m</p>
+</dd>
+<dt><strong>lim: float</strong></dt><dd><p>limits for coordinates, e.g., xmin = -lim, xmax = lim</p>
+</dd>
+<dt><strong>Np: int</strong></dt><dd><p>number of points along different coordinates</p>
+</dd>
+<dt><strong>offset: 1x3 array</strong></dt><dd><p>offset of the volume in which Philm is plotted</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>obj: mayavi object</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.plotsph.plotBPsilm_volume">
 <code class="descname">plotBPsilm_volume</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>lim</em>, <em>Np</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotsph.plotBPsilm_volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots magnetic field basis function ‘Psilm’ (r**l) over a 3D volume.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>sph: spherical harmonics analysis object
-l: single - degree l
-m: single - order m
-lim: single - limits for coordinates, e.g., xmin = -lim, xmax = lim
-Np: single - number of points along different coordinates
-offset: 1x3 array - offset of the volume in which Psilm is plotted</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>obj: mayavi object</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sph: spherical harmonics analysis object</strong></dt><dd></dd>
+<dt><strong>l: int</strong></dt><dd><p>degree l</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order m</p>
+</dd>
+<dt><strong>lim: float</strong></dt><dd><p>limits for coordinates, e.g., xmin = -lim, xmax = lim</p>
+</dd>
+<dt><strong>Np: int</strong></dt><dd><p>number of points along different coordinates</p>
+</dd>
+<dt><strong>offset: 1x3 array</strong></dt><dd><p>offset of the volume in which Psilm is plotted</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>obj: mayavi object</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.plotsph.plotPhilm">
 <code class="descname">plotPhilm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotsph.plotPhilm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots magnetic field basis function ‘Philm’ (r**(-l)) over a sphere.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>sph: spherical harmonics analysis object
-l: single - degree l
-m: single - order m</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>obj: mayavi object</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sph: spherical harmonics analysis object</strong></dt><dd></dd>
+<dt><strong>l: int</strong></dt><dd><p>degree l</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order m</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>obj: mayavi object</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.plotsph.plotPsilm">
 <code class="descname">plotPsilm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotsph.plotPsilm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots magnetic field basis function ‘Psilm’ (r**l) over a sphere.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>sph: spherical harmonics analysis object
-l: single - degree l
-m: single - order m</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>obj: mayavi object</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sph: spherical harmonics analysis object</strong></dt><dd></dd>
+<dt><strong>l: int</strong></dt><dd><p>degree l</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order m</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>obj: mayavi object</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -836,12 +876,17 @@ m: single - order m</p>
 <code class="descname">plotYlm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotsph.plotYlm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots real spherical harmonics of order m and degree l.
 Inspired by <a class="reference external" href="https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html">https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html</a></p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>sph: spherical harmonics analysis object
-l: single - degree l
-m: single - order m</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sph: spherical harmonics analysis object</strong></dt><dd></dd>
+<dt><strong>l: int</strong></dt><dd><p>degree l</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order m</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -849,11 +894,15 @@ m: single - order m</p>
 <code class="descname">plotYlms</code><span class="sig-paren">(</span><em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotsph.plotYlms" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots real spherical harmonics up to lmax.
 Inspired by <a class="reference external" href="https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html">https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html</a>.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>sph: spherical harmonics analysis object
-lmax: single - maximum degree l</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sph: spherical harmonics analysis object</strong></dt><dd></dd>
+<dt><strong>lmax: int</strong></dt><dd><p>maximum degree l</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -875,17 +924,24 @@ used as the inner product &lt;C,D&gt; = int C dot D dOmega.</p>
 <dt id="bfieldtools.sphtools.sphbasis.Blm">
 <code class="descname">Blm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.Blm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Blm vector function (see Eq. 19 Plattner and Simons (2014)).</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>l: single - degree of Plm
-m: single - order of Plm
-theta: Nx1 array - evaluation points, theta at spherical coordinates
-phi: Nx1 array - evaluation points, phi at spherical coordinates</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>Blm: Nx3 array - Blm at (theta, phi).</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>l: int</strong></dt><dd><p>degree of Plm</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order of Plm</p>
+</dd>
+<dt><strong>theta: Nx1 array</strong></dt><dd><p>evaluation points, theta at spherical coordinates</p>
+</dd>
+<dt><strong>phi: Nx1 array</strong></dt><dd><p>evaluation points, phi at spherical coordinates</p>
+</dd>
+<dt><strong>Returns</strong></dt><dd></dd>
+<dt><strong>——-</strong></dt><dd></dd>
+<dt><strong>Blm: Nx3 array</strong></dt><dd><p>Blm at (theta, phi).</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -893,34 +949,50 @@ phi: Nx1 array - evaluation points, phi at spherical coordinates</p>
 <code class="descname">Philm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.Philm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Vector basis function (Philm) for r**(-l) component of the magnetic field.
 Normalization &lt;Philm,Phikn&gt; = delta_lk,mn.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>l: single - degree of Philm
-m: single - order of Philm
-theta: Nx1 array - evaluation points, theta at spherical coordinates
-phi: Nx1 array - evaluation points, phi at spherical coordinates</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>Philm: Nx3 array - Philm at (theta, phi).</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>l: int</strong></dt><dd><p>degree of Philm</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order of Philm</p>
+</dd>
+<dt><strong>theta: Nx1 array</strong></dt><dd><p>evaluation points, theta at spherical coordinates</p>
+</dd>
+<dt><strong>phi: Nx1 array</strong></dt><dd><p>evaluation points, phi at spherical coordinates</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Philm: Nx3 array</strong></dt><dd><p>Philm at (theta, phi).</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.Plm">
 <code class="descname">Plm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.Plm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plm vector function (see Eq. 18 Plattner and Simons (2014)).</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>l: single - degree of Plm
-m: single - order of Plm
-theta: Nx1 array - evaluation points, theta at spherical coordinates
-phi: Nx1 array - evaluation points, phi at spherical coordinates</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>Plm: Nx3 array - Plm at (theta, phi).</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>l: int</strong></dt><dd><p>degree of Plm</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order of Plm</p>
+</dd>
+<dt><strong>theta: Nx1 array</strong></dt><dd><p>evaluation points, theta at spherical coordinates</p>
+</dd>
+<dt><strong>phi: Nx1 array</strong></dt><dd><p>evaluation points, phi at spherical coordinates</p>
+</dd>
+<dt><strong>Returns</strong></dt><dd></dd>
+<dt><strong>——-</strong></dt><dd></dd>
+<dt><strong>Plm: Nx3 array</strong></dt><dd><p>Plm at (theta, phi).</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -928,31 +1000,44 @@ phi: Nx1 array - evaluation points, phi at spherical coordinates</p>
 <code class="descname">Psilm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.Psilm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Vector basis function (Psilm) for r**l component of the magnetic field.
 Normalization &lt;Psilm,Psikn&gt; = delta_lk,mn.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>l: single - degree of Psilm
-m: single - order of Psilm
-theta: Nx1 array - evaluation points, theta at spherical coordinates
-phi: Nx1 array - evaluation points, phi at spherical coordinates</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>Psilm: Nx3 array - Psilm at (theta, phi).</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>l: int</strong></dt><dd><p>degree of Psilm</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order of Psilm</p>
+</dd>
+<dt><strong>theta: Nx1 array</strong></dt><dd><p>evaluation points, theta at spherical coordinates</p>
+</dd>
+<dt><strong>phi: Nx1 array</strong></dt><dd><p>evaluation points, phi at spherical coordinates</p>
+</dd>
+<dt><strong>Returns</strong></dt><dd></dd>
+<dt><strong>——-</strong></dt><dd></dd>
+<dt><strong>Psilm: Nx3 array</strong></dt><dd><p>Psilm at (theta, phi).</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.Rotmatrix">
 <code class="descname">Rotmatrix</code><span class="sig-paren">(</span><em>sp</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.Rotmatrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructs rotation matrix from cartesian coordinates to spherical.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>sp: Nx3 array - spherical coordinates [r, theta, phi]</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>vmat: 3x3 array - rotation matrix from cartesian to spherical.</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sp: Nx3 array</strong></dt><dd><p>spherical coordinates [r, theta, phi]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>vmat: 3x3 array</strong></dt><dd><p>rotation matrix from cartesian to spherical.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -960,15 +1045,22 @@ phi: Nx1 array - evaluation points, phi at spherical coordinates</p>
 <code class="descname">avsphspectra</code><span class="sig-paren">(</span><em>fun</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.avsphspectra" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the l,m-spectra (over r**l-terms) of vector function defined in quadrature points
 using the inner product.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>fun: Nx3 array - vector function computed at quadrature points self.sqp
-lmax: single - maximum degree l for which the spectra is computed</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>coeffs: lmax*(lmax+2)x1 array - spectral coefficients</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>fun: Nx3 array</strong></dt><dd><p>vector function computed at quadrature points self.sqp</p>
+</dd>
+<dt><strong>lmax: int</strong></dt><dd><p>maximum degree l for which the spectra is computed</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>coeffs: lmax*(lmax+2)x1 arrays</strong></dt><dd><p>spectral coefficients</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -976,44 +1068,64 @@ lmax: single - maximum degree l for which the spectra is computed</p>
 <code class="descname">bvsphspectra</code><span class="sig-paren">(</span><em>fun</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.bvsphspectra" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the l,m-spectra (over r**(-l)-terms) of vector function defined in quadrature points
 using the inner product.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>fun: Nx3 array - vector function computed at quadrature points self.sqp
-lmax: single - maximum degree l for which the spectra is computed</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>coeffs: lmax*(lmax+2)x1 array - spectral coefficients</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>fun: Nx3 array</strong></dt><dd><p>vector function computed at quadrature points self.sqp</p>
+</dd>
+<dt><strong>lmax: int</strong></dt><dd><p>maximum degree l for which the spectra is computed</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>coeffs: lmax*(lmax+2)x1 arrays</strong></dt><dd><p>spectral coefficients</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.cartesian2spherical">
 <code class="descname">cartesian2spherical</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.cartesian2spherical" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maps cartesian coordinates to spherical.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>p: Nx3 array - cartesian coordinates</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>sp: Nx3 array - spherical coordinates [r, theta, phi]</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>p: Nx3 array</strong></dt><dd><p>cartesian coordinates</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>sp: Nx3 array</strong></dt><dd><p>spherical coordinates [r, theta, phi]</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.cartvec2sph">
 <code class="descname">cartvec2sph</code><span class="sig-paren">(</span><em>sp</em>, <em>vec</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.cartvec2sph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transforms cartesian vector to spherical coordinates.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>sp: Nx3 array - spherical coordinates [r, theta, phi]
-vec: Nx3 array - vector in cartesian coordinates [e_x, e_y, e_z]</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>svec: Nx3 array - vector in spherical coordinates [e_r, e_theta, e_phi]</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sp: Nx3 array</strong></dt><dd><p>spherical coordinates [r, theta, phi]</p>
+</dd>
+<dt><strong>vec: Nx3 array</strong></dt><dd><p>vector in cartesian coordinates [e_x, e_y, e_z]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>svec: Nx3 array</strong></dt><dd><p>vector in spherical coordinates [e_r, e_theta, e_phi]</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -1021,72 +1133,128 @@ vec: Nx3 array - vector in cartesian coordinates [e_x, e_y, e_z]</p>
 <code class="descname">derlpmn_em</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.derlpmn_em" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes derivative of associated Legendre function (Plm) of the first kind of order m and degree l
 with respect to the argument x.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>l: single - degree of Plm
-m: single - order of Plm
-x: Nx1 array - evaluation points</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>derlp: Nx1 array - dPlm/dx at x</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>l: int</strong></dt><dd><p>degree of Plm</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order of Plm</p>
+</dd>
+<dt><strong>x: Nx1 array</strong></dt><dd><p>evaluation points</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>derlp: Nx1 array</strong></dt><dd><p>dPlm/dx at <cite>x</cite></p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.derxlm">
 <code class="descname">derxlm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.derxlm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Derivative of Xlm with respect to theta.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>l: single - degree of Xlm
-m: single - order of Xlm
-theta: Nx1 array - evaluation points, theta at spherical coordinates</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>derxlm: Nx1 array - dXlm/dtheta at theta</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>l: int</strong></dt><dd><p>degree of Xlm</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order of Xlm</p>
+</dd>
+<dt><strong>theta: Nx1 array</strong></dt><dd><p>evaluation points, theta at spherical coordinates</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>derxlm: Nx1 array</strong></dt><dd><p>dXlm/dtheta at theta</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.dphiylm">
 <code class="descname">dphiylm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.dphiylm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Derivative of Ylm with respect to phi dYlm/dphi.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>l: single - degree of Ylm
-m: single - order of Ylm
-theta: Nx1 array - evaluation points, theta at spherical coordinates
-phi: Nx1 array - evaluation points, phi at spherical coordinates</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>dphiylm: Nx1 array - dYlm/dphi at (theta, phi).</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>l: int</strong></dt><dd><p>degree of Ylm</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order of Ylm</p>
+</dd>
+<dt><strong>theta: Nx1 array</strong></dt><dd><p>evaluation points, theta at spherical coordinates</p>
+</dd>
+<dt><strong>phi: Nx1 array</strong></dt><dd><p>evaluation points, phi at spherical coordinates</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>dphiylm: Nx1 array</strong></dt><dd><p>dYlm/dphi at (theta, phi).</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.dthylm">
 <code class="descname">dthylm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.dthylm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Derivative of Ylm with respect to theta dYlm/dtheta.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>l: single - degree of Ylm
-m: single - order of Ylm
-theta: Nx1 array - evaluation points, theta at spherical coordinates
-phi: Nx1 array - evaluation points, phi at spherical coordinates</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>dthylm: Nx1 array - dYlm/dtheta at (theta, phi).</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>l: int</strong></dt><dd><p>degree of Ylm</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order of Ylm</p>
+</dd>
+<dt><strong>theta: Nx1 array</strong></dt><dd><p>evaluation points, theta at spherical coordinates</p>
+</dd>
+<dt><strong>phi: Nx1 array</strong></dt><dd><p>evaluation points, phi at spherical coordinates</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>dthylm: Nx1 array</strong></dt><dd><p>dYlm/dtheta at (theta, phi).</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.field">
 <code class="descname">field</code><span class="sig-paren">(</span><em>p</em>, <em>acoeffs</em>, <em>bcoeffs</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.field" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Computes magnetic field from the sph coefficients.
+Ignores the ‘DC’ component l=0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>p: Nx3 array</strong></dt><dd><p>coordinates in which the field is computed</p>
+</dd>
+<dt><strong>acoeffs: lmax*(lmax+2)x1 array</strong></dt><dd><p>spectral coefficients of r**l terms</p>
+</dd>
+<dt><strong>bcoeffs: lmax*(lmax+2)x1 array</strong></dt><dd><p>spectral coefficients of r**(-l) terms</p>
+</dd>
+<dt><strong>lmax: int</strong></dt><dd><p>maximum degree l which is used in computing</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>field: Nx3 array</strong></dt><dd><p>magnetic field at p</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.initqp">
@@ -1101,31 +1269,46 @@ phi: Nx1 array - evaluation points, phi at spherical coordinates</p>
 <dd><p>Inner product of vector functions fun1 and fun2.
 Defined as integration over a surface of unit sphere &lt;C,D&gt; = int C dot D dOmega.
 Quadrature rule defined in qp is used.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>fun1: Nx3 array - vector function
-fun2: Nx3 array - vector function</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>dotp: single - inner product of fun1 and fun2</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>fun1: Nx3 array</strong></dt><dd><p>vector function 1</p>
+</dd>
+<dt><strong>fun2: Nx3 array</strong></dt><dd><p>vector function 2</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>dotp: int</strong></dt><dd><p>inner product of fun1 and fun2</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.lpmn_em">
 <code class="descname">lpmn_em</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.lpmn_em" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes associated Legendre function (Plm) of the first kind of order m and degree l.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>l: single - degree of Plm
-m: single - order of Plm
-x: Nx1 array - evaluation points</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>lp: Nx1 array - Plm at x</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>l: int</strong></dt><dd><p>degree of Plm</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order of Plm</p>
+</dd>
+<dt><strong>x: Nx1 array</strong></dt><dd><p>evaluation points</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>lp: Nx1 array</strong></dt><dd><p>Plm at <cite>x</cite></p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -1133,62 +1316,92 @@ x: Nx1 array - evaluation points</p>
 <code class="descname">potential</code><span class="sig-paren">(</span><em>p</em>, <em>acoeffs</em>, <em>bcoeffs</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.potential" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes magnetic scalar potential from the sph coefficients.
 Ignores the ‘DC’ component l=0.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>p: Nx3 array - coordinates in which the potential is computed
-acoeffs: lmax*(lmax+2)x1 array - spectral coefficients of r**l terms
-bcoeffs: lmax*(lmax+2)x1 array - spectral coefficients of r**(-l) terms
-lmax: single - maximum degree l which is used in computing</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>pot: Nx1 array - magnetic scalar potential at p</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>p: Nx3 array</strong></dt><dd><p>coordinates in which the potential is computed</p>
+</dd>
+<dt><strong>acoeffs: lmax*(lmax+2)x1 array</strong></dt><dd><p>spectral coefficients of r**l terms</p>
+</dd>
+<dt><strong>bcoeffs: lmax*(lmax+2)x1 array</strong></dt><dd><p>spectral coefficients of r**(-l) terms</p>
+</dd>
+<dt><strong>lmax: int</strong></dt><dd><p>maximum degree l which is used in computing</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>pot: Nx1 array</strong></dt><dd><p>magnetic scalar potential at p</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.sinxlm">
 <code class="descname">sinxlm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.sinxlm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes m/(sin(theta))*Xlm.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>l: single - degree of Xlm
-m: single - order of Xlm
-theta: Nx1 array - evaluation points, theta at spherical coordinates</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>sinxlm: Nx1 array - m/(sin(theta))*Xlm at theta</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>l: int</strong></dt><dd><p>degree of Xlm</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order of Xlm</p>
+</dd>
+<dt><strong>theta: Nx1 array</strong></dt><dd><p>evaluation points, theta at spherical coordinates</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>sinxlm: Nx1 array</strong></dt><dd><p>m/(sin(theta))*Xlm at theta</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.spherical2cartesian">
 <code class="descname">spherical2cartesian</code><span class="sig-paren">(</span><em>sp</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.spherical2cartesian" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maps spherical coordinates to cartesian.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>sp: Nx3 array - spherical coordinates [r, theta, phi]</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>p: Nx3 array - cartesian croodinates</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sp: Nx3 array</strong></dt><dd><p>spherical coordinates [r, theta, phi]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>p: Nx3 array</strong></dt><dd><p>cartesian croodinates</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.sphvec2cart">
 <code class="descname">sphvec2cart</code><span class="sig-paren">(</span><em>sp</em>, <em>vec</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.sphvec2cart" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transforms cartesian vector to spherical coordinates.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>sp: Nx3 array - spherical coordinates [r, theta, phi]
-vec: Nx3 array - vector in spherical coordinates [e_r, e_theta, e_phi]</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>svec: Nx3 array - vector in cartesian coordinates [e_x, e_y, e_z]</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sp: Nx3 array</strong></dt><dd><p>spherical coordinates [r, theta, phi]</p>
+</dd>
+<dt><strong>vec: Nx3 array</strong></dt><dd><p>vector in spherical coordinates [e_r, e_theta, e_phi]</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>svec: Nx3 array</strong></dt><dd><p>vector in cartesian coordinates [e_x, e_y, e_z]</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -1197,16 +1410,24 @@ vec: Nx3 array - vector in spherical coordinates [e_r, e_theta, e_phi]</p>
 <dd><p>Xlm-function used in the definition of spherical harmonics (Ylm).
 Follows notation of Plattner and Simons (2014);
 see Eqs. 1–3 in <a class="reference external" href="https://arxiv.org/pdf/1306.3201.pdf">https://arxiv.org/pdf/1306.3201.pdf</a>.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>l: single - degree of Xlm
-m: single - order of Xlm
-theta: Nx1 array - evaluation points, theta at spherical coordinates</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>Xlm: Nx1 array - Xlm at theta</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>l: int</strong></dt><dd><p>degree of Xlm</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order of Xlm</p>
+</dd>
+<dt><strong>theta: Nx1 array</strong></dt><dd><p>evaluation points, theta at spherical coordinates</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Xlm: Nx1 array</strong></dt><dd><p>Xlm at theta</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -1214,17 +1435,26 @@ theta: Nx1 array - evaluation points, theta at spherical coordinates</p>
 <code class="descname">ylm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.ylm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Real spherical harmonics as defined by Plattner and Simons (2014);
 see Eqs. 1–3 in <a class="reference external" href="https://arxiv.org/pdf/1306.3201.pdf">https://arxiv.org/pdf/1306.3201.pdf</a>.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>l: single - degree of Ylm
-m: single - order of Ylm
-theta: Nx1 array - evaluation points, theta at spherical coordinates
-phi: Nx1 array - evaluation points, phi at spherical coordinates</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>Ylm: Nx1 array - Ylm at (theta,phi)</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>l: int</strong></dt><dd><p>degree of Ylm</p>
+</dd>
+<dt><strong>m: int</strong></dt><dd><p>order of Ylm</p>
+</dd>
+<dt><strong>theta: Nx1 array</strong></dt><dd><p>evaluation points, theta at spherical coordinates</p>
+</dd>
+<dt><strong>phi: Nx1 array</strong></dt><dd><p>evaluation points, phi at spherical coordinates</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Ylm: Nx1 array</strong></dt><dd><p>Ylm at (theta,phi)</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1240,37 +1470,55 @@ the spherical harmonics representation.</p>
 <dt id="bfieldtools.sphtools.sphfittools.fitSpectra">
 <code class="descname">fitSpectra</code><span class="sig-paren">(</span><em>coords</em>, <em>Bmeas</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphfittools.fitSpectra" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fits spherical harmonics representation (r**l) to measured data.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>sph: spherical harmonics analysis object
-coords: Nx3x3 array - measurement coordinates, each measured field direction
-in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-components.
-Bmeas: Nx3 array - the measured field values along different directions (x,y,z)
-lmax: single - maximum degree l for which the fit is done</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>coeffs: lmax*(lmax+2)x1 array - the unnormalized coefficients
-coeffs2: lmax*(lmax+2)x1 array - the ‘properly’ normalized squared coefficients
-nrmse: single - normalized rms error in percents between the data and fit</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sph: spherical harmonics analysis object</strong></dt><dd></dd>
+<dt><strong>coords: Nx3x3 array</strong></dt><dd><p>measurement coordinates, each measured field direction
+in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-components.</p>
+</dd>
+<dt><strong>Bmeas: Nx3 array</strong></dt><dd><p>the measured field values along different directions (x,y,z)</p>
+</dd>
+<dt><strong>lmax: int</strong></dt><dd><p>maximum degree l for which the fit is done</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>coeffs: lmax*(lmax+2)x1 array</strong></dt><dd><p>the unnormalized coefficients</p>
+</dd>
+<dt><strong>coeffs2: lmax*(lmax+2)x1 array</strong></dt><dd><p>the ‘properly’ normalized squared coefficients</p>
+</dd>
+<dt><strong>nrmse: float</strong></dt><dd><p>normalized rms error in percents between the data and fit</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphfittools.reconstructB">
 <code class="descname">reconstructB</code><span class="sig-paren">(</span><em>p</em>, <em>coeffs</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphfittools.reconstructB" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reconstructs the magnetic field using the spherical harmonics coefficients.</p>
-<p>Parameters:</p>
-<blockquote>
-<div><p>sph: spherical harmonics analysis object
-p: Nx3 array - coordinates where B is reconstructed
-coeffs: lmax*(lmax+2)x1 array - the unnormalized l,m-coefficients
-lmax: single - maximum degree l of the fit</p>
-</div></blockquote>
-<p>Returns:</p>
-<blockquote>
-<div><p>B: Nx3 array - reconstructed magnetic field at p</p>
-</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>sph: spherical harmonics analysis object</strong></dt><dd></dd>
+<dt><strong>p: Nx3 array</strong></dt><dd><p>coordinates where B is reconstructed</p>
+</dd>
+<dt><strong>coeffs: lmax*(lmax+2)x1 array</strong></dt><dd><p>the unnormalized l,m-coefficients</p>
+</dd>
+<dt><strong>lmax:int</strong></dt><dd><p>maximum degree l of the fit</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>B: Nx3 array</strong></dt><dd><p>reconstructed magnetic field at p</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
