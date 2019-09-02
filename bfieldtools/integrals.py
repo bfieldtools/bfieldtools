@@ -20,8 +20,6 @@ def gamma0(R, reg=1e-13, symmetrize=True):
         res: array (Neval, Nverts)
             The analytic integrals for each vertex/edge
 
-
-
     """
     diffs = np.roll(R, 1, -2) - np.roll(R, 2, -2)
     dotprods1 = np.sum(np.roll(R, 1, -2)*diffs, axis=-1)
@@ -191,8 +189,8 @@ def triangle_potential_dipole_linear(R, tn, ta, planar=False):
     else:
         tn_ax = tn
     # Volumes of tetrahedron between field evaluation point and the triangle
-    det = np.sum(np.cross(np.roll(R, 2, -2),
-                          np.roll(R, 1, -2), axis=-1)*R, axis=-1)
+    det = np.sum(np.cross(np.roll(R, 1, -2),
+                          np.roll(R, 2, -2), axis=-1)*R, axis=-1)
     # Edges opposite to the nodes
     edges = np.roll(R, 1, -2) - np.roll(R, 2, -2)
     #Latter part of omega_i integral in de Munck
@@ -206,4 +204,4 @@ def triangle_potential_dipole_linear(R, tn, ta, planar=False):
         result += lin_coeffs*omega(R)[..., :, None]
     else:
         print('Assuming all the triangles are in the same plane!')
-    return result/(2*ta)
+    return result/(2*ta[:,None])
