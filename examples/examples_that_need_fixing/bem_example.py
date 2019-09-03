@@ -21,30 +21,12 @@ from bfieldtools.integrals import triangle_potential_dipole_linear
 from bfieldtools.utils import assemble_matrix
 from bfieldtools.magnetic_field_mesh import compute_U
 
-
-def remove_degenerate_vertices(mesh, th=1e-8):
-    mask = np.ones(len(mesh.vertices), dtype=bool)
-    verts_new = []
-    faces_new = mesh.faces.copy()
-    ind_vert = 0
-    for v in mesh.vertices:
-        inds = np.flatnonzero(np.sum((mesh.vertices - v)**2,axis=1) < th**2)
-        if mask[inds[0]]:
-            verts_new.append(v)
-            for ii in inds:
-                faces_new[mesh.faces==ii] = ind_vert
-            mask[inds[1:]] = False
-            ind_vert += 1
-    return trimesh.Trimesh(verts_new, faces_new)
-
-
 # Load cube representing perfect magnetic shield
 file_obj = file_obj=pkg_resources.resource_filename('bfieldtools',
                     'example_meshes/cube.stl')
-cube = trimesh.load(file_obj, process=False)
+cube = trimesh.load(file_obj, process=True)
 # Center the cube
 cube.vertices -= cube.vertices.mean(axis=0)
-cube = remove_degenerate_vertices(cube)
 
 #Load simple plane mesh that is centered on the origin
 file_obj = pkg_resources.resource_filename('bfieldtools',
