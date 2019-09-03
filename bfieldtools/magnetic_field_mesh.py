@@ -9,6 +9,7 @@ from numba import jit
 import time
 
 from .utils import get_quad_points
+from bfieldtools.integrals import triangle_potential_dipole_linear
 
 
 def get_neighbour_vertices(vertices, edges):
@@ -303,3 +304,41 @@ def compute_C(mesh, r, Nchunks=None):
     print('took %.2f seconds.'%duration)
 
     return coef * C
+
+
+def compute_U(mesh, r, Nchunks=None):
+    """ Compute scalar potential matrix from linear stream functions
+        using analytic integral
+    """
+
+    coeff = 1e-7  # mu_0/(4*pi)
+
+    # Source and eval locations
+    R1 = mesh.vertices[mesh.faces]
+    R2 = r
+
+    if Nchunks is None:
+        if r.shape[0] > 1000:
+            Nchunks = r.shape[0]//100
+        else:
+            Nchunks = 1
+
+    R2chunks = np.array_split(R2, Nchunks, axis=0)
+    i0=0
+    Uf = np.zeros((R2.shape[0], mesh.faces.shape[0], 3))
+    print('Computing potential matrix')
+    for R2chunk in R2chunks:
+        RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
+        i1 = i0+RRchunk.shape[0]
+        Pi = triangle_potential_dipole_linear(RRchunk, mesh.face_normals,
+                                             mesh.area_faces)
+        Uf[i0:i1] = Pi
+        print((100*i1)//R2.shape[0], '% computed')
+        i0=i1
+
+    # Accumulate the elements
+    Uv = np.zeros((R2.shape[0], mesh.vertices.shape[0]))
+    for f in range(len(mesh.faces)):
+        Uv[:, mesh.faces[f]] += Uf[:, f]
+
+    return Uv*coeff

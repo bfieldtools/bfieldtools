@@ -19,6 +19,23 @@ import pkg_resources
 from bfieldtools.mesh_class import MeshWrapper
 from bfieldtools.integrals import triangle_potential_dipole_linear
 from bfieldtools.utils import assemble_matrix
+from bfieldtools.magnetic_field_mesh import compute_U
+
+
+def remove_degenerate_vertices(mesh, th=1e-8):
+    mask = np.ones(len(mesh.vertices), dtype=bool)
+    verts_new = []
+    faces_new = mesh.faces.copy()
+    ind_vert = 0
+    for v in mesh.vertices:
+        inds = np.flatnonzero(np.sum((mesh.vertices - v)**2,axis=1) < th**2)
+        if mask[inds[0]]:
+            verts_new.append(v)
+            for ii in inds:
+                faces_new[mesh.faces==ii] = ind_vert
+            mask[inds[1:]] = False
+            ind_vert += 1
+    return trimesh.Trimesh(verts_new, faces_new)
 
 
 # Load cube representing perfect magnetic shield
@@ -27,10 +44,11 @@ file_obj = file_obj=pkg_resources.resource_filename('bfieldtools',
 cube = trimesh.load(file_obj, process=False)
 # Center the cube
 cube.vertices -= cube.vertices.mean(axis=0)
+cube = remove_degenerate_vertices(cube)
 
 #Load simple plane mesh that is centered on the origin
 file_obj = pkg_resources.resource_filename('bfieldtools',
-                    'example_meshes/10x10_plane_hires.obj')
+                    'example_meshes/10x10_plane.obj')
 coilmesh = trimesh.load(file_obj, process=False)
 # Shrink a little bit and wrap for some additional computations
 coilmesh.vertices *= 0.5
@@ -44,64 +62,18 @@ weights = np.zeros(coilmesh.vertices.shape[0])
 weights[coil.inner_verts] = 1
 mlab.triangular_mesh(*coilmesh.vertices.T, coilmesh.faces, scalars=weights)
 
-# Calculate difference vectors
-R1 = coilmesh.vertices[coilmesh.faces]
-R2 = cube.vertices
-RR = R2[:, None, None, :] - R1[None, :, :, :]
-
 ############################################
-#%% Calculate primary potential matrix in chunks
-RRchunks = np.array_split(RR, 10, axis=0)
-i0=0;
-Pf = np.zeros((R2.shape[0], coilmesh.faces.shape[0], 3))
-print('Computing coupling matrix in chunks')
-for RRchunk in RRchunks:
-    i1 = i0+RRchunk.shape[0]
-    Pi = triangle_potential_dipole_linear(RRchunk, coilmesh.face_normals,
-                                         coilmesh.area_faces)
-    Pf[i0:i1] = Pi
-    print(i1/R2.shape[0]*100, '% computed')
-    i0=i1
-# Accumulate the elements
-Pv = np.zeros((R2.shape[0], coilmesh.vertices.shape[0]))
-Pv[:, coilmesh.faces[:, 0]] += Pf[:, :, 0]
-Pv[:, coilmesh.faces[:, 1]] += Pf[:, :, 1]
-Pv[:, coilmesh.faces[:, 2]] += Pf[:, :, 2]
-
-P_prim=Pv.copy()
+#%% Calculate primary potential matrix
+P_prim = compute_U(coilmesh, cube.vertices)
 
 # Plot the resulting primary potential
 mlab.figure()
-mlab.triangular_mesh(*cube.vertices.T, cube.faces, scalars=Pv @ weights,
+mlab.triangular_mesh(*cube.vertices.T, cube.faces, scalars=P_prim @ weights,
                      opacity=1.0)
 
 ##################################################
-#%% Calculate linear collocation BEM matrix in chunks
-
-# Source and eval locations
-R1 = cube.vertices[cube.faces]
-R2 = cube.vertices
-
-R2chunks = np.array_split(R2, 20, axis=0)
-i0=0;
-Pf = np.zeros((R2.shape[0], cube.faces.shape[0], 3))
-print('Computing BEM matrix in chunks')
-for R2chunk in R2chunks:
-    RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
-    i1 = i0+RRchunk.shape[0]
-    Pi = triangle_potential_dipole_linear(RRchunk, cube.face_normals,
-                                         cube.area_faces)
-    Pf[i0:i1] = Pi
-    print((100*i1)//R2.shape[0], '% computed')
-    i0=i1
-
-# Accumulate the elements
-Pv = np.zeros((R2.shape[0], cube.vertices.shape[0]))
-Pv[:, cube.faces[:, 0]] += Pf[:, :, 0]
-Pv[:, cube.faces[:, 1]] += Pf[:, :, 1]
-Pv[:, cube.faces[:, 2]] += Pf[:, :, 2]
-
-P_bem = Pv
+#%% Calculate linear collocation BEM matrix
+P_bem = compute_U(cube, cube.vertices)
 
 # Recalculate diag elements according to de Munck paper
 # Matrix misses one rank
@@ -116,7 +88,8 @@ P_bem += np.ones(P_bem.shape)/P_bem.shape[0]
 #%% Solve equivalent stream function for the perfect linear mu-metal layer
 weights_2 =  np.linalg.solve(P_bem, P_prim @ weights)
 
-#PLot
+#%% Plot the result
+mlab.figure()
 s1 = mlab.triangular_mesh(*cube.vertices.T, cube.faces, scalars=weights_2,
                      opacity=1.0)
 s1.enable_contours = True
@@ -124,4 +97,19 @@ s1.contour.number_of_contours = 30
 s2 = mlab.triangular_mesh(*coilmesh.vertices.T, coilmesh.faces, scalars=weights)
 s2.enable_contours = True
 s2.contour.number_of_contours = 2
+
+#%%
+from bfieldtools.magnetic_field_mesh import compute_C
+points = cube.vertices
+fpoints1 = points + cube.vertex_normals*0.01
+
+C1_cube = np.moveaxis(compute_C(cube, fpoints1),1,2)
+C1_coil = np.moveaxis(compute_C(coilmesh, fpoints1),1,2)
+
+#%% Test field
+mlab.figure()
+mlab.quiver3d(*points.T, *(-C1_cube @ weights_2 + C1_coil @ weights).T, color=(1,0,0), mode='arrow')
+mlab.quiver3d(*points.T, *(C1_cube @ weights_2 + C1_coil @ weights).T, color=(0,0,1), mode='arrow')
+
+
 
