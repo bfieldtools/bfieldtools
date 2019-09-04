@@ -9,7 +9,8 @@ from numba import jit
 import time
 
 from .utils import get_quad_points
-from bfieldtools.integrals import triangle_potential_dipole_linear
+from .laplacian_mesh import gradient_matrix
+from .integrals import triangle_potential_dipole_linear, triangle_potential_uniform
 
 
 def get_neighbour_vertices(vertices, edges):
@@ -260,7 +261,6 @@ def compute_C(mesh, r, Nchunks=None):
         Coupling matrix for surface current in the mesh to the evaluation points)
 
     '''
-    from bfieldtools.laplacian_mesh import gradient_matrix
     mu0 = 4 * np.pi * 1e-7
     coef = mu0 / (4 * np.pi)
 
@@ -342,3 +342,41 @@ def compute_U(mesh, r, Nchunks=None):
         Uv[:, mesh.faces[f]] += Uf[:, f]
 
     return Uv*coeff
+
+
+def compute_A(mesh, r, Nchunks=None):
+    """ Compute vector potential matrices (one for each coordinate)
+        from linear stream functions using analytic integral
+    """
+
+    coeff = 1e-7  # mu_0/(4*pi)
+
+    # Source and eval locations
+    R1 = mesh.vertices[mesh.faces]
+    R2 = r
+
+    if Nchunks is None:
+        if r.shape[0] > 1000:
+            Nchunks = r.shape[0]//100
+        else:
+            Nchunks = 1
+
+    R2chunks = np.array_split(R2, Nchunks, axis=0)
+    i0=0
+    Af = np.zeros((R2.shape[0], mesh.faces.shape[0]))
+    print('Computing potential matrix')
+
+    for R2chunk in R2chunks:
+        RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
+        i1 = i0+RRchunk.shape[0]
+        Pi = triangle_potential_uniform(RRchunk, mesh.face_normals, False)
+        Af[i0:i1] = Pi
+        print((100*i1)//R2.shape[0], '% computed')
+        i0=i1
+
+    # Rotated gradients (currents)
+    Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
+    # Accumulate the elements
+    Av = np.array([Af @ Gx, Af @ Gy, Af @ Gz])
+
+    return Av*coeff

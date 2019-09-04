@@ -17,7 +17,7 @@ from bfieldtools.integrals import triangle_potential_dipole_linear
 from bfieldtools.integrals import omega
 from bfieldtools.utils import tri_normals_and_areas
 from bfieldtools.laplacian_mesh import gradient
-from bfieldtools.magnetic_field_mesh import compute_U
+from bfieldtools.magnetic_field_mesh import compute_U, compute_A
 
 import trimesh
 from mayavi import mlab
@@ -49,7 +49,7 @@ s2.actor.property.render_lines_as_tubes = True
 points = np.array([[0.01, 1, 1],
                    [0.01, 1, -1],
                    [0.01, -1, -1],
-                   [0.01, -1, 1]])*1.5
+                   [0.01, -1, 1]])*2
 tris=np.array([[0,1,2], [2,3,0]])
 mesh2 = trimesh.Trimesh(points, tris)
 for ii in range(7):
@@ -59,5 +59,18 @@ U = compute_U(mesh, mesh2.vertices) @ scalars
 
 s3= mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces, scalars=U, colormap='bwr')
 s3.enable_contours = True
-s3.actor.mapper.scalar_range = np.array([0., 1.])
+s3.contour.minimum_contour = -5.2e-07
+s3.contour.maximum_contour = 5.2e-07
 s3.actor.property.render_lines_as_tubes = True
+
+
+points = np.array([[1, 1, 0.1],
+                   [1, -1, 0.1],
+                   [-1, -1, 0.1],
+                   [-1, 1, 0.1]])*2
+tris=np.array([[0,1,2], [2,3,0]])
+mesh3 = trimesh.Trimesh(points, tris)
+for ii in range(7):
+    mesh3 =mesh3.subdivide()
+A = compute_A(mesh, mesh3.vertices) @ scalars
+mlab.quiver3d(*mesh3.vertices.T, *A)

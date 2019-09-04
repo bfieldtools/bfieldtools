@@ -111,4 +111,42 @@ def self_inductance_matrix(mesh, planar=False, Nchunks=1, approx=False):
 
     return M * 1e-7
 
+def mutual_inductance_matrix_from_A(mesh1, mesh2, planar=False):
+    """ Calculate a mutual inductance matrix for hat basis functions
+        (stream functions) between two surface meshes
 
+        Parameters
+        ----------
+
+        mesh1: Trimesh mesh object for mesh 1
+        mesh2: Trimesh mesh object for mesh 2
+        planar: boolean
+            If True, use planar assumption when calculating
+
+        Returns
+        -------
+        M: (Nvertices1 x Nvertices2) array
+            Mutual inductance matrix between mesh1 and mesh2
+
+    """
+    from .magnetic_field_mesh import compute_A
+    from .laplacian_mesh import gradient_matrix
+    # Calculate quadrature points
+    weights, quadpoints = get_quad_points(mesh2.vertices, mesh2.faces, 'centroid')
+    # Nt x Nquad x  3 (x,y,z)
+
+    # Compute vector potential to quadrature points
+    Nw = len(weights)
+    Nt = len(mesh2.faces)
+    Nv = len(mesh1.vertices)
+    A = compute_A(mesh1, quadpoints.reshape(-1, 3)).reshape(3, Nt, Nw, Nv)
+
+    # Integrate over the triangles (current patterns are constant over triangles)
+    A = np.sum(A*weights[None, None, :, None], axis=2)
+    A *= mesh2.area_faces[None,:,None]
+
+    # Dot product with current patterns and sum over triangle neighbourhoods
+    Gx, Gy, Gz = gradient_matrix(mesh2, rotated=True)
+    M = A[0].T@Gx + A[1].T@Gy + A[2].T@Gz
+
+    return M
