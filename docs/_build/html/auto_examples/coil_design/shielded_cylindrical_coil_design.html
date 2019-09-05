@@ -197,13 +197,13 @@ face_normals didn&#39;t match triangles, ignoring!
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3536 vertices by 672 target points... took 1.02 seconds.
-Computing C matrix, 904 vertices by 672 target points... took 0.21 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3536 vertices by 672 target points... took 1.10 seconds.
+Computing C matrix, 904 vertices by 672 target points... took 0.23 seconds.
 Calculating potentials
 Inserting stuff into M-matrix
-Computing inductance matrix in 1 chunks since 9 GiB memory is available...
+Computing inductance matrix in 1 chunks since 10 GiB memory is available...
 Calculating potentials, chunk 1/1
-Inductance matrix computation took 6.06 seconds.
+Inductance matrix computation took 6.50 seconds.
 </pre></div>
 </div>
 <p>Create bfield specifications used when optimizing the coil geometry</p>
@@ -233,10 +233,10 @@ Inductance matrix computation took 6.06 seconds.
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 2 chunks since 9 GiB memory is available...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 2 chunks since 10 GiB memory is available...
 Calculating potentials, chunk 1/2
 Calculating potentials, chunk 2/2
-Inductance matrix computation took 96.50 seconds.
+Inductance matrix computation took 96.71 seconds.
 Scaling matrices before optimization. This requires singular value computation, hold on.
 Solving quadratic programming problem using cvxopt...
      pcost       dcost       gap    pres   dres
@@ -323,7 +323,8 @@ Solving quadratic programming problem using cvxopt...
 Optimal solution found.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  53.747 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 3 minutes  1.857 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  10660 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-shielded-cylindrical-coil-design-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/a7ad22fc902bd9cfff073ac95b25aeea/shielded_cylindrical_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">shielded_cylindrical_coil_design.py</span></code></a></p>

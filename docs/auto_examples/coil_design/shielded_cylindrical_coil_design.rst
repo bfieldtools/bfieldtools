@@ -145,13 +145,13 @@ Compute C matrices that are used to compute the generated magnetic field
 
  .. code-block:: none
 
-    Computing C matrix, 3536 vertices by 672 target points... took 1.02 seconds.
-    Computing C matrix, 904 vertices by 672 target points... took 0.21 seconds.
+    Computing C matrix, 3536 vertices by 672 target points... took 1.10 seconds.
+    Computing C matrix, 904 vertices by 672 target points... took 0.23 seconds.
     Calculating potentials
     Inserting stuff into M-matrix
-    Computing inductance matrix in 1 chunks since 9 GiB memory is available...
+    Computing inductance matrix in 1 chunks since 10 GiB memory is available...
     Calculating potentials, chunk 1/1
-    Inductance matrix computation took 6.06 seconds.
+    Inductance matrix computation took 6.50 seconds.
 
 
 
@@ -206,10 +206,10 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 2 chunks since 9 GiB memory is available...
+    Computing inductance matrix in 2 chunks since 10 GiB memory is available...
     Calculating potentials, chunk 1/2
     Calculating potentials, chunk 2/2
-    Inductance matrix computation took 96.50 seconds.
+    Inductance matrix computation took 96.71 seconds.
     Scaling matrices before optimization. This requires singular value computation, hold on.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
@@ -330,7 +330,9 @@ For comparison, let's see how the coils look when we ignore the conducting shiel
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  53.747 seconds)
+   **Total running time of the script:** ( 3 minutes  1.857 seconds)
+
+**Estimated memory usage:**  10660 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_shielded_cylindrical_coil_design.py:

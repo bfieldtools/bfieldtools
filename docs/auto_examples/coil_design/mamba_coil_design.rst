@@ -155,7 +155,7 @@ Compute C matrices that are used to compute the generated magnetic field, create
 
  .. code-block:: none
 
-    Computing C matrix, 3184 vertices by 512 target points... took 0.74 seconds.
+    Computing C matrix, 3184 vertices by 512 target points... took 0.73 seconds.
 
 
 
@@ -187,10 +187,10 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 2 chunks since 9 GiB memory is available...
+    Computing inductance matrix in 2 chunks since 10 GiB memory is available...
     Calculating potentials, chunk 1/2
     Calculating potentials, chunk 2/2
-    Inductance matrix computation took 72.40 seconds.
+    Inductance matrix computation took 73.61 seconds.
     Scaling matrices before optimization. This requires singular value computation, hold on.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
@@ -239,7 +239,9 @@ Plot coil windings and target points
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  25.611 seconds)
+   **Total running time of the script:** ( 1 minutes  31.624 seconds)
+
+**Estimated memory usage:**  8060 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_mamba_coil_design.py:

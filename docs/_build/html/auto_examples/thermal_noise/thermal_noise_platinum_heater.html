@@ -116,14 +116,6 @@ thin-film heater geometry.</p>
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>shapely.geometry.Polygon not available!
-Traceback (most recent call last):
-  File &quot;/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py&quot;, line 22, in &lt;module&gt;
-    from shapely.geometry import Polygon
-ModuleNotFoundError: No module named &#39;shapely&#39;
-</pre></div>
-</div>
 <p>Fix the simulation parameters and load the heater geometry</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">d</span> <span class="o">=</span> <span class="mf">500e-9</span> <span class="c1">#Film thickness in meters</span>
 <span class="n">sigma</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mf">16.592</span> <span class="o">*</span> <span class="mf">1e-6</span> <span class="o">*</span> <span class="mf">1e-2</span><span class="p">)</span> <span class="c1">#Platinum @ 450 K</span>
@@ -183,7 +175,7 @@ ModuleNotFoundError: No module named &#39;shapely&#39;
 </div>
 <img alt="../../_images/sphx_glr_thermal_noise_platinum_heater_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_thermal_noise_platinum_heater_002.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 1011 vertices by 30 target points... took 0.02 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 1011 vertices by 30 target points... took 0.03 seconds.
 </pre></div>
 </div>
 <p>Compute the field on a 3D grid and visualize isosurfaces.</p>
@@ -233,7 +225,7 @@ ModuleNotFoundError: No module named &#39;shapely&#39;
 </div>
 <img alt="../../_images/sphx_glr_thermal_noise_platinum_heater_003.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_thermal_noise_platinum_heater_003.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 1011 vertices by 8000 target points... took 1.16 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 1011 vertices by 8000 target points... took 1.37 seconds.
 </pre></div>
 </div>
 <p>Plot the noise level at horizontal planes at different distance.</p>
@@ -275,8 +267,8 @@ ModuleNotFoundError: No module named &#39;shapely&#39;
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_thermal_noise_platinum_heater_004.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_thermal_noise_platinum_heater_004.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  15.134 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  505 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  13.226 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  280 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-thermal-noise-thermal-noise-platinum-heater-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/13a9c44b4823c0c459ac54558f65ae0f/thermal_noise_platinum_heater.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">thermal_noise_platinum_heater.py</span></code></a></p>

@@ -126,12 +126,22 @@ doi: 10.1109/10.256433</p>
 <span class="kn">from</span> <span class="nn">bfieldtools.utils</span> <span class="k">import</span> <span class="n">tri_normals_and_areas</span>
 </pre></div>
 </div>
-<p>%% Test potential shape slightly above the surface</p>
+<p>%% Test potential shape slightly above the surface
+points = np.array([[0,0,0],</p>
+<blockquote>
+<div><p>[1,0,0],
+[0,1,0]])</p>
+</div></blockquote>
+<p>tris = np.array([[0,1,2]])
+p_tris = points[tris]</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
-                   <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
-                   <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+                   <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+                   <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+                   <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
 
-<span class="n">tris</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]])</span>
+<span class="n">tris</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+<span class="n">tris</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">tris</span><span class="p">,</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">p_tris</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">tris</span><span class="p">]</span>
 
 <span class="c1"># Evaluation points</span>
@@ -151,7 +161,7 @@ doi: 10.1109/10.256433</p>
 <span class="n">f</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">sca</span><span class="p">(</span><span class="n">ax</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">pot</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Nx</span><span class="p">),</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span><span class="n">xx</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">pot</span><span class="p">[:,</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Nx</span><span class="p">),</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span><span class="n">xx</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
                                                    <span class="n">xx</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="n">xx</span><span class="o">.</span><span class="n">min</span><span class="p">()))</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
@@ -194,7 +204,7 @@ doi: 10.1109/10.256433</p>
 <span class="c1"># Center of mass</span>
 <span class="n">Rdip</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="c1"># Moment</span>
-<span class="n">m</span> <span class="o">=</span> <span class="n">ta</span><span class="o">*</span><span class="n">tn</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">ta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">tn</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="c1"># Eval points</span>
 <span class="n">Neval</span> <span class="o">=</span> <span class="mi">100</span>
 <span class="n">p_eval2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Neval</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
@@ -214,8 +224,8 @@ doi: 10.1109/10.256433</p>
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_validate_linear_dipole_003.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_linear_dipole_003.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.329 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  11 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.209 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  9 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-validation-validate-linear-dipole-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/0e7ff67138b044efb6fa96295f625776/validate_linear_dipole.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">validate_linear_dipole.py</span></code></a></p>

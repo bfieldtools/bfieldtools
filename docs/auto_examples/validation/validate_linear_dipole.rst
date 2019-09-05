@@ -44,15 +44,25 @@ For the math see:
 
 
 %% Test potential shape slightly above the surface
+points = np.array([[0,0,0],
+                   [1,0,0],
+                   [0,1,0]])
+
+tris = np.array([[0,1,2]])
+p_tris = points[tris]
 
 
 .. code-block:: default
 
-    points = np.array([[0,0,0],
-                       [1,0,0],
-                       [0,1,0]])
 
-    tris = np.array([[0,1,2]])
+    points = np.array([[0,0,0],
+                       [1,1,0],
+                       [1,-1,0],
+                       [-1,-1,0],
+                       [-1,1,0]])
+
+    tris = np.array([[0,1,2],[0,2,3],[0,3,4],[0,4,1]])
+    tris = np.flip(tris,axis=-1)
     p_tris = points[tris]
 
     # Evaluation points
@@ -72,7 +82,7 @@ For the math see:
     f, ax = plt.subplots(1, 3)
     for i in range(3):
         plt.sca(ax[i])
-        plt.imshow(pot[:,0,i].reshape(Nx, Nx), extent=(xx.min(),xx.max(),
+        plt.imshow(pot[:,2,i].reshape(Nx, Nx), extent=(xx.min(),xx.max(),
                                                        xx.max(),xx.min()))
         plt.colorbar(orientation='horizontal')
         if i==0:
@@ -138,7 +148,7 @@ For the math see:
     # Center of mass
     Rdip = points.mean(axis=0)
     # Moment
-    m = ta*tn
+    m = ta[0]*tn[0]
     # Eval points
     Neval = 100
     p_eval2 = np.zeros((Neval, 3))
@@ -170,9 +180,9 @@ For the math see:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.329 seconds)
+   **Total running time of the script:** ( 0 minutes  1.209 seconds)
 
-**Estimated memory usage:**  11 MB
+**Estimated memory usage:**  9 MB
 
 
 .. _sphx_glr_download_auto_examples_validation_validate_linear_dipole.py:

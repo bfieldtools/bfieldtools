@@ -28,11 +28,21 @@ from bfieldtools.utils import tri_normals_and_areas
 
 #########################################################
 #%% Test potential shape slightly above the surface
-points = np.array([[0,0,0],
-                   [1,0,0],
-                   [0,1,0]])
+#points = np.array([[0,0,0],
+#                   [1,0,0],
+#                   [0,1,0]])
+#
+#tris = np.array([[0,1,2]])
+#p_tris = points[tris]
 
-tris = np.array([[0,1,2]])
+points = np.array([[0,0,0],
+                   [1,1,0],
+                   [1,-1,0],
+                   [-1,-1,0],
+                   [-1,1,0]])
+
+tris = np.array([[0,1,2],[0,2,3],[0,3,4],[0,4,1]])
+tris = np.flip(tris,axis=-1)
 p_tris = points[tris]
 
 # Evaluation points
@@ -52,7 +62,7 @@ pot = triangle_potential_dipole_linear(RR, tn, ta, False)
 f, ax = plt.subplots(1, 3)
 for i in range(3):
     plt.sca(ax[i])
-    plt.imshow(pot[:,0,i].reshape(Nx, Nx), extent=(xx.min(),xx.max(),
+    plt.imshow(pot[:,2,i].reshape(Nx, Nx), extent=(xx.min(),xx.max(),
                                                    xx.max(),xx.min()))
     plt.colorbar(orientation='horizontal')
     if i==0:
@@ -94,7 +104,7 @@ def dip_potential(Reval, Rdip, moment):
 # Center of mass
 Rdip = points.mean(axis=0)
 # Moment
-m = ta*tn
+m = ta[0]*tn[0]
 # Eval points
 Neval = 100
 p_eval2 = np.zeros((Neval, 3))

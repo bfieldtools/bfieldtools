@@ -63,18 +63,6 @@ region between the two coil planes.
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    shapely.geometry.Polygon not available!
-    Traceback (most recent call last):
-      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py", line 22, in <module>
-        from shapely.geometry import Polygon
-    ModuleNotFoundError: No module named 'shapely'
-
 
 
 Set up target and stray field points
@@ -148,7 +136,7 @@ Compute C matrices that are used to compute the generated magnetic field
 
  .. code-block:: none
 
-    Computing C matrix, 3184 vertices by 672 target points... took 0.95 seconds.
+    Computing C matrix, 3184 vertices by 672 target points... took 0.92 seconds.
     Computing C matrix, 3184 vertices by 2562 target points... took 2.69 seconds.
 
 
@@ -202,10 +190,10 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 2 chunks since 8 GiB memory is available...
+    Computing inductance matrix in 2 chunks since 9 GiB memory is available...
     Calculating potentials, chunk 1/2
     Calculating potentials, chunk 2/2
-    Inductance matrix computation took 76.50 seconds.
+    Inductance matrix computation took 72.22 seconds.
     Scaling matrices before optimization. This requires singular value computation, hold on.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
@@ -307,8 +295,8 @@ Plot field falloff on two axes
 
  .. code-block:: none
 
-    Computing C matrix, 3184 vertices by 101 target points... took 0.19 seconds.
-    Computing C matrix, 3184 vertices by 101 target points... took 0.18 seconds.
+    Computing C matrix, 3184 vertices by 101 target points... took 0.20 seconds.
+    Computing C matrix, 3184 vertices by 101 target points... took 0.16 seconds.
     /l/bfieldtools/examples/coil_design/biplanar_coil_design.py:181: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
       plt.show()
 
@@ -422,9 +410,9 @@ Compute magnetic field from discrete current line segments
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  6.147 seconds)
+   **Total running time of the script:** ( 1 minutes  59.623 seconds)
 
-**Estimated memory usage:**  9133 MB
+**Estimated memory usage:**  9041 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_biplanar_coil_design.py:

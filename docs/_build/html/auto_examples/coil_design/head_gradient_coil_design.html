@@ -147,14 +147,6 @@
 <span class="n">coil</span> <span class="o">=</span> <span class="n">MeshWrapper</span><span class="p">(</span><span class="n">verts</span><span class="o">=</span><span class="n">helmetmesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">tris</span><span class="o">=</span><span class="n">helmetmesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>shapely.geometry.Polygon not available!
-Traceback (most recent call last):
-  File &quot;/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py&quot;, line 22, in &lt;module&gt;
-    from shapely.geometry import Polygon
-ModuleNotFoundError: No module named &#39;shapely&#39;
-</pre></div>
-</div>
 <p>Set up target and stray field points.
 Here, the target points are on a volumetric grid within a sphere</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">])</span> <span class="o">*</span> <span class="n">scaling_factor</span>
@@ -181,7 +173,7 @@ Here, the target points are on a volumetric grid within a sphere</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 2044 vertices by 672 target points... took 0.61 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 2044 vertices by 672 target points... took 0.60 seconds.
 </pre></div>
 </div>
 <p>Specify target field and run solver</p>
@@ -208,9 +200,9 @@ Here, the target points are on a volumetric grid within a sphere</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 1 chunks since 10 GiB memory is available...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 1 chunks since 11 GiB memory is available...
 Calculating potentials, chunk 1/1
-Inductance matrix computation took 32.43 seconds.
+Inductance matrix computation took 34.68 seconds.
 Scaling matrices before optimization. This requires singular value computation, hold on.
 Solving quadratic programming problem using cvxopt...
      pcost       dcost       gap    pres   dres
@@ -240,7 +232,8 @@ Optimal solution found.
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_head_gradient_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_head_gradient_coil_design_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  38.254 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  39.767 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  5787 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-head-gradient-coil-design-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/dfd6dab15c682ecb3d97d07910fb87d7/head_gradient_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">head_gradient_coil_design.py</span></code></a></p>

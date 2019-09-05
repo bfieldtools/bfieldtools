@@ -34,6 +34,7 @@ release = '0.1'
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.coverage',
               'numpydoc',
+              'sphinx.ext.intersphinx',
               'sphinx_gallery.gen_gallery',
               'sphinx_bootstrap_theme']
 
@@ -71,9 +72,25 @@ sphinx_gallery_conf = {
       'image_scrapers': scrapers,
       'abort_on_example_error': False,
       'download_section_examples': False,
-      'show_memory': True
+      'show_memory': True,
+      'reference_url': {
+         # The module you locally document uses None
+        'sphinx_gallery': None,
+        }
 }
 
+
+# Example configuration for intersphinx: refer to the Python standard library.
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'numpy': ('https://numpy.org/devdocs', None),
+    'scipy': ('https://scipy.github.io/devdocs', None),
+    'matplotlib': ('https://matplotlib.org', None),
+    'numba': ('https://numba.pydata.org/numba-doc/latest', None),
+    'joblib': ('https://joblib.readthedocs.io/en/latest', None),
+    'mayavi': ('http://docs.enthought.com/mayavi/mayavi', None),
+    'pandas': ('https://pandas.pydata.org/pandas-docs/stable', None),
+}
 
 numpydoc_show_class_members = False
 

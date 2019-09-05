@@ -31,18 +31,6 @@ thin-film heater geometry.
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    shapely.geometry.Polygon not available!
-    Traceback (most recent call last):
-      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py", line 22, in <module>
-        from shapely.geometry import Polygon
-    ModuleNotFoundError: No module named 'shapely'
-
 
 
 Fix the simulation parameters and load the heater geometry
@@ -140,7 +128,7 @@ Compute the normalized thermal current modes, and thereafter compute the
 
  .. code-block:: none
 
-    Computing C matrix, 1011 vertices by 30 target points... took 0.02 seconds.
+    Computing C matrix, 1011 vertices by 30 target points... took 0.03 seconds.
 
 
 
@@ -206,7 +194,7 @@ Compute the field on a 3D grid and visualize isosurfaces.
 
  .. code-block:: none
 
-    Computing C matrix, 1011 vertices by 8000 target points... took 1.16 seconds.
+    Computing C matrix, 1011 vertices by 8000 target points... took 1.37 seconds.
 
 
 
@@ -264,9 +252,9 @@ Plot the noise level at horizontal planes at different distance.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  15.134 seconds)
+   **Total running time of the script:** ( 2 minutes  13.226 seconds)
 
-**Estimated memory usage:**  505 MB
+**Estimated memory usage:**  280 MB
 
 
 .. _sphx_glr_download_auto_examples_thermal_noise_thermal_noise_platinum_heater.py:
