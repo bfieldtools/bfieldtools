@@ -145,13 +145,13 @@ Compute C matrices that are used to compute the generated magnetic field
 
  .. code-block:: none
 
-    Computing C matrix, 3536 vertices by 672 target points... took 1.10 seconds.
+    Computing C matrix, 3536 vertices by 672 target points... took 1.05 seconds.
     Computing C matrix, 904 vertices by 672 target points... took 0.23 seconds.
     Calculating potentials
     Inserting stuff into M-matrix
-    Computing inductance matrix in 1 chunks since 10 GiB memory is available...
+    Computing inductance matrix in 1 chunks since 9 GiB memory is available...
     Calculating potentials, chunk 1/1
-    Inductance matrix computation took 6.50 seconds.
+    Inductance matrix computation took 6.00 seconds.
 
 
 
@@ -190,7 +190,7 @@ Run QP solver
 
     coil.I, coil.sol = optimize_streamfunctions(coil,
                                                 [target_spec, induction_spec],
-                                                laplacian_smooth=0,
+                                                objective='minimum_inductive_energy',
                                                 tolerance=tolerance)
 
     shield.induced_I = shield.coupling @ coil.I
@@ -206,19 +206,18 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 2 chunks since 10 GiB memory is available...
+    Computing inductance matrix in 2 chunks since 9 GiB memory is available...
     Calculating potentials, chunk 1/2
     Calculating potentials, chunk 2/2
-    Inductance matrix computation took 96.71 seconds.
-    Scaling matrices before optimization. This requires singular value computation, hold on.
+    Inductance matrix computation took 95.66 seconds.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
-     0:  4.5366e+01  7.7593e+02  1e+04  3e+00  4e-14
+     0:  4.5366e+01  7.7593e+02  1e+04  3e+00  3e-14
      1:  1.0096e+02  1.1497e+03  3e+03  9e-01  3e-14
      2:  5.6082e+02  2.4779e+03  3e+03  6e-01  9e-14
      3:  5.7943e+02  2.6428e+03  3e+03  6e-01  9e-14
      4:  1.0195e+03  5.8843e+03  3e+03  5e-01  2e-13
-     5:  2.6725e+03  1.0689e+04  4e+03  4e-01  4e-13
+     5:  2.6725e+03  1.0689e+04  4e+03  4e-01  6e-13
     Optimal solution found.
 
 
@@ -315,7 +314,6 @@ For comparison, let's see how the coils look when we ignore the conducting shiel
 
  .. code-block:: none
 
-    Scaling matrices before optimization. This requires singular value computation, hold on.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
      0:  4.3937e+01  6.6183e+01  5e+03  2e+00  4e-14
@@ -330,9 +328,9 @@ For comparison, let's see how the coils look when we ignore the conducting shiel
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 3 minutes  1.857 seconds)
+   **Total running time of the script:** ( 2 minutes  46.159 seconds)
 
-**Estimated memory usage:**  10660 MB
+**Estimated memory usage:**  10469 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_shielded_cylindrical_coil_design.py:

@@ -117,7 +117,7 @@ tolerance = 0.5
 
 coil.I, coil.sol = optimize_streamfunctions(coil,
                                             [target_spec, induction_spec],
-                                            laplacian_smooth=0,
+                                            objective='minimum_inductive_energy',
                                             tolerance=tolerance)
 
 shield.induced_I = shield.coupling @ coil.I

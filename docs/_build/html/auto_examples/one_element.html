@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>&lt;no title&gt; &#8212; bfieldtools 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Head gradient coil" href="coil_design/head_gradient_coil_design.html" />
+    <link rel="prev" title="Interpolate stream function" href="interpolate_example.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          bfieldtools</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../readme.html">Readme</a></li>
+                <li><a href="../literature.html">Literature</a></li>
+                <li><a href="index.html">Example gallery</a></li>
+                <li><a href="../source/modules.html">API Reference</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../literature.html">Literature</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Example gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#coil-design">Coil design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#thermal-noise-computation">Thermal noise computation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#validation">Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/modules.html">API Reference</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-one-element-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<p class="sphx-glr-example-title" id="sphx-glr-auto-examples-one-element-py">Created on Tue Sep  3 15:46:47 2019</p>
+<p>&#64;author: makinea1</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools&#39;</span>
+<span class="k">if</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">path</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">bfieldtools.integrals</span> <span class="k">import</span> <span class="n">triangle_potential_dipole_linear</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.integrals</span> <span class="k">import</span> <span class="n">omega</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.utils</span> <span class="k">import</span> <span class="n">tri_normals_and_areas</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.laplacian_mesh</span> <span class="k">import</span> <span class="n">gradient</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.magnetic_field_mesh</span> <span class="k">import</span> <span class="n">compute_U</span><span class="p">,</span> <span class="n">compute_A</span>
+
+<span class="kn">import</span> <span class="nn">trimesh</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
+</pre></div>
+</div>
+<p>%% Test potential shape slightly above the surface</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                   <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                   <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                   <span class="p">[</span><span class="o">-</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                   <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+
+<span class="n">tris</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">tris</span><span class="p">)</span>
+<span class="n">scalars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">scalars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">s1</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="o">*</span><span class="n">points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">tris</span><span class="p">,</span> <span class="n">scalars</span><span class="o">=</span><span class="n">scalars</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">)</span>
+
+<span class="n">s2</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="o">*</span><span class="n">points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">tris</span><span class="p">,</span> <span class="n">scalars</span><span class="o">=</span><span class="n">scalars</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">)</span>
+<span class="n">s2</span><span class="o">.</span><span class="n">enable_contours</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">s2</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">scalar_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">])</span>
+<span class="n">s2</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">scalar_visibility</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">s2</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">render_lines_as_tubes</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span><span class="o">*</span><span class="mi">2</span>
+<span class="n">tris</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+<span class="n">mesh2</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">tris</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
+    <span class="n">mesh2</span> <span class="o">=</span><span class="n">mesh2</span><span class="o">.</span><span class="n">subdivide</span><span class="p">()</span>
+
+<span class="n">U</span> <span class="o">=</span> <span class="n">compute_U</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">mesh2</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span> <span class="o">@</span> <span class="n">scalars</span>
+
+<span class="n">s3</span><span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="o">*</span><span class="n">mesh2</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">mesh2</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">scalars</span><span class="o">=</span><span class="n">U</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;bwr&#39;</span><span class="p">)</span>
+<span class="n">s3</span><span class="o">.</span><span class="n">enable_contours</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">s3</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">minimum_contour</span> <span class="o">=</span> <span class="o">-</span><span class="mf">5.2e-07</span>
+<span class="n">s3</span><span class="o">.</span><span class="n">contour</span><span class="o">.</span><span class="n">maximum_contour</span> <span class="o">=</span> <span class="mf">5.2e-07</span>
+<span class="n">s3</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">render_lines_as_tubes</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+                   <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+                   <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]])</span><span class="o">*</span><span class="mi">2</span>
+<span class="n">tris</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+<span class="n">mesh3</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">tris</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
+    <span class="n">mesh3</span> <span class="o">=</span><span class="n">mesh3</span><span class="o">.</span><span class="n">subdivide</span><span class="p">()</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">compute_A</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">mesh3</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span> <span class="o">@</span> <span class="n">scalars</span>
+<span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">mesh3</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_one_element_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_one_element_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing potential matrix
+0 % computed
+1 % computed
+1 % computed
+2 % computed
+3 % computed
+3 % computed
+4 % computed
+4 % computed
+5 % computed
+6 % computed
+6 % computed
+7 % computed
+7 % computed
+8 % computed
+9 % computed
+9 % computed
+10 % computed
+10 % computed
+11 % computed
+12 % computed
+12 % computed
+13 % computed
+13 % computed
+14 % computed
+15 % computed
+15 % computed
+16 % computed
+16 % computed
+17 % computed
+18 % computed
+18 % computed
+19 % computed
+20 % computed
+20 % computed
+21 % computed
+21 % computed
+22 % computed
+23 % computed
+23 % computed
+24 % computed
+24 % computed
+25 % computed
+26 % computed
+26 % computed
+27 % computed
+27 % computed
+28 % computed
+29 % computed
+29 % computed
+30 % computed
+30 % computed
+31 % computed
+32 % computed
+32 % computed
+33 % computed
+33 % computed
+34 % computed
+35 % computed
+35 % computed
+36 % computed
+36 % computed
+37 % computed
+38 % computed
+38 % computed
+39 % computed
+39 % computed
+40 % computed
+41 % computed
+41 % computed
+42 % computed
+42 % computed
+43 % computed
+44 % computed
+44 % computed
+45 % computed
+45 % computed
+46 % computed
+47 % computed
+47 % computed
+48 % computed
+48 % computed
+49 % computed
+50 % computed
+50 % computed
+51 % computed
+51 % computed
+52 % computed
+53 % computed
+53 % computed
+54 % computed
+54 % computed
+55 % computed
+56 % computed
+56 % computed
+57 % computed
+57 % computed
+58 % computed
+59 % computed
+59 % computed
+60 % computed
+60 % computed
+61 % computed
+62 % computed
+62 % computed
+63 % computed
+63 % computed
+64 % computed
+65 % computed
+65 % computed
+66 % computed
+66 % computed
+67 % computed
+68 % computed
+68 % computed
+69 % computed
+69 % computed
+70 % computed
+71 % computed
+71 % computed
+72 % computed
+72 % computed
+73 % computed
+74 % computed
+74 % computed
+75 % computed
+75 % computed
+76 % computed
+77 % computed
+77 % computed
+78 % computed
+78 % computed
+79 % computed
+80 % computed
+80 % computed
+81 % computed
+81 % computed
+82 % computed
+83 % computed
+83 % computed
+84 % computed
+84 % computed
+85 % computed
+86 % computed
+86 % computed
+87 % computed
+87 % computed
+88 % computed
+89 % computed
+89 % computed
+90 % computed
+90 % computed
+91 % computed
+92 % computed
+92 % computed
+93 % computed
+93 % computed
+94 % computed
+95 % computed
+95 % computed
+96 % computed
+96 % computed
+97 % computed
+98 % computed
+98 % computed
+99 % computed
+100 % computed
+Computing potential matrix
+0 % computed
+1 % computed
+1 % computed
+2 % computed
+3 % computed
+3 % computed
+4 % computed
+4 % computed
+5 % computed
+6 % computed
+6 % computed
+7 % computed
+7 % computed
+8 % computed
+9 % computed
+9 % computed
+10 % computed
+10 % computed
+11 % computed
+12 % computed
+12 % computed
+13 % computed
+13 % computed
+14 % computed
+15 % computed
+15 % computed
+16 % computed
+16 % computed
+17 % computed
+18 % computed
+18 % computed
+19 % computed
+20 % computed
+20 % computed
+21 % computed
+21 % computed
+22 % computed
+23 % computed
+23 % computed
+24 % computed
+24 % computed
+25 % computed
+26 % computed
+26 % computed
+27 % computed
+27 % computed
+28 % computed
+29 % computed
+29 % computed
+30 % computed
+30 % computed
+31 % computed
+32 % computed
+32 % computed
+33 % computed
+33 % computed
+34 % computed
+35 % computed
+35 % computed
+36 % computed
+36 % computed
+37 % computed
+38 % computed
+38 % computed
+39 % computed
+39 % computed
+40 % computed
+41 % computed
+41 % computed
+42 % computed
+42 % computed
+43 % computed
+44 % computed
+44 % computed
+45 % computed
+45 % computed
+46 % computed
+47 % computed
+47 % computed
+48 % computed
+48 % computed
+49 % computed
+50 % computed
+50 % computed
+51 % computed
+51 % computed
+52 % computed
+53 % computed
+53 % computed
+54 % computed
+54 % computed
+55 % computed
+56 % computed
+56 % computed
+57 % computed
+57 % computed
+58 % computed
+59 % computed
+59 % computed
+60 % computed
+60 % computed
+61 % computed
+62 % computed
+62 % computed
+63 % computed
+63 % computed
+64 % computed
+65 % computed
+65 % computed
+66 % computed
+66 % computed
+67 % computed
+68 % computed
+68 % computed
+69 % computed
+69 % computed
+70 % computed
+71 % computed
+71 % computed
+72 % computed
+72 % computed
+73 % computed
+74 % computed
+74 % computed
+75 % computed
+75 % computed
+76 % computed
+77 % computed
+77 % computed
+78 % computed
+78 % computed
+79 % computed
+80 % computed
+80 % computed
+81 % computed
+81 % computed
+82 % computed
+83 % computed
+83 % computed
+84 % computed
+84 % computed
+85 % computed
+86 % computed
+86 % computed
+87 % computed
+87 % computed
+88 % computed
+89 % computed
+89 % computed
+90 % computed
+90 % computed
+91 % computed
+92 % computed
+92 % computed
+93 % computed
+93 % computed
+94 % computed
+95 % computed
+95 % computed
+96 % computed
+96 % computed
+97 % computed
+98 % computed
+98 % computed
+99 % computed
+100 % computed
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.986 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  138 MB</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-one-element-py">
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/15924af960bfdeeb8e923943eadf2ab9/one_element.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">one_element.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/5738150f2f2f8bfd1c63f3cbeb64b18a/one_element.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">one_element.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, bfieldtools developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -120,7 +120,7 @@ tolerance = 0.25
 
 coil.I, coil.sol = optimize_streamfunctions(coil,
                                             [target_spec, stray_spec],
-                                            laplacian_smooth=0,
+                                            objective='minimum_inductive_energy',
                                             tolerance=tolerance)
 
 

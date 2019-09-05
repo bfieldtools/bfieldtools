@@ -228,9 +228,10 @@ abs_error: float or (N_r, 3)
 rel_error: float or (N_r, 3)</p>
 </dd>
 <dt><strong>objective: string or dict</strong></dt><dd><p>if string, either ‘minimum_inductive_energy’ or ‘minimum_resistive_energy’
-if tuple, should contain: (a, b), where a and b are floats 0-1 describing the inductive and resitive weighting factors</p>
+if tuple, should contain: (a, b), where a and b are floats describing the inductive and resitive weighting factors.
+The resistance matrix is scaled according to the largest singular value of the inductance matrix for consistent behavior
+across meshes.</p>
 </dd>
-<dt><strong>laplacian_smooth: float</strong></dt><dd></dd>
 <dt><strong>tolerance: float</strong></dt><dd></dd>
 </dl>
 </dd>
@@ -400,6 +401,13 @@ defined in the vertex locations of the mesh</p>
 <p>Contains functions for calculating the coupling of surface current density in a
 triangle mesh to magnetic field.</p>
 <dl class="function">
+<dt id="bfieldtools.magnetic_field_mesh.compute_A">
+<code class="descclassname">bfieldtools.magnetic_field_mesh.</code><code class="descname">compute_A</code><span class="sig-paren">(</span><em>mesh</em>, <em>r</em>, <em>Nchunks=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.magnetic_field_mesh.compute_A" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute vector potential matrices (one for each coordinate)
+from linear stream functions using analytic integral</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="bfieldtools.magnetic_field_mesh.compute_C">
 <code class="descclassname">bfieldtools.magnetic_field_mesh.</code><code class="descname">compute_C</code><span class="sig-paren">(</span><em>mesh</em>, <em>r</em>, <em>Nchunks=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.magnetic_field_mesh.compute_C" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a mesh, computes the “C matrix” which gives the magnetic field at
@@ -446,6 +454,13 @@ See eq. 5.13 in Michael Poole’s thesis.</p>
 </dl>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="bfieldtools.magnetic_field_mesh.compute_U">
+<code class="descclassname">bfieldtools.magnetic_field_mesh.</code><code class="descname">compute_U</code><span class="sig-paren">(</span><em>mesh</em>, <em>r</em>, <em>Nchunks=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.magnetic_field_mesh.compute_U" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute scalar potential matrix from linear stream functions
+using analytic integral</p>
 </dd></dl>
 
 <dl class="function">
@@ -597,6 +612,29 @@ including both self- and mutual-inductance.</p>
 <dl class="function">
 <dt id="bfieldtools.mutual_inductance_mesh.mutual_inductance_matrix">
 <code class="descclassname">bfieldtools.mutual_inductance_mesh.</code><code class="descname">mutual_inductance_matrix</code><span class="sig-paren">(</span><em>mesh1</em>, <em>mesh2</em>, <em>planar=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mutual_inductance_mesh.mutual_inductance_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a mutual inductance matrix for hat basis functions
+(stream functions) between two surface meshes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mesh1: Trimesh mesh object for mesh 1</strong></dt><dd></dd>
+<dt><strong>mesh2: Trimesh mesh object for mesh 2</strong></dt><dd></dd>
+<dt><strong>planar: boolean</strong></dt><dd><p>If True, use planar assumption when calculating</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>M: (Nvertices1 x Nvertices2) array</strong></dt><dd><p>Mutual inductance matrix between mesh1 and mesh2</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="bfieldtools.mutual_inductance_mesh.mutual_inductance_matrix_from_A">
+<code class="descclassname">bfieldtools.mutual_inductance_mesh.</code><code class="descname">mutual_inductance_matrix_from_A</code><span class="sig-paren">(</span><em>mesh1</em>, <em>mesh2</em>, <em>planar=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mutual_inductance_mesh.mutual_inductance_matrix_from_A" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate a mutual inductance matrix for hat basis functions
 (stream functions) between two surface meshes</p>
 <dl class="field-list simple">
