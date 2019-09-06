@@ -50,6 +50,26 @@ Below are a number of examples meant to familiarize you with the functionality o
    :hidden:
 
    /auto_examples/interpolate_example
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_one_element_thumb.png
+
+        :ref:`sphx_glr_auto_examples_one_element.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/one_element
 .. raw:: html
 
     <div style='clear:both'></div>

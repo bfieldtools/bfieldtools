@@ -213,7 +213,7 @@ regions arranged in a grid.</p>
 
 <span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">sol</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
                                             <span class="p">[</span><span class="n">target_spec</span><span class="p">],</span>
-                                            <span class="n">laplacian_smooth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                            <span class="n">objective</span><span class="o">=</span><span class="s1">&#39;minimum_inductive_energy&#39;</span><span class="p">,</span>
                                             <span class="n">tolerance</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -221,18 +221,17 @@ regions arranged in a grid.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 2 chunks since 9 GiB memory is available...
 Calculating potentials, chunk 1/2
 Calculating potentials, chunk 2/2
-Inductance matrix computation took 72.40 seconds.
-Scaling matrices before optimization. This requires singular value computation, hold on.
+Inductance matrix computation took 72.63 seconds.
 Solving quadratic programming problem using cvxopt...
      pcost       dcost       gap    pres   dres
  0:  1.6068e+01  2.8227e+01  5e+03  4e+00  2e-14
  1:  2.1506e+01  3.1514e+01  4e+02  3e-01  2e-14
  2:  3.2340e+01  5.2495e+01  2e+02  1e-01  3e-14
  3:  3.7329e+01  6.8586e+01  2e+02  1e-01  9e-14
- 4:  6.5414e+01  1.2704e+02  2e+02  7e-02  9e-13
+ 4:  6.5414e+01  1.2704e+02  2e+02  7e-02  1e-12
  5:  7.9337e+01  1.5876e+02  1e+02  5e-02  2e-12
- 6:  8.4357e+01  2.2902e+02  1e+02  4e-02  5e-12
- 7:  8.6149e+01  4.0152e+02  2e+02  4e-02  6e-12
+ 6:  8.4357e+01  2.2902e+02  1e+02  4e-02  4e-12
+ 7:  8.6149e+01  4.0152e+02  2e+02  4e-02  5e-12
 Optimal solution found.
 </pre></div>
 </div>
@@ -255,7 +254,8 @@ Optimal solution found.
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_mamba_coil_design_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_mamba_coil_design_002.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  25.611 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  23.693 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  8017 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-mamba-coil-design-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/fe524bc035073629d1947aaf32fe31b3/mamba_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mamba_coil_design.py</span></code></a></p>

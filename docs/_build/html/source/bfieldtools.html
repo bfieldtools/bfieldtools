@@ -222,15 +222,16 @@ while keeping specified target field at target points within bounds.</p>
 </dd>
 <dt><strong>bfield_specification: list</strong></dt><dd><p>List in which element is a dictionary containing a field specification.
 Each dict contains:
-C: Coupling matrix n_verts x n_verts
-target_field: n_r x 3
-abs_error: float
-rel_error: float</p>
+C: Coupling matrix (N_r, N_verts, 3)
+target_field: (N_r, 3)
+abs_error: float or (N_r, 3)
+rel_error: float or (N_r, 3)</p>
 </dd>
 <dt><strong>objective: string or dict</strong></dt><dd><p>if string, either ‘minimum_inductive_energy’ or ‘minimum_resistive_energy’
-if tuple, should contain: (a, b), where a and b are floats 0-1 describing the inductive and resitive weighting factors</p>
+if tuple, should contain: (a, b), where a and b are floats describing the inductive and resitive weighting factors.
+The resistance matrix is scaled according to the largest singular value of the inductance matrix for consistent behavior
+across meshes.</p>
 </dd>
-<dt><strong>laplacian_smooth: float</strong></dt><dd></dd>
 <dt><strong>tolerance: float</strong></dt><dd></dd>
 </dl>
 </dd>
@@ -400,6 +401,13 @@ defined in the vertex locations of the mesh</p>
 <p>Contains functions for calculating the coupling of surface current density in a
 triangle mesh to magnetic field.</p>
 <dl class="function">
+<dt id="bfieldtools.magnetic_field_mesh.compute_A">
+<code class="descclassname">bfieldtools.magnetic_field_mesh.</code><code class="descname">compute_A</code><span class="sig-paren">(</span><em>mesh</em>, <em>r</em>, <em>Nchunks=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.magnetic_field_mesh.compute_A" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute vector potential matrices (one for each coordinate)
+from linear stream functions using analytic integral</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="bfieldtools.magnetic_field_mesh.compute_C">
 <code class="descclassname">bfieldtools.magnetic_field_mesh.</code><code class="descname">compute_C</code><span class="sig-paren">(</span><em>mesh</em>, <em>r</em>, <em>Nchunks=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.magnetic_field_mesh.compute_C" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a mesh, computes the “C matrix” which gives the magnetic field at
@@ -446,6 +454,13 @@ See eq. 5.13 in Michael Poole’s thesis.</p>
 </dl>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="bfieldtools.magnetic_field_mesh.compute_U">
+<code class="descclassname">bfieldtools.magnetic_field_mesh.</code><code class="descname">compute_U</code><span class="sig-paren">(</span><em>mesh</em>, <em>r</em>, <em>Nchunks=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.magnetic_field_mesh.compute_U" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute scalar potential matrix from linear stream functions
+using analytic integral</p>
 </dd></dl>
 
 <dl class="function">
@@ -499,7 +514,7 @@ some convinient functions and properties.</p>
 <dl class="class">
 <dt id="bfieldtools.mesh_class.LazyProperty">
 <em class="property">class </em><code class="descclassname">bfieldtools.mesh_class.</code><code class="descname">LazyProperty</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.LazyProperty" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Implementation of lazily loading properties, see
 <a class="reference external" href="http://blog.pythonisito.com/2008/08/lazy-descriptors.html">http://blog.pythonisito.com/2008/08/lazy-descriptors.html</a>
 On first invocation, a lazy property calls a function that populates
@@ -509,7 +524,7 @@ the property (acts as a method). Afterwards, it acts like a normal property.</p>
 <dl class="class">
 <dt id="bfieldtools.mesh_class.MeshWrapper">
 <em class="property">class </em><code class="descclassname">bfieldtools.mesh_class.</code><code class="descname">MeshWrapper</code><span class="sig-paren">(</span><em>verts=None</em>, <em>tris=None</em>, <em>mesh_file=None</em>, <em>mesh_obj=None</em>, <em>process=False</em>, <em>fix_normals=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.MeshWrapper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Class that is used for surface mesh field calculations, e.g. coil design.
 Computation functions are typically external functions that are called
 using lazy properties.</p>
@@ -618,6 +633,29 @@ including both self- and mutual-inductance.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="bfieldtools.mutual_inductance_mesh.mutual_inductance_matrix_from_A">
+<code class="descclassname">bfieldtools.mutual_inductance_mesh.</code><code class="descname">mutual_inductance_matrix_from_A</code><span class="sig-paren">(</span><em>mesh1</em>, <em>mesh2</em>, <em>planar=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mutual_inductance_mesh.mutual_inductance_matrix_from_A" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a mutual inductance matrix for hat basis functions
+(stream functions) between two surface meshes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mesh1: Trimesh mesh object for mesh 1</strong></dt><dd></dd>
+<dt><strong>mesh2: Trimesh mesh object for mesh 2</strong></dt><dd></dd>
+<dt><strong>planar: boolean</strong></dt><dd><p>If True, use planar assumption when calculating</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>M: (Nvertices1 x Nvertices2) array</strong></dt><dd><p>Mutual inductance matrix between mesh1 and mesh2</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="bfieldtools.mutual_inductance_mesh.self_inductance_matrix">
 <code class="descclassname">bfieldtools.mutual_inductance_mesh.</code><code class="descname">self_inductance_matrix</code><span class="sig-paren">(</span><em>mesh</em>, <em>planar=False</em>, <em>Nchunks=1</em>, <em>approx=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mutual_inductance_mesh.self_inductance_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate a self inductance matrix for hat basis functions
@@ -667,7 +705,7 @@ from the mesh.</p>
 <dl class="class">
 <dt id="bfieldtools.sphtools.plotsph">
 <em class="property">class </em><code class="descclassname">bfieldtools.sphtools.</code><code class="descname">plotsph</code><a class="headerlink" href="#bfieldtools.sphtools.plotsph" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Class for visualization of spherical harmonics and basis vector functions.</p>
 <dl class="method">
 <dt id="bfieldtools.sphtools.plotsph.plotBPhilm_volume">
@@ -808,7 +846,7 @@ Inspired by <a class="reference external" href="https://docs.enthought.com/mayav
 <dl class="class">
 <dt id="bfieldtools.sphtools.sphbasis">
 <em class="property">class </em><code class="descclassname">bfieldtools.sphtools.</code><code class="descname">sphbasis</code><span class="sig-paren">(</span><em>Np</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Class for constructing spherical harmonics (Ylms), their gradients
 and related magnetic field ‘basis vectorfunctions’
 (Psilms for r**l components, Philms for r**(-l) components).</p>
@@ -1360,7 +1398,7 @@ see Eqs. 1–3 in <a class="reference external" href="https://arxiv.org/pdf/1306
 <dl class="class">
 <dt id="bfieldtools.sphtools.sphfittools">
 <em class="property">class </em><code class="descclassname">bfieldtools.sphtools.</code><code class="descname">sphfittools</code><a class="headerlink" href="#bfieldtools.sphtools.sphfittools" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Class for fitting spherical harmonics basis functions to measured magnetic field data.
 Can be used to calculate the l,m-spectra of measured data and reconstructing field with
 the spherical harmonics representation.</p>
@@ -1570,27 +1608,27 @@ TODO: make this more flexible.</p>
 <div class="section" id="module-bfieldtools.utils">
 <span id="bfieldtools-utils-module"></span><h2>bfieldtools.utils module<a class="headerlink" href="#module-bfieldtools.utils" title="Permalink to this headline">¶</a></h2>
 <p>This module contains miscellaneous utility functions used across bfieldtools.</p>
-<dl class="function">
+<dl class="attribute">
 <dt id="bfieldtools.utils.assemble_matrix">
-<code class="descclassname">bfieldtools.utils.</code><code class="descname">assemble_matrix</code><span class="sig-paren">(</span><em>tris</em>, <em>Nverts</em>, <em>triangle_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">assemble_matrix</code><a class="headerlink" href="#bfieldtools.utils.assemble_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimized  assembly of finite element matrix for
 precomputed triangle data</p>
 <p>Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
 for the nodes neighbouring the triangle</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="attribute">
 <dt id="bfieldtools.utils.assemble_matrix2">
-<code class="descclassname">bfieldtools.utils.</code><code class="descname">assemble_matrix2</code><span class="sig-paren">(</span><em>tris1</em>, <em>tris2</em>, <em>Nverts1</em>, <em>Nverts2</em>, <em>triangle_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix2" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">assemble_matrix2</code><a class="headerlink" href="#bfieldtools.utils.assemble_matrix2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimized  assembly of finite element matrix for
 precomputed triangle data for separate meshes 1 and 2</p>
 <p>Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
 for the nodes neighbouring the triangle</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="attribute">
 <dt id="bfieldtools.utils.assemble_matrix_chunk">
-<code class="descclassname">bfieldtools.utils.</code><code class="descname">assemble_matrix_chunk</code><span class="sig-paren">(</span><em>tris</em>, <em>Nverts</em>, <em>triangle_data</em>, <em>n</em>, <em>Nchunks</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix_chunk" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">assemble_matrix_chunk</code><a class="headerlink" href="#bfieldtools.utils.assemble_matrix_chunk" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimized  assembly of finite element matrix for
 precomputed triangle data. Version for computation in which eval points
 are chunked smaller, less memory-intensive parts</p>
@@ -1604,9 +1642,9 @@ for the nodes neighbouring the triangle</p>
 <dd><p>Generate and return a set of points on a cylindrical surface.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="attribute">
 <dt id="bfieldtools.utils.dual_areas">
-<code class="descclassname">bfieldtools.utils.</code><code class="descname">dual_areas</code><span class="sig-paren">(</span><em>tris</em>, <em>ta</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.dual_areas" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">dual_areas</code><a class="headerlink" href="#bfieldtools.utils.dual_areas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate (dual) areas for each node in inds</p>
 <p>Dual area == area summed over the neighbouring triangles divided by 3</p>
 </dd></dl>

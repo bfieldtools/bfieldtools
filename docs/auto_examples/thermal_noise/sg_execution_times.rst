@@ -5,7 +5,7 @@
 
 Computation times
 =================
-**02:15.134** total execution time for **auto_examples_thermal_noise** files:
+**03:27.436** total execution time for **auto_examples_thermal_noise** files:
 
-- **02:15.134**: :ref:`sphx_glr_auto_examples_thermal_noise_thermal_noise_platinum_heater.py` (``thermal_noise_platinum_heater.py``)
-- **00:00.000**: :ref:`sphx_glr_auto_examples_thermal_noise_thermal_noise_simulation.py` (``thermal_noise_simulation.py``)
+- **02:13.226**: :ref:`sphx_glr_auto_examples_thermal_noise_thermal_noise_platinum_heater.py` (``thermal_noise_platinum_heater.py``)
+- **01:14.210**: :ref:`sphx_glr_auto_examples_thermal_noise_thermal_noise_simulation.py` (``thermal_noise_simulation.py``)

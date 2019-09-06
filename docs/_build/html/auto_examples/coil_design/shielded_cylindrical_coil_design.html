@@ -197,13 +197,13 @@ face_normals didn&#39;t match triangles, ignoring!
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3536 vertices by 672 target points... took 1.02 seconds.
-Computing C matrix, 904 vertices by 672 target points... took 0.21 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3536 vertices by 672 target points... took 1.05 seconds.
+Computing C matrix, 904 vertices by 672 target points... took 0.23 seconds.
 Calculating potentials
 Inserting stuff into M-matrix
 Computing inductance matrix in 1 chunks since 9 GiB memory is available...
 Calculating potentials, chunk 1/1
-Inductance matrix computation took 6.06 seconds.
+Inductance matrix computation took 6.00 seconds.
 </pre></div>
 </div>
 <p>Create bfield specifications used when optimizing the coil geometry</p>
@@ -226,7 +226,7 @@ Inductance matrix computation took 6.06 seconds.
 
 <span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">sol</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
                                             <span class="p">[</span><span class="n">target_spec</span><span class="p">,</span> <span class="n">induction_spec</span><span class="p">],</span>
-                                            <span class="n">laplacian_smooth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                            <span class="n">objective</span><span class="o">=</span><span class="s1">&#39;minimum_inductive_energy&#39;</span><span class="p">,</span>
                                             <span class="n">tolerance</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)</span>
 
 <span class="n">shield</span><span class="o">.</span><span class="n">induced_I</span> <span class="o">=</span> <span class="n">shield</span><span class="o">.</span><span class="n">coupling</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span>
@@ -236,16 +236,15 @@ Inductance matrix computation took 6.06 seconds.
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 2 chunks since 9 GiB memory is available...
 Calculating potentials, chunk 1/2
 Calculating potentials, chunk 2/2
-Inductance matrix computation took 96.50 seconds.
-Scaling matrices before optimization. This requires singular value computation, hold on.
+Inductance matrix computation took 95.66 seconds.
 Solving quadratic programming problem using cvxopt...
      pcost       dcost       gap    pres   dres
- 0:  4.5366e+01  7.7593e+02  1e+04  3e+00  4e-14
+ 0:  4.5366e+01  7.7593e+02  1e+04  3e+00  3e-14
  1:  1.0096e+02  1.1497e+03  3e+03  9e-01  3e-14
  2:  5.6082e+02  2.4779e+03  3e+03  6e-01  9e-14
  3:  5.7943e+02  2.6428e+03  3e+03  6e-01  9e-14
  4:  1.0195e+03  5.8843e+03  3e+03  5e-01  2e-13
- 5:  2.6725e+03  1.0689e+04  4e+03  4e-01  4e-13
+ 5:  2.6725e+03  1.0689e+04  4e+03  4e-01  6e-13
 Optimal solution found.
 </pre></div>
 </div>
@@ -312,8 +311,7 @@ Optimal solution found.
 </div>
 <img alt="../../_images/sphx_glr_shielded_cylindrical_coil_design_003.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_shielded_cylindrical_coil_design_003.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Scaling matrices before optimization. This requires singular value computation, hold on.
-Solving quadratic programming problem using cvxopt...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Solving quadratic programming problem using cvxopt...
      pcost       dcost       gap    pres   dres
  0:  4.3937e+01  6.6183e+01  5e+03  2e+00  4e-14
  1:  5.0479e+01  6.8140e+01  2e+02  1e-01  2e-14
@@ -323,7 +321,8 @@ Solving quadratic programming problem using cvxopt...
 Optimal solution found.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  53.747 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  46.159 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  10469 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-shielded-cylindrical-coil-design-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/a7ad22fc902bd9cfff073ac95b25aeea/shielded_cylindrical_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">shielded_cylindrical_coil_design.py</span></code></a></p>

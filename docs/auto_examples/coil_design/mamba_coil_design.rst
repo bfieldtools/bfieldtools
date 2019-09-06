@@ -173,7 +173,7 @@ Run QP solver
 
     coil.I, coil.sol = optimize_streamfunctions(coil,
                                                 [target_spec],
-                                                laplacian_smooth=0,
+                                                objective='minimum_inductive_energy',
                                                 tolerance=tolerance)
 
 
@@ -190,18 +190,17 @@ Run QP solver
     Computing inductance matrix in 2 chunks since 9 GiB memory is available...
     Calculating potentials, chunk 1/2
     Calculating potentials, chunk 2/2
-    Inductance matrix computation took 72.40 seconds.
-    Scaling matrices before optimization. This requires singular value computation, hold on.
+    Inductance matrix computation took 72.63 seconds.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
      0:  1.6068e+01  2.8227e+01  5e+03  4e+00  2e-14
      1:  2.1506e+01  3.1514e+01  4e+02  3e-01  2e-14
      2:  3.2340e+01  5.2495e+01  2e+02  1e-01  3e-14
      3:  3.7329e+01  6.8586e+01  2e+02  1e-01  9e-14
-     4:  6.5414e+01  1.2704e+02  2e+02  7e-02  9e-13
+     4:  6.5414e+01  1.2704e+02  2e+02  7e-02  1e-12
      5:  7.9337e+01  1.5876e+02  1e+02  5e-02  2e-12
-     6:  8.4357e+01  2.2902e+02  1e+02  4e-02  5e-12
-     7:  8.6149e+01  4.0152e+02  2e+02  4e-02  6e-12
+     6:  8.4357e+01  2.2902e+02  1e+02  4e-02  4e-12
+     7:  8.6149e+01  4.0152e+02  2e+02  4e-02  5e-12
     Optimal solution found.
 
 
@@ -239,7 +238,9 @@ Plot coil windings and target points
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  25.611 seconds)
+   **Total running time of the script:** ( 1 minutes  23.693 seconds)
+
+**Estimated memory usage:**  8017 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_mamba_coil_design.py:

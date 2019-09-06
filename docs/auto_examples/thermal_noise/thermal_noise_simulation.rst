@@ -44,18 +44,6 @@ Three different examples:
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    shapely.geometry.Polygon not available!
-    Traceback (most recent call last):
-      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py", line 22, in <module>
-        from shapely.geometry import Polygon
-    ModuleNotFoundError: No module named 'shapely'
-
 
 
 Unit sphere
@@ -127,32 +115,32 @@ Unit sphere
 
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
-    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
-    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
-      vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
-    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
-      vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
     Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
+      vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
+    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
     Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
+      vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
+    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
 
 
 
@@ -315,9 +303,9 @@ Unit disc, AC mode
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  6.984 seconds)
+   **Total running time of the script:** ( 1 minutes  14.210 seconds)
 
-**Estimated memory usage:**  2173 MB
+**Estimated memory usage:**  1899 MB
 
 
 .. _sphx_glr_download_auto_examples_thermal_noise_thermal_noise_simulation.py:

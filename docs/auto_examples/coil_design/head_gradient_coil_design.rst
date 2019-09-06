@@ -62,18 +62,6 @@ Example showing a gradient coil designed on the surface of a MEG system helmet
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    shapely.geometry.Polygon not available!
-    Traceback (most recent call last):
-      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py", line 22, in <module>
-        from shapely.geometry import Polygon
-    ModuleNotFoundError: No module named 'shapely'
-
 
 
 Set up target and stray field points.
@@ -155,7 +143,7 @@ Specify target field and run solver
 
     coil.I, coil.sol = optimize_streamfunctions(coil,
                                                 [target_spec],
-                                                laplacian_smooth=0,
+                                                objective='minimum_inductive_energy',
                                                 tolerance=tolerance)
 
 
@@ -169,10 +157,9 @@ Specify target field and run solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 1 chunks since 10 GiB memory is available...
+    Computing inductance matrix in 1 chunks since 9 GiB memory is available...
     Calculating potentials, chunk 1/1
-    Inductance matrix computation took 32.43 seconds.
-    Scaling matrices before optimization. This requires singular value computation, hold on.
+    Inductance matrix computation took 32.26 seconds.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
      0:  2.9677e+01  3.3517e+02  1e+04  5e+00  2e-14
@@ -216,7 +203,9 @@ Plot coil windings and magnetic field in target points
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  38.254 seconds)
+   **Total running time of the script:** ( 0 minutes  36.067 seconds)
+
+**Estimated memory usage:**  5810 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_head_gradient_coil_design.py:

@@ -2,7 +2,7 @@ import numpy as np
 import cvxopt
 from cvxopt import matrix
 from scipy.sparse.linalg import svds
-
+from scipy.linalg import eigh as largest_eigh
 
 def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7):
     '''
@@ -33,6 +33,7 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7):
         return None, sol
     return np.array(sol['x']).reshape((P.shape[1],)), sol
 
+
 def optimize_streamfunctions(meshobj, bfield_specification,
                              objective='minimum_inductive_energy',
                              laplacian_smooth=0.1,
@@ -50,14 +51,15 @@ def optimize_streamfunctions(meshobj, bfield_specification,
     bfield_specification: list
         List in which element is a dictionary containing a field specification.
         Each dict contains:
-        C: Coupling matrix n_verts x n_verts
-        target_field: n_r x 3
-        abs_error: float
-        rel_error: float
+        C: Coupling matrix (N_r, N_verts, 3)
+        target_field: (N_r, 3)
+        abs_error: float or (N_r, 3)
+        rel_error: float or (N_r, 3)
     objective: string or dict
         if string, either 'minimum_inductive_energy' or 'minimum_resistive_energy'
-        if tuple, should contain: (a, b), where a and b are floats 0-1 describing the inductive and resitive weighting factors
-    laplacian_smooth: float
+        if tuple, should contain: (a, b), where a and b are floats describing the inductive and resitive weighting factors.
+        The resistance matrix is scaled according to the largest singular value of the inductance matrix for consistent behavior
+        across meshes.
     tolerance: float
 
     Returns
@@ -114,40 +116,43 @@ def optimize_streamfunctions(meshobj, bfield_specification,
         constraint_product = np.append(constraint_product, stacked_bounds, axis=0)
 
 
-    #Limit L matrix to inner vertices
-    inner_L = meshobj.inductance[meshobj.inner_verts][:, meshobj.inner_verts]
-
-    #Limit R matrix to inner vertices
-    inner_R = meshobj.resistance[meshobj.inner_verts][:, meshobj.inner_verts]
-
-
     #Linear part of QP problem not used, set to zero
     linear_part = np.zeros((len(meshobj.inner_verts), ))
 
-    print('Scaling matrices before optimization. This requires singular value computation, hold on.')
 
-    if laplacian_smooth != 0:
+    if objective == (1, 0):
+        #Limit L matrix to inner vertices
+        inner_L = meshobj.inductance[meshobj.inner_verts][:, meshobj.inner_verts]
 
-        #Limit Laplacian matrix to inner vertices (if used)
-        inner_lapl = meshobj.laplacian.todense()[meshobj.inner_verts][:, meshobj.inner_verts]
-
-        #Scale Laplacian matrix to same magnitude as L matrix and R matrix
-        lapl_eigs = np.linalg.eigvalsh(-inner_lapl)
-
-        L_eigs = np.linalg.eigvalsh(inner_L)
-
-        R_eigs = np.linalg.eigvalsh(inner_R)
-
-        scaled_lapl = np.max(np.abs(L_eigs)) / np.max(np.abs(lapl_eigs)) * -inner_lapl
-
-        quadratic_term = (inner_L + laplacian_smooth * scaled_lapl)
-
-    else:
         quadratic_term = inner_L
 
+    elif objective == (0, 1):
+        #Limit R matrix to inner vertices
+        inner_R = meshobj.resistance[meshobj.inner_verts][:, meshobj.inner_verts]
+
+        quadratic_term = inner_R
+
+    else:
+        #Limit L matrix to inner vertices
+        inner_L = meshobj.inductance[meshobj.inner_verts][:, meshobj.inner_verts]
+
+        #Limit R matrix to inner vertices
+        inner_R = meshobj.resistance[meshobj.inner_verts][:, meshobj.inner_verts]
+
+        print('Scaling inductance and resistance matrices before optimization. This requires eigenvalue computation, hold on.')
+
+        max_eval_L = largest_eigh(inner_L, eigvals=(inner_L.shape[0]-1, inner_L.shape[0]-1))[0][0]
+        max_eval_R = largest_eigh(inner_R, eigvals=(inner_L.shape[0]-1, inner_L.shape[0]-1))[0][0]
+
+        scaled_R = max_eval_L / max_eval_R * inner_R
+
+        quadratic_term = (objective[0] * inner_L  + objective[1] * scaled_R)
+
+
     #Scale whole quadratic term according to largest eigenvalue
-    quad_eigs = np.linalg.eigvalsh(quadratic_term)
-    quadratic_term /= np.max(np.abs(quad_eigs))
+    max_eval_quad = largest_eigh(quadratic_term, eigvals=(quadratic_term.shape[0]-1, quadratic_term.shape[0]-1))[0][0]
+
+    quadratic_term /= max_eval_quad
 
 
     #Compute, scale C matrix according to largest singular value

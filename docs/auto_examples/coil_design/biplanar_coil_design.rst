@@ -63,18 +63,6 @@ region between the two coil planes.
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    shapely.geometry.Polygon not available!
-    Traceback (most recent call last):
-      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py", line 22, in <module>
-        from shapely.geometry import Polygon
-    ModuleNotFoundError: No module named 'shapely'
-
 
 
 Set up target and stray field points
@@ -148,8 +136,8 @@ Compute C matrices that are used to compute the generated magnetic field
 
  .. code-block:: none
 
-    Computing C matrix, 3184 vertices by 672 target points... took 0.95 seconds.
-    Computing C matrix, 3184 vertices by 2562 target points... took 2.69 seconds.
+    Computing C matrix, 3184 vertices by 672 target points... took 0.96 seconds.
+    Computing C matrix, 3184 vertices by 2562 target points... took 2.65 seconds.
 
 
 
@@ -188,7 +176,7 @@ Run QP solver
 
     coil.I, coil.sol = optimize_streamfunctions(coil,
                                                 [target_spec, stray_spec],
-                                                laplacian_smooth=0,
+                                                objective='minimum_inductive_energy',
                                                 tolerance=tolerance)
 
 
@@ -202,22 +190,21 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 2 chunks since 8 GiB memory is available...
+    Computing inductance matrix in 2 chunks since 9 GiB memory is available...
     Calculating potentials, chunk 1/2
     Calculating potentials, chunk 2/2
-    Inductance matrix computation took 76.50 seconds.
-    Scaling matrices before optimization. This requires singular value computation, hold on.
+    Inductance matrix computation took 72.24 seconds.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
      0:  1.0500e+02  3.7757e+02  3e+04  5e+00  3e-14
      1:  1.5336e+02  4.0199e+02  3e+03  6e-01  3e-14
-     2:  4.4248e+02  9.2422e+02  1e+03  1e-01  7e-14
-     3:  4.6255e+02  1.0365e+03  1e+03  1e-01  7e-14
+     2:  4.4248e+02  9.2422e+02  1e+03  1e-01  8e-14
+     3:  4.6255e+02  1.0365e+03  1e+03  1e-01  8e-14
      4:  5.3592e+02  1.4638e+03  9e+02  8e-02  1e-13
      5:  5.6696e+02  3.6612e+03  1e+03  8e-02  3e-13
      6:  5.6809e+02  3.7241e+03  1e+03  8e-02  3e-13
-     7:  5.7281e+02  3.9155e+03  1e+03  8e-02  5e-13
-     8:  6.2388e+02  5.2786e+03  1e+03  8e-02  2e-12
+     7:  5.7281e+02  3.9155e+03  1e+03  8e-02  4e-13
+     8:  6.2388e+02  5.2786e+03  1e+03  8e-02  1e-12
     Optimal solution found.
 
 
@@ -308,7 +295,7 @@ Plot field falloff on two axes
  .. code-block:: none
 
     Computing C matrix, 3184 vertices by 101 target points... took 0.19 seconds.
-    Computing C matrix, 3184 vertices by 101 target points... took 0.18 seconds.
+    Computing C matrix, 3184 vertices by 101 target points... took 0.16 seconds.
     /l/bfieldtools/examples/coil_design/biplanar_coil_design.py:181: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
       plt.show()
 
@@ -422,9 +409,9 @@ Compute magnetic field from discrete current line segments
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  6.147 seconds)
+   **Total running time of the script:** ( 1 minutes  56.344 seconds)
 
-**Estimated memory usage:**  9133 MB
+**Estimated memory usage:**  9007 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_biplanar_coil_design.py:

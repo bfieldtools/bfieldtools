@@ -151,7 +151,13 @@ class MeshWrapper:
         Alternatively, this LazyProperty could be turned into a method.
         '''
 
-        resistance = resistivity / thickness * self.laplacian.todense()
+        #Flip sign
+        negative_laplacian = -1 * self.laplacian.todense()
+
+        #Compensate for rank n-1 by adding offset
+        negative_laplacian += np.ones(negative_laplacian.shape)/negative_laplacian.shape[0]
+
+        resistance = resistivity / thickness * negative_laplacian
 
         #Set boundary vertices to zero
         resistance[self.boundary_verts, :][:, self.boundary_verts] = 0
