@@ -247,8 +247,6 @@ def compute_C(mesh, r, Nchunks=None):
     Given a mesh, computes the "C matrix" which gives the magnetic field at
     some target points due to currents (stream function) on a surface mesh.
 
-    THIS IS A VECTORIZED COMPUTATION FOR COMPARISON
-
     Parameters
     ----------
 
@@ -305,6 +303,76 @@ def compute_C(mesh, r, Nchunks=None):
 
     return coef * C
 
+def compute_C_analytic(mesh, r, Nchunks=None):
+    '''
+    Given a mesh, computes the "C matrix" which gives the magnetic field at
+    some target points due to currents (stream function) on a surface mesh.
+
+    Parameters
+    ----------
+
+    mesh: Trimesh mesh object describing mesh
+    r: target points (Np, 3)
+
+    Returns
+    -------
+    C: (Np, Nvertices, 3) array
+        Coupling matrix for surface current in the mesh to the evaluation points)
+
+    '''
+    from .integrals import omegas
+    mu0 = 4 * np.pi * 1e-7
+    coef = mu0 / (4 * np.pi)
+
+    print('Computing C matrix, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
+    start = time.time()
+
+    # Initialize C-matrix
+    n_target_points = len(r)
+    n_verts = len(mesh.vertices)
+    n_faces = len(mesh.faces)
+
+
+    if Nchunks is None:
+        if r.shape[0] > 1000:
+            Nchunks = r.shape[0]//100
+        else:
+            Nchunks = 1
+
+    ta = mesh.area_faces
+    tn = mesh.face_normals
+
+    # Nfaces, 3, 3
+    rfaces = mesh.vertices[mesh.faces]
+    # Neval, Nfaces, Nedges
+    coeffs = np.zeros((r.shape[0:1] + rfaces.shape[:-1]))
+    # Nfaces, Nedges, 3
+    edges = np.roll(rfaces, 1, -2) - np.roll(rfaces, 2, -2)
+    grad = np.cross(tn[:, None, :], edges, axis=-1)/ta[:, None, None]
+    pots0 = np.zeros((r.shape[0], rfaces.shape[0]))
+    # Calculate potentials and related coefficients
+    for n in range(Nchunks):
+        RRchunk = r[n::Nchunks, None, None, :] - rfaces[None, :, :, :]
+        # Neval, Nfaces, Nedges
+        pot1, pot0 = omegas(RRchunk, tn, ta)
+        # Sum over x,y,z (inner product of 3-vectors)
+        coeffs[n::Nchunks] = -np.sum(grad*np.roll(edges, 2, -2), axis=-1)*pot1
+        coeffs[n::Nchunks] += np.sum(grad*np.roll(RRchunk, 2, -2), axis=-1)*pot0[:, :, None]
+        # Divide by signed distance
+        coeffs[n::Nchunks] /= np.sum(tn[:, None, :]*RRchunk, axis=-1)
+        pots0[n::Nchunks] = pot0
+    # Accumulate the elements
+    C = np.zeros((r.shape[0], mesh.vertices.shape[0], 3))
+    for ind_f, f in enumerate(mesh.faces):
+        C[:, f, :] += coeffs[:, ind_f, :, None]*tn[ind_f]
+        C[:, f, :] += -pots0[:, ind_f:ind_f+1, None]*grad[ind_f]
+
+
+    duration = time.time() - start
+    print('took %.2f seconds.'%duration)
+
+    return coef * np.moveaxis(C, 2, 0)
+
 
 def compute_U(mesh, r, Nchunks=None):
     """ Compute scalar potential matrix from linear stream functions
@@ -338,8 +406,8 @@ def compute_U(mesh, r, Nchunks=None):
 
     # Accumulate the elements
     Uv = np.zeros((R2.shape[0], mesh.vertices.shape[0]))
-    for f in range(len(mesh.faces)):
-        Uv[:, mesh.faces[f]] += Uf[:, f]
+    for ind_f, f in enumerate(mesh.faces):
+        Uv[:, f] += Uf[:, ind_f]
 
     return Uv*coeff
 
@@ -371,7 +439,7 @@ def compute_A(mesh, r, Nchunks=None):
         i1 = i0+RRchunk.shape[0]
         Pi = triangle_potential_uniform(RRchunk, mesh.face_normals, False)
         Af[i0:i1] = Pi
-        print((100*i1)//R2.shape[0], '% computed')
+#        print((100*i1)//R2.shape[0], '% computed')
         i0=i1
 
     # Rotated gradients (currents)

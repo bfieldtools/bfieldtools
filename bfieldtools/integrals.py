@@ -205,3 +205,52 @@ def triangle_potential_dipole_linear(R, tn, ta, planar=False):
     else:
         print('Assuming all the triangles are in the same plane!')
     return result/(2*ta[:,None])
+
+def omegas(R, tn, ta, planar=False):
+    """ Potentials from linearly varying and constant dipole densities
+
+        Parameters
+        ----------
+
+        R : (..., Ntri, 3, 3) array
+            Displacement vectors (...., Ntri, Ntri_verts, xyz)
+        tn : ((Ntri), 3) array
+            Triangle normals (Ntri, dir)
+        ta : (Ntri), array
+            Triangle areas (Ntri, dir)
+
+        Returns
+        -------
+        omega_i, ndarray (...., Ntri, Ntri_verts)
+            Resultant potential linear dipole density for each node (Ntri_verts)
+            in each triangle (Ntri) in the displacement vectors R
+        omega, ndarray (...., Ntri, Ntri_verts)
+            Resultant "Solid angle" potential for each node (Ntri_verts)
+            in each triangle (Ntri) in the displacement vectors R
+
+
+    """
+    if len(R.shape) > 3:
+        tn_ax = tn[:, None, :]
+    else:
+        tn_ax = tn
+    # Volumes of tetrahedron between field evaluation point and the triangle
+    det = np.sum(np.cross(np.roll(R, 1, -2),
+                          np.roll(R, 2, -2), axis=-1)*R, axis=-1)
+    # Edges opposite to the nodes
+    edges = np.roll(R, 1, -2) - np.roll(R, 2, -2)
+    #Latter part of omega_i integral in de Munck
+    result = np.sum(np.sum(gamma0(R)[..., None]*edges, axis=-2)[...,None,:]*edges, axis=-1)
+    result *= det/(2*ta[..., :, None])
+    solid_angle = omega(R)
+    if not planar:
+        # First part of the integral
+        # Note: tn normalized version of n-vector in de Munck
+        lin_coeffs = np.sum(tn_ax*np.cross(np.roll(R, 2, -2),
+                                           np.roll(R, 1, -2), axis=-1), axis=-1)
+        result += lin_coeffs*solid_angle[..., :, None]
+    else:
+        print('Assuming all the triangles are in the same plane!')
+    result /= (2*ta[:,None])
+
+    return result, solid_angle
