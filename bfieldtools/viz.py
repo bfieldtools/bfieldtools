@@ -86,4 +86,28 @@ def plot_field_falloff(axis, points, mesh, current_density, figsize):
 
     return fig
 
+def plot_data_on_faces(mesh, data, cmap='viridis', ncolors=32):
+    """ Plot any data determined on the faces of a mesh
+
+        v:
+    """
+    v = mesh.vertices
+    f = mesh.faces
+
+    s = mlab.pipeline.triangular_mesh_source(*v.T, f)
+    s.mlab_source.dataset.cell_data.scalars = data
+    s.mlab_source.dataset.cell_data.scalars.name = 'Cell data'
+    s.mlab_source.update()
+    s2 = mlab.pipeline.set_active_attribute(s,cell_scalars='Cell data')
+    surf = mlab.pipeline.surface(s2)
+    lutmanager = surf.parent.scalar_lut_manager
+    lutmanager.lut_mode = cmap
+#    lutmanager.reverse_lut = True
+    rangemax = max(abs(data))
+    lutmanager.data_range = np.array([-rangemax*1.01,rangemax*1.01])
+    lutmanager.use_default_range = False
+    lutmanager.number_of_colors = ncolors
+
+    return surf
+
 
