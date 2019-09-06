@@ -320,18 +320,11 @@ def compute_C_analytic(mesh, r, Nchunks=None):
         Coupling matrix for surface current in the mesh to the evaluation points)
 
     '''
-    from .integrals import omegas
-    mu0 = 4 * np.pi * 1e-7
-    coef = mu0 / (4 * np.pi)
+    from .integrals import omegas, omegas_over_distance_close
+    coef = 1e-7
 
     print('Computing C matrix, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
     start = time.time()
-
-    # Initialize C-matrix
-    n_target_points = len(r)
-    n_verts = len(mesh.vertices)
-    n_faces = len(mesh.faces)
-
 
     if Nchunks is None:
         if r.shape[0] > 1000:
@@ -348,19 +341,31 @@ def compute_C_analytic(mesh, r, Nchunks=None):
     coeffs = np.zeros((r.shape[0:1] + rfaces.shape[:-1]))
     # Nfaces, Nedges, 3
     edges = np.roll(rfaces, 1, -2) - np.roll(rfaces, 2, -2)
-    grad = np.cross(tn[:, None, :], edges, axis=-1)/ta[:, None, None]
+    grad = np.cross(tn[:, None, :], edges, axis=-1)/(2*ta[:, None, None])
     pots0 = np.zeros((r.shape[0], rfaces.shape[0]))
     # Calculate potentials and related coefficients
     for n in range(Nchunks):
         RRchunk = r[n::Nchunks, None, None, :] - rfaces[None, :, :, :]
         # Neval, Nfaces, Nedges
         pot1, pot0 = omegas(RRchunk, tn, ta)
-        # Sum over x,y,z (inner product of 3-vectors)
-        coeffs[n::Nchunks] = -np.sum(grad*np.roll(edges, 2, -2), axis=-1)*pot1
-        coeffs[n::Nchunks] += np.sum(grad*np.roll(RRchunk, 2, -2), axis=-1)*pot0[:, :, None]
-        # Divide by signed distance
-        coeffs[n::Nchunks] /= np.sum(tn[:, None, :]*RRchunk, axis=-1)
         pots0[n::Nchunks] = pot0
+        # Sum over x,y,z (inner product of 3-vectors)
+        c0 = np.sum(grad*np.roll(RRchunk, 2, -2), axis=-1)
+        coeffs[n::Nchunks] = -pot1
+        coeffs[n::Nchunks] += c0*pot0[:, :, None]
+        # Divide by signed distance
+        csigned = np.sum(tn[:, :]*RRchunk[:, :, 0, :], axis=-1)
+        coeffs[n::Nchunks] /=  csigned[:,:, None]
+
+        # Recalculate points on the triangle planes
+        mask = abs(csigned) < 1e-8*np.max(np.linalg.norm(edges, axis=-1))
+        # Zero-out the solid angle
+        pots0[n::Nchunks][mask] = 0
+        # Calculate for all, since it's faster than looping
+        pot1, pot0 = omegas_over_distance_close(RRchunk, tn, ta)
+        # Insert data
+        coeffs[n::Nchunks][mask] = -pot1[mask, :]
+        coeffs[n::Nchunks][mask] += c0[mask, :]*pot0[mask, None]
     # Accumulate the elements
     C = np.zeros((r.shape[0], mesh.vertices.shape[0], 3))
     for ind_f, f in enumerate(mesh.faces):

@@ -85,17 +85,18 @@ if False:
     vectors.actor.property.line_width = 3.0
 #%%
 #B0 = np.moveaxis(compute_C(mesh, mesh2.vertices), 2, 0) @ scalars
-points = np.array([[0.01, 1, 1],
-                   [0.01, 1, -1],
-                   [0.01, -1, -1],
-                   [0.01, -1, 1]])*2
+points = np.array([[0.001, 1, 1],
+                   [0.001, 1, -1],
+                   [0.001, -1, -1],
+                   [0.001, -1, 1]])*2 + 0.001
 tris=np.array([[0,1,2], [2,3,0]])
 mesh2 = trimesh.Trimesh(points, tris)
-for ii in range(5):
+for ii in range(6):
     mesh2 =mesh2.subdivide()
 B1 = compute_C_analytic(mesh, mesh2.vertices) @ scalars
-vectors = mlab.quiver3d(*mesh2.vertices.T, *B1, mode='2ddash', color=(1,0,0))
+vectors = mlab.quiver3d(*mesh2.vertices.T, *B1, mode='arrow', color=(1,0,0))
 vectors.glyph.glyph_source.glyph_position = 'center'
-vectors.actor.property.render_lines_as_tubes = True
-vectors.actor.property.line_width = 3.0
+#vectors.actor.property.render_lines_as_tubes = True
+#vectors.actor.property.line_width = 3.0
+
 

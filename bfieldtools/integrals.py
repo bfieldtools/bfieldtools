@@ -21,11 +21,11 @@ def gamma0(R, reg=1e-13, symmetrize=True):
             The analytic integrals for each vertex/edge
 
     """
-    diffs = np.roll(R, 1, -2) - np.roll(R, 2, -2)
-    dotprods1 = np.sum(np.roll(R, 1, -2)*diffs, axis=-1)
-    dotprods2 = np.sum(np.roll(R, 2, -2)*diffs, axis=-1)
-    dn = np.linalg.norm(diffs, axis=-1)
-    del diffs
+    edges = np.roll(R[0], 1, -2) - np.roll(R[0], 2, -2)
+    dotprods1 = np.sum(np.roll(R, 1, -2)*edges, axis=-1)
+    dotprods2 = np.sum(np.roll(R, 2, -2)*edges, axis=-1)
+    dn = np.linalg.norm(edges, axis=-1)
+    del edges
     n = np.linalg.norm(R, axis=-1)
     # Regularize s.t. neither the denominator or the numerator can be zero
     # Avoid numerical issues directly at the edge
@@ -192,7 +192,7 @@ def triangle_potential_dipole_linear(R, tn, ta, planar=False):
     det = np.sum(np.cross(np.roll(R, 1, -2),
                           np.roll(R, 2, -2), axis=-1)*R, axis=-1)
     # Edges opposite to the nodes
-    edges = np.roll(R, 1, -2) - np.roll(R, 2, -2)
+    edges = np.roll(R[0], 1, -2) - np.roll(R[0], 2, -2)
     #Latter part of omega_i integral in de Munck
     result = np.sum(np.sum(gamma0(R)[..., None]*edges, axis=-2)[...,None,:]*edges, axis=-1)
     result *= det/(2*ta[..., :, None])
@@ -254,3 +254,44 @@ def omegas(R, tn, ta, planar=False):
     result /= (2*ta[:,None])
 
     return result, solid_angle
+
+
+def omegas_over_distance_close(R, tn, ta):
+    """ Combination of omega calculatation for approximating the bfield
+        close to the triangle planes
+
+        Parameters
+        ----------
+        R : (N, Ntri, 3, 3) array of points (Neval, ..., Nverts, xyz)
+            Points correspond to relative coordinates (x,y,z) of
+            N triangles/evaluation points for
+            the 3 corners of the triangles/triangle.
+
+        Returns
+        -------
+        omega_i/csigned (N, 3) ndarray
+        omega/csigned:  (N) ndarray
+    """
+    # Distances
+    d = np.linalg.norm(R, axis=-1)
+    # Denominator
+    denom = np.prod(d, axis=-1)
+    for i in range(3):
+        j = (i+1) % 3
+        k = (i+2) % 3
+        denom += np.sum(R[..., i, :]*R[..., j, :], axis=-1)*d[..., k]
+    # Solid angles first order over signed distance to the triangle plane
+    omega_per_distance = 4*ta/denom
+
+    tn_ax = tn[:, None, :]
+    # Edges opposite to the nodes
+    edges = np.roll(R, 1, -2) - np.roll(R, 2, -2)
+    #Latter part of omega_i integral in de Munck
+    result = np.sum(np.sum(gamma0(R)[..., None]*edges, axis=-2)[...,None,:]*edges, axis=-1)
+    result *= 1/(2*ta[:, None])
+
+    lin_coeffs = np.sum(tn_ax*np.cross(np.roll(R, 2, -2),
+                                       np.roll(R, 1, -2), axis=-1), axis=-1)
+    result += 2*lin_coeffs/denom[..., None]
+
+    return result, omega_per_distance
