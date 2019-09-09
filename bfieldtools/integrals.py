@@ -24,23 +24,23 @@ def gamma0(R, reg=1e-13, symmetrize=True):
     edges = np.roll(R[0], 1, -2) - np.roll(R[0], 2, -2)
     dotprods1 = np.sum(np.roll(R, 1, -2)*edges, axis=-1)
     dotprods2 = np.sum(np.roll(R, 2, -2)*edges, axis=-1)
-    dn = np.linalg.norm(edges, axis=-1)
+    en = np.linalg.norm(edges, axis=-1)
     del edges
     n = np.linalg.norm(R, axis=-1)
     # Regularize s.t. neither the denominator or the numerator can be zero
     # Avoid numerical issues directly at the edge
-    res = np.log((np.roll(n, 2, -1)*dn + dotprods2 + reg)
-                 / (np.roll(n, 1, -1)*dn + dotprods1 + reg))
+    res = np.log((np.roll(n, 2, -1)*en + dotprods2 + reg)
+                 / (np.roll(n, 1, -1)*en + dotprods1 + reg))
 
     # Symmetrize the result since on the negative extension of the edge
     # there's division of two small values resulting numerical instabilities
     # (also incompatible with adding the reg value)
     if symmetrize:
-        res2 = -np.log((np.roll(n, 2, -1)*dn - dotprods2 + reg)
-                       / (np.roll(n, 1, -1)*dn - dotprods1 + reg))
+        res2 = -np.log((np.roll(n, 2, -1)*en - dotprods2 + reg)
+                       / (np.roll(n, 1, -1)*en - dotprods1 + reg))
         res = np.where(dotprods1+dotprods2 > 0, res, res2)
-    res /= dn
-    return res
+    res /= en
+    return -res # TODO: there should be minus, since we want this to be positive
 
 
 def omega(R):
@@ -113,7 +113,7 @@ def triangle_potential_uniform(R, tn, planar=False):
         tn_ax = tn[:, None, :]
     else:
         tn_ax = tn
-    summands = gamma0(R)*np.sum(tn_ax*np.cross(np.roll(R, 1, -2),
+    summands = -gamma0(R)*np.sum(tn_ax*np.cross(np.roll(R, 1, -2),
                                                np.roll(R, 2, -2), axis=-1), axis=-1)
     if not planar:
         csigned = np.sum(np.take(R, 0, -2)*tn, axis=-1)
@@ -189,8 +189,8 @@ def triangle_potential_dipole_linear(R, tn, ta, planar=False):
     else:
         tn_ax = tn
     # Volumes of tetrahedron between field evaluation point and the triangle
-    det = np.sum(np.cross(np.roll(R, 1, -2),
-                          np.roll(R, 2, -2), axis=-1)*R, axis=-1)
+    det = np.sum(np.cross(np.roll(R, 2, -2),
+                          np.roll(R, 1, -2), axis=-1)*R, axis=-1)
     # Edges opposite to the nodes
     edges = np.roll(R[0], 1, -2) - np.roll(R[0], 2, -2)
     #Latter part of omega_i integral in de Munck

@@ -32,7 +32,7 @@ coil = MeshWrapper(mesh_obj = coilmesh)
 weights = np.zeros(coilmesh.vertices.shape[0])
 weights[coil.inner_verts] = 1
 
-test_points = coilmesh.vertices + np.array([0,0.1,0])
+test_points = coilmesh.vertices + np.array([0,1,0])
 
 B0 = np.moveaxis(compute_C(coilmesh, test_points), 2, 0) @ weights
 B1 = compute_C_analytic(coilmesh, test_points) @ weights

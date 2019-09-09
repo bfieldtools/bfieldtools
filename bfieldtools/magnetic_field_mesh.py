@@ -347,7 +347,7 @@ def compute_C_analytic(mesh, r, Nchunks=None):
     for n in range(Nchunks):
         RRchunk = r[n::Nchunks, None, None, :] - rfaces[None, :, :, :]
         # Neval, Nfaces, Nedges
-        result = np.sum(np.sum(gamma0(RRchunk)[..., None]*edges,
+        result = -np.sum(np.sum(gamma0(RRchunk)[..., None]*edges,
                                axis=-2)[...,None, :]*edges, axis=-1)
         result *= 1/(2*ta[..., :, None])
         solid_angle[n::Nchunks] = omega(RRchunk)
