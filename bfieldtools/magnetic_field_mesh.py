@@ -311,7 +311,7 @@ def compute_C_analytic(mesh, r, Nchunks=None):
     Parameters
     ----------
 
-    mesh: Trimesh mesh object describing mesh
+    mesh: Trimesh mesh object describing the mesh
     r: target points (Np, 3)
 
     Returns
@@ -320,7 +320,7 @@ def compute_C_analytic(mesh, r, Nchunks=None):
         Coupling matrix for surface current in the mesh to the evaluation points)
 
     '''
-    from .integrals import omegas, omegas_over_distance_close
+    from .integrals import omega, gamma0
     coef = 1e-7
 
     print('Computing C matrix, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
@@ -342,35 +342,22 @@ def compute_C_analytic(mesh, r, Nchunks=None):
     # Nfaces, Nedges, 3
     edges = np.roll(rfaces, 1, -2) - np.roll(rfaces, 2, -2)
     grad = np.cross(tn[:, None, :], edges, axis=-1)/(2*ta[:, None, None])
-    pots0 = np.zeros((r.shape[0], rfaces.shape[0]))
+    solid_angle = np.zeros((r.shape[0], rfaces.shape[0]))
     # Calculate potentials and related coefficients
     for n in range(Nchunks):
         RRchunk = r[n::Nchunks, None, None, :] - rfaces[None, :, :, :]
         # Neval, Nfaces, Nedges
-        pot1, pot0 = omegas(RRchunk, tn, ta)
-        pots0[n::Nchunks] = pot0
-        # Sum over x,y,z (inner product of 3-vectors)
-        c0 = np.sum(grad*np.roll(RRchunk, 2, -2), axis=-1)
-        coeffs[n::Nchunks] = -pot1
-        coeffs[n::Nchunks] += c0*pot0[:, :, None]
-        # Divide by signed distance
-        csigned = np.sum(tn[:, :]*RRchunk[:, :, 0, :], axis=-1)
-        coeffs[n::Nchunks] /=  csigned[:,:, None]
+        result = np.sum(np.sum(gamma0(RRchunk)[..., None]*edges,
+                               axis=-2)[...,None, :]*edges, axis=-1)
+        result *= 1/(2*ta[..., :, None])
+        solid_angle[n::Nchunks] = omega(RRchunk)
+        coeffs[n::Nchunks] = result
 
-        # Recalculate points on the triangle planes
-        mask = abs(csigned) < 1e-8*np.max(np.linalg.norm(edges, axis=-1))
-        # Zero-out the solid angle
-        pots0[n::Nchunks][mask] = 0
-        # Calculate for all, since it's faster than looping
-        pot1, pot0 = omegas_over_distance_close(RRchunk, tn, ta)
-        # Insert data
-        coeffs[n::Nchunks][mask] = -pot1[mask, :]
-        coeffs[n::Nchunks][mask] += c0[mask, :]*pot0[mask, None]
-    # Accumulate the elements
+#    # Accumulate the elements
     C = np.zeros((r.shape[0], mesh.vertices.shape[0], 3))
     for ind_f, f in enumerate(mesh.faces):
         C[:, f, :] += coeffs[:, ind_f, :, None]*tn[ind_f]
-        C[:, f, :] += -pots0[:, ind_f:ind_f+1, None]*grad[ind_f]
+        C[:, f, :] += -solid_angle[:, ind_f:ind_f+1, None]*grad[ind_f]
 
 
     duration = time.time() - start
@@ -386,6 +373,9 @@ def compute_U(mesh, r, Nchunks=None):
 
     coeff = 1e-7  # mu_0/(4*pi)
 
+    print('Computing U matrix, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
+    start = time.time()
+
     # Source and eval locations
     R1 = mesh.vertices[mesh.faces]
     R2 = r
@@ -399,20 +389,21 @@ def compute_U(mesh, r, Nchunks=None):
     R2chunks = np.array_split(R2, Nchunks, axis=0)
     i0=0
     Uf = np.zeros((R2.shape[0], mesh.faces.shape[0], 3))
-    print('Computing potential matrix')
     for R2chunk in R2chunks:
         RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
         i1 = i0+RRchunk.shape[0]
         Pi = triangle_potential_dipole_linear(RRchunk, mesh.face_normals,
                                              mesh.area_faces)
         Uf[i0:i1] = Pi
-        print((100*i1)//R2.shape[0], '% computed')
         i0=i1
 
     # Accumulate the elements
     Uv = np.zeros((R2.shape[0], mesh.vertices.shape[0]))
     for ind_f, f in enumerate(mesh.faces):
         Uv[:, f] += Uf[:, ind_f]
+
+    duration = time.time() - start
+    print('took %.2f seconds.'%duration)
 
     return Uv*coeff
 
