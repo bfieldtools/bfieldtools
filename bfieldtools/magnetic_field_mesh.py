@@ -397,10 +397,11 @@ def compute_U(mesh, r, Nchunks=None):
         Uf[i0:i1] = Pi
         i0=i1
 
-    # Accumulate the elements
+#     Accumulate the elements
     Uv = np.zeros((R2.shape[0], mesh.vertices.shape[0]))
     for ind_f, f in enumerate(mesh.faces):
         Uv[:, f] += Uf[:, ind_f]
+
 
     duration = time.time() - start
     print('took %.2f seconds.'%duration)

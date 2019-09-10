@@ -715,6 +715,55 @@ class sphbasis:
         B *= mu0
         return B
 
+    def fields(self, p, lmax):
+        '''
+        Computes magnetic fields for each sph coefficient.
+        Ignores the 'DC' component l=0.
+
+        Parameters
+        ----------
+        p: Nx3 array
+            coordinates in which the field is computed
+        lmax: int
+            maximum degree l which is used in computing
+
+        Returns
+        -------
+        field: Nx3 array
+            magnetic field at p
+
+        '''
+        mu0=4*np.pi*1e-7
+        L = lmax*(lmax+2)+1
+        B1 = np.zeros((L, p.shape[0], p.shape[1]))
+        B2 = np.zeros((L, p.shape[0], p.shape[1]))
+
+        sp = self.cartesian2spherical(p)
+
+        idx = 0
+        for l in range(1,lmax+1):
+            for m in range(-1*l,l+1):
+                Psilm = self.Psilm(l,m, sp[:,1],sp[:,2])
+                Psilm *= np.sqrt(2*l**2 + l)
+                Psilm[:,0] *= sp[:,0]**(l-1)
+                Psilm[:,1] *= sp[:,0]**(l-1)
+                Psilm[:,2] *= sp[:,0]**(l-1)
+                Psilm = self.sphvec2cart(sp, Psilm)
+                B1[idx] = Psilm
+
+                Philm = self.Philm(l,m, sp[:,1],sp[:,2])
+                Philm *= np.sqrt((2*l+1)*(l+1))
+                Philm[:,0] *= sp[:,0]**(-l-2)
+                Philm[:,1] *= sp[:,0]**(-l-2)
+                Philm[:,2] *= sp[:,0]**(-l-2)
+                Philm = self.sphvec2cart(sp, Philm)
+                B2[idx] = Philm
+
+                idx += 1
+        B1 *= mu0
+        B2 *= mu0
+        return B1, B2
+
 class sphfittools:
     '''
     Class for fitting spherical harmonics basis functions to measured magnetic field data.

@@ -195,7 +195,7 @@ def triangle_potential_dipole_linear(R, tn, ta, planar=False):
     edges = np.roll(R[0], 1, -2) - np.roll(R[0], 2, -2)
     #Latter part of omega_i integral in de Munck
     result = np.sum(np.sum(gamma0(R)[..., None]*edges, axis=-2)[...,None,:]*edges, axis=-1)
-    result *= det/(2*ta[..., :, None])
+    result *= det/(2*ta[..., :, None]) # TODO: IS DET SIGN OK?
     if not planar:
         # First part of the integral
         # Note: tn normalized version of n-vector in de Munck
