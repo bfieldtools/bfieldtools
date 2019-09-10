@@ -17,7 +17,7 @@ The toolbox currently includes tools for
 Dependencies
 ^^^^^^^^^^^^
 
-Requires Python 3 (to be safe, use 3.5 or newer).
+Requires Python 3.5 or newer.
 
  - `Numpy <https://www.numpy.org/>`_
  - `Scipy <https://www.scipy.org/>`_
