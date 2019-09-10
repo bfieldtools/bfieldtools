@@ -5,6 +5,7 @@ Mainly wrappers and convenience helpers around mayavi and matplotlib functions
 
 from mayavi import mlab
 import matplotlib.pyplot as plt
+from matplotlib import colors
 
 import numpy as np
 
@@ -54,60 +55,232 @@ def plot_3d_current_loops(current_loops, current_direction, colors=None, figure=
     return fig
 
 
-def plot_scalar_on_mesh(mesh, scalar):
+
+
+
+
+def plot_cross_section(X, Y, data, axes=None, cmap=None, colorbar=False, contours=10, log=False, vmin=None, vmax=None):
+    '''
+    Plot scalar data on a plane
+
+    Parameters
+    ----------
+    X: (N_x, N_y)
+        meshgrid-generated 2D array with X coordinates for each data point
+    Y: (N_x, N_y) array
+        meshgrid-generated 2D array with Y coordinates for each data point
+    data: (N_x, N_y) array
+        2D array with data for each point in X, Y
+    axes: matplotlib axes
+        Optional, if passed plot to existing axes. If None (default), plot to new figure/axes
+    cmap: str
+        name of colormap to use for scalar data. If None (default), use viridis for
+        all-positive/-negative data and RdBu otherwise
+    colorbar: Boolean
+        If True, plot colorbar for data
+    contours: None, int or array-like
+        If None, no contour lines are plotted. If int, plots specific number of
+        equispaced contour lines. If array-like, plot contours at values in array.
+    log: Boolean
+        if True, colormap is log-scaled. Else, colormap is linear.
+    vmin, vmax: float or None
+        Explicit colormap minimum and maximum values. If not passed, range is according to data
+
+    Returns
+    -------
+    axes: matplotlib axes with plot
     '''
 
+
+    if axes is None:
+        fig, axes = plt.subplots(1,1)
+
+    #If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
+    if cmap is None:
+        if np.all(data > 0) or np.all(data < 0):
+            cmap='viridis'
+        else:
+            cmap='RdBu'
+
+    if log:
+        norm = colors.LogNorm()
+    else:
+        norm = colors.Normalize()
+
+    if vmin is None:
+        vmin = np.min(data)
+
+    if vmax is None:
+        vmax = np.max(data)
+
+    cont = axes.pcolormesh(X, Y,
+                         data,
+                         cmap=cmap,
+                         vmin=vmin,
+                         vmax=vmax,
+                         norm=norm,
+                         shading='gouraud')
+
+    if contours:
+        clines = axes.contour(X, Y,
+                            data,
+                            levels=contours,
+                            norm=norm,
+                            antialiased=True,
+                            colors=('k',),
+                            linewidths=(1,))
+
+        axes.clabel(clines, fmt='%2.2f', colors='w', fontsize=10)
+
+    axes.set_xlabel('X')
+    axes.set_ylabel('Y')
+
+    axes.figure.tight_layout()
+
+    return axes
+
+
+#def plot_field_falloff(axis, points, mesh, current_density, figsize):
+#    '''
+#
+#
+#    '''
+#
+#    if axes is None:
+#        fig, axes = plt.subplots(1,1)
+#
+#    #If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
+#    if cmap is None:
+#        if np.all(data > 0) or np.all(data < 0):
+#            cmap='viridis'
+#        else:
+#            cmap='RdBu'
+#
+#    r = np.zeros(())
+#
+#    compute_C
+#
+#    fig = plt.figure(figsize=figsize)
+#
+#    plt.semilogy(label=)
+#
+#
+#    return fig
+
+def plot_data_on_faces(mesh, data, figure=None, figsize=(800, 800), cmap=None, colorbar=False, ncolors=32):
+    ''' Plot any data determined on the faces of a mesh
+
+        Parameters
+        ----------
+        mesh: Trimesh mesh object
+        data: (N_verts, ) array
+            Scalar data to plot on mesh faces
+        figure: existing mlab figure
+            Optional, if passed will plot to existing figure
+        figsize: (x, y) tuple
+            Optional, if plotting to new figure specifies the size (in pixels)
+        cmap: str
+            name of colormap to use for scalar data. If None (default), use viridis for
+            all-positive/-negative data and RdBu otherwise
+        colorbar: Boolean
+            If True, plot colorbar for scalar data
+        ncolors: int
+            Number of colors to use
+
+        Returns
+        -------
+        fig: mlab figure
     '''
-    return
 
 
-def plot_cross_section(figsize):
+    if figure is None:
+        fig = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                   size=figsize)
 
-    fig = plt.figure(figsize=figsize)
-    return fig
+    #If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
+    if cmap is None:
+        if np.all(data > 0) or np.all(data < 0):
+            cmap='viridis'
+        else:
+            cmap='RdBu'
 
-
-def plot_field_falloff(axis, points, mesh, current_density, figsize):
-    '''
-
-
-    '''
-
-    for
-
-    r = np.zeros(())
-
-    compute_C
-
-    fig = plt.figure(figsize=figsize)
-
-    plt.semilogy(label=)
-
-
-    return fig
-
-def plot_data_on_faces(mesh, data, cmap='viridis', ncolors=32):
-    """ Plot any data determined on the faces of a mesh
-
-        v:
-    """
     v = mesh.vertices
     f = mesh.faces
 
     s = mlab.pipeline.triangular_mesh_source(*v.T, f)
     s.mlab_source.dataset.cell_data.scalars = data
+
     s.mlab_source.dataset.cell_data.scalars.name = 'Cell data'
+
     s.mlab_source.update()
     s2 = mlab.pipeline.set_active_attribute(s,cell_scalars='Cell data')
     surf = mlab.pipeline.surface(s2)
+
     lutmanager = surf.parent.scalar_lut_manager
     lutmanager.lut_mode = cmap
-#    lutmanager.reverse_lut = True
-    rangemax = max(abs(data))
-    lutmanager.data_range = np.array([-rangemax*1.01,rangemax*1.01])
-    lutmanager.use_default_range = False
+
+    if cmap == 'RdBu':
+        rangemax = np.max(np.abs(data))
+        lutmanager.data_range = np.array([-rangemax*1.01,rangemax*1.01])
+        lutmanager.use_default_range = False
+
     lutmanager.number_of_colors = ncolors
 
-    return surf
+    return fig
+
+
+def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), cmap=None, colorbar=False, ncolors=32, interpolate=True):
+    '''
+    Plot scalar data defined on the vertices of a mesh.
+
+    Parameters
+    ----------
+    mesh: Trimesh mesh object
+    data: (N_verts, ) array
+        Scalar data to plot on mesh vertices
+    figure: existing mlab figure
+        Optional, if passed will plot to existing figure
+    figsize: (x, y) tuple
+        Optional, if plotting to new figure specifies the size (in pixels)
+    cmap: str
+        name of colormap to use for scalar data. If None (default), use viridis for
+        all-positive/-negative data and RdBu otherwise
+    colorbar: Boolean
+        If True, plot colorbar for scalar data
+    ncolors: int
+        Number of colors to use
+    interpolate: Boolean
+        If True, interpolate scalar data for smoother look
+    Returns
+    -------
+    fig: mlab figure
+
+    '''
+
+    if figure is None:
+        fig = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                   size=figsize)
+
+    #If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
+    if cmap is None:
+        if np.all(data > 0) or np.all(data < 0):
+            cmap='viridis'
+        else:
+            cmap='RdBu'
+
+
+    surf = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=data, colormap=cmap)
+    mlab.colorbar(surf)
+    surf.actor.mapper.interpolate_scalars_before_mapping = interpolate
+
+    lutmanager = surf.parent.scalar_lut_manager
+    lutmanager.number_of_colors = ncolors
+
+    if cmap == 'RdBu':
+        rangemax = np.max(np.abs(data))
+        lutmanager.data_range = np.array([-rangemax*1.01,rangemax*1.01])
+        lutmanager.use_default_range = False
+
+    return fig
 
 
