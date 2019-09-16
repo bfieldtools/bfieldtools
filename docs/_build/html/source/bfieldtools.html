@@ -412,11 +412,31 @@ from linear stream functions using analytic integral</p>
 <code class="descclassname">bfieldtools.magnetic_field_mesh.</code><code class="descname">compute_C</code><span class="sig-paren">(</span><em>mesh</em>, <em>r</em>, <em>Nchunks=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.magnetic_field_mesh.compute_C" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a mesh, computes the “C matrix” which gives the magnetic field at
 some target points due to currents (stream function) on a surface mesh.</p>
-<p>THIS IS A VECTORIZED COMPUTATION FOR COMPARISON</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>mesh: Trimesh mesh object describing mesh</strong></dt><dd></dd>
+<dt><strong>r: target points (Np, 3)</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>C: (Np, Nvertices, 3) array</strong></dt><dd><p>Coupling matrix for surface current in the mesh to the evaluation points)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="bfieldtools.magnetic_field_mesh.compute_C_analytic">
+<code class="descclassname">bfieldtools.magnetic_field_mesh.</code><code class="descname">compute_C_analytic</code><span class="sig-paren">(</span><em>mesh</em>, <em>r</em>, <em>Nchunks=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.magnetic_field_mesh.compute_C_analytic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a mesh, computes the “C matrix” which gives the magnetic field at
+some target points due to currents (stream function) on a surface mesh.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mesh: Trimesh mesh object describing the mesh</strong></dt><dd></dd>
 <dt><strong>r: target points (Np, 3)</strong></dt><dd></dd>
 </dl>
 </dd>
@@ -1178,6 +1198,29 @@ Ignores the ‘DC’ component l=0.</p>
 <dt><strong>acoeffs: lmax*(lmax+2)x1 array</strong></dt><dd><p>spectral coefficients of r**l terms</p>
 </dd>
 <dt><strong>bcoeffs: lmax*(lmax+2)x1 array</strong></dt><dd><p>spectral coefficients of r**(-l) terms</p>
+</dd>
+<dt><strong>lmax: int</strong></dt><dd><p>maximum degree l which is used in computing</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>field: Nx3 array</strong></dt><dd><p>magnetic field at p</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="bfieldtools.sphtools.sphbasis.fields">
+<code class="descname">fields</code><span class="sig-paren">(</span><em>p</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes magnetic fields for each sph coefficient.
+Ignores the ‘DC’ component l=0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>p: Nx3 array</strong></dt><dd><p>coordinates in which the field is computed</p>
 </dd>
 <dt><strong>lmax: int</strong></dt><dd><p>maximum degree l which is used in computing</p>
 </dd>

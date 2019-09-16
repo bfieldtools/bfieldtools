@@ -1,7 +1,7 @@
 '''
-Shielded cylindrical coil
-=========================
-Compact example of design of a shielded cylindrical coil, for which the transient field
+Coil with minimal eddy currents
+===============================
+Compact example of design of a 'shielded' cylindrical coil, for which the transient field
 due to inductive interaction with the shield is minimized
 '''
 

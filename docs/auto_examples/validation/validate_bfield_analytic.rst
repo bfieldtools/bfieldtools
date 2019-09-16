@@ -1,0 +1,166 @@
+.. note::
+    :class: sphx-glr-download-link-note
+
+    Click :ref:`here <sphx_glr_download_auto_examples_validation_validate_bfield_analytic.py>` to download the full example code
+.. rst-class:: sphx-glr-example-title
+
+.. _sphx_glr_auto_examples_validation_validate_bfield_analytic.py:
+
+
+Created on Fri Sep  6 11:26:17 2019
+
+@author: makinea1
+
+
+
+.. image:: /auto_examples/validation/images/sphx_glr_validate_bfield_analytic_001.png
+    :class: sphx-glr-single-img
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /auto_examples/validation/images/sphx_glr_validate_bfield_analytic_002.png
+            :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /auto_examples/validation/images/sphx_glr_validate_bfield_analytic_003.png
+            :class: sphx-glr-multi-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Computing C matrix, 676 vertices by 676 target points... took 0.19 seconds.
+    Computing C matrix, 676 vertices by 676 target points... took 1.28 seconds.
+    Relative RMS error 0.00522928695809424
+    Computing C matrix, 4701 vertices by 100 target points... took 0.29 seconds.
+    Computing C matrix, 4701 vertices by 100 target points... took 1.53 seconds.
+
+
+
+
+
+|
+
+
+.. code-block:: default
+
+
+    import numpy as np
+    import trimesh
+    from timeit import timeit
+    from mayavi import mlab
+    import matplotlib.pyplot as plt
+
+    import pkg_resources
+    import sys
+    path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
+    if path not in sys.path:
+        sys.path.insert(0,path)
+
+    from bfieldtools.laplacian_mesh import gradient
+    from bfieldtools.magnetic_field_mesh import compute_C
+    from bfieldtools.magnetic_field_mesh import compute_C_analytic
+    from bfieldtools.mesh_class import MeshWrapper
+
+
+    #Load simple plane mesh that is centered on the origin
+    file_obj = pkg_resources.resource_filename('bfieldtools',
+                        'example_meshes/10x10_plane.obj')
+    coilmesh = trimesh.load(file_obj, process=False)
+    coil = MeshWrapper(mesh_obj = coilmesh)
+    weights = np.zeros(coilmesh.vertices.shape[0])
+    weights[coil.inner_verts] = 1
+
+    test_points = coilmesh.vertices + np.array([0,1,0])
+
+    B0 = np.moveaxis(compute_C(coilmesh, test_points), 2, 0) @ weights
+    B1 = compute_C_analytic(coilmesh, test_points) @ weights
+
+
+    s = mlab.triangular_mesh(*coilmesh.vertices.T, coilmesh.faces,
+                             scalars=weights, colormap='viridis')
+    s.enable_contours = True
+    s.actor.property.render_lines_as_tubes = True
+    s.actor.property.line_width = 3.0
+
+    mlab.quiver3d(*test_points.T, *B0, color=(1,0,0))
+    mlab.quiver3d(*test_points.T, *B1, color=(0,0,1))
+
+    print('Relative RMS error',  np.sqrt(np.mean((B1-B0)**2))/np.sqrt(np.mean((B0)**2)))
+
+    #%% Test against analytic formula
+    #Load simple plane mesh that is centered on the origin
+    file_obj = pkg_resources.resource_filename('bfieldtools',
+                        'example_meshes/unit_disc.stl')
+    discmesh = trimesh.load(file_obj, process=True)
+    for ii in range(3):
+        discmesh = discmesh.subdivide()
+    disc = MeshWrapper(mesh_obj = discmesh)
+    weights = np.zeros(discmesh.vertices.shape[0])
+    weights[disc.inner_verts] = 1
+    mlab.figure()
+    s = mlab.triangular_mesh(*discmesh.vertices.T, discmesh.faces,
+                             scalars=weights, colormap='viridis')
+    g = gradient(weights, discmesh, rotated=True)
+    mlab.quiver3d(*discmesh.vertices[discmesh.faces].mean(axis=1).T, *g)
+
+    test_points = np.zeros((100, 3))
+    test_points[:, 2] = np.linspace(0.0, 5, 100)
+    mlab.points3d(*test_points.T, scale_factor=0.1)
+
+    # Bfield for 1 Ampere current
+    B0 = np.moveaxis(compute_C(discmesh, test_points), 2, 0) @ weights
+    B1 = compute_C_analytic(discmesh, test_points) @ weights
+
+    # Analytic formula for unit disc
+    plt.plot(1e-7*2*np.pi/(np.sqrt(test_points[:,2]**2 + 1)**3))
+    # Field from the mesh
+    plt.plot(np.linalg.norm(B0, axis=0))
+    plt.plot(np.linalg.norm(B1, axis=0))
+
+    plt.legend(('Analytic', 'Quadrature mesh', 'Analytic mesh'))
+    plt.xlabel('Distance, z [m]')
+    plt.xlabel('B [T]')
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  4.161 seconds)
+
+**Estimated memory usage:**  178 MB
+
+
+.. _sphx_glr_download_auto_examples_validation_validate_bfield_analytic.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download
+
+     :download:`Download Python source code: validate_bfield_analytic.py <validate_bfield_analytic.py>`
+
+
+
+  .. container:: sphx-glr-download
+
+     :download:`Download Jupyter notebook: validate_bfield_analytic.ipynb <validate_bfield_analytic.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

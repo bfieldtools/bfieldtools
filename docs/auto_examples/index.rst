@@ -147,6 +147,26 @@ Examples related to coil design.
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Magnetically shielded  coil">
+
+.. only:: html
+
+    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_magnetically_shielded_biplanar_coil_design_thumb.png
+
+        :ref:`sphx_glr_auto_examples_coil_design_magnetically_shielded_biplanar_coil_design.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/coil_design/magnetically_shielded_biplanar_coil_design
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing homogeneous field in a target region between th...">
 
 .. only:: html
@@ -270,6 +290,26 @@ Example scripts validating the core functionality of `bfieldtools`
    :hidden:
 
    /auto_examples/validation/validate_linear_dipole
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_bfield_analytic_thumb.png
+
+        :ref:`sphx_glr_auto_examples_validation_validate_bfield_analytic.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/validation/validate_bfield_analytic
 .. raw:: html
 
     <div style='clear:both'></div>
