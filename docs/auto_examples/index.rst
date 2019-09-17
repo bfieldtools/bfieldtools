@@ -127,7 +127,7 @@ Examples related to coil design.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Shielded cylindrical coil">
+    <div class="sphx-glr-thumbcontainer" tooltip="Coil with minimal eddy currents">
 
 .. only:: html
 
@@ -144,26 +144,6 @@ Examples related to coil design.
    :hidden:
 
    /auto_examples/coil_design/shielded_cylindrical_coil_design
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Magnetically shielded  coil">
-
-.. only:: html
-
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_magnetically_shielded_biplanar_coil_design_thumb.png
-
-        :ref:`sphx_glr_auto_examples_coil_design_magnetically_shielded_biplanar_coil_design.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/coil_design/magnetically_shielded_biplanar_coil_design
 
 .. raw:: html
 
@@ -184,6 +164,26 @@ Examples related to coil design.
    :hidden:
 
    /auto_examples/coil_design/biplanar_coil_design
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Magnetically shielded  coil">
+
+.. only:: html
+
+    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_magnetically_shielded_biplanar_coil_design_thumb.png
+
+        :ref:`sphx_glr_auto_examples_coil_design_magnetically_shielded_biplanar_coil_design.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/coil_design/magnetically_shielded_biplanar_coil_design
 .. raw:: html
 
     <div style='clear:both'></div>

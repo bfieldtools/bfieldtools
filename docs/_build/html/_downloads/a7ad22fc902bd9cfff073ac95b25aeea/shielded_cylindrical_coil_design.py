@@ -1,8 +1,8 @@
 '''
-Shielded cylindrical coil
-=========================
-Compact example of design of a shielded cylindrical coil, for which the transient field
-due to inductive interaction with the shield is minimized
+Coil with minimal eddy currents
+===============================
+Compact example of design of a cylindrical coil surrounded by a RF shield, i.e. a conductive surface.
+The effects of eddy currents due to inductive interaction with the shield is minimized
 '''
 
 
@@ -15,6 +15,8 @@ from bfieldtools.mesh_class import MeshWrapper
 from bfieldtools.magnetic_field_mesh import compute_C
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.mutual_inductance_mesh import mutual_inductance_matrix
+from bfieldtools.contour import scalar_contour
+from bfieldtools.viz import plot_3d_current_loops
 
 import pkg_resources
 
@@ -126,21 +128,18 @@ shield.induced_I = shield.coupling @ coil.I
 ###############################################################
 # Plot coil windings and target points
 
+
+loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=10)
+
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
 mlab.clf()
 
-surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
+plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.02)
 
-windings = mlab.pipeline.contour_surface(surface, contours=20)
-windings.module_manager.scalar_lut_manager.number_of_colors = 2 #Color windings according to current direction
-windings.module_manager.scalar_lut_manager.reverse_lut = True #Flip LUT for the colors to correspond to RdBu colormap
+B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
-shield_surface = mlab.pipeline.triangular_mesh_source(*shield.mesh.vertices.T, shield.mesh.faces,scalars=shield.induced_I)
-
-shield_surface_render = mlab.pipeline.surface(shield_surface, colormap='RdBu')
-
-shield_surface_render.actor.property.frontface_culling = True
+mlab.quiver3d(*target_points.T, *B_target.T)
 
 B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
@@ -165,25 +164,13 @@ coil.unshielded_I, coil.unshielded_sol = optimize_streamfunctions(coil,
 
 shield.unshielded_induced_I = shield.coupling @ coil.unshielded_I
 
+loops, loop_values= scalar_contour(coil.mesh, coil.unshielded_I, N_contours=10)
+
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                size=(800, 800))
+           size=(800, 800))
 mlab.clf()
 
-surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.unshielded_I)
-
-windings = mlab.pipeline.contour_surface(surface, contours=20)
-windings.module_manager.scalar_lut_manager.number_of_colors = 2 #Color windings according to current direction
-windings.module_manager.scalar_lut_manager.reverse_lut = True #Flip LUT for the colors to correspond to RdBu colormap
-
-shield_surface = mlab.pipeline.triangular_mesh_source(*shield.mesh.vertices.T, shield.mesh.faces,scalars=shield.unshielded_induced_I)
-
-shield_surface_render = mlab.pipeline.surface(shield_surface, colormap='RdBu')
-
-shield_surface_render.actor.property.frontface_culling = True
-
-B_target = coil.C.transpose([0, 2, 1]) @ coil.unshielded_I
-
-mlab.quiver3d(*target_points.T, *B_target.T)
+plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.02)
 
 mlab.title('Coils which ignore the conductive shield')
 

@@ -165,14 +165,16 @@ class MeshWrapper:
         return resistance
 
 
-    def plot_mesh(self):
+    def plot_mesh(self, representation='wireframe', opacity=0.5, color=(0, 0, 0), cull_front=False, cull_back=False):
         '''
         Simply plot the mesh surface in mayavi.
         '''
 
         mesh = mlab.triangular_mesh(*self.mesh.vertices.T, self.mesh.faces,
-                                    representation='wireframe', color=(0, 0, 0))
+                                    representation=representation, opacity=opacity, color=color)
 
+        mesh.actor.property.frontface_culling = cull_front
+        mesh.actor.property.backface_culling = cull_back
         return mesh
 
 

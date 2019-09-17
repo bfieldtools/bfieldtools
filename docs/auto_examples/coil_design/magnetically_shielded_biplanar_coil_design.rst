@@ -8,9 +8,10 @@
 
 
 Magnetically shielded  coil
-=========================
+===========================
 Compact example of design of a biplanar coil within a cylindrical shield.
-The effect of the shield is prospectively taken into account while designing the coil
+The effect of the shield is prospectively taken into account while designing the coil.
+The coil is positioned close to the end of the shield to demonstrate the effect
 
 
 .. code-block:: default
@@ -25,6 +26,8 @@ The effect of the shield is prospectively taken into account while designing the
     from bfieldtools.mesh_class import MeshWrapper
     from bfieldtools.magnetic_field_mesh import compute_C, compute_U
     from bfieldtools.coil_optimize import optimize_streamfunctions
+    from bfieldtools.contour import scalar_contour
+    from bfieldtools.viz import plot_3d_current_loops
 
     import pkg_resources
 
@@ -40,7 +43,7 @@ The effect of the shield is prospectively taken into account while designing the
     planemesh.apply_scale(scaling_factor)
 
     #Specify coil plane geometry
-    center_offset = np.array([0, 0, 0]) * scaling_factor
+    center_offset = np.array([9, 0, 0]) * scaling_factor
     standoff = np.array([0, 4, 0]) * scaling_factor
 
     #Create coil plane pairs
@@ -57,7 +60,7 @@ The effect of the shield is prospectively taken into account while designing the
 
     # Separate object for shield geometry
     shieldmesh = trimesh.load('/l/bfieldtools/bfieldtools/example_meshes/closed_cylinder.stl')
-    shieldmesh.apply_scale(20)
+    shieldmesh.apply_scale(15)
 
     shield = MeshWrapper(mesh_obj=shieldmesh, process=True, fix_normals=True)
 
@@ -87,9 +90,9 @@ Set up target  points and plot geometry
 
     #Here, the target points are on a volumetric grid within a sphere
 
-    center = np.array([0, 0, 0]) * scaling_factor
+    center = np.array([9, 0, 0]) * scaling_factor
 
-    sidelength = 2 * scaling_factor
+    sidelength = 3 * scaling_factor
     n = 12
     xx = np.linspace(-sidelength/2, sidelength/2, n)
     yy = np.linspace(-sidelength/2, sidelength/2, n)
@@ -111,7 +114,7 @@ Set up target  points and plot geometry
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                     size=(800, 800))
 
-    coil.plot_mesh()
+    coil.plot_mesh(representation='surface')
     shield.plot_mesh()
     mlab.points3d(*target_points.T)
 
@@ -145,8 +148,8 @@ Compute C matrices that are used to compute the generated magnetic field
 
  .. code-block:: none
 
-    Computing C matrix, 3184 vertices by 672 target points... took 0.95 seconds.
-    Computing C matrix, 962 vertices by 672 target points... took 0.26 seconds.
+    Computing C matrix, 3184 vertices by 672 target points... took 0.97 seconds.
+    Computing C matrix, 962 vertices by 672 target points... took 0.27 seconds.
 
 
 
@@ -179,25 +182,27 @@ Let's design a coil without taking the magnetic shield into account
 
 
 
+
+
 .. rst-class:: sphx-glr-script-out
 
  Out:
 
  .. code-block:: none
 
-    Computing inductance matrix in 2 chunks since 8 GiB memory is available...
+    Computing inductance matrix in 2 chunks since 7 GiB memory is available...
     Calculating potentials, chunk 1/2
     Calculating potentials, chunk 2/2
-    Inductance matrix computation took 66.25 seconds.
+    Inductance matrix computation took 67.63 seconds.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
-     0:  4.3437e+01  6.7293e+01  5e+03  2e+00  3e-14
-     1:  4.9776e+01  7.2049e+01  4e+02  2e-01  2e-14
-     2:  7.3576e+01  1.2957e+02  2e+02  7e-02  3e-14
-     3:  1.0880e+02  1.6165e+02  1e+02  3e-02  2e-13
-     4:  1.0388e+02  2.0398e+02  1e+02  3e-02  2e-13
-     5:  1.0423e+02  2.3227e+02  1e+02  3e-02  6e-13
-     6:  1.4962e+02  7.4063e+02  2e+02  2e-02  3e-12
+     0:  4.3858e+01  7.6264e+01  5e+03  2e+00  3e-14
+     1:  5.2944e+01  9.1403e+01  6e+02  2e-01  2e-14
+     2:  1.0614e+02  1.3543e+02  2e+02  6e-02  3e-14
+     3:  1.0230e+02  1.7052e+02  2e+02  5e-02  5e-14
+     4:  1.0406e+02  1.9056e+02  2e+02  5e-02  9e-14
+     5:  1.8354e+02  3.6462e+02  2e+02  3e-02  5e-13
+     6:  1.9672e+02  4.7650e+02  2e+02  2e-02  5e-13
     Optimal solution found.
 
 
@@ -208,17 +213,15 @@ Plot coil windings and target points
 .. code-block:: default
 
 
+    loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=10)
+
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                size=(800, 800))
     mlab.clf()
 
-    surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
-
-    windings = mlab.pipeline.contour_surface(surface, contours=10)
-
+    plot_3d_current_loops(loops, colors='auto', figure=f)
 
     B_target = coil.C.transpose([0, 2, 1]) @ coil.I
-
 
     mlab.quiver3d(*target_points.T, *B_target.T)
 
@@ -240,12 +243,6 @@ Now, let's compute the effect of the shield on the field produced by the coil
     # Calculate primary potential matrix at the shield surface
     P_prim = compute_U(coil.mesh, shield.mesh.vertices)
 
-
-    # Plot the resulting primary potential
-    mlab.figure()
-    mlab.triangular_mesh(*shield.mesh.vertices.T, shield.mesh.faces, scalars=P_prim @ coil.I,
-                         opacity=1.0)
-
     # Calculate linear collocation BEM matrix
     P_bem = compute_U(shield.mesh, shield.mesh.vertices)
 
@@ -259,15 +256,13 @@ Now, let's compute the effect of the shield on the field produced by the coil
     P_bem += np.ones(P_bem.shape)/P_bem.shape[0]
 
 
-    # Solve equivalent stream function for the perfect linear mu-metal layer
+    # Solve equivalent stream function for the perfect linear mu-metal layer.
+    # This is the equivalent surface current in the shield that would cause its
+    # scalar magnetic potential to be constant
     shield.I =  np.linalg.solve(P_bem, P_prim @ coil.I)
 
 
 
-
-
-.. image:: /auto_examples/coil_design/images/sphx_glr_magnetically_shielded_biplanar_coil_design_003.png
-    :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
@@ -276,8 +271,8 @@ Now, let's compute the effect of the shield on the field produced by the coil
 
  .. code-block:: none
 
-    Computing U matrix, 3184 vertices by 962 target points... took 12.21 seconds.
-    Computing U matrix, 962 vertices by 962 target points... took 3.89 seconds.
+    Computing U matrix, 3184 vertices by 962 target points... took 12.59 seconds.
+    Computing U matrix, 962 vertices by 962 target points... took 3.97 seconds.
 
 
 
@@ -295,27 +290,38 @@ Plot the difference in field when taking the shield into account
 
     B_target_w_shield = coil.C.transpose([0, 2, 1]) @ coil.I + shield.C.transpose([0, 2, 1]) @ shield.I
 
-    B_quiver = mlab.quiver3d(*target_points.T, *((B_target_w_shield - B_target)/np.linalg.norm(B_target)).T)
-    mlab.colorbar(B_quiver)
+    B_quiver = mlab.quiver3d(*target_points.T, *(B_target_w_shield - B_target).T, colormap='viridis', mode='arrow')
+    f.scene.isometric_view()
+    mlab.colorbar(B_quiver, title='Difference in magnetic field (a.u.)')
 
     import seaborn as sns
     import matplotlib.pyplot as plt
 
-    plt.figure()
-
-    sns.distplot(np.linalg.norm(B_target, axis=-1), label='Without shield')
-    sns.distplot(np.linalg.norm(B_target_w_shield, axis=-1), label='With shield')
-    plt.legend()
-    plt.title('Effect of magnetic shield on target field amplitude distribution')
-    plt.xlabel('Magnetic field (a.u.)')
 
 
 
+    fig, axes = plt.subplots(1, 3, figsize=(10, 4))
 
-.. image:: /auto_examples/coil_design/images/sphx_glr_magnetically_shielded_biplanar_coil_design_004.png
+    fig.suptitle('Component-wise effect of magnetic shield on target field amplitude distribution')
+    for ax_idx, ax in enumerate(axes):
+
+        sns.distplot(B_target[:, ax_idx], label='Without shield', ax=ax)
+        sns.distplot(B_target_w_shield[:, ax_idx], label='With shield', ax=ax)
+        ax.set_xlabel('Magnetic field (a.u.)')
+
+        if ax_idx == 2:
+            ax.legend()
+
+    fig.tight_layout(rect=[0, 0.03, 1, 0.95])
+
+
+
+
+
+.. image:: /auto_examples/coil_design/images/sphx_glr_magnetically_shielded_biplanar_coil_design_003.png
     :class: sphx-glr-single-img
 
-.. image:: /auto_examples/coil_design/images/sphx_glr_magnetically_shielded_biplanar_coil_design_005.png
+.. image:: /auto_examples/coil_design/images/sphx_glr_magnetically_shielded_biplanar_coil_design_004.png
     :class: sphx-glr-single-img
 
 
@@ -335,7 +341,7 @@ Let's redesign the coil taking the shield into account prospectively
 .. code-block:: default
 
 
-    shield.coupling = np.linalg.pinv(P_bem) @ P_prim
+    shield.coupling = np.linalg.solve(P_bem, P_prim)
 
     secondary_C = (shield.C.transpose((0,2,1)) @ shield.coupling).transpose((0,2,1))
 
@@ -367,13 +373,13 @@ Let's redesign the coil taking the shield into account prospectively
 
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
-     0:  4.2262e+01  6.5149e+01  5e+03  2e+00  4e-14
-     1:  4.8231e+01  6.9003e+01  3e+02  1e-01  2e-14
-     2:  6.7578e+01  1.1915e+02  2e+02  6e-02  3e-14
-     3:  9.8322e+01  1.5206e+02  1e+02  3e-02  1e-13
-     4:  9.3742e+01  1.9527e+02  1e+02  3e-02  1e-13
-     5:  9.3987e+01  2.1868e+02  1e+02  2e-02  3e-13
-     6:  1.1471e+02  5.8094e+02  2e+02  2e-02  1e-12
+     0:  4.1091e+01  6.7938e+01  5e+03  2e+00  4e-14
+     1:  4.7921e+01  7.7016e+01  5e+02  2e-01  2e-14
+     2:  8.4260e+01  1.1282e+02  2e+02  5e-02  3e-14
+     3:  8.2330e+01  1.4557e+02  2e+02  4e-02  4e-14
+     4:  8.3642e+01  1.6328e+02  2e+02  4e-02  9e-14
+     5:  1.5115e+02  3.4381e+02  2e+02  2e-02  5e-13
+     6:  1.4870e+02  3.7736e+02  2e+02  2e-02  5e-13
     Optimal solution found.
 
 
@@ -384,30 +390,32 @@ Plot coil windings and target points
 .. code-block:: default
 
 
+    loops, loop_values= scalar_contour(coil.mesh, coil.I2, N_contours=10)
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                size=(800, 800))
     mlab.clf()
 
-    surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
+    plot_3d_current_loops(loops, colors='auto', figure=f)
 
-    windings = mlab.pipeline.contour_surface(surface, contours=10)
-
-
-    B_target = coil.C.transpose([0, 2, 1]) @ coil.I2
-
+    B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
     mlab.quiver3d(*target_points.T, *B_target.T)
 
+    B_target2 = coil.C.transpose([0, 2, 1]) @ coil.I2
+
+
+    mlab.quiver3d(*target_points.T, *B_target2.T)
 
 
 
-.. image:: /auto_examples/coil_design/images/sphx_glr_magnetically_shielded_biplanar_coil_design_006.png
+
+.. image:: /auto_examples/coil_design/images/sphx_glr_magnetically_shielded_biplanar_coil_design_005.png
     :class: sphx-glr-single-img
 
 
 
 
-Finally, lot the difference in stream functions
+Finally, plot the difference in stream functions
 
 
 .. code-block:: default
@@ -421,7 +429,7 @@ Finally, lot the difference in stream functions
     mlab.colorbar(RE_I, title='Relative error (%)')
 
 
-.. image:: /auto_examples/coil_design/images/sphx_glr_magnetically_shielded_biplanar_coil_design_007.png
+.. image:: /auto_examples/coil_design/images/sphx_glr_magnetically_shielded_biplanar_coil_design_006.png
     :class: sphx-glr-single-img
 
 
@@ -431,7 +439,7 @@ Finally, lot the difference in stream functions
 
  .. code-block:: none
 
-    /l/bfieldtools/examples/coil_design/magnetically_shielded_biplanar_coil_design.py:238: RuntimeWarning: invalid value encountered in true_divide
+    /l/bfieldtools/examples/coil_design/magnetically_shielded_biplanar_coil_design.py:249: RuntimeWarning: invalid value encountered in true_divide
       RE_I = mlab.triangular_mesh(*coil.mesh.vertices.T, coil.mesh.faces, scalars=100 * (coil.I-coil.I2)/coil.I, colormap='RdBu')
 
 
@@ -439,9 +447,9 @@ Finally, lot the difference in stream functions
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  54.850 seconds)
+   **Total running time of the script:** ( 2 minutes  5.402 seconds)
 
-**Estimated memory usage:**  8185 MB
+**Estimated memory usage:**  8033 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_magnetically_shielded_biplanar_coil_design.py:

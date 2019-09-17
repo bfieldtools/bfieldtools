@@ -18,6 +18,7 @@ from bfieldtools.mesh_class import MeshWrapper
 from bfieldtools.magnetic_field_mesh import compute_C
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
+from bfieldtools.viz import plot_3d_current_loops
 
 import pkg_resources
 
@@ -127,20 +128,17 @@ coil.I, coil.sol = optimize_streamfunctions(coil,
 ##############################################################
 # Plot coil windings and target points
 
+loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=10)
+
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
 mlab.clf()
 
-surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
-
-windings = mlab.pipeline.contour_surface(surface, contours=10)
-
+plot_3d_current_loops(loops, colors='auto', figure=f)
 
 B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
-
 mlab.quiver3d(*target_points.T, *B_target.T)
-
 
 ##############################################################
 # Plot field falloff on two axes
