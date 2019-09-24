@@ -29,6 +29,7 @@ region between the two coil planes.
     from bfieldtools.magnetic_field_mesh import compute_C
     from bfieldtools.coil_optimize import optimize_streamfunctions
     from bfieldtools.contour import scalar_contour
+    from bfieldtools.viz import plot_3d_current_loops
 
     import pkg_resources
 
@@ -136,8 +137,8 @@ Compute C matrices that are used to compute the generated magnetic field
 
  .. code-block:: none
 
-    Computing C matrix, 3184 vertices by 672 target points... took 0.96 seconds.
-    Computing C matrix, 3184 vertices by 2562 target points... took 2.65 seconds.
+    Computing C matrix, 3184 vertices by 672 target points... took 0.95 seconds.
+    Computing C matrix, 3184 vertices by 2562 target points... took 2.89 seconds.
 
 
 
@@ -190,21 +191,22 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 2 chunks since 9 GiB memory is available...
-    Calculating potentials, chunk 1/2
-    Calculating potentials, chunk 2/2
-    Inductance matrix computation took 72.24 seconds.
+    Computing inductance matrix in 3 chunks since 6 GiB memory is available...
+    Calculating potentials, chunk 1/3
+    Calculating potentials, chunk 2/3
+    Calculating potentials, chunk 3/3
+    Inductance matrix computation took 69.54 seconds.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
      0:  1.0500e+02  3.7757e+02  3e+04  5e+00  3e-14
      1:  1.5336e+02  4.0199e+02  3e+03  6e-01  3e-14
-     2:  4.4248e+02  9.2422e+02  1e+03  1e-01  8e-14
-     3:  4.6255e+02  1.0365e+03  1e+03  1e-01  8e-14
+     2:  4.4248e+02  9.2422e+02  1e+03  1e-01  7e-14
+     3:  4.6255e+02  1.0365e+03  1e+03  1e-01  7e-14
      4:  5.3592e+02  1.4638e+03  9e+02  8e-02  1e-13
      5:  5.6696e+02  3.6612e+03  1e+03  8e-02  3e-13
      6:  5.6809e+02  3.7241e+03  1e+03  8e-02  3e-13
      7:  5.7281e+02  3.9155e+03  1e+03  8e-02  4e-13
-     8:  6.2388e+02  5.2786e+03  1e+03  8e-02  1e-12
+     8:  6.2388e+02  5.2786e+03  1e+03  8e-02  4e-12
     Optimal solution found.
 
 
@@ -215,20 +217,17 @@ Plot coil windings and target points
 .. code-block:: default
 
 
+    loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=10)
+
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                size=(800, 800))
     mlab.clf()
 
-    surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
-
-    windings = mlab.pipeline.contour_surface(surface, contours=10)
-
+    plot_3d_current_loops(loops, colors='auto', figure=f)
 
     B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
-
     mlab.quiver3d(*target_points.T, *B_target.T)
-
 
 
 
@@ -294,9 +293,9 @@ Plot field falloff on two axes
 
  .. code-block:: none
 
+    Computing C matrix, 3184 vertices by 101 target points... took 0.21 seconds.
     Computing C matrix, 3184 vertices by 101 target points... took 0.19 seconds.
-    Computing C matrix, 3184 vertices by 101 target points... took 0.16 seconds.
-    /l/bfieldtools/examples/coil_design/biplanar_coil_design.py:181: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+    /l/bfieldtools/examples/coil_design/biplanar_coil_design.py:179: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
       plt.show()
 
 
@@ -409,9 +408,9 @@ Compute magnetic field from discrete current line segments
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  56.344 seconds)
+   **Total running time of the script:** ( 2 minutes  0.263 seconds)
 
-**Estimated memory usage:**  9007 MB
+**Estimated memory usage:**  6383 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_biplanar_coil_design.py:

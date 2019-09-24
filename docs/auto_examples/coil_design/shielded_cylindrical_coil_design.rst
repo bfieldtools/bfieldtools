@@ -7,10 +7,10 @@
 .. _sphx_glr_auto_examples_coil_design_shielded_cylindrical_coil_design.py:
 
 
-Shielded cylindrical coil
-=========================
-Compact example of design of a shielded cylindrical coil, for which the transient field
-due to inductive interaction with the shield is minimized
+Coil with minimal eddy currents
+===============================
+Compact example of design of a cylindrical coil surrounded by a RF shield, i.e. a conductive surface.
+The effects of eddy currents due to inductive interaction with the shield is minimized
 
 
 .. code-block:: default
@@ -26,6 +26,8 @@ due to inductive interaction with the shield is minimized
     from bfieldtools.magnetic_field_mesh import compute_C
     from bfieldtools.coil_optimize import optimize_streamfunctions
     from bfieldtools.mutual_inductance_mesh import mutual_inductance_matrix
+    from bfieldtools.contour import scalar_contour
+    from bfieldtools.viz import plot_3d_current_loops
 
     import pkg_resources
 
@@ -145,13 +147,13 @@ Compute C matrices that are used to compute the generated magnetic field
 
  .. code-block:: none
 
-    Computing C matrix, 3536 vertices by 672 target points... took 1.05 seconds.
-    Computing C matrix, 904 vertices by 672 target points... took 0.23 seconds.
+    Computing C matrix, 3536 vertices by 672 target points... took 1.17 seconds.
+    Computing C matrix, 904 vertices by 672 target points... took 0.24 seconds.
     Calculating potentials
     Inserting stuff into M-matrix
-    Computing inductance matrix in 1 chunks since 9 GiB memory is available...
+    Computing inductance matrix in 1 chunks since 8 GiB memory is available...
     Calculating potentials, chunk 1/1
-    Inductance matrix computation took 6.00 seconds.
+    Inductance matrix computation took 6.64 seconds.
 
 
 
@@ -206,18 +208,18 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 2 chunks since 9 GiB memory is available...
+    Computing inductance matrix in 2 chunks since 8 GiB memory is available...
     Calculating potentials, chunk 1/2
     Calculating potentials, chunk 2/2
-    Inductance matrix computation took 95.66 seconds.
+    Inductance matrix computation took 93.84 seconds.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
-     0:  4.5366e+01  7.7593e+02  1e+04  3e+00  3e-14
+     0:  4.5366e+01  7.7593e+02  1e+04  3e+00  4e-14
      1:  1.0096e+02  1.1497e+03  3e+03  9e-01  3e-14
      2:  5.6082e+02  2.4779e+03  3e+03  6e-01  9e-14
      3:  5.7943e+02  2.6428e+03  3e+03  6e-01  9e-14
      4:  1.0195e+03  5.8843e+03  3e+03  5e-01  2e-13
-     5:  2.6725e+03  1.0689e+04  4e+03  4e-01  6e-13
+     5:  2.6725e+03  1.0689e+04  4e+03  4e-01  5e-13
     Optimal solution found.
 
 
@@ -228,21 +230,18 @@ Plot coil windings and target points
 .. code-block:: default
 
 
+
+    loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=10)
+
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                size=(800, 800))
     mlab.clf()
 
-    surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
+    plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.02)
 
-    windings = mlab.pipeline.contour_surface(surface, contours=20)
-    windings.module_manager.scalar_lut_manager.number_of_colors = 2 #Color windings according to current direction
-    windings.module_manager.scalar_lut_manager.reverse_lut = True #Flip LUT for the colors to correspond to RdBu colormap
+    B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
-    shield_surface = mlab.pipeline.triangular_mesh_source(*shield.mesh.vertices.T, shield.mesh.faces,scalars=shield.induced_I)
-
-    shield_surface_render = mlab.pipeline.surface(shield_surface, colormap='RdBu')
-
-    shield_surface_render.actor.property.frontface_culling = True
+    mlab.quiver3d(*target_points.T, *B_target.T)
 
     B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
@@ -279,25 +278,13 @@ For comparison, let's see how the coils look when we ignore the conducting shiel
 
     shield.unshielded_induced_I = shield.coupling @ coil.unshielded_I
 
+    loops, loop_values= scalar_contour(coil.mesh, coil.unshielded_I, N_contours=10)
+
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                    size=(800, 800))
+               size=(800, 800))
     mlab.clf()
 
-    surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.unshielded_I)
-
-    windings = mlab.pipeline.contour_surface(surface, contours=20)
-    windings.module_manager.scalar_lut_manager.number_of_colors = 2 #Color windings according to current direction
-    windings.module_manager.scalar_lut_manager.reverse_lut = True #Flip LUT for the colors to correspond to RdBu colormap
-
-    shield_surface = mlab.pipeline.triangular_mesh_source(*shield.mesh.vertices.T, shield.mesh.faces,scalars=shield.unshielded_induced_I)
-
-    shield_surface_render = mlab.pipeline.surface(shield_surface, colormap='RdBu')
-
-    shield_surface_render.actor.property.frontface_culling = True
-
-    B_target = coil.C.transpose([0, 2, 1]) @ coil.unshielded_I
-
-    mlab.quiver3d(*target_points.T, *B_target.T)
+    plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.02)
 
     mlab.title('Coils which ignore the conductive shield')
 
@@ -320,7 +307,7 @@ For comparison, let's see how the coils look when we ignore the conducting shiel
      1:  5.0479e+01  6.8140e+01  2e+02  1e-01  2e-14
      2:  6.1947e+01  9.9187e+01  1e+02  4e-02  3e-14
      3:  6.7204e+01  1.2054e+02  1e+02  3e-02  5e-14
-     4:  7.3748e+01  1.8486e+02  7e+01  2e-02  1e-13
+     4:  7.3748e+01  1.8486e+02  7e+01  2e-02  9e-14
     Optimal solution found.
 
 
@@ -328,9 +315,9 @@ For comparison, let's see how the coils look when we ignore the conducting shiel
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  46.159 seconds)
+   **Total running time of the script:** ( 2 minutes  56.494 seconds)
 
-**Estimated memory usage:**  10469 MB
+**Estimated memory usage:**  10697 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_shielded_cylindrical_coil_design.py:

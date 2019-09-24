@@ -1,8 +1,9 @@
 '''
 Magnetically shielded  coil
-=========================
+===========================
 Compact example of design of a biplanar coil within a cylindrical shield.
-The effect of the shield is prospectively taken into account while designing the coil
+The effect of the shield is prospectively taken into account while designing the coil.
+The coil is positioned close to the end of the shield to demonstrate the effect
 '''
 
 
@@ -14,6 +15,8 @@ import trimesh
 from bfieldtools.mesh_class import MeshWrapper
 from bfieldtools.magnetic_field_mesh import compute_C, compute_U
 from bfieldtools.coil_optimize import optimize_streamfunctions
+from bfieldtools.contour import scalar_contour
+from bfieldtools.viz import plot_3d_current_loops
 
 import pkg_resources
 
@@ -29,7 +32,7 @@ planemesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools',
 planemesh.apply_scale(scaling_factor)
 
 #Specify coil plane geometry
-center_offset = np.array([0, 0, 0]) * scaling_factor
+center_offset = np.array([9, 0, 0]) * scaling_factor
 standoff = np.array([0, 4, 0]) * scaling_factor
 
 #Create coil plane pairs
@@ -46,7 +49,7 @@ coil = MeshWrapper(mesh_obj=joined_planes, fix_normals=True)
 
 # Separate object for shield geometry
 shieldmesh = trimesh.load('/l/bfieldtools/bfieldtools/example_meshes/closed_cylinder.stl')
-shieldmesh.apply_scale(20)
+shieldmesh.apply_scale(15)
 
 shield = MeshWrapper(mesh_obj=shieldmesh, process=True, fix_normals=True)
 
@@ -59,9 +62,9 @@ shield = MeshWrapper(mesh_obj=shieldmesh, process=True, fix_normals=True)
 
 #Here, the target points are on a volumetric grid within a sphere
 
-center = np.array([0, 0, 0]) * scaling_factor
+center = np.array([9, 0, 0]) * scaling_factor
 
-sidelength = 2 * scaling_factor
+sidelength = 3 * scaling_factor
 n = 12
 xx = np.linspace(-sidelength/2, sidelength/2, n)
 yy = np.linspace(-sidelength/2, sidelength/2, n)
@@ -83,7 +86,7 @@ target_points = target_points[np.linalg.norm(target_points, axis=1) < sidelength
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                 size=(800, 800))
 
-coil.plot_mesh()
+coil.plot_mesh(representation='surface')
 shield.plot_mesh()
 mlab.points3d(*target_points.T)
 
@@ -117,20 +120,20 @@ coil.I, coil.sol = optimize_streamfunctions(coil,
                                             tolerance=tolerance)
 
 
+
+
 ##############################################################
 # Plot coil windings and target points
+
+loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=10)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
 mlab.clf()
 
-surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
-
-windings = mlab.pipeline.contour_surface(surface, contours=10)
-
+plot_3d_current_loops(loops, colors='auto', figure=f)
 
 B_target = coil.C.transpose([0, 2, 1]) @ coil.I
-
 
 mlab.quiver3d(*target_points.T, *B_target.T)
 
@@ -139,12 +142,6 @@ mlab.quiver3d(*target_points.T, *B_target.T)
 
 # Calculate primary potential matrix at the shield surface
 P_prim = compute_U(coil.mesh, shield.mesh.vertices)
-
-
-# Plot the resulting primary potential
-mlab.figure()
-mlab.triangular_mesh(*shield.mesh.vertices.T, shield.mesh.faces, scalars=P_prim @ coil.I,
-                     opacity=1.0)
 
 # Calculate linear collocation BEM matrix
 P_bem = compute_U(shield.mesh, shield.mesh.vertices)
@@ -159,9 +156,10 @@ for diag_index in range(P_bem.shape[0]):
 P_bem += np.ones(P_bem.shape)/P_bem.shape[0]
 
 
-# Solve equivalent stream function for the perfect linear mu-metal layer
+# Solve equivalent stream function for the perfect linear mu-metal layer.
+# This is the equivalent surface current in the shield that would cause its
+# scalar magnetic potential to be constant
 shield.I =  np.linalg.solve(P_bem, P_prim @ coil.I)
-
 
 ##########################################################
 # Plot the difference in field when taking the shield into account
@@ -174,24 +172,35 @@ B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
 B_target_w_shield = coil.C.transpose([0, 2, 1]) @ coil.I + shield.C.transpose([0, 2, 1]) @ shield.I
 
-B_quiver = mlab.quiver3d(*target_points.T, *((B_target_w_shield - B_target)/np.linalg.norm(B_target)).T)
-mlab.colorbar(B_quiver)
+B_quiver = mlab.quiver3d(*target_points.T, *(B_target_w_shield - B_target).T, colormap='viridis', mode='arrow')
+f.scene.isometric_view()
+mlab.colorbar(B_quiver, title='Difference in magnetic field (a.u.)')
 
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-plt.figure()
 
-sns.distplot(np.linalg.norm(B_target, axis=-1), label='Without shield')
-sns.distplot(np.linalg.norm(B_target_w_shield, axis=-1), label='With shield')
-plt.legend()
-plt.title('Effect of magnetic shield on target field amplitude distribution')
-plt.xlabel('Magnetic field (a.u.)')
+
+
+fig, axes = plt.subplots(1, 3, figsize=(10, 4))
+
+fig.suptitle('Component-wise effect of magnetic shield on target field amplitude distribution')
+for ax_idx, ax in enumerate(axes):
+
+    sns.distplot(B_target[:, ax_idx], label='Without shield', ax=ax)
+    sns.distplot(B_target_w_shield[:, ax_idx], label='With shield', ax=ax)
+    ax.set_xlabel('Magnetic field (a.u.)')
+
+    if ax_idx == 2:
+        ax.legend()
+
+fig.tight_layout(rect=[0, 0.03, 1, 0.95])
+
 
 ###############################################################
 # Let's redesign the coil taking the shield into account prospectively
 
-shield.coupling = np.linalg.pinv(P_bem) @ P_prim
+shield.coupling = np.linalg.solve(P_bem, P_prim)
 
 secondary_C = (shield.C.transpose((0,2,1)) @ shield.coupling).transpose((0,2,1))
 
@@ -214,22 +223,24 @@ coil.I2, coil.sol2 = optimize_streamfunctions(coil,
 ##############################################################
 # Plot coil windings and target points
 
+loops, loop_values= scalar_contour(coil.mesh, coil.I2, N_contours=10)
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
 mlab.clf()
 
-surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
+plot_3d_current_loops(loops, colors='auto', figure=f)
 
-windings = mlab.pipeline.contour_surface(surface, contours=10)
-
-
-B_target = coil.C.transpose([0, 2, 1]) @ coil.I2
-
+B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
 mlab.quiver3d(*target_points.T, *B_target.T)
 
+B_target2 = coil.C.transpose([0, 2, 1]) @ coil.I2
+
+
+mlab.quiver3d(*target_points.T, *B_target2.T)
+
 ###############################################################
-# Finally, lot the difference in stream functions
+# Finally, plot the difference in stream functions
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))

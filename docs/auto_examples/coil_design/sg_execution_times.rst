@@ -5,10 +5,10 @@
 
 Computation times
 =================
-**01:54.850** total execution time for **auto_examples_coil_design** files:
+**02:56.494** total execution time for **auto_examples_coil_design** files:
 
-- **01:54.850**: :ref:`sphx_glr_auto_examples_coil_design_magnetically_shielded_biplanar_coil_design.py` (``magnetically_shielded_biplanar_coil_design.py``)
+- **02:56.494**: :ref:`sphx_glr_auto_examples_coil_design_shielded_cylindrical_coil_design.py` (``shielded_cylindrical_coil_design.py``)
 - **00:00.000**: :ref:`sphx_glr_auto_examples_coil_design_biplanar_coil_design.py` (``biplanar_coil_design.py``)
 - **00:00.000**: :ref:`sphx_glr_auto_examples_coil_design_head_gradient_coil_design.py` (``head_gradient_coil_design.py``)
+- **00:00.000**: :ref:`sphx_glr_auto_examples_coil_design_magnetically_shielded_biplanar_coil_design.py` (``magnetically_shielded_biplanar_coil_design.py``)
 - **00:00.000**: :ref:`sphx_glr_auto_examples_coil_design_mamba_coil_design.py` (``mamba_coil_design.py``)
-- **00:00.000**: :ref:`sphx_glr_auto_examples_coil_design_shielded_cylindrical_coil_design.py` (``shielded_cylindrical_coil_design.py``)

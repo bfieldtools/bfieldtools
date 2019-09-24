@@ -9,7 +9,7 @@ from matplotlib import colors
 
 import numpy as np
 
-def plot_3d_current_loops(current_loops, current_direction, colors=None, figure=None, figsize=(800, 800)):
+def plot_3d_current_loops(current_loops, colors=None, figure=None, figsize=(800, 800), tube_radius=0.05):
     '''
     Plot current loops (e.g. contour_polys given by scalar_contour()) in 3D using mayavi.
 
@@ -18,10 +18,11 @@ def plot_3d_current_loops(current_loops, current_direction, colors=None, figure=
     current_loops: list of (N_verts, 3) arrays with length N_loops
         List of segmented lines specifying the path of a current loop.
         Last vertex is assumed to be connected to the first.
-    current_direction: list of floats with length N_loops
-        For each line/loop, specify the current direction by the sign of a scalar value.
-    colors: list of (3, ) tuples with length 2
-        Optional specification of colors used for current direction
+
+    colors: 'auto' (default) or None or (3, ) tuple or  list of (3, ) tuples with same length as current_loops
+        Optional specification of colors used for current direction. If auto (default),
+        color blue-red based on current direction. If None, use middle-grey for all loops.
+        If tuple, color all loops according to tuple. If list of tuples, color each loop accordingly.
     figure: existing mlab figure
         Optional, if passed will plot to existing figure
     figsize: (x, y) tuple
@@ -32,27 +33,89 @@ def plot_3d_current_loops(current_loops, current_direction, colors=None, figure=
 
     '''
 
+
+
     if figure is None:
-        fig = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+        figure = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                    size=figsize)
 
     if colors is None:
-        colors = [(1, 0, 0), (0, 0, 1)]
+        colors = [(0.5, 0.5, 0.5)] * len(current_loops)
+
+    elif type(colors) == tuple:
+        colors = [colors] * len(current_loops)
+
+    elif colors == 'auto':
+        colors = []
+
+        palette = [(1, 0, 0), (0, 0, 1)]
+        for loop_idx, loop in enumerate(current_loops):
+
+            #Compute each loop segment
+            segments = np.vstack((loop[1:,:] - loop[0:-1,:], loop[0, :] - loop[-1, :]))
+
+            #Find mean normal vector following right-hand rule, in loop centre
+            centre_normal = np.mean(np.cross(segments, loop), axis=0)
+            centre_normal /= np.linalg.norm(centre_normal, axis=-1)
+
+            #Check if normal "points in" or "out" (towards or away from origin)
+
+            origin_vector = np.mean(loop, axis=0)
+
+            colors.append(palette[int((np.sign(centre_normal @ origin_vector)+1)/2)])
+
 
     for loop_idx, loop in enumerate(current_loops):
         mlab.plot3d(*loop[list(range(len(loop))) + [0]].T,
-                    color=colors[int((np.sign(current_direction[loop_idx])+1)/2)],
-                    tube_radius=0.05)
+                    color=colors[loop_idx],
+                    tube_radius=tube_radius)
 
-        mlab.quiver3d(*loop[1,:].T,
-                  *(loop[1,:].T - loop[0,:].T),
-                  mode='cone', scale_mode='none',
-                  scale_factor=0.5,
-                  color=colors[int((np.sign(current_direction[loop_idx])+1)/2)])
+        #Put two arrows on loop
 
-    fig.scene.isometric_view()
+        #First arrow on longest segment of loop
+        longest_idx = np.argmax(np.linalg.norm(np.vstack((loop[1:,:] - loop[0:-1,:], loop[0, :] - loop[-1, :])), axis=-1))
 
-    return fig
+        if longest_idx == len(loop)-1:
+            arrow1 = mlab.quiver3d(*loop[-1,:].T,
+                      *(loop[0,:] - loop[-1,:]).T,
+                      mode='cone', scale_mode='none',
+                      scale_factor=0.5 * tube_radius/0.05,
+                      color=colors[loop_idx])
+        else:
+            arrow1 = mlab.quiver3d(*loop[longest_idx+1,:].T,
+                      *(loop[longest_idx+1,:] - loop[longest_idx,:]).T,
+                      mode='cone', scale_mode='none',
+                      scale_factor=0.5 * tube_radius/0.05,
+                      color=colors[loop_idx])
+
+        arrow1.glyph.glyph_source.glyph_position = 'center'
+        arrow1.glyph.glyph_source.glyph_source.radius = 0.3
+        arrow1.glyph.glyph_source.glyph_source.height = 0.5
+
+        #Second arrow on the element "half away"
+
+        opposite_idx = int((longest_idx + len(loop)/2) % len(loop))
+
+        if opposite_idx == len(loop)-1:
+            arrow1 = mlab.quiver3d(*loop[-1,:].T,
+                      *(loop[0,:] - loop[-1,:]).T,
+                      mode='cone', scale_mode='none',
+                      scale_factor=0.5 * tube_radius/0.05,
+                      color=colors[loop_idx])
+        else:
+            arrow2 = mlab.quiver3d(*loop[opposite_idx+1,:].T,
+                      *(loop[opposite_idx+1,:] - loop[opposite_idx,:]).T,
+                      mode='cone', scale_mode='none',
+                      scale_factor=0.5 * tube_radius/0.05,
+                      color=colors[loop_idx])
+        arrow2.glyph.glyph_source.glyph_position = 'center'
+        arrow2.glyph.glyph_source.glyph_source.radius = 0.3
+        arrow2.glyph.glyph_source.glyph_source.height = 0.5
+
+
+    figure.scene.isometric_view()
+
+    return figure
 
 
 

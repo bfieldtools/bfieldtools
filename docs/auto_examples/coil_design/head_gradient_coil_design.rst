@@ -18,7 +18,6 @@ Example showing a gradient coil designed on the surface of a MEG system helmet
 
 
     import numpy as np
-    import matplotlib.pyplot as plt
     from mayavi import mlab
     import trimesh
 
@@ -26,6 +25,8 @@ Example showing a gradient coil designed on the surface of a MEG system helmet
     from bfieldtools.mesh_class import MeshWrapper
     from bfieldtools.magnetic_field_mesh import compute_C
     from bfieldtools.coil_optimize import optimize_streamfunctions
+    from bfieldtools.contour import scalar_contour
+    from bfieldtools.viz import plot_3d_current_loops
 
     import pkg_resources
 
@@ -115,7 +116,7 @@ Compute C matrices that are used to compute the generated magnetic field
 
  .. code-block:: none
 
-    Computing C matrix, 2044 vertices by 672 target points... took 0.61 seconds.
+    Computing C matrix, 2044 vertices by 672 target points... took 0.63 seconds.
 
 
 
@@ -157,9 +158,10 @@ Specify target field and run solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 1 chunks since 9 GiB memory is available...
-    Calculating potentials, chunk 1/1
-    Inductance matrix computation took 32.26 seconds.
+    Computing inductance matrix in 2 chunks since 8 GiB memory is available...
+    Calculating potentials, chunk 1/2
+    Calculating potentials, chunk 2/2
+    Inductance matrix computation took 31.25 seconds.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
      0:  2.9677e+01  3.3517e+02  1e+04  5e+00  2e-14
@@ -175,21 +177,19 @@ Plot coil windings and magnetic field in target points
 .. code-block:: default
 
 
+
+    loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=10)
+
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                size=(800, 800))
     mlab.clf()
 
-    surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
+    plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.05/100)
 
-    windings = mlab.pipeline.contour_surface(surface, contours=10)
-
-
-    B_target = np.vstack((coil.C[:, :, 0].dot(coil.I),
-                      coil.C[:, :, 1].dot(coil.I),
-                      coil.C[:, :, 2].dot(coil.I))).T
-
+    B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
     mlab.quiver3d(*target_points.T, *B_target.T)
+
     f.scene.isometric_view()
 
 
@@ -203,9 +203,9 @@ Plot coil windings and magnetic field in target points
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  36.067 seconds)
+   **Total running time of the script:** ( 0 minutes  39.364 seconds)
 
-**Estimated memory usage:**  5810 MB
+**Estimated memory usage:**  3710 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_head_gradient_coil_design.py:

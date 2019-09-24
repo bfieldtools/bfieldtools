@@ -27,6 +27,8 @@ regions arranged in a grid.
     from bfieldtools.mesh_class import MeshWrapper
     from bfieldtools.magnetic_field_mesh import compute_C
     from bfieldtools.coil_optimize import optimize_streamfunctions
+    from bfieldtools.contour import scalar_contour
+    from bfieldtools.viz import plot_3d_current_loops
 
     import pkg_resources
 
@@ -155,7 +157,7 @@ Compute C matrices that are used to compute the generated magnetic field, create
 
  .. code-block:: none
 
-    Computing C matrix, 3184 vertices by 512 target points... took 0.74 seconds.
+    Computing C matrix, 3184 vertices by 512 target points... took 0.76 seconds.
 
 
 
@@ -187,10 +189,10 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 2 chunks since 9 GiB memory is available...
+    Computing inductance matrix in 2 chunks since 8 GiB memory is available...
     Calculating potentials, chunk 1/2
     Calculating potentials, chunk 2/2
-    Inductance matrix computation took 72.63 seconds.
+    Inductance matrix computation took 67.42 seconds.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
      0:  1.6068e+01  2.8227e+01  5e+03  4e+00  2e-14
@@ -211,21 +213,19 @@ Plot coil windings and target points
 .. code-block:: default
 
 
+    loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=10)
+
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                size=(800, 800))
     mlab.clf()
 
-    surface = mlab.pipeline.triangular_mesh_source(*coil.mesh.vertices.T, coil.mesh.faces,scalars=coil.I)
+    plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.01)
 
-    windings = mlab.pipeline.contour_surface(surface, contours=10)
-
-
-    B_target = np.vstack((coil.C[:, :, 0].dot(coil.I),
-                      coil.C[:, :, 1].dot(coil.I),
-                      coil.C[:, :, 2].dot(coil.I))).T
-
+    B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
     mlab.quiver3d(*target_points.T, *B_target.T)
+
+    f.scene.isometric_view()
 
 
 
@@ -238,9 +238,9 @@ Plot coil windings and target points
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  23.693 seconds)
+   **Total running time of the script:** ( 2 minutes  3.453 seconds)
 
-**Estimated memory usage:**  8017 MB
+**Estimated memory usage:**  8055 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_mamba_coil_design.py:
