@@ -715,7 +715,7 @@ class sphbasis:
         B *= mu0
         return B
 
-    def fields(self, p, lmax):
+    def basis_fields(self, p, lmax):
         '''
         Computes magnetic fields for each sph coefficient.
         Ignores the 'DC' component l=0.
@@ -744,7 +744,7 @@ class sphbasis:
         for l in range(1,lmax+1):
             for m in range(-1*l,l+1):
                 Psilm = self.Psilm(l,m, sp[:,1],sp[:,2])
-                Psilm *= np.sqrt(2*l**2 + l)
+#                Psilm *= np.sqrt(2*l**2 + l)
                 Psilm[:,0] *= sp[:,0]**(l-1)
                 Psilm[:,1] *= sp[:,0]**(l-1)
                 Psilm[:,2] *= sp[:,0]**(l-1)
@@ -752,7 +752,7 @@ class sphbasis:
                 B1[idx] = Psilm
 
                 Philm = self.Philm(l,m, sp[:,1],sp[:,2])
-                Philm *= np.sqrt((2*l+1)*(l+1))
+#                Philm *= np.sqrt((2*l+1)*(l+1))
                 Philm[:,0] *= sp[:,0]**(-l-2)
                 Philm[:,1] *= sp[:,0]**(-l-2)
                 Philm[:,2] *= sp[:,0]**(-l-2)
@@ -760,8 +760,8 @@ class sphbasis:
                 B2[idx] = Philm
 
                 idx += 1
-        B1 *= mu0
-        B2 *= mu0
+#        B1 *= mu0
+#        B2 *= mu0
         return B1, B2
 
 class sphfittools:
