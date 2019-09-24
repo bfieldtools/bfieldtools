@@ -95,8 +95,8 @@ def vectorpot_current_loops(vertices, points, loops=None,
             if None use all vertices in the order of vertices.
             All loops must have the same number of indices
             (this could be changed in future)
-            Example: Giving array of 4 vertices, the closed loop can be
-            defined as loops = np.array([[0,1,2,3,0]])
+            Example: Giving array of 4 vertices, a closed loop can be
+            defined as loops = np.array([[0,1,2,3]])
 
 
         Returns
@@ -132,7 +132,7 @@ def vectorpot_current_loops(vertices, points, loops=None,
 
     return 1e-7 * np.sum(res[..., None] * segments[..., None, :], axis=1)
 
-def flux_line_segments(vertices, loops, vertices_other, Nquad=2):
+def flux_current_loops(vertices, loops, vertices_other, Nquad=2):
     """ Compute magnetic flux created by a segmented line current loops
         (vertices, loops) on a another closed loop of segmented current
         (vertices_other). The other loop is numerically integrated.
@@ -140,8 +140,6 @@ def flux_line_segments(vertices, loops, vertices_other, Nquad=2):
         In other words, calculate mutual inductance of the current loops.
 
         NOT SUITABLE for calculating the self-flux, i.e., self inductance
-
-        TODO: test
 
         Parameters
         ----------
@@ -153,7 +151,7 @@ def flux_line_segments(vertices, loops, vertices_other, Nquad=2):
             None use all vertices. All loops must have the same
             number of indices (this could be changed in future)
             Example: Giving array of 4 vertices, the loops can be
-            defined as loops = np.array([[0,1,2,3,0]])
+            defined as loops = np.array([[0,1,2,3]])
 
         vertices_other:
             vertices in the loop receiving the flux
@@ -168,7 +166,7 @@ def flux_line_segments(vertices, loops, vertices_other, Nquad=2):
     # Calculate quadrature points linearly spaced on the line segments
     # of the other loop
     t = np.linspace(0, 1, Nquad + 1)
-    sides = vertices_other[1:] - vertices_other[1:]
+    sides = vertices_other[1:] - vertices_other[:-1]
     segments = (t[1:, None, None] - t[:-1, None, None]) * sides / Nquad
 
     t = 0.5 * (t[1:] + t[:-1]) # Nquad points on the segments
@@ -217,7 +215,7 @@ if __name__ == "__main__":
     q = mlab.quiver3d(*points, *b1.T)
     q.glyph.glyph_source.glyph_position = 'center'
 
-    loops = np.array([np.arange(len(vertices)), np.array([4, 3, 2, 1, 0])])
+    loops = np.array([np.arange(len(vertices)-1), np.array([3, 2, 1, 0])])
     a1 = vectorpot_current_loops(vertices, points.T, loops)[1]
     q = mlab.quiver3d(*points, *a1.T, colormap='viridis')
     q.glyph.glyph_source.glyph_position = 'center'
