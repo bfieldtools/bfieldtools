@@ -129,6 +129,35 @@ def compute_dc_Bnoise_covar(mesh, vl, fp, sigma, d, T):
     return B
 
 
+def integrate_Bnoise_covar(B_covar, weighting=None):
+    '''
+    Computes the (quadrature) integrated noise over a volume spanned by the points in fp.
+
+    Parameters
+    ----------
+    B_covar: (N_p, N_p, 3) array
+        One vector component of the covariance matrix computed by compute_dc_Bnoise_covar
+    weighting: (N_p,) array
+        Weighting factors for each point in the volume. If None (default), use equal weighting.
+
+    Returns
+    -------
+    Bnoise_integrated: float
+        Integrated noise amplitude over the volume
+
+    '''
+
+    if weighting is None:
+        weighting = np.ones((len(B_covar,)))/len(B_covar)
+        print('No weighting provided, assuming equal weighting')
+
+    Bnoise_integrated = np.sum(np.outer(weighting, weighting) * B_covar)
+
+    return Bnoise_integrated**0.5
+
+
+
+
 def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T):
     '''
     Computes the AC magnetic noise due to thermal motion of charge carriers (Jonhson-Nyquist noise)
@@ -243,8 +272,8 @@ def visualize_current_modes(mesh, vl, Nmodes, scale, contours=True, colormap='bw
         i = ii % n
         j = int(ii/n)
 
-        x = scale*verts[:, 0] + i*12
-        y = scale*verts[:, 1]+ j*12
+        x = scale*verts[:, 0] + i*(np.max(verts[:, 0]) - np.min(verts[:, 0]))*1.2
+        y = scale*verts[:, 1]+ j*(np.max(verts[:, 1]) - np.min(verts[:, 1]))*1.2
         z = scale*verts[:, 2]
 
         limit = np.max(np.abs(vl[:, ii]))
