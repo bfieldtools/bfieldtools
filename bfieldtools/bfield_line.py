@@ -55,10 +55,34 @@ def bfield_line_segments(vertices, points):
 
     return field.T * 1e-7
 
-def vectorpot_line_segments(vertices, points, loops=None,
+def bfield_current_loops(vertices, points, loops):
+    """ B field for segmented current loops
+
+        Parameters
+        ----------
+        vertices: (N_line, 3) array
+            Vertices of the line with N_line-1 segments
+        points: (N_points, 3) array
+            Magnetic field evaluation points
+        loops: list
+            list of ordered indices defining closed loops of vertices,
+            if None use all vertices in the order of vertices.
+            Example: Giving array of 4 vertices, the closed loop can be
+            defined as loops = np.array([[0,1,2,3,0]])
+    """
+    bfield = np.zeros((len(loops), len(points), 3))
+    for ii, loop in enumerate(loops):
+        bfield[ii] = bfield_line_segments(vertices[loop], points)
+
+    return bfield
+
+
+def vectorpot_current_loops(vertices, points, loops=None,
                             reg=1e-12, symmetrize=True):
-    """ Compute vector potential of a segmented line current.
+    """ Compute vector potential of a segmented line currents.
         Based on straightforward integration of 1/r potential over a line
+        i.e. the gamma0 integral
+
 
         Parameters
         ----------
@@ -71,8 +95,8 @@ def vectorpot_line_segments(vertices, points, loops=None,
             if None use all vertices in the order of vertices.
             All loops must have the same number of indices
             (this could be changed in future)
-            Example: Giving array of 4 vertices, the closed loop can be
-            defined as loops = np.array([[0,1,2,3,0]])
+            Example: Giving array of 4 vertices, a closed loop can be
+            defined as loops = np.array([[0,1,2,3]])
 
 
         Returns
@@ -108,7 +132,7 @@ def vectorpot_line_segments(vertices, points, loops=None,
 
     return 1e-7 * np.sum(res[..., None] * segments[..., None, :], axis=1)
 
-def flux_line_segments(vertices, loops, vertices_other, Nquad=2):
+def flux_current_loops(vertices, loops, vertices_other, Nquad=2):
     """ Compute magnetic flux created by a segmented line current loops
         (vertices, loops) on a another closed loop of segmented current
         (vertices_other). The other loop is numerically integrated.
@@ -116,8 +140,6 @@ def flux_line_segments(vertices, loops, vertices_other, Nquad=2):
         In other words, calculate mutual inductance of the current loops.
 
         NOT SUITABLE for calculating the self-flux, i.e., self inductance
-
-        TODO: test
 
         Parameters
         ----------
@@ -129,7 +151,7 @@ def flux_line_segments(vertices, loops, vertices_other, Nquad=2):
             None use all vertices. All loops must have the same
             number of indices (this could be changed in future)
             Example: Giving array of 4 vertices, the loops can be
-            defined as loops = np.array([[0,1,2,3,0]])
+            defined as loops = np.array([[0,1,2,3]])
 
         vertices_other:
             vertices in the loop receiving the flux
@@ -144,8 +166,8 @@ def flux_line_segments(vertices, loops, vertices_other, Nquad=2):
     # Calculate quadrature points linearly spaced on the line segments
     # of the other loop
     t = np.linspace(0, 1, Nquad + 1)
-    sides = vertices_other[1:] - vertices_other[1:]
-    segments = (t[1:, None, None] - t[:-1, None, None]) * sides / Nquad
+    sides = vertices_other[1:] - vertices_other[:-1]
+    segments = (t[1:, None, None] - t[:-1, None, None]) * sides
 
     t = 0.5 * (t[1:] + t[:-1]) # Nquad points on the segments
 
@@ -154,14 +176,14 @@ def flux_line_segments(vertices, loops, vertices_other, Nquad=2):
     shape = points.shape
 
     # Nloops, Nquad*Nsegments, 3
-    a = vectorpot_line_segments(vertices, points.reshape(-1, 3), loops)
+    a = vectorpot_current_loops(vertices, points.reshape(-1, 3), loops)
 
     # Nloops, Nquad, Nsegments, 3
     a = a.reshape(a.shape[0:1] + shape)
 
     # Take dot product between vector potential and the line segments
     # corresponding to each quadrature points (axis=3) and sum over the
-    # segemnts (axis=2) and quadrature points on each segment (axis=1)
+    # segements (axis=2) and quadrature points on each segment (axis=1)
 
     return np.sum(a * segments, axis=(1, 2, 3))
 
@@ -187,13 +209,13 @@ if __name__ == "__main__":
     points[0] = X.flatten()
     points[1] = Y.flatten()
 
-    b1 = bfield_line_segments(vertices, points.T)
+    b1 = bfield_current_loops(vertices, points.T, [np.arange(Ntheta)])[0]
 
     from mayavi import mlab
     q = mlab.quiver3d(*points, *b1.T)
     q.glyph.glyph_source.glyph_position = 'center'
 
-    loops = np.array([np.arange(len(vertices)), np.array([4, 3, 2, 1, 0])])
-    a1 = vectorpot_line_segments(vertices, points.T, loops)[1]
+    loops = np.array([np.arange(len(vertices)-1), np.array([3, 2, 1, 0])])
+    a1 = vectorpot_current_loops(vertices, points.T, loops)[1]
     q = mlab.quiver3d(*points, *a1.T, colormap='viridis')
     q.glyph.glyph_source.glyph_position = 'center'
