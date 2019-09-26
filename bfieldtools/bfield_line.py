@@ -167,7 +167,7 @@ def flux_current_loops(vertices, loops, vertices_other, Nquad=2):
     # of the other loop
     t = np.linspace(0, 1, Nquad + 1)
     sides = vertices_other[1:] - vertices_other[:-1]
-    segments = (t[1:, None, None] - t[:-1, None, None]) * sides / Nquad
+    segments = (t[1:, None, None] - t[:-1, None, None]) * sides
 
     t = 0.5 * (t[1:] + t[:-1]) # Nquad points on the segments
 
