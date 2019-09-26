@@ -93,7 +93,7 @@ mutual_inductance = mutual_inductance_matrix(coil.mesh, shield.mesh)
 # Take into account the field produced by currents induced into the shield
 # NB! This expression is for instantaneous step-function switching of coil current, see Eq. 18 in G.N. Peeren, 2003.
 
-shield.coupling = -np.linalg.pinv(shield.inductance) @ mutual_inductance.T
+shield.coupling = np.linalg.solve(-shield.inductance, mutual_inductance.T)
 secondary_C = (shield.C.transpose((0,2,1)) @ shield.coupling).transpose((0,2,1))
 
 ###############################################################
@@ -141,9 +141,6 @@ B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
 mlab.quiver3d(*target_points.T, *B_target.T)
 
-B_target = coil.C.transpose([0, 2, 1]) @ coil.I
-
-mlab.quiver3d(*target_points.T, *B_target.T)
 
 mlab.title('Coils which minimize the transient effects of conductive shield')
 
@@ -171,6 +168,10 @@ f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
 mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.02)
+
+B_target_unshielded = coil.C.transpose([0, 2, 1]) @ coil.unshielded_I
+
+mlab.quiver3d(*target_points.T, *B_target_unshielded.T)
 
 mlab.title('Coils which ignore the conductive shield')
 

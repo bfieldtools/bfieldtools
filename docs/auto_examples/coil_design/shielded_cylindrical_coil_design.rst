@@ -134,7 +134,7 @@ Compute C matrices that are used to compute the generated magnetic field
     # Take into account the field produced by currents induced into the shield
     # NB! This expression is for instantaneous step-function switching of coil current, see Eq. 18 in G.N. Peeren, 2003.
 
-    shield.coupling = -np.linalg.pinv(shield.inductance) @ mutual_inductance.T
+    shield.coupling = np.linalg.solve(-shield.inductance, mutual_inductance.T)
     secondary_C = (shield.C.transpose((0,2,1)) @ shield.coupling).transpose((0,2,1))
 
 
@@ -147,13 +147,13 @@ Compute C matrices that are used to compute the generated magnetic field
 
  .. code-block:: none
 
-    Computing C matrix, 3536 vertices by 672 target points... took 1.17 seconds.
-    Computing C matrix, 904 vertices by 672 target points... took 0.24 seconds.
+    Computing C matrix, 3536 vertices by 672 target points... took 1.22 seconds.
+    Computing C matrix, 904 vertices by 672 target points... took 0.26 seconds.
     Calculating potentials
     Inserting stuff into M-matrix
-    Computing inductance matrix in 1 chunks since 8 GiB memory is available...
+    Computing inductance matrix in 1 chunks since 10 GiB memory is available...
     Calculating potentials, chunk 1/1
-    Inductance matrix computation took 6.64 seconds.
+    Inductance matrix computation took 6.22 seconds.
 
 
 
@@ -208,10 +208,10 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 2 chunks since 8 GiB memory is available...
+    Computing inductance matrix in 2 chunks since 10 GiB memory is available...
     Calculating potentials, chunk 1/2
     Calculating potentials, chunk 2/2
-    Inductance matrix computation took 93.84 seconds.
+    Inductance matrix computation took 92.69 seconds.
     Solving quadratic programming problem using cvxopt...
          pcost       dcost       gap    pres   dres
      0:  4.5366e+01  7.7593e+02  1e+04  3e+00  4e-14
@@ -243,9 +243,6 @@ Plot coil windings and target points
 
     mlab.quiver3d(*target_points.T, *B_target.T)
 
-    B_target = coil.C.transpose([0, 2, 1]) @ coil.I
-
-    mlab.quiver3d(*target_points.T, *B_target.T)
 
     mlab.title('Coils which minimize the transient effects of conductive shield')
 
@@ -286,6 +283,10 @@ For comparison, let's see how the coils look when we ignore the conducting shiel
 
     plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.02)
 
+    B_target_unshielded = coil.C.transpose([0, 2, 1]) @ coil.unshielded_I
+
+    mlab.quiver3d(*target_points.T, *B_target_unshielded.T)
+
     mlab.title('Coils which ignore the conductive shield')
 
 
@@ -315,9 +316,9 @@ For comparison, let's see how the coils look when we ignore the conducting shiel
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  56.494 seconds)
+   **Total running time of the script:** ( 2 minutes  53.484 seconds)
 
-**Estimated memory usage:**  10697 MB
+**Estimated memory usage:**  10801 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_shielded_cylindrical_coil_design.py:
