@@ -1098,7 +1098,7 @@ def compute_sphcoeffs_mesh(mesh, lmax):
 
     '''
 
-    Gx, Gy, Gz = gradient_matrix(mesh.vertices,mesh.faces, rotated = True)
+    Gx, Gy, Gz = gradient_matrix(mesh, rotated = True)
 #    Gx = Gx.toarray()
 #    Gy = Gy.toarray()
 #    Gz = Gz.toarray()
