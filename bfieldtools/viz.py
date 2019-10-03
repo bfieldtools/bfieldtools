@@ -92,25 +92,25 @@ def plot_3d_current_loops(current_loops, colors=None, figure=None, figsize=(800,
         arrow1.glyph.glyph_source.glyph_source.radius = 0.3
         arrow1.glyph.glyph_source.glyph_source.height = 0.5
 
-        #Second arrow on the element "half away"
-
-        opposite_idx = int((longest_idx + len(loop)/2) % len(loop))
-
-        if opposite_idx == len(loop)-1:
-            arrow1 = mlab.quiver3d(*loop[-1,:].T,
-                      *(loop[0,:] - loop[-1,:]).T,
-                      mode='cone', scale_mode='none',
-                      scale_factor=0.5 * tube_radius/0.05,
-                      color=colors[loop_idx])
-        else:
-            arrow2 = mlab.quiver3d(*loop[opposite_idx+1,:].T,
-                      *(loop[opposite_idx+1,:] - loop[opposite_idx,:]).T,
-                      mode='cone', scale_mode='none',
-                      scale_factor=0.5 * tube_radius/0.05,
-                      color=colors[loop_idx])
-        arrow2.glyph.glyph_source.glyph_position = 'center'
-        arrow2.glyph.glyph_source.glyph_source.radius = 0.3
-        arrow2.glyph.glyph_source.glyph_source.height = 0.5
+#        #Second arrow on the element "half away"
+#
+#        opposite_idx = int((longest_idx + len(loop)/2) % len(loop))
+#
+#        if opposite_idx == len(loop)-1:
+#            arrow1 = mlab.quiver3d(*loop[-1,:].T,
+#                      *(loop[0,:] - loop[-1,:]).T,
+#                      mode='cone', scale_mode='none',
+#                      scale_factor=0.5 * tube_radius/0.05,
+#                      color=colors[loop_idx])
+#        else:
+#            arrow2 = mlab.quiver3d(*loop[opposite_idx+1,:].T,
+#                      *(loop[opposite_idx+1,:] - loop[opposite_idx,:]).T,
+#                      mode='cone', scale_mode='none',
+#                      scale_factor=0.5 * tube_radius/0.05,
+#                      color=colors[loop_idx])
+#        arrow2.glyph.glyph_source.glyph_position = 'center'
+#        arrow2.glyph.glyph_source.glyph_source.radius = 0.3
+#        arrow2.glyph.glyph_source.glyph_source.height = 0.5
 
 
     figure.scene.isometric_view()
@@ -257,7 +257,7 @@ def plot_data_on_faces(mesh, data, figure=None, figsize=(800, 800), cmap=None, c
 
 
     if figure is None:
-        fig = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+        figure = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                    size=figsize)
 
     #If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
@@ -289,7 +289,7 @@ def plot_data_on_faces(mesh, data, figure=None, figsize=(800, 800), cmap=None, c
 
     lutmanager.number_of_colors = ncolors
 
-    return fig
+    return figure
 
 
 def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), cmap=None, colorbar=False, ncolors=32, interpolate=True):
@@ -321,7 +321,7 @@ def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), cmap=None
     '''
 
     if figure is None:
-        fig = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+        figure = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                    size=figsize)
 
     #If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
@@ -344,6 +344,6 @@ def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), cmap=None
         lutmanager.data_range = np.array([-rangemax*1.01,rangemax*1.01])
         lutmanager.use_default_range = False
 
-    return fig
+    return figure
 
 

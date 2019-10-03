@@ -22,7 +22,7 @@ Requires Python 3.5 or newer.
  - `Numpy <https://www.numpy.org/>`_
  - `Scipy <https://www.scipy.org/>`_
  - `Trimesh <https://github.com/mikedh/trimesh>`_
- - `CVXOPT <https://cvxopt.org/>`_
+ - `CVXPY <https://cvxpy.org/>`_
  - `Quadpy>=0.13 <https://github.com/nschloe/quadpy/tree/master/quadpy>`_
  - `Numba <https://numba.pydata.org/>`_
  - `Matplotlib <https://matplotlib.org/>`_
