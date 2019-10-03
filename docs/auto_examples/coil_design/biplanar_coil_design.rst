@@ -18,12 +18,10 @@ region between the two coil planes.
 .. code-block:: default
 
 
-
     import numpy as np
     import matplotlib.pyplot as plt
     from mayavi import mlab
     import trimesh
-
 
     from bfieldtools.mesh_class import MeshWrapper
     from bfieldtools.magnetic_field_mesh import compute_C
@@ -77,7 +75,7 @@ Set up target and stray field points
     center = np.array([0, 0, 0]) * scaling_factor
 
     sidelength = 2 * scaling_factor
-    n = 12
+    n = 8
     xx = np.linspace(-sidelength/2, sidelength/2, n)
     yy = np.linspace(-sidelength/2, sidelength/2, n)
     zz = np.linspace(-sidelength/2, sidelength/2, n)
@@ -104,7 +102,7 @@ Set up target and stray field points
     #                                   nalpha = 30,
     #                                   orientation=np.array([1, 0, 0]))
     #
-    stray_points_mesh = trimesh.creation.icosphere(subdivisions=4, radius=stray_radius)
+    stray_points_mesh = trimesh.creation.icosphere(subdivisions=3, radius=stray_radius)
     stray_points = stray_points_mesh.vertices + center
 
     n_stray_points = len(stray_points)
@@ -137,8 +135,8 @@ Compute C matrices that are used to compute the generated magnetic field
 
  .. code-block:: none
 
-    Computing C matrix, 3184 vertices by 672 target points... took 0.95 seconds.
-    Computing C matrix, 3184 vertices by 2562 target points... took 2.89 seconds.
+    Computing C matrix, 3184 vertices by 160 target points... took 0.30 seconds.
+    Computing C matrix, 3184 vertices by 642 target points... took 0.84 seconds.
 
 
 
@@ -154,9 +152,17 @@ Create bfield specifications used when optimizing the coil geometry
     target_field = np.zeros(target_points.shape)
     target_field[:, 0] = target_field[:, 0] + 1
 
-    target_spec = {'C':coil.C, 'rel_error':0.01, 'abs_error':0, 'target_field':target_field}
+    target_rel_error = np.zeros_like(target_field)
+    target_rel_error[:, 0] += 0.01
+
+    target_abs_error = np.zeros_like(target_field)
+    target_abs_error[:, 0] += 0.001
+    target_abs_error[:, 1:3] += 0.005
+
+    target_spec = {'C':coil.C, 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
     stray_spec = {'C':coil.strayC, 'abs_error':0.01, 'rel_error':0, 'target_field':np.zeros((n_stray_points, 3))}
 
+    bfield_specification = [target_spec, stray_spec]
 
 
 
@@ -169,17 +175,14 @@ Run QP solver
 
 .. code-block:: default
 
+    import mosek
 
-    # The tolerance parameter will determine the spatial detail of the coil.
-    # Smaller tolerance means better but more intricate patterns. Too small values
-    # will not be solveable.
-    tolerance = 0.25
-
-    coil.I, coil.sol = optimize_streamfunctions(coil,
-                                                [target_spec, stray_spec],
-                                                objective='minimum_inductive_energy',
-                                                tolerance=tolerance)
-
+    coil.I, prob = optimize_streamfunctions(coil,
+                                       [target_spec, stray_spec],
+                                       objective='minimum_inductive_energy',
+                                       solver='MOSEK',
+                                       solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
+                                       )
 
 
 
@@ -191,23 +194,70 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 3 chunks since 6 GiB memory is available...
-    Calculating potentials, chunk 1/3
-    Calculating potentials, chunk 2/3
-    Calculating potentials, chunk 3/3
-    Inductance matrix computation took 69.54 seconds.
-    Solving quadratic programming problem using cvxopt...
-         pcost       dcost       gap    pres   dres
-     0:  1.0500e+02  3.7757e+02  3e+04  5e+00  3e-14
-     1:  1.5336e+02  4.0199e+02  3e+03  6e-01  3e-14
-     2:  4.4248e+02  9.2422e+02  1e+03  1e-01  7e-14
-     3:  4.6255e+02  1.0365e+03  1e+03  1e-01  7e-14
-     4:  5.3592e+02  1.4638e+03  9e+02  8e-02  1e-13
-     5:  5.6696e+02  3.6612e+03  1e+03  8e-02  3e-13
-     6:  5.6809e+02  3.7241e+03  1e+03  8e-02  3e-13
-     7:  5.7281e+02  3.9155e+03  1e+03  8e-02  4e-13
-     8:  6.2388e+02  5.2786e+03  1e+03  8e-02  4e-12
-    Optimal solution found.
+    Computing inductance matrix in 2 chunks since 8 GiB memory is available...
+    Calculating potentials, chunk 1/2
+    Calculating potentials, chunk 2/2
+    Inductance matrix computation took 65.46 seconds.
+
+
+    Problem
+      Name                   :                 
+      Objective sense        : min             
+      Type                   : CONIC (conic optimization problem)
+      Constraints            : 7710            
+      Cones                  : 1               
+      Scalar variables       : 5795            
+      Matrix variables       : 0               
+      Integer variables      : 0               
+
+    Optimizer started.
+    Problem
+      Name                   :                 
+      Objective sense        : min             
+      Type                   : CONIC (conic optimization problem)
+      Constraints            : 7710            
+      Cones                  : 1               
+      Scalar variables       : 5795            
+      Matrix variables       : 0               
+      Integer variables      : 0               
+
+    Optimizer  - threads                : 8               
+    Optimizer  - solved problem         : the dual        
+    Optimizer  - Constraints            : 2897
+    Optimizer  - Cones                  : 1
+    Optimizer  - Scalar variables       : 7710              conic                  : 2898            
+    Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+    Factor     - setup time             : 2.01              dense det. time        : 0.00            
+    Factor     - ML order time          : 0.29              GP order time          : 0.00            
+    Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06        
+    Factor     - dense dim.             : 0                 flops                  : 5.26e+10        
+    ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+    0   3.3e+02  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  75.60 
+    1   1.8e+02  5.5e-01  1.5e+00  -9.69e-01  3.901237432e-01   1.731532757e-01   5.5e-01  76.35 
+    2   9.6e+01  2.9e-01  1.0e+00  -9.27e-01  4.185471306e+00   5.344659909e+00   2.9e-01  76.89 
+    3   8.0e+01  2.4e-01  9.1e-01  -8.52e-01  7.541655539e+00   9.185280969e+00   2.4e-01  77.43 
+    4   2.7e+01  8.2e-02  4.6e-01  -8.22e-01  6.067138585e+01   6.676969596e+01   8.2e-02  78.15 
+    5   1.8e+01  5.5e-02  3.2e-01  -5.35e-01  1.129291606e+02   1.202495325e+02   5.5e-02  78.73 
+    6   3.2e+00  9.7e-03  6.3e-02  -3.68e-01  4.183598608e+02   4.284717884e+02   9.7e-03  79.34 
+    7   9.6e-01  2.9e-03  1.0e-02  5.15e-01   5.931225935e+02   5.961146234e+02   2.9e-03  79.87 
+    8   4.3e-01  1.3e-03  3.1e-03  9.19e-01   4.222103767e+02   4.235030322e+02   1.3e-03  80.44 
+    9   3.3e-01  1.0e-03  2.1e-03  9.88e-01   4.916049319e+02   4.926280323e+02   1.0e-03  80.98 
+    10  8.3e-03  2.5e-05  7.2e-06  9.94e-01   4.664898365e+02   4.665081857e+02   2.5e-05  81.73 
+    11  8.3e-04  2.5e-06  2.8e-07  1.00e+00   4.673976385e+02   4.674004349e+02   2.5e-06  82.48 
+    12  5.1e-04  1.5e-06  1.3e-07  1.00e+00   4.674257060e+02   4.674274237e+02   1.5e-06  83.19 
+    13  1.5e-04  4.6e-07  2.1e-08  1.00e+00   4.675038693e+02   4.675043792e+02   4.6e-07  83.81 
+    14  1.9e-05  5.8e-08  9.7e-10  1.00e+00   4.675437418e+02   4.675438062e+02   5.8e-08  84.47 
+    15  7.3e-06  2.2e-08  2.3e-10  1.00e+00   4.675482297e+02   4.675482544e+02   2.2e-08  85.03 
+    16  1.0e-06  5.7e-09  1.4e-11  1.00e+00   4.675502446e+02   4.675502480e+02   3.1e-09  85.59 
+    17  2.1e-08  1.2e-10  5.4e-14  1.00e+00   4.675506350e+02   4.675506350e+02   6.5e-11  86.72 
+    Optimizer terminated. Time: 87.23   
+
+
+    Interior-point solution summary
+      Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+      Solution status : OPTIMAL
+      Primal.  obj: 4.6755063496e+02    nrm: 9e+02    Viol.  con: 2e-09    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 4.6755063503e+02    nrm: 4e+04    Viol.  con: 7e-05    var: 1e-09    cones: 0e+00  
 
 
 
@@ -217,7 +267,9 @@ Plot coil windings and target points
 .. code-block:: default
 
 
-    loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=10)
+    N_contours = 10
+
+    loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=N_contours)
 
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                size=(800, 800))
@@ -230,177 +282,8 @@ Plot coil windings and target points
     mlab.quiver3d(*target_points.T, *B_target.T)
 
 
-
-
 .. image:: /auto_examples/coil_design/images/sphx_glr_biplanar_coil_design_001.png
     :class: sphx-glr-single-img
-
-
-
-
-Plot field falloff on two axes
-
-
-.. code-block:: default
-
-
-    plt.figure()
-
-    z1 = np.linspace(-30, 30, 101) * scaling_factor
-
-    x1 = y1 = np.zeros_like(z1)
-
-    line1_points = np.vstack((x1, y1, z1)).T
-
-    line1_C = compute_C(coil.mesh, r=line1_points)
-
-    B_line1 = line1_C.transpose([0, 2, 1]) @ coil.I
-
-    plt.semilogy(z1 / scaling_factor, np.linalg.norm(B_line1, axis=1)/np.mean(np.abs(target_field)), label='Z')
-
-    y2 = np.linspace(-30, 30, 101) * scaling_factor
-
-    z2 = x2 = np.zeros_like(y2)
-
-    line2_points = np.vstack((x2, y2, z2)).T
-
-    line2_C = compute_C(coil.mesh, r=line2_points)
-
-    B_line2 = line2_C.transpose([0, 2, 1]) @ coil.I
-
-    plt.semilogy(y2 / scaling_factor, np.linalg.norm(B_line2, axis=1)/np.mean(np.abs(target_field)), label='Y')
-    plt.ylabel('Field amplitude (target field units)')
-    plt.xlabel('Distance from origin')
-    plt.grid(True, which='minor', axis='y')
-    plt.grid(True, which='major', axis='y', color='k')
-    plt.grid(True, which='major', axis='x')
-
-    plt.legend()
-
-    plt.show()
-
-
-
-
-
-.. image:: /auto_examples/coil_design/images/sphx_glr_biplanar_coil_design_002.png
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Computing C matrix, 3184 vertices by 101 target points... took 0.21 seconds.
-    Computing C matrix, 3184 vertices by 101 target points... took 0.19 seconds.
-    /l/bfieldtools/examples/coil_design/biplanar_coil_design.py:179: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
-      plt.show()
-
-
-
-Extract stream function isosurfaces/contours as polygons,
-plot with current directions
-
-
-.. code-block:: default
-
-
-    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                   size=(800, 800))
-    mlab.clf()
-
-    N_contours = 10
-
-
-    contour_polys, contour_values = scalar_contour(coil.mesh, coil.I, N_contours=N_contours)
-
-
-    colors = [(1, 0, 0), (0, 0, 1)]
-
-    for loop_idx, loop in enumerate(contour_polys):
-        mlab.plot3d(*loop.T,
-                    color=colors[int((np.sign(contour_values[loop_idx])+1)/2)],
-                    tube_radius=None)
-
-        mlab.quiver3d(*loop[0,:].T,
-                  *(loop[0,:].T - loop[1,:].T),
-                  mode='cone', scale_mode='none',
-                  scale_factor=0.5,
-                  color=colors[int((np.sign(contour_values[loop_idx])+1)/2)])
-
-
-
-
-.. image:: /auto_examples/coil_design/images/sphx_glr_biplanar_coil_design_003.png
-    :class: sphx-glr-single-img
-
-
-
-
-Compute magnetic field from discrete current line segments
-
-
-.. code-block:: default
-
-
-    Bseg_target = np.zeros(B_target.shape)
-
-    Bseg_line1 = np.zeros(B_line1.shape)
-    Bseg_line2 = np.zeros(B_line2.shape)
-
-    from bfieldtools.bfield_line import bfield_line_segments
-
-    for loop in contour_polys:
-        Bseg_target += bfield_line_segments(loop,
-                             target_points)
-
-        Bseg_line1 += bfield_line_segments(loop,
-                             np.array([x1, y1, z1]).T)
-
-        Bseg_line2 += bfield_line_segments(loop,
-                         np.array([x2, y2, z2]).T)
-
-
-    plt.figure()
-
-    I = 0.01
-    plt.hist(1e9 * np.linalg.norm(Bseg_target, axis=1)*0.01, 50)
-    plt.xlabel('Field amplitude in target region when %.1f mA current is injected (nT)' % (I*1e3))
-
-
-    plt.figure()
-
-    normalize_value = np.linalg.norm(Bseg_line1, axis=1)[np.where(z1==0)[0][0]]
-    plt.semilogy(z1 / scaling_factor, np.linalg.norm(Bseg_line1, axis=1)/normalize_value, label='Z')
-
-    normalize_value = np.linalg.norm(Bseg_line2, axis=1)[np.where(y2==0)[0][0]]
-    plt.semilogy(y2 / scaling_factor, np.linalg.norm(Bseg_line2, axis=1)/normalize_value, label='Y')
-
-    plt.ylabel('Field amplitude (target field units)')
-    plt.xlabel('Distance from origin')
-    plt.grid(True, which='minor', axis='y')
-    plt.grid(True, which='major', axis='y', color='k')
-    plt.grid(True, which='major', axis='x')
-    plt.title('Field from discrete line segments, N_contours: %d'%N_contours)
-
-    plt.legend()
-
-
-
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image:: /auto_examples/coil_design/images/sphx_glr_biplanar_coil_design_004.png
-            :class: sphx-glr-multi-img
-
-    *
-
-      .. image:: /auto_examples/coil_design/images/sphx_glr_biplanar_coil_design_005.png
-            :class: sphx-glr-multi-img
 
 
 
@@ -408,9 +291,9 @@ Compute magnetic field from discrete current line segments
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  0.263 seconds)
+   **Total running time of the script:** ( 3 minutes  21.344 seconds)
 
-**Estimated memory usage:**  6383 MB
+**Estimated memory usage:**  7944 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_biplanar_coil_design.py:

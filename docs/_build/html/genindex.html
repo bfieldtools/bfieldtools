@@ -112,6 +112,7 @@
  | <a href="#M"><strong>M</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -139,6 +140,10 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/bfieldtools.html#bfieldtools.sphtools.sphbasis.basis_fields">basis_fields() (bfieldtools.sphtools.sphbasis method)</a>
+</li>
+      <li><a href="source/bfieldtools.html#bfieldtools.bfield_line.bfield_current_loops">bfield_current_loops() (in module bfieldtools.bfield_line)</a>
+</li>
       <li><a href="source/bfieldtools.html#bfieldtools.bfield_line.bfield_line_segments">bfield_line_segments() (in module bfieldtools.bfield_line)</a>
 </li>
       <li><a href="source/bfieldtools.html#module-bfieldtools.bfield_line">bfieldtools.bfield_line (module)</a>
@@ -149,10 +154,10 @@
 </li>
       <li><a href="source/bfieldtools.html#module-bfieldtools.laplacian_mesh">bfieldtools.laplacian_mesh (module)</a>
 </li>
-      <li><a href="source/bfieldtools.html#module-bfieldtools.magnetic_field_mesh">bfieldtools.magnetic_field_mesh (module)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/bfieldtools.html#module-bfieldtools.magnetic_field_mesh">bfieldtools.magnetic_field_mesh (module)</a>
+</li>
       <li><a href="source/bfieldtools.html#module-bfieldtools.mesh_class">bfieldtools.mesh_class (module)</a>
 </li>
       <li><a href="source/bfieldtools.html#module-bfieldtools.mutual_inductance_mesh">bfieldtools.mutual_inductance_mesh (module)</a>
@@ -187,10 +192,10 @@
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.magnetic_field_mesh.compute_C_loops">compute_C_loops() (in module bfieldtools.magnetic_field_mesh)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/bfieldtools.html#bfieldtools.thermal_noise.compute_current_modes">compute_current_modes() (in module bfieldtools.thermal_noise)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/bfieldtools.html#bfieldtools.thermal_noise.compute_dc_Bnoise">compute_dc_Bnoise() (in module bfieldtools.thermal_noise)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.thermal_noise.compute_dc_Bnoise_covar">compute_dc_Bnoise_covar() (in module bfieldtools.thermal_noise)</a>
@@ -202,6 +207,8 @@
       <li><a href="source/bfieldtools.html#bfieldtools.magnetic_field_mesh.create_basis">create_basis() (in module bfieldtools.magnetic_field_mesh)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.coil_optimize.cvxopt_solve_qp">cvxopt_solve_qp() (in module bfieldtools.coil_optimize)</a>
+</li>
+      <li><a href="source/bfieldtools.html#bfieldtools.coil_optimize.cvxpy_solve_qp">cvxpy_solve_qp() (in module bfieldtools.coil_optimize)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.utils.cylinder_points">cylinder_points() (in module bfieldtools.utils)</a>
 </li>
@@ -233,17 +240,15 @@
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.sphbasis.field">field() (bfieldtools.sphtools.sphbasis method)</a>
 </li>
-      <li><a href="source/bfieldtools.html#bfieldtools.sphtools.sphbasis.fields">fields() (bfieldtools.sphtools.sphbasis method)</a>
+      <li><a href="source/bfieldtools.html#bfieldtools.utils.find_mesh_boundaries">find_mesh_boundaries() (in module bfieldtools.utils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/bfieldtools.html#bfieldtools.utils.find_mesh_boundaries">find_mesh_boundaries() (in module bfieldtools.utils)</a>
-</li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.sphfittools.fitSpectra">fitSpectra() (bfieldtools.sphtools.sphfittools method)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.utils.fix_normals">fix_normals() (in module bfieldtools.utils)</a>
 </li>
-      <li><a href="source/bfieldtools.html#bfieldtools.bfield_line.flux_line_segments">flux_line_segments() (in module bfieldtools.bfield_line)</a>
+      <li><a href="source/bfieldtools.html#bfieldtools.bfield_line.flux_current_loops">flux_current_loops() (in module bfieldtools.bfield_line)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -271,11 +276,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/bfieldtools.html#bfieldtools.mesh_class.MeshWrapper.inductance">inductance (bfieldtools.mesh_class.MeshWrapper attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.sphbasis.initqp">initqp() (bfieldtools.sphtools.sphbasis method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.sphbasis.innerproduct">innerproduct() (bfieldtools.sphtools.sphbasis method)</a>
+</li>
+      <li><a href="source/bfieldtools.html#bfieldtools.thermal_noise.integrate_Bnoise_covar">integrate_Bnoise_covar() (in module bfieldtools.thermal_noise)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -362,6 +369,14 @@
   </ul></td>
 </tr></table>
 
+<h2 id="Q">Q</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/bfieldtools.html#bfieldtools.coil_optimize.quadprog_solve_qp">quadprog_solve_qp() (in module bfieldtools.coil_optimize)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -417,7 +432,7 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/bfieldtools.html#bfieldtools.bfield_line.vectorpot_line_segments">vectorpot_line_segments() (in module bfieldtools.bfield_line)</a>
+      <li><a href="source/bfieldtools.html#bfieldtools.bfield_line.vectorpot_current_loops">vectorpot_current_loops() (in module bfieldtools.bfield_line)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>

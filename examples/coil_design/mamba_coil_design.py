@@ -90,6 +90,14 @@ target_field = np.asarray(target_field).reshape((-1,))
 
 target_field = np.array([np.zeros((len(target_field),)), target_field, np.zeros((len(target_field),))]).T
 
+
+target_rel_error = np.zeros_like(target_field)
+target_rel_error[:, 1] += 0.05
+
+target_abs_error = np.zeros_like(target_field)
+target_abs_error[:, 1] += 0.01
+target_abs_error[:, 0::2] += 0.05
+
 ###############################################################
 # Plot target points and mesh
 scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
@@ -104,21 +112,19 @@ coil.plot_mesh()
 
 coil.C = compute_C(coil.mesh, target_points)
 
-target_spec = {'C':coil.C, 'rel_error':0.01, 'abs_error':0, 'target_field':target_field}
+target_spec = {'C':coil.C, 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
 
 ###############################################################
 # Run QP solver
 
+import mosek
 
-# The tolerance parameter will determine the spatial detail of the coil.
-# Smaller tolerance means better but more intricate patterns. Too small values
-# will not be solveable.
-tolerance = 0.45
-
-coil.I, coil.sol = optimize_streamfunctions(coil,
-                                            [target_spec],
-                                            objective='minimum_inductive_energy',
-                                            tolerance=tolerance)
+coil.I, prob = optimize_streamfunctions(coil,
+                                   [target_spec],
+                                   objective='minimum_inductive_energy',
+                                   solver='MOSEK',
+                                   solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
+                                   )
 
 
 ###############################################################
@@ -130,7 +136,7 @@ f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
 mlab.clf()
 
-plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.01)
+plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.025)
 
 B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 

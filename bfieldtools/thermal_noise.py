@@ -156,8 +156,6 @@ def integrate_Bnoise_covar(B_covar, weighting=None):
     return Bnoise_integrated**0.5
 
 
-
-
 def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T):
     '''
     Computes the AC magnetic noise due to thermal motion of charge carriers (Jonhson-Nyquist noise)

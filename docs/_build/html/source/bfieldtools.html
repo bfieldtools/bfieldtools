@@ -105,6 +105,27 @@
 <div class="section" id="module-bfieldtools.bfield_line">
 <span id="bfieldtools-bfield-line-module"></span><h2>bfieldtools.bfield_line module<a class="headerlink" href="#module-bfieldtools.bfield_line" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
+<dt id="bfieldtools.bfield_line.bfield_current_loops">
+<code class="descclassname">bfieldtools.bfield_line.</code><code class="descname">bfield_current_loops</code><span class="sig-paren">(</span><em>vertices</em>, <em>points</em>, <em>loops</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.bfield_line.bfield_current_loops" title="Permalink to this definition">¶</a></dt>
+<dd><p>B field for segmented current loops</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>vertices: (N_line, 3) array</strong></dt><dd><p>Vertices of the line with N_line-1 segments</p>
+</dd>
+<dt><strong>points: (N_points, 3) array</strong></dt><dd><p>Magnetic field evaluation points</p>
+</dd>
+<dt><strong>loops: list</strong></dt><dd><p>list of ordered indices defining closed loops of vertices,
+if None use all vertices in the order of vertices.
+Example: Giving array of 4 vertices, the closed loop can be
+defined as loops = np.array([[0,1,2,3,0]])</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="bfieldtools.bfield_line.bfield_line_segments">
 <code class="descclassname">bfieldtools.bfield_line.</code><code class="descname">bfield_line_segments</code><span class="sig-paren">(</span><em>vertices</em>, <em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.bfield_line.bfield_line_segments" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute b field of a segmented line current.
@@ -129,14 +150,13 @@ on page 217 (3rd edition)</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="bfieldtools.bfield_line.flux_line_segments">
-<code class="descclassname">bfieldtools.bfield_line.</code><code class="descname">flux_line_segments</code><span class="sig-paren">(</span><em>vertices</em>, <em>loops</em>, <em>vertices_other</em>, <em>Nquad=2</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.bfield_line.flux_line_segments" title="Permalink to this definition">¶</a></dt>
+<dt id="bfieldtools.bfield_line.flux_current_loops">
+<code class="descclassname">bfieldtools.bfield_line.</code><code class="descname">flux_current_loops</code><span class="sig-paren">(</span><em>vertices</em>, <em>loops</em>, <em>vertices_other</em>, <em>Nquad=2</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.bfield_line.flux_current_loops" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute magnetic flux created by a segmented line current loops
 (vertices, loops) on a another closed loop of segmented current
 (vertices_other). The other loop is numerically integrated.</p>
 <p>In other words, calculate mutual inductance of the current loops.</p>
 <p>NOT SUITABLE for calculating the self-flux, i.e., self inductance</p>
-<p>TODO: test</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -146,7 +166,7 @@ on page 217 (3rd edition)</p>
 None use all vertices. All loops must have the same
 number of indices (this could be changed in future)
 Example: Giving array of 4 vertices, the loops can be
-defined as loops = np.array([[0,1,2,3,0]])</p>
+defined as loops = np.array([[0,1,2,3]])</p>
 </dd>
 <dt><strong>vertices_other:</strong></dt><dd><p>vertices in the loop receiving the flux</p>
 </dd>
@@ -167,10 +187,11 @@ defined as loops = np.array([[0,1,2,3,0]])</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="bfieldtools.bfield_line.vectorpot_line_segments">
-<code class="descclassname">bfieldtools.bfield_line.</code><code class="descname">vectorpot_line_segments</code><span class="sig-paren">(</span><em>vertices</em>, <em>points</em>, <em>loops=None</em>, <em>reg=1e-12</em>, <em>symmetrize=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.bfield_line.vectorpot_line_segments" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute vector potential of a segmented line current.
-Based on straightforward integration of 1/r potential over a line</p>
+<dt id="bfieldtools.bfield_line.vectorpot_current_loops">
+<code class="descclassname">bfieldtools.bfield_line.</code><code class="descname">vectorpot_current_loops</code><span class="sig-paren">(</span><em>vertices</em>, <em>points</em>, <em>loops=None</em>, <em>reg=1e-12</em>, <em>symmetrize=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.bfield_line.vectorpot_current_loops" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute vector potential of a segmented line currents.
+Based on straightforward integration of 1/r potential over a line
+i.e. the gamma0 integral</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -182,8 +203,8 @@ Based on straightforward integration of 1/r potential over a line</p>
 if None use all vertices in the order of vertices.
 All loops must have the same number of indices
 (this could be changed in future)
-Example: Giving array of 4 vertices, the closed loop can be
-defined as loops = np.array([[0,1,2,3,0]])</p>
+Example: Giving array of 4 vertices, a closed loop can be
+defined as loops = np.array([[0,1,2,3]])</p>
 </dd>
 </dl>
 </dd>
@@ -200,7 +221,7 @@ defined as loops = np.array([[0,1,2,3,0]])</p>
 <span id="bfieldtools-coil-optimize-module"></span><h2>bfieldtools.coil_optimize module<a class="headerlink" href="#module-bfieldtools.coil_optimize" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="bfieldtools.coil_optimize.cvxopt_solve_qp">
-<code class="descclassname">bfieldtools.coil_optimize.</code><code class="descname">cvxopt_solve_qp</code><span class="sig-paren">(</span><em>P</em>, <em>q</em>, <em>G=None</em>, <em>h=None</em>, <em>A=None</em>, <em>b=None</em>, <em>tolerance=1e-07</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.cvxopt_solve_qp" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.coil_optimize.</code><code class="descname">cvxopt_solve_qp</code><span class="sig-paren">(</span><em>P</em>, <em>q</em>, <em>G=None</em>, <em>h=None</em>, <em>A=None</em>, <em>b=None</em>, <em>sw=None</em>, <em>reg=None</em>, <em>tolerance=1e-07</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.cvxopt_solve_qp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use cvxopt to minimize
 (1/2) * x’ * P * x + q’ * x</p>
 <p>subject to
@@ -210,11 +231,15 @@ A * x = b</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="bfieldtools.coil_optimize.cvxpy_solve_qp">
+<code class="descclassname">bfieldtools.coil_optimize.</code><code class="descname">cvxpy_solve_qp</code><span class="sig-paren">(</span><em>P</em>, <em>G</em>, <em>h</em>, <em>solver='MOSEK'</em>, <em>tolerance=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.cvxpy_solve_qp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="bfieldtools.coil_optimize.optimize_streamfunctions">
-<code class="descclassname">bfieldtools.coil_optimize.</code><code class="descname">optimize_streamfunctions</code><span class="sig-paren">(</span><em>meshobj</em>, <em>bfield_specification</em>, <em>objective='minimum_inductive_energy'</em>, <em>laplacian_smooth=0.1</em>, <em>tolerance=0.1</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.optimize_streamfunctions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Quadratic optimization of coil stream function according to minimal field energy,
-while keeping specified target field at target points within bounds.</p>
-<p>Optional Laplacian smoothing of inductance matrix.</p>
+<code class="descclassname">bfieldtools.coil_optimize.</code><code class="descname">optimize_streamfunctions</code><span class="sig-paren">(</span><em>meshobj</em>, <em>bfield_specification</em>, <em>objective='minimum_inductive_energy'</em>, <em>solver=None</em>, <em>solver_opts={}</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.optimize_streamfunctions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quadratic optimization of coil stream function according to a specified objective,
+while keeping specified target field at target points within given constraints.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -232,6 +257,7 @@ if tuple, should contain: (a, b), where a and b are floats describing the induct
 The resistance matrix is scaled according to the largest singular value of the inductance matrix for consistent behavior
 across meshes.</p>
 </dd>
+<dt><strong>solver</strong></dt><dd></dd>
 <dt><strong>tolerance: float</strong></dt><dd></dd>
 </dl>
 </dd>
@@ -245,6 +271,17 @@ at each mesh vertex</p>
 </dl>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="bfieldtools.coil_optimize.quadprog_solve_qp">
+<code class="descclassname">bfieldtools.coil_optimize.</code><code class="descname">quadprog_solve_qp</code><span class="sig-paren">(</span><em>P</em>, <em>q</em>, <em>G=None</em>, <em>h=None</em>, <em>A=None</em>, <em>b=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.quadprog_solve_qp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use quadprog to minimize
+(1/2) * x’ * P * x + q’ * x</p>
+<p>subject to
+G * x &lt;= h</p>
+<p>and
+A * x = b</p>
 </dd></dl>
 
 </div>
@@ -1020,6 +1057,29 @@ using the inner product.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="bfieldtools.sphtools.sphbasis.basis_fields">
+<code class="descname">basis_fields</code><span class="sig-paren">(</span><em>p</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.basis_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes magnetic fields for each sph coefficient.
+Ignores the ‘DC’ component l=0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>p: Nx3 array</strong></dt><dd><p>coordinates in which the field is computed</p>
+</dd>
+<dt><strong>lmax: int</strong></dt><dd><p>maximum degree l which is used in computing</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>field: Nx3 array</strong></dt><dd><p>magnetic field at p</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.bvsphspectra">
 <code class="descname">bvsphspectra</code><span class="sig-paren">(</span><em>fun</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.bvsphspectra" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the l,m-spectra (over r**(-l)-terms) of vector function defined in quadrature points
@@ -1198,29 +1258,6 @@ Ignores the ‘DC’ component l=0.</p>
 <dt><strong>acoeffs: lmax*(lmax+2)x1 array</strong></dt><dd><p>spectral coefficients of r**l terms</p>
 </dd>
 <dt><strong>bcoeffs: lmax*(lmax+2)x1 array</strong></dt><dd><p>spectral coefficients of r**(-l) terms</p>
-</dd>
-<dt><strong>lmax: int</strong></dt><dd><p>maximum degree l which is used in computing</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>field: Nx3 array</strong></dt><dd><p>magnetic field at p</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="bfieldtools.sphtools.sphbasis.fields">
-<code class="descname">fields</code><span class="sig-paren">(</span><em>p</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.fields" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes magnetic fields for each sph coefficient.
-Ignores the ‘DC’ component l=0.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>p: Nx3 array</strong></dt><dd><p>coordinates in which the field is computed</p>
 </dd>
 <dt><strong>lmax: int</strong></dt><dd><p>maximum degree l which is used in computing</p>
 </dd>
@@ -1616,6 +1653,28 @@ in a relatively thin conductor.</p>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>B: Nfieldpoints x Nfieldpoints x 3components array</strong></dt><dd><p>magnetic noise covariance at DC</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="bfieldtools.thermal_noise.integrate_Bnoise_covar">
+<code class="descclassname">bfieldtools.thermal_noise.</code><code class="descname">integrate_Bnoise_covar</code><span class="sig-paren">(</span><em>B_covar</em>, <em>weighting=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.integrate_Bnoise_covar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the (quadrature) integrated noise over a volume spanned by the points in fp.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>B_covar: (N_p, N_p, 3) array</strong></dt><dd><p>One vector component of the covariance matrix computed by compute_dc_Bnoise_covar</p>
+</dd>
+<dt><strong>weighting: (N_p,) array</strong></dt><dd><p>Weighting factors for each point in the volume. If None (default), use equal weighting.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>Bnoise_integrated: float</strong></dt><dd><p>Integrated noise amplitude over the volume</p>
 </dd>
 </dl>
 </dd>

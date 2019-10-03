@@ -14,8 +14,8 @@
     <script type="text/javascript" src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Magnetically shielded coil" href="magnetically_shielded_biplanar_coil_design.html" />
-    <link rel="prev" title="Coil with minimal eddy currents" href="shielded_cylindrical_coil_design.html" />
+    <link rel="next" title="Coil with minimal eddy currents" href="minimal_eddy_current_cylindrical_coil_design.html" />
+    <link rel="prev" title="MAMBA coil" href="mamba_coil_design.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -111,7 +111,6 @@ region between the two coil planes.</p>
 <span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
 
-
 <span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">MeshWrapper</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.magnetic_field_mesh</span> <span class="k">import</span> <span class="n">compute_C</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="k">import</span> <span class="n">optimize_streamfunctions</span>
@@ -154,7 +153,7 @@ region between the two coil planes.</p>
 <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">scaling_factor</span>
 
 <span class="n">sidelength</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">scaling_factor</span>
-<span class="n">n</span> <span class="o">=</span> <span class="mi">12</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">8</span>
 <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 <span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
@@ -181,7 +180,7 @@ region between the two coil planes.</p>
 <span class="c1">#                                   nalpha = 30,</span>
 <span class="c1">#                                   orientation=np.array([1, 0, 0]))</span>
 <span class="c1">#</span>
-<span class="n">stray_points_mesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">creation</span><span class="o">.</span><span class="n">icosphere</span><span class="p">(</span><span class="n">subdivisions</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">stray_radius</span><span class="p">)</span>
+<span class="n">stray_points_mesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">creation</span><span class="o">.</span><span class="n">icosphere</span><span class="p">(</span><span class="n">subdivisions</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">stray_radius</span><span class="p">)</span>
 <span class="n">stray_points</span> <span class="o">=</span> <span class="n">stray_points_mesh</span><span class="o">.</span><span class="n">vertices</span> <span class="o">+</span> <span class="n">center</span>
 
 <span class="n">n_stray_points</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">stray_points</span><span class="p">)</span>
@@ -193,8 +192,8 @@ region between the two coil planes.</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3184 vertices by 672 target points... took 0.95 seconds.
-Computing C matrix, 3184 vertices by 2562 target points... took 2.89 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3184 vertices by 160 target points... took 0.30 seconds.
+Computing C matrix, 3184 vertices by 642 target points... took 0.84 seconds.
 </pre></div>
 </div>
 <p>Create bfield specifications used when optimizing the coil geometry</p>
@@ -204,44 +203,101 @@ Computing C matrix, 3184 vertices by 2562 target points... took 2.89 seconds.
 <span class="n">target_field</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">target_points</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="n">target_field</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">target_field</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
 
-<span class="n">target_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="n">coil</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;target_field&#39;</span><span class="p">:</span><span class="n">target_field</span><span class="p">}</span>
+<span class="n">target_rel_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">target_field</span><span class="p">)</span>
+<span class="n">target_rel_error</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.01</span>
+
+<span class="n">target_abs_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">target_field</span><span class="p">)</span>
+<span class="n">target_abs_error</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.001</span>
+<span class="n">target_abs_error</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.005</span>
+
+<span class="n">target_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="n">coil</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="n">target_rel_error</span><span class="p">,</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="n">target_abs_error</span><span class="p">,</span> <span class="s1">&#39;target_field&#39;</span><span class="p">:</span><span class="n">target_field</span><span class="p">}</span>
 <span class="n">stray_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="n">coil</span><span class="o">.</span><span class="n">strayC</span><span class="p">,</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;target_field&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_stray_points</span><span class="p">,</span> <span class="mi">3</span><span class="p">))}</span>
+
+<span class="n">bfield_specification</span> <span class="o">=</span> <span class="p">[</span><span class="n">target_spec</span><span class="p">,</span> <span class="n">stray_spec</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Run QP solver</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># The tolerance parameter will determine the spatial detail of the coil.</span>
-<span class="c1"># Smaller tolerance means better but more intricate patterns. Too small values</span>
-<span class="c1"># will not be solveable.</span>
-<span class="n">tolerance</span> <span class="o">=</span> <span class="mf">0.25</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mosek</span>
 
-<span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">sol</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
-                                            <span class="p">[</span><span class="n">target_spec</span><span class="p">,</span> <span class="n">stray_spec</span><span class="p">],</span>
-                                            <span class="n">objective</span><span class="o">=</span><span class="s1">&#39;minimum_inductive_energy&#39;</span><span class="p">,</span>
-                                            <span class="n">tolerance</span><span class="o">=</span><span class="n">tolerance</span><span class="p">)</span>
+<span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
+                                   <span class="p">[</span><span class="n">target_spec</span><span class="p">,</span> <span class="n">stray_spec</span><span class="p">],</span>
+                                   <span class="n">objective</span><span class="o">=</span><span class="s1">&#39;minimum_inductive_energy&#39;</span><span class="p">,</span>
+                                   <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;MOSEK&#39;</span><span class="p">,</span>
+                                   <span class="n">solver_opts</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mosek_params&#39;</span><span class="p">:{</span><span class="n">mosek</span><span class="o">.</span><span class="n">iparam</span><span class="o">.</span><span class="n">num_threads</span><span class="p">:</span> <span class="mi">8</span><span class="p">}}</span>
+                                   <span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 3 chunks since 6 GiB memory is available...
-Calculating potentials, chunk 1/3
-Calculating potentials, chunk 2/3
-Calculating potentials, chunk 3/3
-Inductance matrix computation took 69.54 seconds.
-Solving quadratic programming problem using cvxopt...
-     pcost       dcost       gap    pres   dres
- 0:  1.0500e+02  3.7757e+02  3e+04  5e+00  3e-14
- 1:  1.5336e+02  4.0199e+02  3e+03  6e-01  3e-14
- 2:  4.4248e+02  9.2422e+02  1e+03  1e-01  7e-14
- 3:  4.6255e+02  1.0365e+03  1e+03  1e-01  7e-14
- 4:  5.3592e+02  1.4638e+03  9e+02  8e-02  1e-13
- 5:  5.6696e+02  3.6612e+03  1e+03  8e-02  3e-13
- 6:  5.6809e+02  3.7241e+03  1e+03  8e-02  3e-13
- 7:  5.7281e+02  3.9155e+03  1e+03  8e-02  4e-13
- 8:  6.2388e+02  5.2786e+03  1e+03  8e-02  4e-12
-Optimal solution found.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 2 chunks since 8 GiB memory is available...
+Calculating potentials, chunk 1/2
+Calculating potentials, chunk 2/2
+Inductance matrix computation took 65.46 seconds.
+
+
+Problem
+  Name                   :
+  Objective sense        : min
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 7710
+  Cones                  : 1
+  Scalar variables       : 5795
+  Matrix variables       : 0
+  Integer variables      : 0
+
+Optimizer started.
+Problem
+  Name                   :
+  Objective sense        : min
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 7710
+  Cones                  : 1
+  Scalar variables       : 5795
+  Matrix variables       : 0
+  Integer variables      : 0
+
+Optimizer  - threads                : 8
+Optimizer  - solved problem         : the dual
+Optimizer  - Constraints            : 2897
+Optimizer  - Cones                  : 1
+Optimizer  - Scalar variables       : 7710              conic                  : 2898
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0
+Factor     - setup time             : 2.01              dense det. time        : 0.00
+Factor     - ML order time          : 0.29              GP order time          : 0.00
+Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06
+Factor     - dense dim.             : 0                 flops                  : 5.26e+10
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
+0   3.3e+02  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  75.60
+1   1.8e+02  5.5e-01  1.5e+00  -9.69e-01  3.901237432e-01   1.731532757e-01   5.5e-01  76.35
+2   9.6e+01  2.9e-01  1.0e+00  -9.27e-01  4.185471306e+00   5.344659909e+00   2.9e-01  76.89
+3   8.0e+01  2.4e-01  9.1e-01  -8.52e-01  7.541655539e+00   9.185280969e+00   2.4e-01  77.43
+4   2.7e+01  8.2e-02  4.6e-01  -8.22e-01  6.067138585e+01   6.676969596e+01   8.2e-02  78.15
+5   1.8e+01  5.5e-02  3.2e-01  -5.35e-01  1.129291606e+02   1.202495325e+02   5.5e-02  78.73
+6   3.2e+00  9.7e-03  6.3e-02  -3.68e-01  4.183598608e+02   4.284717884e+02   9.7e-03  79.34
+7   9.6e-01  2.9e-03  1.0e-02  5.15e-01   5.931225935e+02   5.961146234e+02   2.9e-03  79.87
+8   4.3e-01  1.3e-03  3.1e-03  9.19e-01   4.222103767e+02   4.235030322e+02   1.3e-03  80.44
+9   3.3e-01  1.0e-03  2.1e-03  9.88e-01   4.916049319e+02   4.926280323e+02   1.0e-03  80.98
+10  8.3e-03  2.5e-05  7.2e-06  9.94e-01   4.664898365e+02   4.665081857e+02   2.5e-05  81.73
+11  8.3e-04  2.5e-06  2.8e-07  1.00e+00   4.673976385e+02   4.674004349e+02   2.5e-06  82.48
+12  5.1e-04  1.5e-06  1.3e-07  1.00e+00   4.674257060e+02   4.674274237e+02   1.5e-06  83.19
+13  1.5e-04  4.6e-07  2.1e-08  1.00e+00   4.675038693e+02   4.675043792e+02   4.6e-07  83.81
+14  1.9e-05  5.8e-08  9.7e-10  1.00e+00   4.675437418e+02   4.675438062e+02   5.8e-08  84.47
+15  7.3e-06  2.2e-08  2.3e-10  1.00e+00   4.675482297e+02   4.675482544e+02   2.2e-08  85.03
+16  1.0e-06  5.7e-09  1.4e-11  1.00e+00   4.675502446e+02   4.675502480e+02   3.1e-09  85.59
+17  2.1e-08  1.2e-10  5.4e-14  1.00e+00   4.675506350e+02   4.675506350e+02   6.5e-11  86.72
+Optimizer terminated. Time: 87.23
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 4.6755063496e+02    nrm: 9e+02    Viol.  con: 2e-09    var: 0e+00    cones: 0e+00
+  Dual.    obj: 4.6755063503e+02    nrm: 4e+04    Viol.  con: 7e-05    var: 1e-09    cones: 0e+00
 </pre></div>
 </div>
 <p>Plot coil windings and target points</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loops</span><span class="p">,</span> <span class="n">loop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">N_contours</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="n">loops</span><span class="p">,</span> <span class="n">loop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="n">N_contours</span><span class="p">)</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
            <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
@@ -255,130 +311,8 @@ Optimal solution found.
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_biplanar_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_biplanar_coil_design_001.png" />
-<p>Plot field falloff on two axes</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-
-<span class="n">z1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">101</span><span class="p">)</span> <span class="o">*</span> <span class="n">scaling_factor</span>
-
-<span class="n">x1</span> <span class="o">=</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">z1</span><span class="p">)</span>
-
-<span class="n">line1_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">z1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
-
-<span class="n">line1_C</span> <span class="o">=</span> <span class="n">compute_C</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">line1_points</span><span class="p">)</span>
-
-<span class="n">B_line1</span> <span class="o">=</span> <span class="n">line1_C</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">z1</span> <span class="o">/</span> <span class="n">scaling_factor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">B_line1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">target_field</span><span class="p">)),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Z&#39;</span><span class="p">)</span>
-
-<span class="n">y2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">101</span><span class="p">)</span> <span class="o">*</span> <span class="n">scaling_factor</span>
-
-<span class="n">z2</span> <span class="o">=</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">y2</span><span class="p">)</span>
-
-<span class="n">line2_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">z2</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
-
-<span class="n">line2_C</span> <span class="o">=</span> <span class="n">compute_C</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="n">line2_points</span><span class="p">)</span>
-
-<span class="n">B_line2</span> <span class="o">=</span> <span class="n">line2_C</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">y2</span> <span class="o">/</span> <span class="n">scaling_factor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">B_line2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">target_field</span><span class="p">)),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Field amplitude (target field units)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Distance from origin&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;minor&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<img alt="../../_images/sphx_glr_biplanar_coil_design_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_biplanar_coil_design_002.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3184 vertices by 101 target points... took 0.21 seconds.
-Computing C matrix, 3184 vertices by 101 target points... took 0.19 seconds.
-/l/bfieldtools/examples/coil_design/biplanar_coil_design.py:179: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
-  plt.show()
-</pre></div>
-</div>
-<p>Extract stream function isosurfaces/contours as polygons,
-plot with current directions</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scene</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-               <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
-<span class="n">mlab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-
-<span class="n">N_contours</span> <span class="o">=</span> <span class="mi">10</span>
-
-
-<span class="n">contour_polys</span><span class="p">,</span> <span class="n">contour_values</span> <span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="n">N_contours</span><span class="p">)</span>
-
-
-<span class="n">colors</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
-
-<span class="k">for</span> <span class="n">loop_idx</span><span class="p">,</span> <span class="n">loop</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">contour_polys</span><span class="p">):</span>
-    <span class="n">mlab</span><span class="o">.</span><span class="n">plot3d</span><span class="p">(</span><span class="o">*</span><span class="n">loop</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
-                <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="nb">int</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">contour_values</span><span class="p">[</span><span class="n">loop_idx</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)],</span>
-                <span class="n">tube_radius</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-
-    <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">loop</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
-              <span class="o">*</span><span class="p">(</span><span class="n">loop</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">loop</span><span class="p">[</span><span class="mi">1</span><span class="p">,:]</span><span class="o">.</span><span class="n">T</span><span class="p">),</span>
-              <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;cone&#39;</span><span class="p">,</span> <span class="n">scale_mode</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span>
-              <span class="n">scale_factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-              <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="nb">int</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">contour_values</span><span class="p">[</span><span class="n">loop_idx</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)])</span>
-</pre></div>
-</div>
-<img alt="../../_images/sphx_glr_biplanar_coil_design_003.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_biplanar_coil_design_003.png" />
-<p>Compute magnetic field from discrete current line segments</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Bseg_target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">B_target</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-
-<span class="n">Bseg_line1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">B_line1</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="n">Bseg_line2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">B_line2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-
-<span class="kn">from</span> <span class="nn">bfieldtools.bfield_line</span> <span class="k">import</span> <span class="n">bfield_line_segments</span>
-
-<span class="k">for</span> <span class="n">loop</span> <span class="ow">in</span> <span class="n">contour_polys</span><span class="p">:</span>
-    <span class="n">Bseg_target</span> <span class="o">+=</span> <span class="n">bfield_line_segments</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span>
-                         <span class="n">target_points</span><span class="p">)</span>
-
-    <span class="n">Bseg_line1</span> <span class="o">+=</span> <span class="n">bfield_line_segments</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span>
-                         <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">z1</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-
-    <span class="n">Bseg_line2</span> <span class="o">+=</span> <span class="n">bfield_line_segments</span><span class="p">(</span><span class="n">loop</span><span class="p">,</span>
-                     <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">z2</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-
-
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-
-<span class="n">I</span> <span class="o">=</span> <span class="mf">0.01</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="mf">1e9</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">Bseg_target</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Field amplitude in target region when </span><span class="si">%.1f</span><span class="s1"> mA current is injected (nT)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">I</span><span class="o">*</span><span class="mf">1e3</span><span class="p">))</span>
-
-
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-
-<span class="n">normalize_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">Bseg_line1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">z1</span><span class="o">==</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">z1</span> <span class="o">/</span> <span class="n">scaling_factor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">Bseg_line1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">normalize_value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Z&#39;</span><span class="p">)</span>
-
-<span class="n">normalize_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">Bseg_line2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">y2</span><span class="o">==</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">y2</span> <span class="o">/</span> <span class="n">scaling_factor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">Bseg_line2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="n">normalize_value</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Field amplitude (target field units)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Distance from origin&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;minor&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Field from discrete line segments, N_contours: </span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span><span class="n">N_contours</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-</pre></div>
-</div>
-<ul class="sphx-glr-horizontal">
-<li><img alt="../../_images/sphx_glr_biplanar_coil_design_004.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_biplanar_coil_design_004.png" />
-</li>
-<li><img alt="../../_images/sphx_glr_biplanar_coil_design_005.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_biplanar_coil_design_005.png" />
-</li>
-</ul>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  0.263 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  6383 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 3 minutes  21.344 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  7944 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-biplanar-coil-design-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/bfe43e86311a239427cae232e794e54a/biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">biplanar_coil_design.py</span></code></a></p>

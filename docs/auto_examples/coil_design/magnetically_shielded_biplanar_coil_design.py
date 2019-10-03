@@ -16,7 +16,7 @@ from bfieldtools.mesh_class import MeshWrapper
 from bfieldtools.magnetic_field_mesh import compute_C, compute_U
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
-from bfieldtools.viz import plot_3d_current_loops
+from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
 
 import pkg_resources
 
@@ -106,19 +106,24 @@ shield.C = compute_C(shield.mesh, target_points)
 target_field = np.zeros(target_points.shape)
 target_field[:, 1] = target_field[:, 1] + 1 # Homogeneous Z-field
 
-target_spec = {'C':coil.C, 'rel_error':0.01, 'abs_error':0, 'target_field':target_field}
 
+target_rel_error = np.zeros_like(target_field)
+target_rel_error[:, 0] += 0.01
 
-# The tolerance parameter will determine the spatial detail of the coil.
-# Smaller tolerance means better but more intricate patterns. Too small values
-# will not be solveable.
-tolerance = 0.5
+target_abs_error = np.zeros_like(target_field)
+target_abs_error[:, 0] += 0.001
+target_abs_error[:, 1:3] += 0.005
 
-coil.I, coil.sol = optimize_streamfunctions(coil,
-                                            [target_spec],
-                                            objective='minimum_inductive_energy',
-                                            tolerance=tolerance)
+target_spec = {'C':coil.C, 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
 
+import mosek
+
+coil.I, coil.prob = optimize_streamfunctions(coil,
+                                   [target_spec],
+                                   objective='minimum_inductive_energy',
+                                   solver='MOSEK',
+                                   solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
+                                   )
 
 
 
@@ -206,22 +211,18 @@ secondary_C = (shield.C.transpose((0,2,1)) @ shield.coupling).transpose((0,2,1))
 
 total_C = coil.C + secondary_C
 
-target_spec_w_shield = {'C':total_C, 'rel_error':0.01, 'abs_error':0, 'target_field':target_field}
+target_spec_w_shield = {'C':total_C, 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
 
 
-# The tolerance parameter will determine the spatial detail of the coil.
-# Smaller tolerance means better but more intricate patterns. Too small values
-# will not be solveable.
-tolerance = 0.5
-
-coil.I2, coil.sol2 = optimize_streamfunctions(coil,
-                                            [target_spec_w_shield],
-                                            objective='minimum_inductive_energy',
-                                            tolerance=tolerance)
-
+coil.I2, coil.prob2 = optimize_streamfunctions(coil,
+                                   [target_spec_w_shield],
+                                   objective='minimum_inductive_energy',
+                                   solver='MOSEK',
+                                   solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
+                                   )
 
 ##############################################################
-# Plot coil windings and target points
+# Plot the newly designed coil windings and field at the target points
 
 loops, loop_values= scalar_contour(coil.mesh, coil.I2, N_contours=10)
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
@@ -230,21 +231,51 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f)
 
-B_target = coil.C.transpose([0, 2, 1]) @ coil.I
-
-mlab.quiver3d(*target_points.T, *B_target.T)
-
-B_target2 = coil.C.transpose([0, 2, 1]) @ coil.I2
-
-
+B_target2 = total_C.transpose([0, 2, 1]) @ coil.I2
 mlab.quiver3d(*target_points.T, *B_target2.T)
 
 ###############################################################
-# Finally, plot the difference in stream functions
+# Plot the difference in stream functions
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
 mlab.clf()
 
-RE_I = mlab.triangular_mesh(*coil.mesh.vertices.T, coil.mesh.faces, scalars=100 * (coil.I-coil.I2)/coil.I, colormap='RdBu')
-mlab.colorbar(RE_I, title='Relative error (%)')
+plot_data_on_vertices(coil.mesh, np.nan_to_num(100 * (coil.I-coil.I2)/coil.I), figure=f, colorbar=True)
+
+mlab.colorbar(title='Relative error (%)')
+
+
+###############################################################
+# Finally, plot the field lines when the shield is included into the model
+
+extent = 8
+N = 20
+X, Y, Z = np.meshgrid(np.linspace(-extent, extent, N)+7.5, np.linspace(-extent, extent, N), np.linspace(-extent, extent, N))
+
+r = np.array([X.flatten(), Y.flatten(), Z.flatten()]).T
+
+r = r[shield.mesh.contains(r)]
+
+
+coil.C_cyl = compute_C(coil.mesh, r)
+shield.C_cyl = compute_C(shield.mesh, r)
+
+secondary_C_cyl = (shield.C_cyl.transpose((0,2,1)) @ shield.coupling).transpose((0,2,1))
+
+total_C_cyl = coil.C_cyl + secondary_C_cyl
+
+
+Bfield = total_C_cyl.transpose([0, 2, 1]) @ coil.I2
+
+f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+           size=(800, 800))
+mlab.clf()
+
+quiv = mlab.quiver3d(*r.T, *Bfield.T)
+
+
+
+plot_3d_current_loops(loops, colors='auto', figure=f)
+
+shield.plot_mesh(representation='surface', opacity=0.1, cull_front=True)

@@ -54,7 +54,7 @@ coil = MeshWrapper(verts=helmetmesh.vertices, tris=helmetmesh.faces, fix_normals
 
 center = np.array([0, 0, 0.04]) * scaling_factor
 
-sidelength = 0.1 * scaling_factor
+sidelength = 0.05 * scaling_factor
 n = 12
 xx = np.linspace(-sidelength/2, sidelength/2, n)
 yy = np.linspace(-sidelength/2, sidelength/2, n)
@@ -82,37 +82,39 @@ coil.C = compute_C(coil.mesh, target_points)
 
 #The absolute target field amplitude is not of importance,
 # and it is scaled to match the C matrix in the optimization function
-target_field = np.ones(target_points.shape[0], ) * target_points[:,0]
-
-
-
 target_field = np.zeros(target_points.shape)
 target_field[:, 0] = target_field[:, 0] + 1 * target_points[:,0]/np.max(target_points[:,0])
 
-target_spec = {'C':coil.C, 'rel_error':0.1, 'abs_error':0, 'target_field':target_field}
+rel_error = np.zeros_like(target_field)
+rel_error[:, 0] += 0.5
 
-# The tolerance parameter will determine the spatial detail of the coil.
-# Smaller tolerance means better but more intricate patterns. Too small values
-# will not be solveable.
-tolerance = 5
+abs_error = np.zeros_like(target_field)
+abs_error[:, 0] += 0.5
+abs_error[:, 1:3] += 0.5
 
-coil.I, coil.sol = optimize_streamfunctions(coil,
-                                            [target_spec],
-                                            objective='minimum_inductive_energy',
-                                            tolerance=tolerance)
 
+target_spec = {'C':coil.C, 'rel_error':rel_error, 'abs_error':abs_error, 'target_field':target_field}
+
+import mosek
+
+coil.I, prob = optimize_streamfunctions(coil,
+                                   [target_spec],
+                                   objective='minimum_inductive_energy',
+                                   solver='MOSEK',
+                                   solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
+                                   )
 
 ###############################################################
 #Plot coil windings and magnetic field in target points
 
 
-loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=10)
+loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=20)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
 mlab.clf()
 
-plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.05/100)
+plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.05/50)
 
 B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 

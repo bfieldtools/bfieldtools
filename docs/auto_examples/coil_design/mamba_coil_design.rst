@@ -111,6 +111,14 @@ Set up target and stray field points. Here, the target points are on a planar
     target_field = np.array([np.zeros((len(target_field),)), target_field, np.zeros((len(target_field),))]).T
 
 
+    target_rel_error = np.zeros_like(target_field)
+    target_rel_error[:, 1] += 0.05
+
+    target_abs_error = np.zeros_like(target_field)
+    target_abs_error[:, 1] += 0.01
+    target_abs_error[:, 0::2] += 0.05
+
+
 
 
 
@@ -145,7 +153,7 @@ Compute C matrices that are used to compute the generated magnetic field, create
 
     coil.C = compute_C(coil.mesh, target_points)
 
-    target_spec = {'C':coil.C, 'rel_error':0.01, 'abs_error':0, 'target_field':target_field}
+    target_spec = {'C':coil.C, 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
 
 
 
@@ -157,7 +165,7 @@ Compute C matrices that are used to compute the generated magnetic field, create
 
  .. code-block:: none
 
-    Computing C matrix, 3184 vertices by 512 target points... took 0.76 seconds.
+    Computing C matrix, 3184 vertices by 512 target points... took 0.81 seconds.
 
 
 
@@ -167,16 +175,14 @@ Run QP solver
 .. code-block:: default
 
 
+    import mosek
 
-    # The tolerance parameter will determine the spatial detail of the coil.
-    # Smaller tolerance means better but more intricate patterns. Too small values
-    # will not be solveable.
-    tolerance = 0.45
-
-    coil.I, coil.sol = optimize_streamfunctions(coil,
-                                                [target_spec],
-                                                objective='minimum_inductive_energy',
-                                                tolerance=tolerance)
+    coil.I, prob = optimize_streamfunctions(coil,
+                                       [target_spec],
+                                       objective='minimum_inductive_energy',
+                                       solver='MOSEK',
+                                       solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
+                                       )
 
 
 
@@ -189,21 +195,66 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 2 chunks since 8 GiB memory is available...
+    Computing inductance matrix in 2 chunks since 9 GiB memory is available...
     Calculating potentials, chunk 1/2
     Calculating potentials, chunk 2/2
-    Inductance matrix computation took 67.42 seconds.
-    Solving quadratic programming problem using cvxopt...
-         pcost       dcost       gap    pres   dres
-     0:  1.6068e+01  2.8227e+01  5e+03  4e+00  2e-14
-     1:  2.1506e+01  3.1514e+01  4e+02  3e-01  2e-14
-     2:  3.2340e+01  5.2495e+01  2e+02  1e-01  3e-14
-     3:  3.7329e+01  6.8586e+01  2e+02  1e-01  9e-14
-     4:  6.5414e+01  1.2704e+02  2e+02  7e-02  1e-12
-     5:  7.9337e+01  1.5876e+02  1e+02  5e-02  2e-12
-     6:  8.4357e+01  2.2902e+02  1e+02  4e-02  4e-12
-     7:  8.6149e+01  4.0152e+02  2e+02  4e-02  5e-12
-    Optimal solution found.
+    Inductance matrix computation took 65.25 seconds.
+
+
+    Problem
+      Name                   :                 
+      Objective sense        : min             
+      Type                   : CONIC (conic optimization problem)
+      Constraints            : 5970            
+      Cones                  : 1               
+      Scalar variables       : 5795            
+      Matrix variables       : 0               
+      Integer variables      : 0               
+
+    Optimizer started.
+    Problem
+      Name                   :                 
+      Objective sense        : min             
+      Type                   : CONIC (conic optimization problem)
+      Constraints            : 5970            
+      Cones                  : 1               
+      Scalar variables       : 5795            
+      Matrix variables       : 0               
+      Integer variables      : 0               
+
+    Optimizer  - threads                : 8               
+    Optimizer  - solved problem         : the dual        
+    Optimizer  - Constraints            : 2897
+    Optimizer  - Cones                  : 1
+    Optimizer  - Scalar variables       : 5970              conic                  : 2898            
+    Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+    Factor     - setup time             : 1.52              dense det. time        : 0.00            
+    Factor     - ML order time          : 0.28              GP order time          : 0.00            
+    Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06        
+    Factor     - dense dim.             : 0                 flops                  : 4.53e+10        
+    ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+    0   2.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  71.48 
+    1   9.2e+00  3.8e-01  3.3e-01  3.18e-01   8.720442621e+01   8.663738472e+01   3.8e-01  71.99 
+    2   6.5e+00  2.7e-01  2.4e-01  3.48e-01   1.226961211e+02   1.222523302e+02   2.7e-01  72.48 
+    3   3.4e+00  1.4e-01  1.3e-01  3.68e-01   1.987899646e+02   1.985326339e+02   1.4e-01  72.98 
+    4   1.1e+00  4.6e-02  2.1e-02  1.11e+00   3.144686625e+02   3.143947436e+02   4.6e-02  73.49 
+    5   4.4e-01  1.8e-02  6.2e-03  9.35e-01   3.445450804e+02   3.445201507e+02   1.8e-02  73.98 
+    6   3.2e-02  1.3e-03  1.2e-04  9.84e-01   3.765035939e+02   3.765016483e+02   1.3e-03  74.67 
+    7   8.4e-04  3.5e-05  5.6e-07  1.00e+00   3.791913665e+02   3.791913288e+02   3.5e-05  75.31 
+    8   3.7e-04  1.5e-05  1.7e-07  1.00e+00   3.792467290e+02   3.792467145e+02   1.5e-05  75.88 
+    9   6.2e-06  2.6e-07  4.6e-10  1.00e+00   3.792916897e+02   3.792916893e+02   2.6e-07  76.54 
+    10  7.4e-07  3.1e-08  2.2e-11  1.00e+00   3.792923898e+02   3.792923898e+02   3.1e-08  77.06 
+    11  3.7e-07  1.5e-08  1.2e-11  1.00e+00   3.792924377e+02   3.792924376e+02   1.5e-08  77.97 
+    12  8.6e-07  7.7e-09  4.9e-12  1.00e+00   3.792924617e+02   3.792924616e+02   7.7e-09  78.76 
+    13  1.6e-07  3.9e-09  3.6e-12  1.00e+00   3.792924737e+02   3.792924736e+02   3.9e-09  79.57 
+    Optimizer terminated. Time: 79.97   
+
+
+    Interior-point solution summary
+      Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+      Solution status : OPTIMAL
+      Primal.  obj: 3.7929247368e+02    nrm: 8e+02    Viol.  con: 2e-08    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 3.7929247363e+02    nrm: 4e+02    Viol.  con: 0e+00    var: 2e-10    cones: 0e+00  
 
 
 
@@ -219,7 +270,7 @@ Plot coil windings and target points
                size=(800, 800))
     mlab.clf()
 
-    plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.01)
+    plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.025)
 
     B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
@@ -238,9 +289,9 @@ Plot coil windings and target points
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  3.453 seconds)
+   **Total running time of the script:** ( 3 minutes  17.943 seconds)
 
-**Estimated memory usage:**  8055 MB
+**Estimated memory usage:**  7836 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_mamba_coil_design.py:

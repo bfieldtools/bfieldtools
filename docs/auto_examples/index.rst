@@ -127,26 +127,6 @@ Examples related to coil design.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Coil with minimal eddy currents">
-
-.. only:: html
-
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_shielded_cylindrical_coil_design_thumb.png
-
-        :ref:`sphx_glr_auto_examples_coil_design_shielded_cylindrical_coil_design.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/coil_design/shielded_cylindrical_coil_design
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing homogeneous field in a target region between th...">
 
 .. only:: html
@@ -164,6 +144,26 @@ Examples related to coil design.
    :hidden:
 
    /auto_examples/coil_design/biplanar_coil_design
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Coil with minimal eddy currents">
+
+.. only:: html
+
+    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_minimal_eddy_current_cylindrical_coil_design_thumb.png
+
+        :ref:`sphx_glr_auto_examples_coil_design_minimal_eddy_current_cylindrical_coil_design.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/coil_design/minimal_eddy_current_cylindrical_coil_design
 
 .. raw:: html
 
