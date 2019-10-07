@@ -173,8 +173,11 @@ def optimize_streamfunctions(meshobj, bfield_specification,
         inner_C = spec['C'][:, meshobj.inner_verts]
 
         #Reshape so that values on axis 1 are x1, y1, z1, x2, y2, z2, etc.
-        inner_C = inner_C.transpose((1, 0, 2))
-        inner_C = inner_C.reshape((inner_C.shape[0], -1)).T
+        #If not 3D matrix, assuming the use of spherical harmonics
+        if inner_C.ndim == 3:
+
+            inner_C = inner_C.transpose((1, 0, 2))
+            inner_C = inner_C.reshape((inner_C.shape[0], -1)).T
 
         #Apply relative error to bounds
         if spec['rel_error'] is not None:
