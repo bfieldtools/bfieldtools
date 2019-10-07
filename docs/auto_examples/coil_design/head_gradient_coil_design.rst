@@ -84,7 +84,8 @@ Here, the target points are on a volumetric grid within a sphere
 .. code-block:: default
 
 
-    center = np.array([0, 0, 0.04]) * scaling_factor
+    offset = np.array([0, 0, 0.04])
+    center = offset * scaling_factor
 
     sidelength = 0.05 * scaling_factor
     n = 12
@@ -128,7 +129,7 @@ Compute C matrices that are used to compute the generated magnetic field
 
  .. code-block:: none
 
-    Computing C matrix, 2044 vertices by 672 target points... took 0.61 seconds.
+    Computing C matrix, 2044 vertices by 672 target points... took 0.64 seconds.
 
 
 
@@ -140,15 +141,44 @@ Specify target field and run solver
 
     #The absolute target field amplitude is not of importance,
     # and it is scaled to match the C matrix in the optimization function
-    target_field = np.zeros(target_points.shape)
-    target_field[:, 0] = target_field[:, 0] + 1 * target_points[:,0]/np.max(target_points[:,0])
+
+
+    #Let's generate the target field through the use of spherical harmonics.
+    # Thus we avoid issues with having to manually specify the concomitant gradients
+
+
+    from bfieldtools.sphtools import sphbasis, plotsph, sphfittools
+
+
+    sph = sphbasis(50)
+
+    #plotsph.plotYlms(sph, 3)
+
+    lmax = 3
+    alm = np.zeros((lmax*(lmax+2),))
+    blm = np.zeros((lmax*(lmax+2),))
+
+    #
+    alm[3]+=1
+    #blm[0]+=1
+
+    sphfield = sph.field(target_points - offset,alm, blm, lmax)
+
+    target_field = sphfield/np.max(sphfield[:, 0])
+
+    target_field[:, 2] = 0
+
+    coil.plot_mesh()
+    mlab.quiver3d(*target_points.T, *sphfield.T)
+
+
 
     rel_error = np.zeros_like(target_field)
-    rel_error[:, 0] += 0.5
+    #rel_error[:, 0] += 0.1
 
     abs_error = np.zeros_like(target_field)
-    abs_error[:, 0] += 0.5
-    abs_error[:, 1:3] += 0.5
+    abs_error[:, 0] += 0.1
+    abs_error[:, 1:3] += 0.1
 
 
     target_spec = {'C':coil.C, 'rel_error':rel_error, 'abs_error':abs_error, 'target_field':target_field}
@@ -165,6 +195,9 @@ Specify target field and run solver
 
 
 
+.. image:: /auto_examples/coil_design/images/sphx_glr_head_gradient_coil_design_001.png
+    :class: sphx-glr-single-img
+
 
 .. rst-class:: sphx-glr-script-out
 
@@ -172,9 +205,9 @@ Specify target field and run solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 1 chunks since 9 GiB memory is available...
+    Computing inductance matrix in 1 chunks since 10 GiB memory is available...
     Calculating potentials, chunk 1/1
-    Inductance matrix computation took 30.90 seconds.
+    Inductance matrix computation took 30.07 seconds.
 
 
     Problem
@@ -204,31 +237,36 @@ Specify target field and run solver
     Optimizer  - Cones                  : 1
     Optimizer  - Scalar variables       : 5979              conic                  : 1947            
     Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
-    Factor     - setup time             : 0.91              dense det. time        : 0.00            
-    Factor     - ML order time          : 0.09              GP order time          : 0.00            
+    Factor     - setup time             : 0.93              dense det. time        : 0.00            
+    Factor     - ML order time          : 0.10              GP order time          : 0.00            
     Factor     - nonzeros before factor : 1.89e+06          after factor           : 1.89e+06        
     Factor     - dense dim.             : 0                 flops                  : 1.75e+10        
     ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
-    0   1.9e+02  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  37.27 
-    1   2.2e+01  1.1e-01  6.3e-01  -9.79e-01  6.350121087e+00   1.226904514e+01   1.1e-01  37.61 
-    2   6.1e+00  3.2e-02  2.7e-01  -7.93e-01  1.835479781e+01   3.527219599e+01   3.2e-02  37.83 
-    3   9.4e-01  4.9e-03  4.8e-02  -4.12e-01  7.638261550e+01   9.977001451e+01   4.9e-03  38.07 
-    4   2.8e-02  1.4e-04  3.7e-04  4.57e-01   9.658276130e+01   9.824096869e+01   1.4e-04  38.30 
-    5   8.7e-03  4.6e-05  5.9e-05  9.79e-01   7.376772385e+01   7.418242294e+01   4.6e-05  38.54 
-    6   6.2e-04  3.3e-06  9.7e-07  9.93e-01   5.956608800e+01   5.958789531e+01   3.3e-06  38.87 
-    7   1.6e-04  8.1e-07  1.2e-07  1.00e+00   5.839147102e+01   5.839641393e+01   8.1e-07  39.13 
-    8   2.5e-05  1.3e-07  7.1e-09  1.00e+00   5.759453648e+01   5.759522420e+01   1.3e-07  39.39 
-    9   7.4e-06  3.8e-08  1.1e-09  1.00e+00   5.749433976e+01   5.749454619e+01   3.8e-08  39.64 
-    10  2.5e-06  1.3e-08  2.2e-10  1.00e+00   5.749118663e+01   5.749125846e+01   1.3e-08  39.87 
-    11  4.8e-09  2.5e-11  2.8e-14  1.00e+00   5.748651428e+01   5.748651443e+01   2.5e-11  40.20 
-    Optimizer terminated. Time: 40.46   
+    0   2.8e+02  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  38.00 
+    1   9.6e+01  3.4e-01  1.0e+00  -8.89e-01  3.495137057e+01   3.556319782e+01   3.4e-01  38.24 
+    2   1.9e+01  6.7e-02  3.1e-01  -6.80e-01  3.287714245e+02   3.330587999e+02   6.7e-02  38.48 
+    3   3.0e+00  1.1e-02  3.5e-02  -3.87e-03  7.839861013e+02   7.864354334e+02   1.1e-02  38.72 
+    4   2.4e-01  8.5e-04  7.5e-04  7.33e-01   7.252185038e+02   7.253864548e+02   8.5e-04  38.99 
+    5   2.2e-01  7.9e-04  6.8e-04  9.90e-01   7.113676402e+02   7.115249139e+02   7.9e-04  39.21 
+    6   2.1e-01  7.6e-04  6.3e-04  9.87e-01   7.125757126e+02   7.127264412e+02   7.6e-04  39.46 
+    7   1.4e-01  4.9e-04  3.4e-04  9.86e-01   6.702376827e+02   6.703372928e+02   4.9e-04  39.71 
+    8   9.2e-02  3.3e-04  1.8e-04  9.89e-01   6.598383456e+02   6.599050761e+02   3.3e-04  39.96 
+    9   5.4e-02  1.9e-04  8.2e-05  9.92e-01   6.563198007e+02   6.563594718e+02   1.9e-04  40.21 
+    10  2.5e-02  8.8e-05  2.5e-05  9.95e-01   6.509659213e+02   6.509842552e+02   8.8e-05  40.45 
+    11  1.4e-02  5.1e-05  1.1e-05  9.98e-01   6.498164918e+02   6.498271835e+02   5.1e-05  40.73 
+    12  1.6e-03  5.8e-06  4.4e-07  9.99e-01   6.485899413e+02   6.485912086e+02   5.8e-06  41.06 
+    13  3.4e-05  1.2e-07  1.3e-09  1.00e+00   6.486172624e+02   6.486172881e+02   1.2e-07  41.42 
+    14  6.0e-06  2.1e-08  9.6e-11  1.00e+00   6.486175937e+02   6.486175983e+02   2.1e-08  41.67 
+    15  3.0e-06  1.1e-08  3.7e-11  1.00e+00   6.486177173e+02   6.486177196e+02   1.1e-08  42.17 
+    16  1.0e-07  2.0e-10  2.9e-12  1.00e+00   6.486178411e+02   6.486178403e+02   1.3e-11  42.40 
+    Optimizer terminated. Time: 42.67   
 
 
     Interior-point solution summary
       Problem status  : PRIMAL_AND_DUAL_FEASIBLE
       Solution status : OPTIMAL
-      Primal.  obj: 5.7486514282e+01    nrm: 1e+02    Viol.  con: 3e-09    var: 0e+00    cones: 0e+00  
-      Dual.    obj: 5.7486514427e+01    nrm: 1e+02    Viol.  con: 4e-07    var: 1e-11    cones: 0e+00  
+      Primal.  obj: 6.4861784110e+02    nrm: 1e+03    Viol.  con: 2e-10    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 6.4861784030e+02    nrm: 3e+03    Viol.  con: 4e-08    var: 1e-09    cones: 0e+00  
 
 
 
@@ -255,7 +293,7 @@ Plot coil windings and magnetic field in target points
 
 
 
-.. image:: /auto_examples/coil_design/images/sphx_glr_head_gradient_coil_design_001.png
+.. image:: /auto_examples/coil_design/images/sphx_glr_head_gradient_coil_design_002.png
     :class: sphx-glr-single-img
 
 
@@ -264,9 +302,9 @@ Plot coil windings and magnetic field in target points
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  28.528 seconds)
+   **Total running time of the script:** ( 1 minutes  30.426 seconds)
 
-**Estimated memory usage:**  5815 MB
+**Estimated memory usage:**  5823 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_head_gradient_coil_design.py:

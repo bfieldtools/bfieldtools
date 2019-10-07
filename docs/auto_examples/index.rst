@@ -50,26 +50,6 @@ Below are a number of examples meant to familiarize you with the functionality o
    :hidden:
 
    /auto_examples/interpolate_example
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_one_element_thumb.png
-
-        :ref:`sphx_glr_auto_examples_one_element.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/one_element
 .. raw:: html
 
     <div style='clear:both'></div>
@@ -84,26 +64,6 @@ Coil design
 Examples related to coil design.
 
 
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a gradient coil designed on the surface of a MEG system helmet ">
-
-.. only:: html
-
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_head_gradient_coil_design_thumb.png
-
-        :ref:`sphx_glr_auto_examples_coil_design_head_gradient_coil_design.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/coil_design/head_gradient_coil_design
 
 .. raw:: html
 
@@ -127,6 +87,26 @@ Examples related to coil design.
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a gradient coil designed on the surface of a MEG system helmet ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_head_gradient_coil_design_thumb.png
+
+        :ref:`sphx_glr_auto_examples_coil_design_head_gradient_coil_design.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/coil_design/head_gradient_coil_design
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing homogeneous field in a target region between th...">
 
 .. only:: html
@@ -144,6 +124,46 @@ Examples related to coil design.
    :hidden:
 
    /auto_examples/coil_design/biplanar_coil_design
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing a high-order spherical harmonic field in a targ...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_spherical_harmonics_biplanar_coil_design_thumb.png
+
+        :ref:`sphx_glr_auto_examples_coil_design_spherical_harmonics_biplanar_coil_design.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/coil_design/spherical_harmonics_biplanar_coil_design
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing a field profile defined by spherical harmonics.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_spherical_harmonics_coil_design_thumb.png
+
+        :ref:`sphx_glr_auto_examples_coil_design_spherical_harmonics_coil_design.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/coil_design/spherical_harmonics_coil_design
 
 .. raw:: html
 
@@ -293,7 +313,7 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
+    <div class="sphx-glr-thumbcontainer" tooltip="Analytic B">
 
 .. only:: html
 
@@ -310,6 +330,26 @@ Example scripts validating the core functionality of `bfieldtools`
    :hidden:
 
    /auto_examples/validation/validate_bfield_analytic
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="One">
+
+.. only:: html
+
+    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_one_element_thumb.png
+
+        :ref:`sphx_glr_auto_examples_validation_one_element.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/validation/one_element
 .. raw:: html
 
     <div style='clear:both'></div>

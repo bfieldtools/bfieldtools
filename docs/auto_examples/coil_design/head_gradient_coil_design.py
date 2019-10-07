@@ -52,7 +52,8 @@ coil = MeshWrapper(verts=helmetmesh.vertices, tris=helmetmesh.faces, fix_normals
 #Set up target and stray field points.
 #Here, the target points are on a volumetric grid within a sphere
 
-center = np.array([0, 0, 0.04]) * scaling_factor
+offset = np.array([0, 0, 0.04])
+center = offset * scaling_factor
 
 sidelength = 0.05 * scaling_factor
 n = 12
@@ -82,15 +83,44 @@ coil.C = compute_C(coil.mesh, target_points)
 
 #The absolute target field amplitude is not of importance,
 # and it is scaled to match the C matrix in the optimization function
-target_field = np.zeros(target_points.shape)
-target_field[:, 0] = target_field[:, 0] + 1 * target_points[:,0]/np.max(target_points[:,0])
+
+
+#Let's generate the target field through the use of spherical harmonics.
+# Thus we avoid issues with having to manually specify the concomitant gradients
+
+
+from bfieldtools.sphtools import sphbasis, plotsph, sphfittools
+
+
+sph = sphbasis(50)
+
+#plotsph.plotYlms(sph, 3)
+
+lmax = 3
+alm = np.zeros((lmax*(lmax+2),))
+blm = np.zeros((lmax*(lmax+2),))
+
+#
+alm[3]+=1
+#blm[0]+=1
+
+sphfield = sph.field(target_points - offset,alm, blm, lmax)
+
+target_field = sphfield/np.max(sphfield[:, 0])
+
+target_field[:, 2] = 0
+
+coil.plot_mesh()
+mlab.quiver3d(*target_points.T, *sphfield.T)
+
+
 
 rel_error = np.zeros_like(target_field)
-rel_error[:, 0] += 0.5
+#rel_error[:, 0] += 0.1
 
 abs_error = np.zeros_like(target_field)
-abs_error[:, 0] += 0.5
-abs_error[:, 1:3] += 0.5
+abs_error[:, 0] += 0.1
+abs_error[:, 1:3] += 0.1
 
 
 target_spec = {'C':coil.C, 'rel_error':rel_error, 'abs_error':abs_error, 'target_field':target_field}

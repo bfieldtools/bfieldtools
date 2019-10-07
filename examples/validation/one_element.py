@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Sep  3 15:46:47 2019
+'''
+One-element validation
+======================
 
-@author: makinea1
-"""
+'''
+
 
 import numpy as np
 import matplotlib.pyplot as plt

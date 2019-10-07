@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>&lt;no title&gt; &#8212; bfieldtools 0.1 documentation</title>
+    <title>Analytic B-field computation &#8212; bfieldtools 0.1 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript" src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="API Reference" href="../../source/modules.html" />
+    <link rel="next" title="One-element validation" href="one_element.html" />
     <link rel="prev" title="Linear dipole" href="validate_linear_dipole.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -59,13 +59,13 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../literature.html">Literature</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Example gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html#coil-design">Coil design</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html#thermal-noise-computation">Thermal noise computation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../index.html#validation">Validation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html#validation">Validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/modules.html">API Reference</a></li>
 </ul>
 </ul>
@@ -102,8 +102,9 @@
 <p class="admonition-title">Note</p>
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-validation-validate-bfield-analytic-py"><span class="std std-ref">here</span></a> to download the full example code</p>
 </div>
-<p class="sphx-glr-example-title" id="sphx-glr-auto-examples-validation-validate-bfield-analytic-py">Created on Fri Sep  6 11:26:17 2019</p>
-<p>&#64;author: makinea1</p>
+<div class="sphx-glr-example-title section" id="analytic-b-field-computation">
+<span id="sphx-glr-auto-examples-validation-validate-bfield-analytic-py"></span><h1>Analytic B-field computation<a class="headerlink" href="#analytic-b-field-computation" title="Permalink to this headline">¶</a></h1>
+<p>Validation of analytic mesh operator for magnetic field computation.</p>
 <img alt="../../_images/sphx_glr_validate_bfield_analytic_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_bfield_analytic_001.png" />
 <ul class="sphx-glr-horizontal">
 <li><img alt="../../_images/sphx_glr_validate_bfield_analytic_002.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_validate_bfield_analytic_002.png" />
@@ -112,11 +113,11 @@
 </li>
 </ul>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 676 vertices by 676 target points... took 0.19 seconds.
-Computing C matrix, 676 vertices by 676 target points... took 1.28 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 676 vertices by 676 target points... took 0.20 seconds.
+Computing C matrix, 676 vertices by 676 target points... took 1.33 seconds.
 Relative RMS error 0.00522928695809424
-Computing C matrix, 4701 vertices by 100 target points... took 0.29 seconds.
-Computing C matrix, 4701 vertices by 100 target points... took 1.53 seconds.
+Computing C matrix, 4701 vertices by 100 target points... took 0.27 seconds.
+Computing C matrix, 4701 vertices by 100 target points... took 1.49 seconds.
 </pre></div>
 </div>
 <div class="line-block">
@@ -200,8 +201,8 @@ Computing C matrix, 4701 vertices by 100 target points... took 1.53 seconds.
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;B [T]&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.161 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  178 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.404 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  217 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-validation-validate-bfield-analytic-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/641aca383a51453c2ae86afc881fa364/validate_bfield_analytic.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">validate_bfield_analytic.py</span></code></a></p>
@@ -211,6 +212,7 @@ Computing C matrix, 4701 vertices by 100 target points... took 1.53 seconds.
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
 
 
     </div>

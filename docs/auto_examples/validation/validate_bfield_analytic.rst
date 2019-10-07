@@ -7,9 +7,9 @@
 .. _sphx_glr_auto_examples_validation_validate_bfield_analytic.py:
 
 
-Created on Fri Sep  6 11:26:17 2019
-
-@author: makinea1
+Analytic B-field computation
+==================================================
+Validation of analytic mesh operator for magnetic field computation.
 
 
 
@@ -36,11 +36,11 @@ Created on Fri Sep  6 11:26:17 2019
 
  .. code-block:: none
 
-    Computing C matrix, 676 vertices by 676 target points... took 0.19 seconds.
-    Computing C matrix, 676 vertices by 676 target points... took 1.28 seconds.
+    Computing C matrix, 676 vertices by 676 target points... took 0.20 seconds.
+    Computing C matrix, 676 vertices by 676 target points... took 1.33 seconds.
     Relative RMS error 0.00522928695809424
-    Computing C matrix, 4701 vertices by 100 target points... took 0.29 seconds.
-    Computing C matrix, 4701 vertices by 100 target points... took 1.53 seconds.
+    Computing C matrix, 4701 vertices by 100 target points... took 0.27 seconds.
+    Computing C matrix, 4701 vertices by 100 target points... took 1.49 seconds.
 
 
 
@@ -133,9 +133,9 @@ Created on Fri Sep  6 11:26:17 2019
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.161 seconds)
+   **Total running time of the script:** ( 0 minutes  4.404 seconds)
 
-**Estimated memory usage:**  178 MB
+**Estimated memory usage:**  217 MB
 
 
 .. _sphx_glr_download_auto_examples_validation_validate_bfield_analytic.py:

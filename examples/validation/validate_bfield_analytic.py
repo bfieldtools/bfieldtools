@@ -1,10 +1,8 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Sep  6 11:26:17 2019
-
-@author: makinea1
-"""
+'''
+Analytic B-field computation
+==================================================
+Validation of analytic mesh operator for magnetic field computation.
+'''
 
 import numpy as np
 import trimesh
