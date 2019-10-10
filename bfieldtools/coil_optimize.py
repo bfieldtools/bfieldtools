@@ -118,10 +118,13 @@ def quadprog_solve_qp(P, q, G=None, h=None, A=None, b=None):
     return quadprog.solve_qp(qp_G, qp_a, qp_C, qp_b, meq)[0]
 
 
-def optimize_streamfunctions(meshobj, bfield_specification,
+def optimize_streamfunctions(meshobj,
+                             bfield_specification,
                              objective='minimum_inductive_energy',
                              solver=None,
-                             solver_opts={}):
+                             solver_opts={},
+                             problem=None,
+                             boundary_constraints='all_zero'):
     '''
     Quadratic optimization of coil stream function according to a specified objective,
     while keeping specified target field at target points within given constraints.
@@ -142,16 +145,28 @@ def optimize_streamfunctions(meshobj, bfield_specification,
         if tuple, should contain: (a, b), where a and b are floats describing the inductive and resitive weighting factors.
         The resistance matrix is scaled according to the largest singular value of the inductance matrix for consistent behavior
         across meshes.
-    solver
-    tolerance: float
+    solver: string
+        string specifying which solver CVXPy will use
+    solver_opt: dict
+        dict containing solver options CVXPY will pass to the solver
+    problem: CVXPY problem object
+        If passed, will use already existing problem (MUST BE SAME DIMENSIONS) to
+        skip DCP processing/reformulation time.
+    boundary_constraints: string or dict
+        Specifies how boundaries are handled. If 'all_zero' (default), boundary vertices are not included
+        in the optimization, and are set at zero. If dict, must have entries
+            'zero_eq_indices' (list of ints)
+            'iso_eq_indices'  (list of lists of ints)
+        which contain the vertex indices for which the stream function is set to zero or
+        to be equal across elements.
 
     Returns
     -------
     I: vector
         Vector with length len(`meshobj.mesh.vertices`), containing the optimized current density values
         at each mesh vertex
-    sol: dict
-        Dict containing solution info and diagnostics supplied by cvxopt
+    prob: CVXPY problem object
+        CVXPY problem object containing data, formulation, solution, metric etc
 
     '''
 
@@ -161,23 +176,28 @@ def optimize_streamfunctions(meshobj, bfield_specification,
         objective = (0, 1)
 
     #Initialize inequality constraint matrix and constraints
-    constraint_matrix = np.zeros((0, len(meshobj.inner_verts)))
+    constraint_matrix = np.zeros((0, len(meshobj.mesh.vertices)))
     upper_bounds = np.zeros((0, ))
     lower_bounds = np.zeros((0, ))
 
+    #If boundaries are all zero, don't include them in the optimization
+    if boundary_constraints == 'all_zero':
+        indices = meshobj.inner_verts
+    else:
+        indices = np.arange(0, len(meshobj.mesh.vertices))
 
     #Populate inequality constraints with bfield specifications
     for spec in bfield_specification:
 
-        #Limit C matrix to inner vertices (boundaries are kept at zero)
-        inner_C = spec['C'][:, meshobj.inner_verts]
+
+        C = spec['C'][:, indices]
 
         #Reshape so that values on axis 1 are x1, y1, z1, x2, y2, z2, etc.
         #If not 3D matrix, assuming the use of spherical harmonics
-        if inner_C.ndim == 3:
+        if C.ndim == 3:
 
-            inner_C = inner_C.transpose((1, 0, 2))
-            inner_C = inner_C.reshape((inner_C.shape[0], -1)).T
+            C = C.transpose((1, 0, 2))
+            C = C.reshape((C.shape[0], -1)).T
 
         #Apply relative error to bounds
         if spec['rel_error'] is not None:
@@ -196,7 +216,7 @@ def optimize_streamfunctions(meshobj, bfield_specification,
 
 
         # Append specification to constraint matrix and bounds
-        constraint_matrix = np.append(constraint_matrix, inner_C, axis=0)
+        constraint_matrix = np.append(constraint_matrix, C, axis=0)
 
         upper_bounds = np.append(upper_bounds, upper_bound, axis=0)
         lower_bounds = np.append(lower_bounds, lower_bound, axis=0)
@@ -204,32 +224,27 @@ def optimize_streamfunctions(meshobj, bfield_specification,
 
     #Construct quadratic objective matrix
     if objective == (1, 0):
-        #Limit L matrix to inner vertices
-        inner_L = meshobj.inductance[meshobj.inner_verts][:, meshobj.inner_verts]
 
-        quadratic_matrix = inner_L
+        quadratic_matrix = meshobj.inductance[indices][:, indices]
 
     elif objective == (0, 1):
-        #Limit R matrix to inner vertices
-        inner_R = meshobj.resistance[meshobj.inner_verts][:, meshobj.inner_verts]
 
-        quadratic_matrix = inner_R
+        quadratic_matrix = meshobj.resistance[indices][:, indices]
 
     else:
-        #Limit L matrix to inner vertices
-        inner_L = meshobj.inductance[meshobj.inner_verts][:, meshobj.inner_verts]
 
-        #Limit R matrix to inner vertices
-        inner_R = meshobj.resistance[meshobj.inner_verts][:, meshobj.inner_verts]
+        L = meshobj.inductance[indices][:, indices]
+
+        R = meshobj.resistance[indices][:, indices]
 
         print('Scaling inductance and resistance matrices before optimization. This requires eigenvalue computation, hold on.')
 
-        max_eval_L = largest_eigh(inner_L, eigvals=(inner_L.shape[0]-1, inner_L.shape[0]-1))[0][0]
-        max_eval_R = largest_eigh(inner_R, eigvals=(inner_L.shape[0]-1, inner_L.shape[0]-1))[0][0]
+        max_eval_L = largest_eigh(L, eigvals=(L.shape[0]-1, L.shape[0]-1))[0][0]
+        max_eval_R = largest_eigh(R, eigvals=(L.shape[0]-1, L.shape[0]-1))[0][0]
 
-        scaled_R = max_eval_L / max_eval_R * inner_R
+        scaled_R = max_eval_L / max_eval_R * R
 
-        quadratic_matrix = (objective[0] * inner_L  + objective[1] * scaled_R)
+        quadratic_matrix = (objective[0] * L  + objective[1] * scaled_R)
 
 
     #Scale whole quadratic term according to largest eigenvalue
@@ -241,30 +256,62 @@ def optimize_streamfunctions(meshobj, bfield_specification,
     #Compute, scale constraint matrix according to largest singular value
     u, s, vt = svds(constraint_matrix, k=1)
 
-    #Make sure that quadratic matrix is positive semi-definite, scale constraint matrix
-    P = .5 * (quadratic_matrix + quadratic_matrix.T)
-    G = constraint_matrix / s[0]
+    #If no pre-constructed problem is passed, create it
+    if problem is None:
+        print('Pre-existing problem not passed, creating...')
+        #Symbolic variable for CVXPY
+        x = cp.Variable(shape=(len(quadratic_matrix), ), name='x')
 
-    #Symbolic variable for CVXPY
-    x = cp.Variable(len(P))
+        #Parameters into which data is loaded
+        P = cp.Parameter(shape=quadratic_matrix.shape, name='P', PSD=True)
+        G = cp.Parameter(shape=constraint_matrix.shape, name='G')
+        lb = cp.Parameter(shape=lower_bounds.shape, name ='lb')
+        ub = cp.Parameter(shape=upper_bounds.shape, name='ub')
 
-    #Formulate problem and constraints
-    objective = cp.Minimize((1/2)*cp.quad_form(x, P))
+        #Formulate problem and constraints
+        objective = cp.Minimize((1/2)*cp.quad_form(x, P))
 
+        constraints = [G@x >= lb, G@x <= ub]
 
-    constraints = [G@x >=lower_bounds, G@x <= upper_bounds]
+        if type(boundary_constraints) == dict:
+            if boundary_constraints['zero_eq_indices'] is not None:
+                print('Passing boundary zero equality constraint')
+                constraints += [x[boundary_constraints['zero_eq_indices']] == np.zeros_like(boundary_constraints['zero_eq_indices'])]
 
-    prob = cp.Problem(objective,
-                      constraints)
+            if boundary_constraints['iso_eq_indices'] is not None:
+                print('Passing boundary equality constraints')
+                for i in range(len(boundary_constraints['iso_eq_indices'])):
+                    for j in range(1, len(boundary_constraints['iso_eq_indices'][i])):
+                        constraints += [x[boundary_constraints['iso_eq_indices'][i][j]] == x[boundary_constraints['iso_eq_indices'][i][0]]]
 
-#    prob.solve(solver=cp.OSQP, verbose=True, linsys_solver='mkl pardiso', rho=0.1, max_iter=50000)  # Returns the optimal value.
+        problem = cp.Problem(objective,
+                          constraints)
+    else:
+        print('Existing problem passed')
+
+    #Assign values to parameters
+    print('Passing parameters to problem...')
+    for par in problem.parameters():
+        if par.name() == 'P':
+            #Make sure that quadratic matrix is positive semi-definite, scale constraint matrix
+            par.value = .5 * (quadratic_matrix + quadratic_matrix.T)
+        elif par.name() == 'G':
+            par.value = constraint_matrix / s[0]
+        elif par.name() == 'lb':
+            par.value = lower_bounds
+        elif par.name() == 'ub':
+            par.value = upper_bounds
+        else:
+            print('Unknown parameter encountered')
+
 
     #Run solver
-    prob.solve(solver=solver, verbose=True, **solver_opts)
+    print('Passing problem to solver...')
+    problem.solve(solver=solver, verbose=True, **solver_opts)
 
     #Build final I vector with zeros on boundary elements, scale by same singular value as constraint matrix
-    I = np.zeros((meshobj.inductance.shape[0], ))
-    I[meshobj.inner_verts] = x.value / s[0]
+
+    I = problem.variables()[0].value / s[0]
 
 
-    return I, prob
+    return I, problem
