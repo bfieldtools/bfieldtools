@@ -7,6 +7,12 @@ spherical harmonics.
 
 '''
 
+import sys
+path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
+if path in sys.path:
+    sys.path.insert(0, path)
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 from mayavi import mlab
@@ -51,7 +57,7 @@ joined_planes = coil_plus.union(coil_minus)
 #Create mesh class object
 coil = MeshWrapper(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
 
-lmax = 10
+lmax = 4
 coil.C_alms, coil.C_blms = compute_sphcoeffs_mesh(coil.mesh, lmax=lmax)
 
 
@@ -70,7 +76,7 @@ for l in range(1,lmax+1):
 target_alms = np.zeros((lmax * (lmax+2),))
 target_blms = np.zeros((lmax * (lmax+2),))
 
-target_alms[0] += 1
+target_blms[0] += 1
 
 
 center = np.array([0, 0, 0]) * scaling_factor
@@ -94,8 +100,8 @@ target_points = target_points[np.linalg.norm(target_points, axis=1) < sidelength
 
 
 
-sph = sphbasis(10)
-sphfield = sph.field(target_points,target_alms, target_blms, lmax)
+sph = sphbasis(4)
+sphfield = sph.field(target_points, target_alms, target_blms, lmax)
 
 target_field = sphfield/np.max(sphfield[:, 0])
 
@@ -112,33 +118,35 @@ mlab.quiver3d(*target_points.T, *sphfield.T)
 #The absolute target field amplitude is not of importance,
 # and it is scaled to match the C matrix in the optimization function
 
-#target_abs_error = np.zeros_like(target_alms)
-#target_abs_error += 0.5
-
-target_field = np.zeros_like(target_points)
-target_field[:, 0] += 1
-
-target_abs_error = np.zeros_like(target_points)
+target_abs_error = np.zeros_like(target_blms)
 target_abs_error += 0.01
+
+#target_field = np.zeros_like(target_points)
+#target_field[:, 0] += 1
+
+#target_abs_error = np.zeros_like(target_points)
+#target_abs_error += 0.01
 
 coil.C = compute_C(coil.mesh, target_points)
 
-#target_spec = {'C':coil.C_alms_norm, 'rel_error':None, 'abs_error':target_abs_error, 'target_field':target_alms}
-target_spec = {'C':coil.C, 'rel_error':None, 'abs_error':target_abs_error, 'target_field':target_field}
+# FIX: alm -> blm
+target_spec = {'C':coil.C_blms, 'rel_error':None, 'abs_error':target_abs_error, 'target_field':target_blms}
+#target_spec = {'C':coil.C, 'rel_error':None, 'abs_error':target_abs_error, 'target_field':target_field}
 
 
 ##############################################################
 # Run QP solver
 import mosek
 
-coil.I, prob = optimize_streamfunctions(coil,
+I, prob = optimize_streamfunctions(coil,
                                    [target_spec],
                                    objective='minimum_inductive_energy',
                                    solver='MOSEK',
                                    solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
                                    )
 
-
+coil.I = np.zeros(coil.mesh.vertices.shape[0])
+coil.I[coil.inner_verts] = I
 
 B_target = coil.C.transpose([0, 2, 1]) @ coil.I
 
@@ -148,7 +156,7 @@ coil.C_alms, coil.C_blms = compute_sphcoeffs_mesh(coil.mesh, lmax=lmax)
 
 Alms, Blms = coil.C_alms @ coil.I, coil.C_blms @ coil.I
 
-Blms = np.zeros_like(Alms)
+Alms = np.zeros_like(Blms)
 sphfield_target = sph.field(target_points, Alms, Blms, lmax)
 
 

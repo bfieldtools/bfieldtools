@@ -698,7 +698,7 @@ class sphbasis:
                 Psilm[:,0] *= sp[:,0]**(l-1)
                 Psilm[:,1] *= sp[:,0]**(l-1)
                 Psilm[:,2] *= sp[:,0]**(l-1)
-                Psilm *= acoeffs[idx]
+                Psilm *= bcoeffs[idx] # Fixed a -> b
                 Psilm = self.sphvec2cart(sp, Psilm)
                 B += Psilm
 
@@ -707,7 +707,7 @@ class sphbasis:
                 Philm[:,0] *= sp[:,0]**(-l-2)
                 Philm[:,1] *= sp[:,0]**(-l-2)
                 Philm[:,2] *= sp[:,0]**(-l-2)
-                Philm *= bcoeffs[idx]
+                Philm *= acoeffs[idx] # Fixed b -> a
                 Philm = self.sphvec2cart(sp, Philm)
                 B += Philm
 
@@ -1118,6 +1118,8 @@ def compute_sphcoeffs_mesh(mesh, lmax):
         for m in range(-1*l,l+1):
             derylm = np.sqrt(l*(l+1))*sph.Blm(l,m,centers_sp[:,1],centers_sp[:,2])
             derylm = sph.sphvec2cart(centers_sp, derylm)
+            # FIX: gradient of Ylm has also 1/r multiplier
+            derylm /= centers_sp[:,0:1]
 
             crossp = np.cross(centers, derylm)
             alm_terms = crossp.T*(centers_sp[:,0]**l)*tri_areas
@@ -1128,8 +1130,9 @@ def compute_sphcoeffs_mesh(mesh, lmax):
             integral_alm = alm_terms[0] @ Gx  + alm_terms[1] @ Gy  + alm_terms[2] @ Gz
             integral_blm = blm_terms[0] @ Gx  + blm_terms[1] @ Gy  + blm_terms[2] @ Gz
 
-            blm[idx] = -1/((2*l+1)*(l+1))*integral_blm
-            alm[idx] = 1/((2*l+1)*l)*integral_alm
+            # FIX: l-coefficients here were swapped
+            blm[idx] = -1/((2*l+1)*l)*integral_blm # ADDED MINUS HERE (different from Nieminen 2011, Eq 5)
+            alm[idx] = -1/((2*l+1)*(l+1))*integral_alm # THIS SIGN SHOULD BE CHECKED TOO
 #            for i in range(mesh.vertices.shape[0]):
 #                G = np.zeros(crossp.shape)
 #                G[:,0] = Gx[:,i]

@@ -175,16 +175,16 @@ def optimize_streamfunctions(meshobj,
     elif objective == 'minimum_resistive_energy':
         objective = (0, 1)
 
-    #Initialize inequality constraint matrix and constraints
-    constraint_matrix = np.zeros((0, len(meshobj.mesh.vertices)))
-    upper_bounds = np.zeros((0, ))
-    lower_bounds = np.zeros((0, ))
-
     #If boundaries are all zero, don't include them in the optimization
     if boundary_constraints == 'all_zero':
         indices = meshobj.inner_verts
     else:
         indices = np.arange(0, len(meshobj.mesh.vertices))
+
+    #Initialize inequality constraint matrix and constraints
+    constraint_matrix = np.zeros((0, len(indices)))
+    upper_bounds = np.zeros((0, ))
+    lower_bounds = np.zeros((0, ))
 
     #Populate inequality constraints with bfield specifications
     for spec in bfield_specification:
