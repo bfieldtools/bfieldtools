@@ -7,10 +7,10 @@ spherical harmonics.
 
 '''
 
-import sys
-path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
-if path in sys.path:
-    sys.path.insert(0, path)
+#import sys
+#path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
+#if path in sys.path:
+#    sys.path.insert(0, path)
 
 
 import numpy as np
