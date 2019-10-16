@@ -311,7 +311,7 @@ def optimize_streamfunctions(meshobj,
 
     #Build final I vector with zeros on boundary elements, scale by same singular value as constraint matrix
 
-    I = problem.variables()[0].value / s[0]
-
+    I = np.zeros((len(meshobj.mesh.vertices),))
+    I[indices] = problem.variables()[0].value / s[0]
 
     return I, problem
