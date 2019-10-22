@@ -12,7 +12,7 @@ from mayavi import mlab
 import trimesh
 
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import MeshWrapper, CouplingMatrix
 from bfieldtools.magnetic_field_mesh import compute_C, compute_U
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
@@ -93,9 +93,9 @@ mlab.points3d(*target_points.T)
 
 ###############################################################
 # Compute C matrices that are used to compute the generated magnetic field
-
-coil.C = compute_C(coil.mesh, target_points)
+coil.C = CouplingMatrix(coil, compute_C)
 shield.C = compute_C(shield.mesh, target_points)
+shield.C = CouplingMatrix(shield, compute_C)
 
 
 ################################################################
@@ -114,7 +114,7 @@ target_abs_error = np.zeros_like(target_field)
 target_abs_error[:, 0] += 0.001
 target_abs_error[:, 1:3] += 0.005
 
-target_spec = {'C':coil.C, 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
+target_spec = {'C':coil.C(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
 
 import mosek
 
@@ -138,7 +138,7 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f)
 
-B_target = coil.C.transpose([0, 2, 1]) @ coil.I
+B_target = coil.C(target_points) @ coil.I
 
 mlab.quiver3d(*target_points.T, *B_target.T)
 
@@ -173,9 +173,9 @@ f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
 mlab.clf()
 
-B_target = coil.C.transpose([0, 2, 1]) @ coil.I
+B_target = coil.C(target_points) @ coil.I
 
-B_target_w_shield = coil.C.transpose([0, 2, 1]) @ coil.I + shield.C.transpose([0, 2, 1]) @ shield.I
+B_target_w_shield = coil.C(target_points) @ coil.I + shield.C(target_points) @ shield.I
 
 B_quiver = mlab.quiver3d(*target_points.T, *(B_target_w_shield - B_target).T, colormap='viridis', mode='arrow')
 f.scene.isometric_view()
@@ -207,9 +207,9 @@ fig.tight_layout(rect=[0, 0.03, 1, 0.95])
 
 shield.coupling = np.linalg.solve(P_bem, P_prim)
 
-secondary_C = (shield.C.transpose((0,2,1)) @ shield.coupling).transpose((0,2,1))
+secondary_C = shield.C(target_points) @ shield.coupling
 
-total_C = coil.C + secondary_C
+total_C = coil.C(target_points) + secondary_C
 
 target_spec_w_shield = {'C':total_C, 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
 
@@ -231,7 +231,7 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f)
 
-B_target2 = total_C.transpose([0, 2, 1]) @ coil.I2
+B_target2 = total_C @ coil.I2
 mlab.quiver3d(*target_points.T, *B_target2.T)
 
 ###############################################################
@@ -261,12 +261,12 @@ r = r[shield.mesh.contains(r)]
 coil.C_cyl = compute_C(coil.mesh, r)
 shield.C_cyl = compute_C(shield.mesh, r)
 
-secondary_C_cyl = (shield.C_cyl.transpose((0,2,1)) @ shield.coupling).transpose((0,2,1))
+secondary_C_cyl = shield.C_cyl @ shield.coupling
 
 total_C_cyl = coil.C_cyl + secondary_C_cyl
 
 
-Bfield = total_C_cyl.transpose([0, 2, 1]) @ coil.I2
+Bfield = total_C_cyl @ coil.I2
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))

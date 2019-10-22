@@ -255,7 +255,7 @@ def compute_C(mesh, r, Nchunks=None):
 
     Returns
     -------
-    C: (Np, Nvertices, 3) array
+    C: (Np, 3, Nvertices) array
         Coupling matrix for surface current in the mesh to the evaluation points)
 
     '''
@@ -301,7 +301,7 @@ def compute_C(mesh, r, Nchunks=None):
     duration = time.time() - start
     print('took %.2f seconds.'%duration)
 
-    return coef * C
+    return coef * np.moveaxis(C, 2, 1)
 
 def compute_C_analytic(mesh, r, Nchunks=None):
     '''
@@ -316,7 +316,7 @@ def compute_C_analytic(mesh, r, Nchunks=None):
 
     Returns
     -------
-    C: (Np, Nvertices, 3) array
+    C: (Np, 3, Nvertices) array
         Coupling matrix for surface current in the mesh to the evaluation points)
 
     '''
@@ -363,7 +363,7 @@ def compute_C_analytic(mesh, r, Nchunks=None):
     duration = time.time() - start
     print('took %.2f seconds.'%duration)
 
-    return coef * np.moveaxis(C, 2, 0)
+    return coef * np.moveaxis(C, 2, 1)
 
 
 def compute_U(mesh, r, Nchunks=None):

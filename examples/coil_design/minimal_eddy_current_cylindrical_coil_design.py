@@ -11,7 +11,7 @@ from mayavi import mlab
 import trimesh
 
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import MeshWrapper, CouplingMatrix
 from bfieldtools.magnetic_field_mesh import compute_C
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.mutual_inductance_mesh import mutual_inductance_matrix
@@ -85,8 +85,8 @@ mlab.points3d(*target_points.T)
 ###############################################################
 # Compute C matrices that are used to compute the generated magnetic field
 
-coil.C = compute_C(coil.mesh, target_points)
-shield.C = compute_C(shield.mesh, target_points)
+coil.C = CouplingMatrix(coil, compute_C)
+shield.C = CouplingMatrix(shield, compute_C)
 
 mutual_inductance = mutual_inductance_matrix(coil.mesh, shield.mesh)
 
@@ -94,7 +94,7 @@ mutual_inductance = mutual_inductance_matrix(coil.mesh, shield.mesh)
 # NB! This expression is for instantaneous step-function switching of coil current, see Eq. 18 in G.N. Peeren, 2003.
 
 shield.coupling = np.linalg.solve(-shield.inductance, mutual_inductance.T)
-secondary_C = (shield.C.transpose((0,2,1)) @ shield.coupling).transpose((0,2,1))
+secondary_C = shield.C(target_points) @ shield.coupling
 
 ###############################################################
 # Create bfield specifications used when optimizing the coil geometry
@@ -111,7 +111,7 @@ target_abs_error = np.zeros_like(target_field)
 target_abs_error[:, 1] += 0.001
 target_abs_error[:, 0::2] += 0.005
 
-target_spec = {'C':coil.C, 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
+target_spec = {'C':coil.C(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
 
 
 induction_spec = {'C':secondary_C, 'abs_error':0.1, 'rel_error':0, 'target_field':np.zeros(target_field.shape)}
@@ -143,7 +143,7 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.02)
 
-B_target = coil.C.transpose([0, 2, 1]) @ coil.I
+B_target = coil.C(target_points) @ coil.I
 
 mlab.quiver3d(*target_points.T, *B_target.T)
 
@@ -172,7 +172,7 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.02)
 
-B_target_unshielded = coil.C.transpose([0, 2, 1]) @ coil.unshielded_I
+B_target_unshielded = coil.C(target_points) @ coil.unshielded_I
 
 mlab.quiver3d(*target_points.T, *B_target_unshielded.T)
 

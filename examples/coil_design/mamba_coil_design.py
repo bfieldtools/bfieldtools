@@ -13,7 +13,7 @@ from mayavi import mlab
 import trimesh
 
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import MeshWrapper, CouplingMatrix
 from bfieldtools.magnetic_field_mesh import compute_C
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
@@ -110,9 +110,9 @@ coil.plot_mesh()
 ###############################################################
 # Compute C matrices that are used to compute the generated magnetic field, create field specification
 
-coil.C = compute_C(coil.mesh, target_points)
+coil.C = CouplingMatrix(coil, compute_C)
 
-target_spec = {'C':coil.C, 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
+target_spec = {'C':coil.C(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
 
 ###############################################################
 # Run QP solver
@@ -138,7 +138,7 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.025)
 
-B_target = coil.C.transpose([0, 2, 1]) @ coil.I
+B_target = coil.C(target_points) @ coil.I
 
 mlab.quiver3d(*target_points.T, *B_target.T)
 

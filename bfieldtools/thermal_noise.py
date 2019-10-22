@@ -82,9 +82,8 @@ def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T):
     B = np.zeros(fp.shape)
     for i in range(vl.shape[1]):
         vec = vl[:, i] * np.sqrt(4 * kB * T * sigma * d)
-        B[:, 0] += (C[:, :, 0] @ vec)**2
-        B[:, 1] += (C[:, :, 1] @ vec)**2
-        B[:, 2] += (C[:, :, 2] @ vec)**2
+
+        B += (C @ vec)**2
 
     B = np.sqrt(B) #RMS
 

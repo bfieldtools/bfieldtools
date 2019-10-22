@@ -1,9 +1,9 @@
 '''
-Biplanar coil design
-====================
+Coil with interior holes
+========================
 
 Example showing a basic biplanar coil producing homogeneous field in a target
-region between the two coil planes.
+region between the two coil planes. The coil planes have holes in them,
 
 '''
 
@@ -16,7 +16,7 @@ from bfieldtools.mesh_class import MeshWrapper, CouplingMatrix
 from bfieldtools.magnetic_field_mesh import compute_C
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
-from bfieldtools.viz import plot_3d_current_loops
+from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
 
 import pkg_resources
 
@@ -27,13 +27,21 @@ scaling_factor = 1
 
 
 #Load simple plane mesh that is centered on the origin
-planemesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane.obj'), process=False)
+planemesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/plane_w_holes.stl'), process=False)
 
-planemesh.apply_scale(scaling_factor*1.6)
+angle=np.pi/2
+rotation_matrix = np.array([[1, 0, 0, 0],
+                            [0, np.cos(angle), -np.sin(angle), 0],
+                            [0, np.sin(angle), np.cos(angle), 0],
+                            [0, 0, 0, 1]
+                              ])
+
+planemesh.apply_transform(rotation_matrix)
+planemesh.apply_scale(scaling_factor)
 
 #Specify coil plane geometry
 center_offset = np.array([0, 0, 0]) * scaling_factor
-standoff = np.array([0, 5, 0]) * scaling_factor
+standoff = np.array([0, 20, 0]) * scaling_factor
 
 #Create coil plane pairs
 coil_plus = trimesh.Trimesh(planemesh.vertices + center_offset + standoff,
@@ -54,7 +62,7 @@ coil = MeshWrapper(verts=joined_planes.vertices, tris=joined_planes.faces, fix_n
 
 center = np.array([0, 0, 0]) * scaling_factor
 
-sidelength = 2 * scaling_factor
+sidelength = 10 * scaling_factor
 n = 8
 xx = np.linspace(-sidelength/2, sidelength/2, n)
 yy = np.linspace(-sidelength/2, sidelength/2, n)
@@ -72,27 +80,53 @@ target_points = target_points[np.linalg.norm(target_points, axis=1) < sidelength
 
 
 
-#    #Here, the stray field points are on a spherical surface
-stray_radius = 20 * scaling_factor
-#    stray_length = 20 * scaling_factor
-#
-#    stray_points = cylinder_points(radius=stray_radius,
-#                                   length = stray_length,
-#                                   nlength = 5,
-#                                   nalpha = 30,
-#                                   orientation=np.array([1, 0, 0]))
-#
-stray_points_mesh = trimesh.creation.icosphere(subdivisions=3, radius=stray_radius)
-stray_points = stray_points_mesh.vertices + center
-
-n_stray_points = len(stray_points)
-
 
 
 ##############################################################
 # Compute C matrices that are used to compute the generated magnetic field
 
 coil.C = CouplingMatrix(coil, compute_C)
+
+
+
+####################################################################
+# Let's find and separate the inner and outer boundaries of the coil mesh
+
+inner_bounds = np.intersect1d(coil.boundary_verts, np.where(np.linalg.norm(coil.mesh.vertices[:,0::2], axis=1)< 0.015)[0])
+
+centre_hole1 = np.intersect1d(np.intersect1d(coil.boundary_verts,
+                                             np.where(np.linalg.norm(coil.mesh.vertices[:,0::2], axis=1)< 0.004)[0]),
+                              np.where(coil.mesh.vertices[:,1] < 0)[0])
+
+centre_hole2 = np.intersect1d(np.intersect1d(coil.boundary_verts,
+                                             np.where(np.linalg.norm(coil.mesh.vertices[:,0::2], axis=1)< 0.004)[0]),
+                              np.where(coil.mesh.vertices[:,1] > 0)[0])
+
+left_hole1 = np.intersect1d(np.intersect1d(np.intersect1d(coil.boundary_verts,
+                                           np.where(coil.mesh.vertices[:,0] < -0.004)[0]), inner_bounds),
+                            np.where(coil.mesh.vertices[:,1] < 0)[0])
+
+left_hole2 = np.intersect1d(np.intersect1d(np.intersect1d(coil.boundary_verts,
+                                           np.where(coil.mesh.vertices[:,0] < -0.004)[0]), inner_bounds),
+                            np.where(coil.mesh.vertices[:,1] > 0)[0])
+
+right_hole1 = np.intersect1d(np.intersect1d(np.intersect1d(coil.boundary_verts,
+                                           np.where(coil.mesh.vertices[:,0] > 0.004)[0]), inner_bounds),
+                            np.where(coil.mesh.vertices[:,1] < 0)[0])
+
+right_hole2 = np.intersect1d(np.intersect1d(np.intersect1d(coil.boundary_verts,
+                                           np.where(coil.mesh.vertices[:,0] > 0.004)[0]), inner_bounds),
+                            np.where(coil.mesh.vertices[:,1] > 0)[0])
+
+outer_bounds = np.setdiff1d(coil.boundary_verts, inner_bounds)
+
+
+graph = trimesh.graph.vertex_adjacency_graph(coil.mesh)
+
+zero_eq_indices = outer_bounds
+iso_eq_indices = [left_hole1, centre_hole1, right_hole1, left_hole2, centre_hole2, right_hole2]
+
+boundary_constraints = {'zero_eq_indices':zero_eq_indices , 'iso_eq_indices': iso_eq_indices}
 
 ##############################################################
 # Create bfield specifications used when optimizing the coil geometry
@@ -111,25 +145,25 @@ target_abs_error[:, 0] += 0.001
 target_abs_error[:, 1:3] += 0.005
 
 target_spec = {'C':coil.C(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
-stray_spec = {'C':coil.C(stray_points), 'abs_error':0.01, 'rel_error':0, 'target_field':np.zeros((n_stray_points, 3))}
 
-bfield_specification = [target_spec, stray_spec]
+bfield_specification = [target_spec]
 
 ##############################################################
 # Run QP solver
 import mosek
 
 coil.I, prob = optimize_streamfunctions(coil,
-                                   [target_spec, stray_spec],
+                                   bfield_specification,
                                    objective='minimum_inductive_energy',
                                    solver='MOSEK',
-                                   solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
+                                   solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}},
+                                   boundary_constraints=boundary_constraints
                                    )
 
 #############################################################
 # Plot coil windings and target points
 
-N_contours = 10
+N_contours = 20
 
 loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=N_contours)
 
@@ -137,7 +171,7 @@ f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
 mlab.clf()
 
-plot_3d_current_loops(loops, colors='auto', figure=f)
+plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.1)
 
 B_target = coil.C(target_points) @ coil.I
 

@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 from mayavi import mlab
 import trimesh
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import MeshWrapper, CouplingMatrix
 from bfieldtools.magnetic_field_mesh import compute_C
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
@@ -127,11 +127,9 @@ target_abs_error += 0.01
 #target_abs_error = np.zeros_like(target_points)
 #target_abs_error += 0.01
 
-coil.C = compute_C(coil.mesh, target_points)
+coil.C = CouplingMatrix(coil, compute_C)
 
-# FIX: alm -> blm
 target_spec = {'C':coil.C_blms, 'rel_error':None, 'abs_error':target_abs_error, 'target_field':target_blms}
-#target_spec = {'C':coil.C, 'rel_error':None, 'abs_error':target_abs_error, 'target_field':target_field}
 
 
 ##############################################################
@@ -148,7 +146,7 @@ I, prob = optimize_streamfunctions(coil,
 coil.I = np.zeros(coil.mesh.vertices.shape[0])
 coil.I[coil.inner_verts] = I
 
-B_target = coil.C.transpose([0, 2, 1]) @ coil.I
+B_target = coil.C(target_points) @ coil.I
 
 
 lmax = 4
