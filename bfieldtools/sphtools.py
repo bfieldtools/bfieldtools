@@ -673,9 +673,9 @@ class sphbasis:
         p: Nx3 array
             coordinates in which the field is computed
         acoeffs: lmax*(lmax+2)x1 array
-            spectral coefficients of r**l terms
-        bcoeffs: lmax*(lmax+2)x1 array
             spectral coefficients of r**(-l) terms
+        bcoeffs: lmax*(lmax+2)x1 array
+            spectral coefficients of r**l terms
         lmax: int
             maximum degree l which is used in computing
 
@@ -718,7 +718,8 @@ class sphbasis:
     def basis_fields(self, p, lmax):
         '''
         Computes magnetic fields for each sph coefficient.
-        Ignores the 'DC' component l=0.
+        Ignores the 'DC' component l=0. The fields are normalized
+        over the unit sphere.
 
         Parameters
         ----------
@@ -729,11 +730,12 @@ class sphbasis:
 
         Returns
         -------
-        field: Nx3 array
-            magnetic field at p
+        B1: N_lmax x N x 3 array
+            magnetic field at p for each alpha_lm
+        B2: N_lmax x N x 3 array
+            magnetic field at p for each alpha_lm
 
         '''
-        mu0=4*np.pi*1e-7
         L = lmax*(lmax+2)+1
         B1 = np.zeros((L, p.shape[0], p.shape[1]))
         B2 = np.zeros((L, p.shape[0], p.shape[1]))
@@ -749,7 +751,7 @@ class sphbasis:
                 Psilm[:,1] *= sp[:,0]**(l-1)
                 Psilm[:,2] *= sp[:,0]**(l-1)
                 Psilm = self.sphvec2cart(sp, Psilm)
-                B1[idx] = Psilm
+                B2[idx] = Psilm # r**l functions
 
                 Philm = self.Philm(l,m, sp[:,1],sp[:,2])
 #                Philm *= np.sqrt((2*l+1)*(l+1))
@@ -757,11 +759,14 @@ class sphbasis:
                 Philm[:,1] *= sp[:,0]**(-l-2)
                 Philm[:,2] *= sp[:,0]**(-l-2)
                 Philm = self.sphvec2cart(sp, Philm)
-                B2[idx] = Philm
+                B1[idx] = Philm # 1/r**l functions
 
                 idx += 1
-#        B1 *= mu0
-#        B2 *= mu0
+
+        # FIX, should be handled earlier maybe?s
+        B1[np.isinf(B1)] = 0
+        B2[np.isinf(B2)] = 0
+
         return B1, B2
 
 class sphfittools:
