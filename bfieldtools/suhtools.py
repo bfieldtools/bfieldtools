@@ -15,6 +15,7 @@ Surface harmonics == Laplace-Beltrami eigenfunctions
 
 from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix
 from bfieldtools.magnetic_field_mesh import compute_C
+from bfieldtools.mesh_class import CouplingMatrix
 from scipy.sparse.linalg import eigsh
 import numpy as np
 
@@ -76,7 +77,7 @@ class suhbasis():
         """
         C = compute_C(mesh, points)
 
-        return C.transpose(2,0,1) @ self.basis
+        return C @ self.basis
 
     def fit_coeffs(self, points, data):
         """ Fit basis function coefficients to the data
