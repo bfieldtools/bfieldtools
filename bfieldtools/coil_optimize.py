@@ -231,7 +231,7 @@ def optimize_streamfunctions(meshobj,
 
         quadratic_matrix = meshobj.resistance[indices][:, indices]
 
-    else:
+    elif type(objective) == tuple:
 
         L = meshobj.inductance[indices][:, indices]
 
@@ -245,7 +245,9 @@ def optimize_streamfunctions(meshobj,
         scaled_R = max_eval_L / max_eval_R * R
 
         quadratic_matrix = (objective[0] * L  + objective[1] * scaled_R)
-
+    else:
+        print('Custom objective passed, assuming it is a matrix of correct dimensions')
+        quadratic_matrix = objective[indices][:, indices]
 
     #Scale whole quadratic term according to largest eigenvalue
     max_eval_quad = largest_eigh(quadratic_matrix, eigvals=(quadratic_matrix.shape[0]-1, quadratic_matrix.shape[0]-1))[0][0]
