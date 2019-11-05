@@ -23,7 +23,7 @@ class suhbasis():
     """ Class for representing magnetic field using surface harmonics
     """
 
-    def __init__(self, mesh, Nc, override_closed_mesh=False):
+    def __init__(self, mesh, Nc, closed_mesh=False):
         """
         Parameters
             mesh : Trimesh-object representing the boundary on which
@@ -34,25 +34,47 @@ class suhbasis():
 
         self.mesh = mesh
         self.Nc = Nc
-        self.calculate_basis(override_closed_mesh)
+        self.calculate_basis(closed_mesh)
 
 
-    def calculate_basis(self, override_closed_mesh=False):
+    def calculate_basis(self, closed_mesh=True):
         """ Calculate basis functions as eigenfunctions of the laplacian
+        
+            closed_mesh: if True, calculate the basis for the whole mesh
+                         if False, calculate for inner vertices (zero-dirichlet condition)
+                                    and use zero for the boundary 
         """
 
-        if not override_closed_mesh:
+        if closed_mesh:
             assert self.mesh.is_watertight
 
         L = laplacian_matrix(self.mesh)
         M = mass_matrix(self.mesh)
 
-        v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
-        vals, funcs = eigsh(-L, self.Nc+1, M, which='SA', v0 = v0)
-
-        # The first function is constant and does not yield any field
-        self.basis = funcs[:,1:]
-        self.eigenvals = vals[1:]
+        if closed_mesh:
+            v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
+            vals, funcs = eigsh(-L, self.Nc+1, M, which='SA', v0 = v0)
+    
+            # The first function is constant and does not yield any field
+            self.basis = funcs[:,1:]
+            self.eigenvals = vals[1:]
+        else:
+            from .utils import find_mesh_boundaries
+            self.boundary_verts, \
+            self.inner_verts,\
+            self.boundary_tris, \
+            self.inner_tris = find_mesh_boundaries(self.mesh.vertices, 
+                                                   self.mesh.faces, self.mesh.edges)
+            Linner = L[self.inner_verts][:, self.inner_verts]
+            Minner = M[self.inner_verts][:, self.inner_verts]
+            v0 = np.ones(Linner.shape[1]) # avoid random basis for symmetric geometries
+            vals, funcs = eigsh(-Linner, self.Nc, Minner, which='SA', v0 = v0)
+    
+            # Insert values to the inner verts
+            self.basis = np.zeros((L.shape[0], self.Nc))
+            self.basis[self.inner_verts] = funcs
+            self.eigenvals = vals[1:]
+            
 
     def field(self, coeffs, points):
         """ Calculate field at points
