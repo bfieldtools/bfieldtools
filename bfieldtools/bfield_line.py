@@ -9,11 +9,55 @@ def mycross(r1, r2):
     result[2] = r1[0] * r2[1] - r1[1] * r2[0]
     return result
 
+def bfield_line_segments2(vertices, points):
+    """ Compute b field of a segmented line current.
+        See:
+        Compact expressions for the Biot–Savart fields of a filamentary segments
+        by Hanson & Hirshman
+
+
+        Parameters
+        ----------
+
+        vertices: (N_line, 3) array
+            Vertices of the line with N_line-1 segments
+        points:   (N_points, 3) array
+            Magnetic field evaluation points
+
+        Returns
+        -------
+        bfield: (N_points, 3) array
+            Magnetic field at evaluation points
+
+    """
+    field = np.zeros(points.T.shape)
+    for i in range(len(vertices) - 1):
+        r1 = vertices[i]
+        r2 = vertices[i + 1]
+        
+        # Vectors between vertices and field points
+        a1 = points.T - r1.reshape(3, 1)
+        a2 = points.T - r2.reshape(3, 1)
+
+        # Direction of the field
+        f = mycross(a1, a2)
+
+        # Vector lengths
+        d1 = np.sqrt(np.sum(a1**2, axis=0))
+        d2 = np.sqrt(np.sum(a2**2, axis=0))
+
+        # Normalize direction field and divide by cylindrical distance
+        f *= (d1 + d2)/(d1*d2*(d1*d2 + np.sum(a1*a2, axis=0)))
+        
+        field = field + f
+
+    return field.T * 1e-7
+
 def bfield_line_segments(vertices, points):
     """ Compute b field of a segmented line current.
         This calculation is based on integration by Griffiths
-        on page 217 (3rd edition)
-
+        on page 217 (3rd edition)    
+        
         Parameters
         ----------
 
@@ -82,6 +126,11 @@ def vectorpot_current_loops(vertices, points, loops=None,
     """ Compute vector potential of a segmented line currents.
         Based on straightforward integration of 1/r potential over a line
         i.e. the gamma0 integral
+        
+        See:
+            Compact expressions for the Biot–Savart fields of a filamentary segments
+            by Hanson & Hirshman
+            
 
 
         Parameters
@@ -212,6 +261,7 @@ if __name__ == "__main__":
     b1 = bfield_current_loops(vertices, points.T, [np.arange(Ntheta)])[0]
 
     from mayavi import mlab
+    mlab.figure()
     q = mlab.quiver3d(*points, *b1.T)
     q.glyph.glyph_source.glyph_position = 'center'
 
