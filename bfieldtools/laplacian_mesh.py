@@ -5,7 +5,7 @@ such as the Laplacian, mass and gradient matrices.
 
 import numpy as np
 from scipy.sparse import csr_matrix, spdiags
-from .utils import dual_areas
+
 
 
 def laplacian_matrix(mesh):
@@ -121,6 +121,7 @@ def mass_matrix(mesh, da=None):
 
     '''
     if da is None:
+        from .utils import dual_areas
         da = dual_areas(mesh.faces, mesh.area_faces)
 
     A = spdiags(da, 0, mesh.vertices.shape[0], mesh.vertices.shape[0]).tocsr()
@@ -200,3 +201,57 @@ def gradient(vals, mesh, rotated=False):
     """
     Gx, Gy, Gz = gradient_matrix(mesh, rotated)
     return np.array([Gx @ vals, Gy @ vals, Gz @ vals])
+
+def divergence_matrix(mesh):
+    """ Divergence of tangential vector field as linear mappings
+    """
+    from .utils import tri_normals_and_areas
+    Gx, Gy, Gz = gradient_matrix(mesh, rotated=False)
+    n, a = tri_normals_and_areas(mesh.vertices, mesh.faces)
+    A = spdiags(a, 0, a.shape[0], a.shape[0])
+    return -Gx.T*A, -Gy.T*A, -Gz.T*A 
+    
+def adjoint_curl_matrix(mesh):
+    """ Adjoint curl of tangential vector field
+    """
+    from .utils import tri_normals_and_areas
+    Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
+    n, a = tri_normals_and_areas(mesh.vertices, mesh.faces)
+    A = spdiags(a, 0, a.shape[0], a.shape[0])
+    return -Gx.T*A, -Gy.T*A, -Gz.T*A 
+    
+    
+def divergence(vecs, mesh):
+    """ Divergence mapping applied to tangential vector field
+    """
+    Dx, Dy, Dz = divergence_matrix(mesh)
+    return Dx @ vecs[:, 0] + Dx @ vecs[:, 1] + Dx @ vecs[:, 2]
+
+def adjoint_curl(vecs, mesh):
+    """ Adjoint curl applied to tangential vector field
+    """
+    Cx, Cy, Cz = adjoint_curl_matrix(mesh)
+    return Cx @ vecs[:, 0] + Cx @ vecs[:, 1] + Cx @ vecs[:, 2]
+
+
+#if __name__ == "__main__":
+#    import numpy as np
+#    from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix
+#    from bfieldtools.mesh_class import MeshWrapper
+#    import trimesh
+#    import pkg_resources
+#    
+#    #Load simple plane mesh that is centered on the origin
+#    file_obj = pkg_resources.resource_filename('bfieldtools',
+#                        'example_meshes/10x10_plane.obj')
+#    mesh = trimesh.load(file_obj, process=True)
+#    coil = MeshWrapper(mesh_obj = mesh)
+#    
+#    # All three Laplacians should be the same
+#    L = laplacian_matrix(mesh)
+#    Dx, Dy, Dz = divergence_matrix(mesh)
+#    Cx, Cy, Cz = adjoint_curl_matrix(mesh)
+#    Gx, Gy, Gz = gradient_matrix(mesh, rotated=False)
+#    L2 = Dx @ Gx + Dy @ Gy + Dz @ Gz
+#    Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
+#    L3 = Cx @ Gx + Cy @ Gy + Cz @ Gz
