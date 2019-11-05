@@ -50,6 +50,63 @@ def laplacian_matrix(mesh):
 
     return L
 
+
+def laplacian_matrix_w_holes(mesh, inner_vertices, boundaries):
+    '''
+    Computes Laplacian matrix with additional boundary constraint
+    for inner boundaris: the transverse gradient at the inner boundaries are
+
+    Mesh vertices not present in inner_vertices or boundaries are assumed to be
+    on the outer boundary of the mesh, which is set to zero.
+
+    Parameters
+    ----------
+    mesh: Trimesh Mesh object
+
+    inner_vertices: list
+        contains mesh vertex indices corresponding to inner boundaries
+    boundaries: list with length N_holes
+        each list element contains mesh vertex indices corresponding to each
+        mesh holes
+
+
+    Returns
+    -------
+    L_holes: Cotangent weights
+        First N_inner_vertices elements correspond to inner mesh vertices,
+        last N_holes elements correspond to the values at the boundaries
+
+    '''
+
+
+    L = laplacian_matrix(mesh)
+
+    Linner = L[inner_vertices, :][:, inner_vertices]
+
+
+
+    Lb = [None]*len(boundaries)
+
+
+    #Start constructing the Laplacian matrix including the values at the inner boundaries
+    L_holes = Linner.toarray()
+
+    for b_idx, b in enumerate(boundaries):
+        #Hole contribution in original Laplacian matrix
+        Lb[b_idx] = np.array(np.sum(L[b,:][:, inner_vertices], axis=0))
+
+        #Add on the values at the right-hand side of the matrix
+        L_holes = np.concatenate((L_holes, Lb[b_idx].T), axis=1)
+
+        #Construct the added-on diagonal part
+        concat = np.zeros((len(boundaries),1))
+        concat[b_idx] = -Lb[b_idx].sum()
+
+        #Add on the values at the bottom of the matrix, including the diagonal part
+        L_holes = np.concatenate((L_holes, np.concatenate((Lb[b_idx], concat.T), axis=1)) ,axis=0)
+
+    return L_holes
+
 def mass_matrix(mesh, da=None):
     '''
     Computes mass matrix of mesh.
@@ -70,6 +127,24 @@ def mass_matrix(mesh, da=None):
     A = spdiags(da, 0, mesh.vertices.shape[0], mesh.vertices.shape[0]).tocsr()
 
     return A
+
+
+def mass_matrix_w_holes(mesh, inner_vertices, boundaries, da=None):
+    '''
+    Computes mass matrix of mesh with added boundaries (see laplacian_matrix_w_holes)
+    '''
+    M = mass_matrix(mesh, da)
+
+    Minner = M[inner_vertices, :][:, inner_vertices]
+    m = M.diagonal()
+
+    M_holes = Minner.diagonal()
+    for b_idx, b in enumerate(boundaries):
+        M_holes = np.concatenate((M_holes, np.array([np.sum(m[b])])))
+
+    M_holes = np.diag(M_holes)
+
+    return M_holes
 
 def gradient_matrix(mesh, rotated=False):
     """

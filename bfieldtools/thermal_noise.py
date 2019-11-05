@@ -8,12 +8,12 @@ from scipy.linalg import eigh
 from mayavi import mlab
 
 from .magnetic_field_mesh import compute_C
-from .laplacian_mesh import laplacian_matrix, mass_matrix
+from .laplacian_mesh import laplacian_matrix, mass_matrix, laplacian_matrix_w_holes, mass_matrix_w_holes
 from .mutual_inductance_mesh import self_inductance_matrix
 from . import utils
 
 
-def compute_current_modes(mesh):
+def compute_current_modes(mesh, boundaries=None):
     '''
     Computes eddy-current modes for a mesh using surface laplacian.
     Uses Dirichlet boundary condition, i.e., stream function is zero at boundary:
@@ -27,6 +27,7 @@ def compute_current_modes(mesh):
     ----------
     mesh: Trimesh mesh object
         The surface mesh
+    boundaries: list of N_holes
 
     Returns
     -------
@@ -34,18 +35,38 @@ def compute_current_modes(mesh):
         The normalized eddy-current modes vl[:,i]
 
     '''
-
     boundary_verts, inner_verts, boundary_tris, inner_tris = utils.find_mesh_boundaries(mesh.vertices, mesh.faces, mesh.edges)
 
-    L = laplacian_matrix(mesh)
-    M = mass_matrix(mesh)
+    if boundaries:
+        L_holes = laplacian_matrix_w_holes(mesh, inner_verts, boundaries)
+        M_holes = mass_matrix_w_holes(mesh, inner_verts, boundaries)
 
-    u, v = eigh(-L.todense()[inner_verts][:, inner_verts], M.todense()[inner_verts][:, inner_verts])
+        u, v = eigh(-L_holes, M_holes)
 
-    #Normalize the laplacien eigenvectors
-    vl = np.zeros(M.shape)
-    for i in range(v.shape[1]):
-        vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
+
+        #Normalize the laplacien eigenvectors
+
+        for i in range(v.shape[1]):
+            v[:, i] = v[:, i]/np.sqrt(u[i])
+
+        #Assign values per vertex
+        vl = np.zeros((mesh.vertices.shape[0], v.shape[1]))
+
+        vl[inner_verts] = v[:-len(boundaries)]
+
+        for b_idx, b in enumerate(boundaries):
+            vl[b] = v[len(inner_verts) + b_idx]
+
+    else:
+        L = laplacian_matrix(mesh)
+        M = mass_matrix(mesh)
+
+        u, v = eigh(-L.todense()[inner_verts][:, inner_verts], M.todense()[inner_verts][:, inner_verts])
+
+        #Normalize the laplacien eigenvectors
+        vl = np.zeros(M.shape)
+        for i in range(v.shape[1]):
+            vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
 
     return vl
 
@@ -119,11 +140,11 @@ def compute_dc_Bnoise_covar(mesh, vl, fp, sigma, d, T):
 
     C = compute_C(mesh, fp)
 
-    eps = 4*kB*T*sigma*d*np.eye(vl.shape[0])
+    eps = 4*kB*T*sigma*d*np.eye(vl.shape[1])
 
     B = np.zeros((fp.shape[0], fp.shape[0], 3))
     for i in range(3):
-        B[:, :, i] = C[:, :, i] @ vl @ eps @ (vl.T) @ (C[:, :, i].T)
+        B[:, :, i] = C[:, i, :] @ vl @ eps @ (vl.T) @ (C[:, i, :].T)
 
     return B
 
