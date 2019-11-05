@@ -323,7 +323,7 @@ def compute_C_analytic(mesh, r, Nchunks=None):
     from .integrals import omega, gamma0
     coef = 1e-7
 
-    print('Computing C matrix, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
+    print('Computing C matrix analytically, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
     start = time.time()
 
     if Nchunks is None:
