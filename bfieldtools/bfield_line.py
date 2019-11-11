@@ -34,7 +34,7 @@ def bfield_line_segments2(vertices, points):
     for i in range(len(vertices) - 1):
         r1 = vertices[i]
         r2 = vertices[i + 1]
-        
+
         # Vectors between vertices and field points
         a1 = points.T - r1.reshape(3, 1)
         a2 = points.T - r2.reshape(3, 1)
@@ -48,7 +48,7 @@ def bfield_line_segments2(vertices, points):
 
         # Normalize direction field and divide by cylindrical distance
         f *= (d1 + d2)/(d1*d2*(d1*d2 + np.sum(a1*a2, axis=0)))
-        
+
         field = field + f
 
     return field.T * 1e-7
@@ -56,8 +56,8 @@ def bfield_line_segments2(vertices, points):
 def bfield_line_segments(vertices, points):
     """ Compute b field of a segmented line current.
         This calculation is based on integration by Griffiths
-        on page 217 (3rd edition)    
-        
+        on page 217 (3rd edition)
+
         Parameters
         ----------
 
@@ -126,11 +126,11 @@ def vectorpot_current_loops(vertices, points, loops=None,
     """ Compute vector potential of a segmented line currents.
         Based on straightforward integration of 1/r potential over a line
         i.e. the gamma0 integral
-        
+
         See:
             Compact expressions for the Biot–Savart fields of a filamentary segments
             by Hanson & Hirshman
-            
+
 
 
         Parameters
@@ -180,6 +180,48 @@ def vectorpot_current_loops(vertices, points, loops=None,
         res = np.where(dotprods1 + dotprods2 > 0, res, res2)
 
     return 1e-7 * np.sum(res[..., None] * segments[..., None, :], axis=1)
+
+
+from bfieldtools.integrals import omega
+
+def scalarpot_current_loops(vertices, points):
+    '''
+    Computes the scalar magnetic potential of a segmented current loop at given points.
+    This is equal to the solid angle spanned by the loop (polygon), times a constant.
+    The first and last vertices are connected to close the loop.
+    Parameters
+    ----------
+    vertices: (N_line, 3) array
+        Vertices of the line with N_line-1 segments
+    points: (N_points, 3) array
+        Magnetic field evaluation points
+
+    Returns
+    -------
+    Scalar magnetic potential (Npoints, )
+    '''
+
+    N_verts = len(vertices)
+
+    #VERTEX MASS CENTRE
+    mass_center = np.mean(vertices, axis=0)
+
+    vertices = np.vstack((vertices, mass_center))
+
+    #CREATE TRIANGLE FAN
+    faces = np.full(shape=(N_verts, 3), fill_value=np.nan, dtype=int)
+
+    for i in range(N_verts):
+        faces[i] = np.array([i, (i+1)%N_verts, N_verts])
+
+    R1 = vertices[faces]
+    R2 = points
+
+    RR = R2[:, None, None, :] - R1[None, :, :, :]
+
+    #COMPUTE SOLID ANGLE, DIVIDE BY 4*PI*mu0
+    return np.sum(omega(RR), axis=1) * 1e-7
+
 
 def flux_current_loops(vertices, loops, vertices_other, Nquad=2):
     """ Compute magnetic flux created by a segmented line current loops
@@ -235,6 +277,7 @@ def flux_current_loops(vertices, loops, vertices_other, Nquad=2):
     # segements (axis=2) and quadrature points on each segment (axis=1)
 
     return np.sum(a * segments, axis=(1, 2, 3))
+
 
 
 
