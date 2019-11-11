@@ -48,7 +48,7 @@ joined_planes = coil_plus.union(coil_minus)
 coil = MeshWrapper(mesh_obj=joined_planes, fix_normals=True)
 
 # Separate object for shield geometry
-shieldmesh = trimesh.load('/l/bfieldtools/bfieldtools/example_meshes/closed_cylinder.stl')
+shieldmesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/closed_cylinder.stl'), process=True)
 shieldmesh.apply_scale(15)
 
 shield = MeshWrapper(mesh_obj=shieldmesh, process=True, fix_normals=True)
@@ -145,20 +145,24 @@ mlab.quiver3d(*target_points.T, *B_target.T)
 #################################################################
 # Now, let's compute the effect of the shield on the field produced by the coil
 
+# Points slightly inside the shield
+d = np.mean(np.diff(shield.mesh.vertices[shield.mesh.faces[:,0:2]],axis=1), axis=0)/10
+points = shield.mesh.vertices - d*shield.mesh.vertex_normals
+
 # Calculate primary potential matrix at the shield surface
-P_prim = compute_U(coil.mesh, shield.mesh.vertices)
+P_prim = compute_U(coil.mesh, points)
 
 # Calculate linear collocation BEM matrix
-P_bem = compute_U(shield.mesh, shield.mesh.vertices)
+P_bem = compute_U(shield.mesh, points)
 
 # Recalculate diag elements according to de Munck paper
-for diag_index in range(P_bem.shape[0]):
-    P_bem[diag_index, diag_index] = 0
-    P_bem[diag_index, diag_index] = -P_bem[diag_index, :].sum()
+#for diag_index in range(P_bem.shape[0]):
+#    P_bem[diag_index, diag_index] = 0
+#    P_bem[diag_index, diag_index] = -P_bem[diag_index, :].sum()
 
 # Matrix misses one rank, make it invertible
 # by rank-one update (sets potential of constant dipole layer)
-P_bem += np.ones(P_bem.shape)/P_bem.shape[0]
+#P_bem += np.ones(P_bem.shape)/P_bem.shape[0]
 
 
 # Solve equivalent stream function for the perfect linear mu-metal layer.

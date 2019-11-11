@@ -29,8 +29,6 @@ from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
 from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis
 
-from trimesh.creation import box
-from trimesh.smoothing import filter_laplacian
 
 import pkg_resources
 
@@ -58,21 +56,6 @@ mesh1 = coil_plus.union(coil_minus)
 mesh2 = mesh1.copy()
 mesh2.apply_scale(1.4)
 
-current1 = MeshWrapper(mesh_obj = mesh1, fix_normals=False)
-current2 = MeshWrapper(mesh_obj = mesh2, fix_normals=False)
-
-
-
-#
-#mesh1 = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane_hires.obj'), process=False)
-#mesh1.vertices *= 0.1
-#mesh1.vertices[:,1] += 0.5
-#
-#mesh2 = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane_hires.obj'), process=False)
-#mesh2.vertices *= 0.15
-#mesh2.vertices[:,1] += 0.75
-
-
 current1 = MeshWrapper(mesh_obj=mesh1)
 current2 = MeshWrapper(mesh_obj=mesh2)
 
@@ -89,14 +72,14 @@ M21 = M21[current2.inner_verts][:, current1.inner_verts]
 # Mapping from I1 to I2, constraining flux through mesh2 to zero
 P = -np.linalg.solve(M22, M21)
 
-#A1, temp = compute_sphcoeffs_mesh(mesh1, 7)
-#A2, temp = compute_sphcoeffs_mesh(mesh2, 7)
+A1, Beta1 = compute_sphcoeffs_mesh(mesh1, 4)
+A2, Beta2 = compute_sphcoeffs_mesh(mesh2, 4)
 
 sb = sphbasis(10)
 F1 = (sb.basis_fields(mesh1.vertices, 3)[1]*mesh1.vertex_normals).sum(axis=-1)
 #F2 = (sb.basis_fields(mesh2.vertices, 3)[0]*mesh2.vertex_normals).sum(axis=-1)
 
-x = y = np.linspace(-0.8, 0.8, 50)
+x = y = np.linspace(-0.8, 0.8, 150)
 X,Y = np.meshgrid(x, y, indexing='ij')
 points = np.zeros((X.flatten().shape[0], 3))
 points[:, 0] = X.flatten()
@@ -109,25 +92,34 @@ CU1 = compute_U(mesh1, points)
 CU2 = compute_U(mesh2, points)
 
 #%% Specify spherical harmonic and calculate corresponding shielded field
-#alpha = np.zeros(A1.shape[0])
-#alpha[2] = 1
+beta = np.zeros(Beta1.shape[0])
+beta[7] = 1
 #alpha[15] = 1
 # Minimization of magnetic energy with spherical harmonic constraint
-#C = A1 + A2 @ P
+
+C = Beta1[:, current1.inner_verts] + Beta2[:, current2.inner_verts] @ P
 M = M11 + M21.T @ P
 #G = np.linalg.solve(M, C.T)
-#I1 = G @ np.linalg.solve(C @ G, alpha)
+#I1inner = G @ np.linalg.solve(C @ G + 1.5e6*np.eye(C.shape[0]), beta)
+# Minimum residual
+#I1inner = np.linalg.solve(C.T @ C + M/1e8, C.T @ beta)
+# Minimum energy
+I1inner = np.linalg.solve(C.T @ C + M/1e-8, C.T @ beta)
 
 #f = F1[2]
-f =  np.ones(M11.shape[0])
+#f =  np.ones(M11.shape[0])
+#ind=2
+#f = (Beta1[ind:ind+1][:, current1.inner_verts] +
+#     Beta2[ind:ind+1][:, current2.inner_verts] @ P).T
 #f = mesh1.vertex_normals[:,1]
-I1inner = np.linalg.solve(M, f)
+
+#I1inner = np.linalg.solve(M, f)
 #I1, res, rr, s = np.linalg.lstsq(C, alpha, rcond=1e-12)
 #I1 = mesh1.vertices[:,0]
 I2inner = P @ I1inner
 
-I1 = np.zeros(mesh1.vertices.shape[0]); I1[current1.inner_verts] = I1inner
-I2 = np.zeros(mesh2.vertices.shape[0]); I2[current2.inner_verts] = I2inner
+I1 = np.zeros(mesh1.vertices.shape[0]); I1[current1.inner_verts] = I1inner.T
+I2 = np.zeros(mesh2.vertices.shape[0]); I2[current2.inner_verts] = I2inner.T
 
 s = mlab.triangular_mesh(*mesh1.vertices.T, mesh1.faces, scalars=I1)
 s.enable_contours=True
@@ -140,27 +132,48 @@ B2 = CB2 @ I2
 U1 = CU1 @ I1
 U2 = CU2 @ I2
 #%% Plot
+cc1 = scalar_contour(mesh1, mesh1.vertices[:,2], contours= [-0.001])[0]
+cc2 = scalar_contour(mesh2, mesh2.vertices[:,2], contours= [-0.001])[0]
+cx10 = cc1[0][:,1]
+cy10 = cc1[0][:,0]
+cx20 = cc2[0][:,1]
+cy20 = cc2[0][:,0]
+
+cx11 = np.vstack(cc1[1:])[:,1]
+cy11 = np.vstack(cc1[1:])[:,0]
+cx21 = np.vstack(cc2[1:])[:,1]
+cy21 = np.vstack(cc2[1:])[:,0]
+
 B = (B1.T + B2.T)[:2].reshape(2, x.shape[0], y.shape[0])
 lw = np.sqrt(B[0]**2 + B[1]**2)
 lw = 2*lw/np.max(lw)
+
 xx = np.linspace(-1,1, 16)
-seed_points = 0.51*np.array([xx, -np.sqrt(1-xx**2)])
-seed_points = np.hstack([seed_points, (0.51*np.array([xx, np.sqrt(1-xx**2)]))])
+#seed_points = 0.56*np.array([xx, -np.sqrt(1-xx**2)])
+#seed_points = np.hstack([seed_points, (0.56*np.array([xx, np.sqrt(1-xx**2)]))])
+#seed_points = np.hstack([seed_points, (0.56*np.array([np.zeros_like(xx), xx]))])
+seed_points = np.array([cx10+0.001, cy10])
+seed_points = np.hstack([seed_points, np.array([cx11-0.001, cy11])])
+seed_points = np.hstack([seed_points, (0.56*np.array([np.zeros_like(xx), xx]))])
+
 #plt.streamplot(x,y, B[1], B[0], density=2, linewidth=lw, color='k',
 #               start_points=seed_points.T, integration_direction='both')
 U = (U1 + U2).reshape(x.shape[0], y.shape[0])
 U /= np.max(U)
 plt.figure()
-plt.imshow(U, vmin=-1.0, vmax=1.0, cmap='seismic', interpolation='bicubic',
-           extent=(x.min(), x.max(), y.min(), y.max()))
+plt.contourf(X,Y, U.T, cmap='seismic', levels=40)
+#plt.imshow(U, vmin=-1.0, vmax=1.0, cmap='seismic', interpolation='bicubic',
+#           extent=(x.min(), x.max(), y.min(), y.max()))
 plt.streamplot(x,y, B[1], B[0], density=2, linewidth=lw, color='k',
                start_points=seed_points.T, integration_direction='both')
 
-cc1 = scalar_contour(mesh1, mesh1.vertices[:,2], contours= [-0.001])[0][0]
-cc2 = scalar_contour(mesh2, mesh2.vertices[:,2], contours= [-0.001])[0][0]
 
-plt.plot(cc1[:,1], cc1[:,0], linewidth=3.0)
-plt.plot(cc2[:,1], cc2[:,0], linewidth=3.0)
+
+plt.plot(cx10, cy10, linewidth=3.0, color='gray')
+plt.plot(cx20, cy20, linewidth=3.0, color='gray')
+plt.plot(cx11, cy11, linewidth=3.0, color='gray')
+plt.plot(cx21, cy21, linewidth=3.0, color='gray')
+
 
 plt.xticks([])
 plt.yticks([])

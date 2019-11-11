@@ -54,8 +54,8 @@ M21 = mutual_inductance_matrix_from_A(mesh2, mesh1)
 # Mapping from I1 to I2
 P = -np.linalg.solve(M22, M21)
 
-A1, temp = compute_sphcoeffs_mesh(mesh1, 7)
-A2, temp = compute_sphcoeffs_mesh(mesh2, 7)
+A1, Beta1 = compute_sphcoeffs_mesh(mesh1, 7)
+A2, Beta2 = compute_sphcoeffs_mesh(mesh2, 7)
 
 sb = sphbasis(10)
 F1 = (sb.basis_fields(mesh1.vertices, 3)[1]*mesh1.vertex_normals).sum(axis=-1)
@@ -78,12 +78,13 @@ CU2 = compute_U(mesh2, points)
 #alpha[2] = 1
 #alpha[15] = 1
 # Minimization of magnetic energy with spherical harmonic constraint
-#C = A1 + A2 @ P
+C = Beta1 + Beta2 @ P
 M = M11 + M21.T @ P
 #G = np.linalg.solve(M, C.T)
 #I1 = G @ np.linalg.solve(C @ G, alpha)
 
-f = F1[7]
+f = F1[14]
+#f = C[7]
 #f = mesh1.vertex_normals[:,1]
 I1 = np.linalg.solve(M, f)
 #I1, res, rr, s = np.linalg.lstsq(C, alpha, rcond=1e-12)
@@ -100,31 +101,35 @@ B2 = CB2 @ I2
 U1 = CU1 @ I1
 U2 = CU2 @ I2
 #%% Plot
+cc1 = scalar_contour(mesh1, mesh1.vertices[:,2], contours= [-0.001])[0][0]
+cc2 = scalar_contour(mesh2, mesh2.vertices[:,2], contours= [-0.001])[0][0]
+
 B = (B1.T + B2.T)[:2].reshape(2, x.shape[0], y.shape[0])
 lw = np.sqrt(B[0]**2 + B[1]**2)
 lw = 2*lw/np.max(lw)
 xx = np.linspace(-1,1, 16)
-seed_points = 0.51*np.array([xx, -np.sqrt(1-xx**2)])
-seed_points = np.hstack([seed_points, (0.51*np.array([xx, np.sqrt(1-xx**2)]))])
+#seed_points = 0.51*np.array([xx, -np.sqrt(1-xx**2)])
+#seed_points = np.hstack([seed_points, (0.51*np.array([xx, np.sqrt(1-xx**2)]))])
+seed_points = np.array([cc1[:,0], cc1[:,1]])*1.01
 #plt.streamplot(x,y, B[1], B[0], density=2, linewidth=lw, color='k',
 #               start_points=seed_points.T, integration_direction='both')
 U = (U1 + U2).reshape(x.shape[0], y.shape[0])
 U /= np.max(U)
 plt.figure()
-plt.imshow(U, vmin=-1.0, vmax=1.0, cmap='seismic', interpolation='bicubic',
-           extent=(x.min(), x.max(), y.min(), y.max()))
+plt.contourf(X,Y, U.T, cmap='seismic', levels=40)
+#plt.imshow(U, vmin=-1.0, vmax=1.0, cmap='seismic', interpolation='bicubic',
+#           extent=(x.min(), x.max(), y.min(), y.max()))
 plt.streamplot(x,y, B[1], B[0], density=2, linewidth=lw, color='k',
                start_points=seed_points.T, integration_direction='both')
 
 
-cc1 = scalar_contour(mesh1, mesh1.vertices[:,2], contours= [-0.001])[0][0]
-cc2 = scalar_contour(mesh2, mesh2.vertices[:,2], contours= [-0.001])[0][0]
-
-plt.plot(cc1[:,0], cc1[:,1], linewidth=3.0)
-plt.plot(cc2[:,0], cc2[:,1], linewidth=3.0)
+plt.plot(cc1[:,0], cc1[:,1], linewidth=3.0, color='gray')
+plt.plot(cc2[:,0], cc2[:,1], linewidth=3.0, color='gray')
 
 plt.xticks([])
 plt.yticks([])
+
+plt.axis('image')
 
 #%% Plot "coils"
 contours1 = scalar_contour(mesh1, I1, 20)[0]

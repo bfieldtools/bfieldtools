@@ -122,8 +122,9 @@ import mosek
 coil.I, prob = optimize_streamfunctions(coil,
                                    [target_spec, stray_spec],
                                    objective='minimum_inductive_energy',
-                                   solver='MOSEK',
-                                   solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
+                                   solver='CVXOPT',
+                                   solver_opts={}
+                                   #{'mosek_params':{mosek.iparam.num_threads: 8}}
                                    )
 
 #############################################################
