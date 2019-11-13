@@ -13,10 +13,8 @@ Surface harmonics == Laplace-Beltrami eigenfunctions
 
 """
 
-from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix
+from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix, laplacian_matrix_w_holes, mass_matrix_w_holes
 from bfieldtools.magnetic_field_mesh import compute_C
-from bfieldtools.mutual_inductance_mesh import self_inductance_matrix
-from bfieldtools.mesh_class import CouplingMatrix
 from scipy.sparse.linalg import eigsh
 import numpy as np
 
@@ -24,7 +22,7 @@ class suhbasis():
     """ Class for representing magnetic field using surface harmonics
     """
 
-    def __init__(self, mesh, Nc, closed_mesh=True):
+    def __init__(self, mesh, Nc, closed_mesh=True, inner_vertices=None, boundaries=None):
         """
         Parameters
             mesh : Trimesh-object representing the boundary on which
@@ -35,7 +33,10 @@ class suhbasis():
 
         self.mesh = mesh
         self.Nc = Nc
+        self.inner_vertices = inner_vertices
+        self.boundaries = boundaries
         self.calculate_basis(closed_mesh)
+
 
 
     def calculate_basis(self, closed_mesh=True):
@@ -62,21 +63,25 @@ class suhbasis():
             self.basis = funcs[:,1:]
             self.eigenvals = vals[1:]
         else:
-            from bfieldtools.utils import find_mesh_boundaries
-            self.boundary_verts, \
-            self.inner_verts,\
-            self.boundary_tris, \
-            self.inner_tris = find_mesh_boundaries(self.mesh.vertices,
-                                                   self.mesh.faces, self.mesh.edges)
-            Linner = L[self.inner_verts][:, self.inner_verts]
-            Minner = M[self.inner_verts][:, self.inner_verts]
-            v0 = np.ones(Linner.shape[1]) # avoid random basis for symmetric geometries
-            vals, funcs = eigsh(-Linner, self.Nc, Minner, which='SA', v0 = v0)
+
+
+            L = laplacian_matrix_w_holes(self.mesh, self.inner_vertices, self.boundaries)
+            M = mass_matrix_w_holes(self.mesh, self.inner_vertices, self.boundaries)
+
+            v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
+            u, v = eigsh(-L, self.Nc, M, which='SA', v0 = v0)
+
+            #Assign values per vertex
+            vl = np.zeros((self.mesh.vertices.shape[0], v.shape[1]))
+
+            vl[self.inner_vertices] = v[:-len(self.boundaries)]
+
+            for b_idx, b in enumerate(self.boundaries):
+                vl[b] = v[len(self.inner_vertices) + b_idx]
 
             # Insert values to the inner verts
-            self.basis = np.zeros((L.shape[0], self.Nc))
-            self.basis[self.inner_verts] = funcs
-            self.eigenvals = vals
+            self.basis = vl
+            self.eigenvals = u
 
 
     def field(self, coeffs, points):
@@ -121,8 +126,8 @@ class suhbasis():
         """ Plot basis functions on the mesh
         """
         N1 = np.floor(np.sqrt(Nfuncs))
-        dx = (mesh.vertices[:,0].max() - mesh.vertices[:,0].min())*(1+dist)
-        dy = (mesh.vertices[:,1].max() - mesh.vertices[:,1].min())*(1+dist)
+        dx = (self.mesh.vertices[:,0].max() - self.mesh.vertices[:,0].min())*(1+dist)
+        dy = (self.mesh.vertices[:,1].max() - self.mesh.vertices[:,1].min())*(1+dist)
 
         i = 0
         j = 0

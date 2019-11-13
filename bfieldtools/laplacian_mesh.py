@@ -4,7 +4,7 @@ such as the Laplacian, mass and gradient matrices.
 '''
 
 import numpy as np
-from scipy.sparse import csr_matrix, spdiags
+from scipy.sparse import csr_matrix, coo_matrix, spdiags, hstack, vstack
 
 
 
@@ -89,23 +89,27 @@ def laplacian_matrix_w_holes(mesh, inner_vertices, boundaries):
 
 
     #Start constructing the Laplacian matrix including the values at the inner boundaries
-    L_holes = Linner.toarray()
+    L_holes = Linner
 
+
+    #Add columns
     for b_idx, b in enumerate(boundaries):
         #Hole contribution in original Laplacian matrix
-        Lb[b_idx] = np.array(np.sum(L[b,:][:, inner_vertices], axis=0))
+        Lb[b_idx] = coo_matrix(np.sum(L[b,:][:, inner_vertices], axis=0))
 
         #Add on the values at the right-hand side of the matrix
-        L_holes = np.concatenate((L_holes, Lb[b_idx].T), axis=1)
+        L_holes = hstack((L_holes, Lb[b_idx].T))
 
+    #Add rows, including new diagonal
+    for b_idx, b in enumerate(boundaries):
         #Construct the added-on diagonal part
         concat = np.zeros((len(boundaries),1))
-        concat[b_idx] = -Lb[b_idx].sum()
+        concat[b_idx] = -np.sum(Lb[b_idx])
 
         #Add on the values at the bottom of the matrix, including the diagonal part
-        L_holes = np.concatenate((L_holes, np.concatenate((Lb[b_idx], concat.T), axis=1)) ,axis=0)
+        L_holes = vstack((L_holes, hstack((Lb[b_idx], coo_matrix(concat.T)))))
 
-    return L_holes
+    return L_holes.tocsr()
 
 def mass_matrix(mesh, da=None):
     '''
@@ -142,7 +146,7 @@ def mass_matrix_w_holes(mesh, inner_vertices, boundaries, da=None):
     for b_idx, b in enumerate(boundaries):
         M_holes = np.concatenate((M_holes, np.array([np.sum(m[b])])))
 
-    M_holes = np.diag(M_holes)
+    M_holes = spdiags(M_holes, diags=0, m=M_holes.shape[0], n=M_holes.shape[0], format='csr')
 
     return M_holes
 
@@ -209,8 +213,8 @@ def divergence_matrix(mesh):
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=False)
     n, a = tri_normals_and_areas(mesh.vertices, mesh.faces)
     A = spdiags(a, 0, a.shape[0], a.shape[0])
-    return -Gx.T*A, -Gy.T*A, -Gz.T*A 
-    
+    return -Gx.T*A, -Gy.T*A, -Gz.T*A
+
 def adjoint_curl_matrix(mesh):
     """ Adjoint curl of tangential vector field
     """
@@ -218,9 +222,9 @@ def adjoint_curl_matrix(mesh):
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
     n, a = tri_normals_and_areas(mesh.vertices, mesh.faces)
     A = spdiags(a, 0, a.shape[0], a.shape[0])
-    return -Gx.T*A, -Gy.T*A, -Gz.T*A 
-    
-    
+    return -Gx.T*A, -Gy.T*A, -Gz.T*A
+
+
 def divergence(vecs, mesh):
     """ Divergence mapping applied to tangential vector field
     """
@@ -240,13 +244,13 @@ def adjoint_curl(vecs, mesh):
 #    from bfieldtools.mesh_class import MeshWrapper
 #    import trimesh
 #    import pkg_resources
-#    
+#
 #    #Load simple plane mesh that is centered on the origin
 #    file_obj = pkg_resources.resource_filename('bfieldtools',
 #                        'example_meshes/10x10_plane.obj')
 #    mesh = trimesh.load(file_obj, process=True)
 #    coil = MeshWrapper(mesh_obj = mesh)
-#    
+#
 #    # All three Laplacians should be the same
 #    L = laplacian_matrix(mesh)
 #    Dx, Dy, Dz = divergence_matrix(mesh)
