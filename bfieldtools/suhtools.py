@@ -13,10 +13,11 @@ Surface harmonics == Laplace-Beltrami eigenfunctions
 
 """
 
-from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix, laplacian_matrix_w_holes, mass_matrix_w_holes
-from bfieldtools.magnetic_field_mesh import compute_C
+from .mesh_calculus import laplacian_matrix, mass_matrix, laplacian_matrix_w_holes, mass_matrix_w_holes
+from .mesh_magnetics import magnetic_field_coupling
 from scipy.sparse.linalg import eigsh
 import numpy as np
+from mayavi import mlab
 
 class suhbasis():
     """ Class for representing magnetic field using surface harmonics
@@ -105,9 +106,9 @@ class suhbasis():
 
                 Fields (3, N_points, N_coeffs)
         """
-        C = compute_C(mesh, points)
+        B_coupling = magnetic_field_coupling(mesh, points)
 
-        return C @ self.basis
+        return B_coupling @ self.basis
 
     def fit_coeffs(self, points, data):
         """ Fit basis function coefficients to the data
@@ -151,7 +152,6 @@ if __name__ == '__main__':
     """
 
     from trimesh.creation import icosphere
-    from mayavi import mlab
 
     # Create basis for a sphere (basis.eigenvals shere the same structure
     # as spherical harmonic eigenvalues)

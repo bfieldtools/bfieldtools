@@ -21,7 +21,7 @@ Minimal example visualizing the gradient of a scalar function on a mesh
     from mayavi import mlab
     import trimesh
 
-    from bfieldtools.laplacian_mesh import gradient
+    from bfieldtools.mesh_calculus import gradient
     import pkg_resources
 
     #Load simple plane mesh that is centered on the origin
@@ -46,11 +46,11 @@ Minimal example visualizing the gradient of a scalar function on a mesh
 
  .. code-block:: none
 
-    shapely.geometry.Polygon not available!
+    SVG path loading unavailable!
     Traceback (most recent call last):
-      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py", line 22, in <module>
-        from shapely.geometry import Polygon
-    ModuleNotFoundError: No module named 'shapely'
+      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/path/exchange/svg_io.py", line 18, in <module>
+        from svg.path import parse_path
+    ModuleNotFoundError: No module named 'svg'
 
 
 
@@ -103,9 +103,9 @@ The same but rotated (e.g. current density from a stream function)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.547 seconds)
+   **Total running time of the script:** ( 0 minutes  2.981 seconds)
 
-**Estimated memory usage:**  145 MB
+**Estimated memory usage:**  161 MB
 
 
 .. _sphx_glr_download_auto_examples_gradient_example.py:

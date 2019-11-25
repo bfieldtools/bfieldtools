@@ -14,7 +14,7 @@
     <script type="text/javascript" src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Biplanar coil design" href="biplanar_coil_design.html" />
+    <link rel="next" title="High-order spherical harmonic biplanar coil design" href="spherical_harmonics_biplanar_coil_design.html" />
     <link rel="prev" title="Head gradient coil" href="head_gradient_coil_design.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -112,7 +112,6 @@ regions arranged in a grid.</p>
 
 
 <span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">MeshWrapper</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.magnetic_field_mesh</span> <span class="k">import</span> <span class="n">compute_C</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="k">import</span> <span class="n">optimize_streamfunctions</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="k">import</span> <span class="n">scalar_contour</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="k">import</span> <span class="n">plot_3d_current_loops</span>
@@ -148,6 +147,14 @@ regions arranged in a grid.</p>
 
 <span class="c1">#Create mesh class object</span>
 <span class="n">coil</span> <span class="o">=</span> <span class="n">MeshWrapper</span><span class="p">(</span><span class="n">verts</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">tris</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>SVG path loading unavailable!
+Traceback (most recent call last):
+  File &quot;/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/path/exchange/svg_io.py&quot;, line 18, in &lt;module&gt;
+    from svg.path import parse_path
+ModuleNotFoundError: No module named &#39;svg&#39;
 </pre></div>
 </div>
 <p>Set up target and stray field points. Here, the target points are on a planar
@@ -205,20 +212,18 @@ regions arranged in a grid.</p>
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_mamba_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_mamba_coil_design_001.png" />
-<p>Compute C matrices that are used to compute the generated magnetic field, create field specification</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">coil</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="n">compute_C</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">target_points</span><span class="p">)</span>
-
-<span class="n">target_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="n">coil</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="n">target_rel_error</span><span class="p">,</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="n">target_abs_error</span><span class="p">,</span> <span class="s1">&#39;target_field&#39;</span><span class="p">:</span><span class="n">target_field</span><span class="p">}</span>
+<p>Compute coupling matrix that is used to compute the generated magnetic field, create field specification</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">target_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;coupling&#39;</span><span class="p">:</span><span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">),</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="n">target_rel_error</span><span class="p">,</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="n">target_abs_error</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="n">target_field</span><span class="p">}</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3184 vertices by 512 target points... took 0.81 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3184 vertices by 512 target points... took 0.84 seconds.
 </pre></div>
 </div>
 <p>Run QP solver</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mosek</span>
 
-<span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
+<span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
                                    <span class="p">[</span><span class="n">target_spec</span><span class="p">],</span>
                                    <span class="n">objective</span><span class="o">=</span><span class="s1">&#39;minimum_inductive_energy&#39;</span><span class="p">,</span>
                                    <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;MOSEK&#39;</span><span class="p">,</span>
@@ -227,10 +232,13 @@ regions arranged in a grid.</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 2 chunks since 9 GiB memory is available...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 2 chunks since 7 GiB memory is available...
 Calculating potentials, chunk 1/2
 Calculating potentials, chunk 2/2
-Inductance matrix computation took 65.25 seconds.
+Inductance matrix computation took 70.82 seconds.
+Pre-existing problem not passed, creating...
+Passing parameters to problem...
+Passing problem to solver...
 
 
 Problem
@@ -260,37 +268,37 @@ Optimizer  - Constraints            : 2897
 Optimizer  - Cones                  : 1
 Optimizer  - Scalar variables       : 5970              conic                  : 2898
 Optimizer  - Semi-definite variables: 0                 scalarized             : 0
-Factor     - setup time             : 1.52              dense det. time        : 0.00
-Factor     - ML order time          : 0.28              GP order time          : 0.00
+Factor     - setup time             : 1.78              dense det. time        : 0.00
+Factor     - ML order time          : 0.37              GP order time          : 0.00
 Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06
 Factor     - dense dim.             : 0                 flops                  : 4.53e+10
 ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
-0   2.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  71.48
-1   9.2e+00  3.8e-01  3.3e-01  3.18e-01   8.720442621e+01   8.663738472e+01   3.8e-01  71.99
-2   6.5e+00  2.7e-01  2.4e-01  3.48e-01   1.226961211e+02   1.222523302e+02   2.7e-01  72.48
-3   3.4e+00  1.4e-01  1.3e-01  3.68e-01   1.987899646e+02   1.985326339e+02   1.4e-01  72.98
-4   1.1e+00  4.6e-02  2.1e-02  1.11e+00   3.144686625e+02   3.143947436e+02   4.6e-02  73.49
-5   4.4e-01  1.8e-02  6.2e-03  9.35e-01   3.445450804e+02   3.445201507e+02   1.8e-02  73.98
-6   3.2e-02  1.3e-03  1.2e-04  9.84e-01   3.765035939e+02   3.765016483e+02   1.3e-03  74.67
-7   8.4e-04  3.5e-05  5.6e-07  1.00e+00   3.791913665e+02   3.791913288e+02   3.5e-05  75.31
-8   3.7e-04  1.5e-05  1.7e-07  1.00e+00   3.792467290e+02   3.792467145e+02   1.5e-05  75.88
-9   6.2e-06  2.6e-07  4.6e-10  1.00e+00   3.792916897e+02   3.792916893e+02   2.6e-07  76.54
-10  7.4e-07  3.1e-08  2.2e-11  1.00e+00   3.792923898e+02   3.792923898e+02   3.1e-08  77.06
-11  3.7e-07  1.5e-08  1.2e-11  1.00e+00   3.792924377e+02   3.792924376e+02   1.5e-08  77.97
-12  8.6e-07  7.7e-09  4.9e-12  1.00e+00   3.792924617e+02   3.792924616e+02   7.7e-09  78.76
-13  1.6e-07  3.9e-09  3.6e-12  1.00e+00   3.792924737e+02   3.792924736e+02   3.9e-09  79.57
-Optimizer terminated. Time: 79.97
+0   2.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  73.46
+1   9.2e+00  3.8e-01  3.3e-01  3.18e-01   8.720442621e+01   8.663738472e+01   3.8e-01  74.14
+2   6.5e+00  2.7e-01  2.4e-01  3.48e-01   1.226961211e+02   1.222523302e+02   2.7e-01  74.71
+3   3.4e+00  1.4e-01  1.3e-01  3.68e-01   1.987899646e+02   1.985326339e+02   1.4e-01  75.32
+4   1.1e+00  4.6e-02  2.1e-02  1.11e+00   3.144686625e+02   3.143947436e+02   4.6e-02  75.90
+5   4.4e-01  1.8e-02  6.2e-03  9.35e-01   3.445450804e+02   3.445201507e+02   1.8e-02  76.46
+6   3.2e-02  1.3e-03  1.2e-04  9.84e-01   3.765035939e+02   3.765016483e+02   1.3e-03  77.26
+7   8.4e-04  3.5e-05  5.6e-07  1.00e+00   3.791913665e+02   3.791913288e+02   3.5e-05  78.02
+8   3.7e-04  1.5e-05  1.7e-07  1.00e+00   3.792467051e+02   3.792466888e+02   1.5e-05  78.59
+9   6.2e-06  2.6e-07  4.0e-10  1.00e+00   3.792916856e+02   3.792916853e+02   2.6e-07  79.34
+10  7.4e-07  3.1e-08  1.7e-11  1.00e+00   3.792923899e+02   3.792923899e+02   3.1e-08  79.92
+11  3.7e-07  1.5e-08  4.1e-12  1.00e+00   3.792924377e+02   3.792924377e+02   1.5e-08  81.02
+12  3.9e-07  7.7e-09  2.0e-12  1.00e+00   3.792924617e+02   3.792924617e+02   7.7e-09  81.92
+13  1.1e-06  3.9e-09  3.8e-12  1.00e+00   3.792924737e+02   3.792924738e+02   3.9e-09  82.91
+Optimizer terminated. Time: 83.34
 
 
 Interior-point solution summary
   Problem status  : PRIMAL_AND_DUAL_FEASIBLE
   Solution status : OPTIMAL
-  Primal.  obj: 3.7929247368e+02    nrm: 8e+02    Viol.  con: 2e-08    var: 0e+00    cones: 0e+00
-  Dual.    obj: 3.7929247363e+02    nrm: 4e+02    Viol.  con: 0e+00    var: 2e-10    cones: 0e+00
+  Primal.  obj: 3.7929247369e+02    nrm: 8e+02    Viol.  con: 2e-08    var: 0e+00    cones: 0e+00
+  Dual.    obj: 3.7929247376e+02    nrm: 4e+02    Viol.  con: 0e+00    var: 2e-10    cones: 0e+00
 </pre></div>
 </div>
 <p>Plot coil windings and target points</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loops</span><span class="p">,</span> <span class="n">loop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loops</span><span class="p">,</span> <span class="n">loop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
            <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
@@ -298,7 +306,7 @@ Interior-point solution summary
 
 <span class="n">plot_3d_current_loops</span><span class="p">(</span><span class="n">loops</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">tube_radius</span><span class="o">=</span><span class="mf">0.025</span><span class="p">)</span>
 
-<span class="n">B_target</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span>
+<span class="n">B_target</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span>
 
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B_target</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 
@@ -306,8 +314,8 @@ Interior-point solution summary
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_mamba_coil_design_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_mamba_coil_design_002.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 3 minutes  17.943 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  7836 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 3 minutes  39.183 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  7903 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-mamba-coil-design-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/fe524bc035073629d1947aaf32fe31b3/mamba_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mamba_coil_design.py</span></code></a></p>

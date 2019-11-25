@@ -136,8 +136,8 @@ def optimize_streamfunctions(meshobj,
     bfield_specification: list
         List in which element is a dictionary containing a field specification.
         Each dict contains:
-        C: Coupling matrix (N_r, N_verts, 3)
-        target_field: (N_r, 3)
+        coupling: Coupling matrix (N_r, N_verts, 3)
+        target: (N_r, 3)
         abs_error: float or (N_r, 3)
         rel_error: float or (N_r, 3)
     objective: string or dict
@@ -190,7 +190,7 @@ def optimize_streamfunctions(meshobj,
     for spec in bfield_specification:
 
 
-        C = spec['C'][:, :, indices]
+        C = spec['coupling'][:, :, indices]
 
         #Reshape so that values on axis 1 are x1, y1, z1, x2, y2, z2, etc.
         #If not 3D matrix, assuming the use of spherical harmonics
@@ -201,13 +201,13 @@ def optimize_streamfunctions(meshobj,
 
         #Apply relative error to bounds
         if spec['rel_error'] is not None:
-            upper_bound = spec['target_field'] * (1 + np.sign(spec['target_field']) * spec['rel_error'])
-            lower_bound = spec['target_field'] * (1 - np.sign(spec['target_field']) * spec['rel_error'])
+            upper_bound = spec['target'] * (1 + np.sign(spec['target']) * spec['rel_error'])
+            lower_bound = spec['target'] * (1 - np.sign(spec['target']) * spec['rel_error'])
 
         #Apply absolute error to bounds
         if spec['abs_error'] is not None:
-            upper_bound = spec['target_field'] + spec['abs_error']
-            lower_bound = spec['target_field'] - spec['abs_error']
+            upper_bound = spec['target'] + spec['abs_error']
+            lower_bound = spec['target'] - spec['abs_error']
 
 
         #Flatten to match C matrix

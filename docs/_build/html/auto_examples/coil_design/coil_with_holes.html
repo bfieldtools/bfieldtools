@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Coil with interior holes &#8212; bfieldtools 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Magnetically shielded coil" href="magnetically_shielded_biplanar_coil_design.html" />
+    <link rel="prev" title="Biplanar coil design" href="biplanar_coil_design.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          bfieldtools</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../readme.html">Readme</a></li>
+                <li><a href="../../literature.html">Literature</a></li>
+                <li><a href="../index.html">Example gallery</a></li>
+                <li><a href="../../source/modules.html">API Reference</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../literature.html">Literature</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Example gallery</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html#coil-design">Coil design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html#thermal-noise-computation">Thermal noise computation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html#validation">Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/modules.html">API Reference</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-coil-design-coil-with-holes-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="coil-with-interior-holes">
+<span id="sphx-glr-auto-examples-coil-design-coil-with-holes-py"></span><h1>Coil with interior holes<a class="headerlink" href="#coil-with-interior-holes" title="Permalink to this headline">¶</a></h1>
+<p>Example showing a basic biplanar coil producing homogeneous field in a target
+region between the two coil planes. The coil planes have holes in them,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
+<span class="kn">import</span> <span class="nn">trimesh</span>
+
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">MeshWrapper</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="k">import</span> <span class="n">optimize_streamfunctions</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="k">import</span> <span class="n">scalar_contour</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="k">import</span> <span class="n">plot_3d_current_loops</span>
+
+<span class="kn">import</span> <span class="nn">pkg_resources</span>
+
+
+<span class="c1">#Set unit, e.g. meter or millimeter.</span>
+<span class="c1"># This doesn&#39;t matter, the problem is scale-invariant</span>
+<span class="n">scaling_factor</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+<span class="c1">#Load simple plane mesh that is centered on the origin</span>
+<span class="n">planemesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_obj</span><span class="o">=</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;bfieldtools&#39;</span><span class="p">,</span> <span class="s1">&#39;example_meshes/plane_w_holes.stl&#39;</span><span class="p">),</span> <span class="n">process</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">angle</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span>
+<span class="n">rotation_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="mi">0</span><span class="p">],</span>
+                            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> <span class="mi">0</span><span class="p">],</span>
+                            <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+                              <span class="p">])</span>
+
+<span class="n">planemesh</span><span class="o">.</span><span class="n">apply_transform</span><span class="p">(</span><span class="n">rotation_matrix</span><span class="p">)</span>
+<span class="n">planemesh</span><span class="o">.</span><span class="n">apply_scale</span><span class="p">(</span><span class="n">scaling_factor</span><span class="p">)</span>
+
+<span class="c1">#Specify coil plane geometry</span>
+<span class="n">center_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">scaling_factor</span>
+<span class="n">standoff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">scaling_factor</span>
+
+<span class="c1">#Create coil plane pairs</span>
+<span class="n">coil_plus</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="n">planemesh</span><span class="o">.</span><span class="n">vertices</span> <span class="o">+</span> <span class="n">center_offset</span> <span class="o">+</span> <span class="n">standoff</span><span class="p">,</span>
+                         <span class="n">planemesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">coil_minus</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="n">planemesh</span><span class="o">.</span><span class="n">vertices</span> <span class="o">+</span> <span class="n">center_offset</span> <span class="o">-</span> <span class="n">standoff</span><span class="p">,</span>
+                     <span class="n">planemesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">joined_planes</span> <span class="o">=</span> <span class="n">coil_plus</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">coil_minus</span><span class="p">)</span>
+
+<span class="c1">#Create mesh class object</span>
+<span class="n">coil</span> <span class="o">=</span> <span class="n">MeshWrapper</span><span class="p">(</span><span class="n">verts</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">tris</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set up target and stray field points</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#Here, the target points are on a volumetric grid within a sphere</span>
+
+<span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">scaling_factor</span>
+
+<span class="n">sidelength</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">scaling_factor</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;ij&#39;</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+<span class="n">target_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+
+<span class="c1">#Turn cube into sphere by rejecting points &quot;in the corners&quot;</span>
+<span class="n">target_points</span> <span class="o">=</span> <span class="n">target_points</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">target_points</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>  <span class="o">+</span> <span class="n">center</span>
+</pre></div>
+</div>
+<p>Let’s find and separate the inner and outer boundaries of the coil mesh</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">inner_bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">&lt;</span> <span class="mf">0.015</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">centre_hole1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span>
+                                             <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">&lt;</span> <span class="mf">0.004</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span>
+                              <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">centre_hole2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span>
+                                             <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">&lt;</span> <span class="mf">0.004</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span>
+                              <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">left_hole1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span>
+                                           <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.004</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">inner_bounds</span><span class="p">),</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">left_hole2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span>
+                                           <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.004</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">inner_bounds</span><span class="p">),</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">right_hole1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span>
+                                           <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.004</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">inner_bounds</span><span class="p">),</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">right_hole2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span>
+                                           <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.004</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">inner_bounds</span><span class="p">),</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">outer_bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span> <span class="n">inner_bounds</span><span class="p">)</span>
+
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vertex_adjacency_graph</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
+
+<span class="n">zero_eq_indices</span> <span class="o">=</span> <span class="n">outer_bounds</span>
+<span class="n">iso_eq_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">left_hole1</span><span class="p">,</span> <span class="n">centre_hole1</span><span class="p">,</span> <span class="n">right_hole1</span><span class="p">,</span> <span class="n">left_hole2</span><span class="p">,</span> <span class="n">centre_hole2</span><span class="p">,</span> <span class="n">right_hole2</span><span class="p">]</span>
+
+<span class="n">boundary_constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;zero_eq_indices&#39;</span><span class="p">:</span><span class="n">zero_eq_indices</span> <span class="p">,</span> <span class="s1">&#39;iso_eq_indices&#39;</span><span class="p">:</span> <span class="n">iso_eq_indices</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Create bfield specifications used when optimizing the coil geometry</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#The absolute target field amplitude is not of importance,</span>
+<span class="c1"># and it is scaled to match the C matrix in the optimization function</span>
+
+<span class="n">target_field</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">target_points</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">target_field</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">target_field</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">target_rel_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">target_field</span><span class="p">)</span>
+<span class="n">target_rel_error</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.01</span>
+
+<span class="n">target_abs_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">target_field</span><span class="p">)</span>
+<span class="n">target_abs_error</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.001</span>
+<span class="n">target_abs_error</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.005</span>
+
+<span class="n">target_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;coupling&#39;</span><span class="p">:</span><span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">),</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="n">target_rel_error</span><span class="p">,</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="n">target_abs_error</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="n">target_field</span><span class="p">}</span>
+
+<span class="n">bfield_specification</span> <span class="o">=</span> <span class="p">[</span><span class="n">target_spec</span><span class="p">]</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 2772 vertices by 160 target points... took 0.28 seconds.
+</pre></div>
+</div>
+<p>Run QP solver</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mosek</span>
+
+<span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
+                                   <span class="n">bfield_specification</span><span class="p">,</span>
+                                   <span class="n">objective</span><span class="o">=</span><span class="s1">&#39;minimum_inductive_energy&#39;</span><span class="p">,</span>
+                                   <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;MOSEK&#39;</span><span class="p">,</span>
+                                   <span class="n">solver_opts</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mosek_params&#39;</span><span class="p">:{</span><span class="n">mosek</span><span class="o">.</span><span class="n">iparam</span><span class="o">.</span><span class="n">num_threads</span><span class="p">:</span> <span class="mi">8</span><span class="p">}},</span>
+                                   <span class="n">boundary_constraints</span><span class="o">=</span><span class="n">boundary_constraints</span>
+                                   <span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 2 chunks since 7 GiB memory is available...
+Calculating potentials, chunk 1/2
+Calculating potentials, chunk 2/2
+Inductance matrix computation took 52.12 seconds.
+Pre-existing problem not passed, creating...
+Passing boundary zero equality constraint
+Passing boundary equality constraints
+Passing parameters to problem...
+Passing problem to solver...
+
+
+Problem
+  Name                   :
+  Objective sense        : min
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 4108
+  Cones                  : 1
+  Scalar variables       : 5545
+  Matrix variables       : 0
+  Integer variables      : 0
+
+Optimizer started.
+Problem
+  Name                   :
+  Objective sense        : min
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 4108
+  Cones                  : 1
+  Scalar variables       : 5545
+  Matrix variables       : 0
+  Integer variables      : 0
+
+Optimizer  - threads                : 8
+Optimizer  - solved problem         : the dual
+Optimizer  - Constraints            : 2397
+Optimizer  - Cones                  : 1
+Optimizer  - Scalar variables       : 3732              conic                  : 2772
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0
+Factor     - setup time             : 0.78              dense det. time        : 0.00
+Factor     - ML order time          : 0.17              GP order time          : 0.00
+Factor     - nonzeros before factor : 2.87e+06          after factor           : 2.87e+06
+Factor     - dense dim.             : 0                 flops                  : 2.33e+10
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
+0   2.6e+02  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  47.18
+1   1.3e+02  4.9e-01  1.2e+00  -8.01e-01  1.314016891e+01   1.297374658e+01   4.9e-01  47.47
+2   7.2e+01  2.8e-01  8.5e-01  -7.16e-01  5.227631276e+01   5.293911450e+01   2.8e-01  47.74
+3   4.6e+01  1.8e-01  3.6e-01  2.31e-01   2.416119265e+02   2.416233728e+02   1.8e-01  48.02
+4   1.7e+01  6.7e-02  2.1e-01  -3.74e-01  3.487844131e+02   3.502915686e+02   6.7e-02  48.29
+5   6.0e+00  2.3e-02  4.5e-02  2.30e-01   1.041175646e+03   1.041708335e+03   2.3e-02  48.56
+6   2.1e+00  8.1e-03  1.6e-02  1.88e-01   1.654937539e+03   1.655654721e+03   8.1e-03  48.84
+7   4.8e-01  1.9e-03  1.7e-03  9.81e-01   2.165332079e+03   2.165485403e+03   1.9e-03  49.12
+8   4.3e-03  1.7e-05  9.7e-07  9.78e-01   2.331560695e+03   2.331561099e+03   1.7e-05  49.49
+9   1.6e-05  6.1e-08  1.6e-10  1.00e+00   2.333080133e+03   2.333080133e+03   6.1e-08  49.87
+10  1.6e-07  3.5e-10  3.2e-12  1.00e+00   2.333086102e+03   2.333086103e+03   7.9e-11  50.47
+Optimizer terminated. Time: 50.69
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 2.3330861020e+03    nrm: 5e+03    Viol.  con: 1e-09    var: 0e+00    cones: 0e+00
+  Dual.    obj: 2.3330861028e+03    nrm: 6e+04    Viol.  con: 1e-07    var: 1e-09    cones: 0e+00
+</pre></div>
+</div>
+<p>Plot coil windings and target points</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">N_contours</span> <span class="o">=</span> <span class="mi">20</span>
+
+<span class="n">loops</span><span class="p">,</span> <span class="n">loop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="n">N_contours</span><span class="p">)</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+           <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
+<span class="n">mlab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+
+<span class="n">plot_3d_current_loops</span><span class="p">(</span><span class="n">loops</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">tube_radius</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="n">B_target</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span>
+
+<span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B_target</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../../_images/sphx_glr_coil_with_holes_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_coil_with_holes_001.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  22.594 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  5621 MB</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-coil-with-holes-py">
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/108f11c462f1a5f7355be8241f892d21/coil_with_holes.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">coil_with_holes.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/beebbebd6e9300d0b6fc519a8b138dcf/coil_with_holes.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">coil_with_holes.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, bfieldtools developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

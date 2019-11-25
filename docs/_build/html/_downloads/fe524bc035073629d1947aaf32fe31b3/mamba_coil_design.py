@@ -14,7 +14,6 @@ import trimesh
 
 
 from bfieldtools.mesh_class import MeshWrapper
-from bfieldtools.magnetic_field_mesh import compute_C
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
@@ -108,18 +107,17 @@ coil.plot_mesh()
 
 
 ###############################################################
-# Compute C matrices that are used to compute the generated magnetic field, create field specification
+# Compute coupling matrix that is used to compute the generated magnetic field, create field specification
 
-coil.C = compute_C(coil.mesh, target_points)
 
-target_spec = {'C':coil.C, 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
+target_spec = {'coupling':coil.B_coupling(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target':target_field}
 
 ###############################################################
 # Run QP solver
 
 import mosek
 
-coil.I, prob = optimize_streamfunctions(coil,
+coil.j, prob = optimize_streamfunctions(coil,
                                    [target_spec],
                                    objective='minimum_inductive_energy',
                                    solver='MOSEK',
@@ -130,7 +128,7 @@ coil.I, prob = optimize_streamfunctions(coil,
 ###############################################################
 # Plot coil windings and target points
 
-loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=10)
+loops, loop_values= scalar_contour(coil.mesh, coil.j, N_contours=10)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
@@ -138,7 +136,7 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.025)
 
-B_target = coil.C.transpose([0, 2, 1]) @ coil.I
+B_target = coil.B_coupling(target_points) @ coil.j
 
 mlab.quiver3d(*target_points.T, *B_target.T)
 

@@ -16,9 +16,8 @@ path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
 if path not in sys.path:
     sys.path.insert(0,path)
 
-from bfieldtools.laplacian_mesh import gradient
-from bfieldtools.magnetic_field_mesh import compute_C
-from bfieldtools.magnetic_field_mesh import compute_C_analytic
+from bfieldtools.mesh_calculus import gradient
+from bfieldtools.mesh_magnetics import magnetic_field_coupling, magnetic_field_coupling_analytic
 from bfieldtools.mesh_class import MeshWrapper
 
 
@@ -32,8 +31,8 @@ weights[coil.inner_verts] = 1
 
 test_points = coilmesh.vertices + np.array([0,1,0])
 
-B0 = np.moveaxis(compute_C(coilmesh, test_points), 2, 0) @ weights
-B1 = compute_C_analytic(coilmesh, test_points) @ weights
+B0 = np.moveaxis(magnetic_field_coupling(coilmesh, test_points), 2, 0) @ weights
+B1 = magnetic_field_coupling_analytic(coilmesh, test_points) @ weights
 
 
 s = mlab.triangular_mesh(*coilmesh.vertices.T, coilmesh.faces,
@@ -68,8 +67,8 @@ test_points[:, 2] = np.linspace(0.0, 5, 100)
 mlab.points3d(*test_points.T, scale_factor=0.1)
 
 # Bfield for 1 Ampere current
-B0 = np.moveaxis(compute_C(discmesh, test_points), 2, 0) @ weights
-B1 = compute_C_analytic(discmesh, test_points) @ weights
+B0 = np.moveaxis(magnetic_field_coupling(discmesh, test_points), 2, 0) @ weights
+B1 = magnetic_field_coupling_analytic(discmesh, test_points) @ weights
 
 # Analytic formula for unit disc
 plt.plot(1e-7*2*np.pi/(np.sqrt(test_points[:,2]**2 + 1)**3))

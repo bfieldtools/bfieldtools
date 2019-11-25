@@ -15,7 +15,7 @@ from scipy.sparse.linalg import spsolve
 
 import trimesh
 
-from bfieldtools.laplacian_mesh import gradient
+from .mesh_calculus import gradient
 
 
 def scalar_contour(mesh, scalars, N_contours=10, contours=None):
@@ -164,7 +164,6 @@ def scalar_contour(mesh, scalars, N_contours=10, contours=None):
                 raise RuntimeWarning('Something wrong with the contours, number of max iterations exceeded')
 
     return contour_polys, contour_values
-
 
 
 def simplify_contour(c, min_edge=1e-3, angle_threshold=2e-2, smooth=True):

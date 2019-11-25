@@ -105,23 +105,17 @@
 <div class="sphx-glr-example-title section" id="analytic-b-field-computation">
 <span id="sphx-glr-auto-examples-validation-validate-bfield-analytic-py"></span><h1>Analytic B-field computation<a class="headerlink" href="#analytic-b-field-computation" title="Permalink to this headline">¶</a></h1>
 <p>Validation of analytic mesh operator for magnetic field computation.</p>
-<img alt="../../_images/sphx_glr_validate_bfield_analytic_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_bfield_analytic_001.png" />
-<ul class="sphx-glr-horizontal">
-<li><img alt="../../_images/sphx_glr_validate_bfield_analytic_002.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_validate_bfield_analytic_002.png" />
-</li>
-<li><img alt="../../_images/sphx_glr_validate_bfield_analytic_003.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_validate_bfield_analytic_003.png" />
-</li>
-</ul>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 676 vertices by 676 target points... took 0.20 seconds.
-Computing C matrix, 676 vertices by 676 target points... took 1.33 seconds.
-Relative RMS error 0.00522928695809424
-Computing C matrix, 4701 vertices by 100 target points... took 0.27 seconds.
-Computing C matrix, 4701 vertices by 100 target points... took 1.49 seconds.
+<div class="highlight-pytb notranslate"><div class="highlight"><pre><span></span>Traceback (most recent call last):
+  File &quot;/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;, line 474, in _memory_usage
+    multiprocess=True)
+  File &quot;/l/conda-envs/mne/lib/python3.6/site-packages/memory_profiler.py&quot;, line 336, in memory_usage
+    returned = f(*args, **kw)
+  File &quot;/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;, line 465, in __call__
+    exec(self.code, self.globals)
+  File &quot;/l/bfieldtools/examples/validation/validate_bfield_analytic.py&quot;, line 34, in &lt;module&gt;
+    B0 = np.moveaxis(magnetic_field_coupling(coilmesh, test_points), 2, 0) @ weights
+ValueError: shapes (676,676,3) and (676,) not aligned: 3 (dim 2) != 676 (dim 0)
 </pre></div>
-</div>
-<div class="line-block">
-<div class="line"><br /></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
@@ -135,9 +129,8 @@ Computing C matrix, 4701 vertices by 100 target points... took 1.49 seconds.
 <span class="k">if</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">path</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.laplacian_mesh</span> <span class="k">import</span> <span class="n">gradient</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.magnetic_field_mesh</span> <span class="k">import</span> <span class="n">compute_C</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.magnetic_field_mesh</span> <span class="k">import</span> <span class="n">compute_C_analytic</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_calculus</span> <span class="k">import</span> <span class="n">gradient</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="k">import</span> <span class="n">magnetic_field_coupling</span><span class="p">,</span> <span class="n">magnetic_field_coupling_analytic</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">MeshWrapper</span>
 
 
@@ -151,8 +144,8 @@ Computing C matrix, 4701 vertices by 100 target points... took 1.49 seconds.
 
 <span class="n">test_points</span> <span class="o">=</span> <span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
 
-<span class="n">B0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">compute_C</span><span class="p">(</span><span class="n">coilmesh</span><span class="p">,</span> <span class="n">test_points</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">@</span> <span class="n">weights</span>
-<span class="n">B1</span> <span class="o">=</span> <span class="n">compute_C_analytic</span><span class="p">(</span><span class="n">coilmesh</span><span class="p">,</span> <span class="n">test_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">weights</span>
+<span class="n">B0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">magnetic_field_coupling</span><span class="p">(</span><span class="n">coilmesh</span><span class="p">,</span> <span class="n">test_points</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">@</span> <span class="n">weights</span>
+<span class="n">B1</span> <span class="o">=</span> <span class="n">magnetic_field_coupling_analytic</span><span class="p">(</span><span class="n">coilmesh</span><span class="p">,</span> <span class="n">test_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">weights</span>
 
 
 <span class="n">s</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="o">*</span><span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">coilmesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span>
@@ -187,8 +180,8 @@ Computing C matrix, 4701 vertices by 100 target points... took 1.49 seconds.
 <span class="n">mlab</span><span class="o">.</span><span class="n">points3d</span><span class="p">(</span><span class="o">*</span><span class="n">test_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">scale_factor</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 
 <span class="c1"># Bfield for 1 Ampere current</span>
-<span class="n">B0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">compute_C</span><span class="p">(</span><span class="n">discmesh</span><span class="p">,</span> <span class="n">test_points</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">@</span> <span class="n">weights</span>
-<span class="n">B1</span> <span class="o">=</span> <span class="n">compute_C_analytic</span><span class="p">(</span><span class="n">discmesh</span><span class="p">,</span> <span class="n">test_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">weights</span>
+<span class="n">B0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">magnetic_field_coupling</span><span class="p">(</span><span class="n">discmesh</span><span class="p">,</span> <span class="n">test_points</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">@</span> <span class="n">weights</span>
+<span class="n">B1</span> <span class="o">=</span> <span class="n">magnetic_field_coupling_analytic</span><span class="p">(</span><span class="n">discmesh</span><span class="p">,</span> <span class="n">test_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">weights</span>
 
 <span class="c1"># Analytic formula for unit disc</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mf">1e-7</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">test_points</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">))</span>
@@ -201,8 +194,8 @@ Computing C matrix, 4701 vertices by 100 target points... took 1.49 seconds.
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;B [T]&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.404 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  217 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.483 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  9 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-validation-validate-bfield-analytic-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/641aca383a51453c2ae86afc881fa364/validate_bfield_analytic.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">validate_bfield_analytic.py</span></code></a></p>

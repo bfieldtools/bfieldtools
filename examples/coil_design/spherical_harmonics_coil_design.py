@@ -14,12 +14,10 @@ spherical harmonics.
 
 
 import numpy as np
-import matplotlib.pyplot as plt
 from mayavi import mlab
 import trimesh
 
-from bfieldtools.mesh_class import MeshWrapper, CouplingMatrix
-from bfieldtools.magnetic_field_mesh import compute_C
+from bfieldtools.mesh_class import MeshWrapper
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
@@ -127,9 +125,7 @@ target_abs_error += 0.01
 #target_abs_error = np.zeros_like(target_points)
 #target_abs_error += 0.01
 
-coil.C = CouplingMatrix(coil, compute_C)
-
-target_spec = {'C':coil.C_blms, 'rel_error':None, 'abs_error':target_abs_error, 'target_field':target_blms}
+target_spec = {'coupling':coil.C_blms, 'rel_error':None, 'abs_error':target_abs_error, 'target_field':target_blms}
 
 
 ##############################################################
@@ -143,16 +139,16 @@ I, prob = optimize_streamfunctions(coil,
                                    solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
                                    )
 
-coil.I = np.zeros(coil.mesh.vertices.shape[0])
-coil.I[coil.inner_verts] = I
+coil.j = np.zeros(coil.mesh.vertices.shape[0])
+coil.j[coil.inner_verts] = I
 
-B_target = coil.C(target_points) @ coil.I
+B_target = coil.B_coupling(target_points) @ coil.j
 
 
 lmax = 4
 coil.C_alms, coil.C_blms = compute_sphcoeffs_mesh(coil.mesh, lmax=lmax)
 
-Alms, Blms = coil.C_alms @ coil.I, coil.C_blms @ coil.I
+Alms, Blms = coil.C_alms @ coil.j, coil.C_blms @ coil.j
 
 Alms = np.zeros_like(Blms)
 sphfield_target = sph.field(target_points, Alms, Blms, lmax)
@@ -167,7 +163,7 @@ coeffs, coeffs2, nrmse = sphfittools.fitSpectra(sph, np.repeat(target_points[:, 
 
 N_contours = 10
 
-loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=N_contours)
+loops, loop_values= scalar_contour(coil.mesh, coil.j, N_contours=N_contours)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
@@ -175,6 +171,6 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f)
 
-B_target = coil.C.transpose([0, 2, 1]) @ coil.I
+B_target = coil.B_coupling(target_points) @ coil.j
 
 mlab.quiver3d(*target_points.T, *B_target.T)

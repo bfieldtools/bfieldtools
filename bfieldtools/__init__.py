@@ -1,13 +1,13 @@
-from . import bfield_line
-from . import coil_optimize
-from . import laplacian_mesh
-from . import magnetic_field_mesh
 from . import mesh_class
+from . import mesh_inductance
+from . import mesh_magnetics
+from . import mesh_calculus
+from . import line_magnetics
+from . import coil_optimize
 from . import sphtools
+from . import suhtools
 from . import thermal_noise
 from . import utils
-from . import mutual_inductance_mesh
 
-
-__all__=['bfield_line', 'coil_optimize', 'laplacian_mesh',
-'magnetic_field_mesh', 'mesh_class', 'mutual_inductance_mesh', 'sphtools', 'thermal_noise', 'utils']#, 'validation']
+__all__=['line_magnetics', 'coil_optimize', 'mesh_calculus',
+'mesh_magnetics', 'mesh_class', 'mesh_inductance', 'sphtools', 'suhtools', 'thermal_noise', 'utils']#, 'validation']

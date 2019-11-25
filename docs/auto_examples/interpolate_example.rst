@@ -25,7 +25,7 @@ defined on that mesh to match.
     import numpy as np
     from scipy.linalg import eigh
 
-    from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix
+    from bfieldtools.mesh_calculus import laplacian_matrix, mass_matrix
     from bfieldtools import utils
 
     import pkg_resources
@@ -138,9 +138,9 @@ Plot subdivided mesh and interpolated scalars
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.522 seconds)
+   **Total running time of the script:** ( 0 minutes  1.679 seconds)
 
-**Estimated memory usage:**  42 MB
+**Estimated memory usage:**  40 MB
 
 
 .. _sphx_glr_download_auto_examples_interpolate_example.py:

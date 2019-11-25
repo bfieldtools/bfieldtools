@@ -11,10 +11,9 @@ from mayavi import mlab
 import trimesh
 
 
-from bfieldtools.mesh_class import MeshWrapper, CouplingMatrix
-from bfieldtools.magnetic_field_mesh import compute_C
+from bfieldtools.mesh_class import MeshWrapper
 from bfieldtools.coil_optimize import optimize_streamfunctions
-from bfieldtools.mutual_inductance_mesh import mutual_inductance_matrix
+from bfieldtools.mesh_inductance import mutual_inductance_matrix
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
 
@@ -85,8 +84,6 @@ mlab.points3d(*target_points.T)
 ###############################################################
 # Compute C matrices that are used to compute the generated magnetic field
 
-coil.C = CouplingMatrix(coil, compute_C)
-shield.C = CouplingMatrix(shield, compute_C)
 
 mutual_inductance = mutual_inductance_matrix(coil.mesh, shield.mesh)
 
@@ -94,7 +91,7 @@ mutual_inductance = mutual_inductance_matrix(coil.mesh, shield.mesh)
 # NB! This expression is for instantaneous step-function switching of coil current, see Eq. 18 in G.N. Peeren, 2003.
 
 shield.coupling = np.linalg.solve(-shield.inductance, mutual_inductance.T)
-secondary_C = shield.C(target_points) @ shield.coupling
+secondary_C = shield.B_coupling(target_points) @ shield.coupling
 
 ###############################################################
 # Create bfield specifications used when optimizing the coil geometry
@@ -111,31 +108,31 @@ target_abs_error = np.zeros_like(target_field)
 target_abs_error[:, 1] += 0.001
 target_abs_error[:, 0::2] += 0.005
 
-target_spec = {'C':coil.C(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
+target_spec = {'coupling':coil.B_coupling(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target':target_field}
 
 
-induction_spec = {'C':secondary_C, 'abs_error':0.1, 'rel_error':0, 'target_field':np.zeros(target_field.shape)}
+induction_spec = {'coupling':secondary_C, 'abs_error':0.1, 'rel_error':0, 'target':np.zeros(target_field.shape)}
 
 ###############################################################
 # Run QP solver
 
 import mosek
 
-coil.I, prob = optimize_streamfunctions(coil,
+coil.j, prob = optimize_streamfunctions(coil,
                                    [target_spec, induction_spec],
                                    objective='minimum_inductive_energy',
                                    solver='MOSEK',
                                    solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
                                    )
 
-shield.induced_I = shield.coupling @ coil.I
+shield.induced_j = shield.coupling @ coil.j
 
 
 ###############################################################
 # Plot coil windings and target points
 
 
-loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=10)
+loops, loop_values= scalar_contour(coil.mesh, coil.j, N_contours=10)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
@@ -143,7 +140,7 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.02)
 
-B_target = coil.C(target_points) @ coil.I
+B_target = coil.B_coupling(target_points) @ coil.j
 
 mlab.quiver3d(*target_points.T, *B_target.T)
 
@@ -155,16 +152,16 @@ mlab.title('Coils which minimize the transient effects of conductive shield')
 # For comparison, let's see how the coils look when we ignore the conducting shield
 
 
-coil.unshielded_I, coil.unshielded_prob = optimize_streamfunctions(coil,
+coil.unshielded_j, coil.unshielded_prob = optimize_streamfunctions(coil,
                                    [target_spec],
                                    objective='minimum_inductive_energy',
                                    solver='MOSEK',
                                    solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
                                    )
 
-shield.unshielded_induced_I = shield.coupling @ coil.unshielded_I
+shield.unshielded_induced_j = shield.coupling @ coil.unshielded_j
 
-loops, loop_values= scalar_contour(coil.mesh, coil.unshielded_I, N_contours=10)
+loops, loop_values= scalar_contour(coil.mesh, coil.unshielded_j, N_contours=10)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
@@ -172,7 +169,7 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.02)
 
-B_target_unshielded = coil.C(target_points) @ coil.unshielded_I
+B_target_unshielded = coil.B_coupling(target_points) @ coil.unshielded_j
 
 mlab.quiver3d(*target_points.T, *B_target_unshielded.T)
 

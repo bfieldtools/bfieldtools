@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Analytical self-shielded biplanar coil design &#8212; bfieldtools 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Thin-film heater noise" href="../thermal_noise/thermal_noise_platinum_heater.html" />
+    <link rel="prev" title="Magnetically shielded coil" href="magnetically_shielded_biplanar_coil_design.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          bfieldtools</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../readme.html">Readme</a></li>
+                <li><a href="../../literature.html">Literature</a></li>
+                <li><a href="../index.html">Example gallery</a></li>
+                <li><a href="../../source/modules.html">API Reference</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../literature.html">Literature</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Example gallery</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html#coil-design">Coil design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html#thermal-noise-computation">Thermal noise computation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html#validation">Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../source/modules.html">API Reference</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-coil-design-self-shielded-biplanar-coil-design-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="analytical-self-shielded-biplanar-coil-design">
+<span id="sphx-glr-auto-examples-coil-design-self-shielded-biplanar-coil-design-py"></span><h1>Analytical self-shielded biplanar coil design<a class="headerlink" href="#analytical-self-shielded-biplanar-coil-design" title="Permalink to this headline">¶</a></h1>
+<p>Example showing a basic biplanar coil producing homogeneous field in a target
+region between the two coil planes. In addition, the coils have an outer surface
+for which (in a linear fashion) a secondary current is created, which zeroes the
+normal component of the field produced by the primary coil at the secondary coil
+surface. The combination of the primary and secondary coil currents are specified to create
+the target field, and their combined inductive energy is minimized.</p>
+<p>NB. The secondary coil current is entirely a function of the primary coil current
+and the geometry.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
+<span class="kn">import</span> <span class="nn">trimesh</span>
+
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">MeshWrapper</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="k">import</span> <span class="n">magnetic_field_coupling_analytic</span><span class="p">,</span> <span class="n">scalar_potential_coupling</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_inductance</span> <span class="k">import</span> <span class="n">mutual_inductance_matrix_from_A</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="k">import</span> <span class="n">optimize_streamfunctions</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="k">import</span> <span class="n">scalar_contour</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="k">import</span> <span class="n">plot_3d_current_loops</span><span class="p">,</span> <span class="n">plot_data_on_vertices</span>
+
+<span class="kn">import</span> <span class="nn">pkg_resources</span>
+
+
+<span class="c1">#Set unit, e.g. meter or millimeter.</span>
+<span class="c1"># This doesn&#39;t matter, the problem is scale-invariant</span>
+<span class="n">scaling_factor</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+<span class="c1">#Load simple plane mesh that is centered on the origin</span>
+<span class="n">planemesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_obj</span><span class="o">=</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;bfieldtools&#39;</span><span class="p">,</span> <span class="s1">&#39;example_meshes/10x10_plane.obj&#39;</span><span class="p">),</span> <span class="n">process</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">planemesh</span><span class="o">.</span><span class="n">apply_scale</span><span class="p">(</span><span class="n">scaling_factor</span><span class="o">*</span><span class="mf">1.6</span><span class="p">)</span>
+
+<span class="c1">#Specify coil plane geometry</span>
+<span class="n">center_offset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">scaling_factor</span>
+<span class="n">standoff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">scaling_factor</span>
+
+<span class="c1">#Create coil plane pairs</span>
+<span class="n">coil_plus</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="n">planemesh</span><span class="o">.</span><span class="n">vertices</span> <span class="o">+</span> <span class="n">center_offset</span> <span class="o">+</span> <span class="n">standoff</span><span class="p">,</span>
+                         <span class="n">planemesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">coil_minus</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">Trimesh</span><span class="p">(</span><span class="n">planemesh</span><span class="o">.</span><span class="n">vertices</span> <span class="o">+</span> <span class="n">center_offset</span> <span class="o">-</span> <span class="n">standoff</span><span class="p">,</span>
+                     <span class="n">planemesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">joined_planes</span> <span class="o">=</span> <span class="n">coil_plus</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">coil_minus</span><span class="p">)</span>
+
+<span class="c1">#Create mesh class object</span>
+<span class="n">coil</span> <span class="o">=</span> <span class="n">MeshWrapper</span><span class="p">(</span><span class="n">verts</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">tris</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">shieldmesh</span> <span class="o">=</span> <span class="n">joined_planes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">shieldmesh</span><span class="o">.</span><span class="n">vertices</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">])</span>
+
+<span class="n">shieldcoil</span> <span class="o">=</span> <span class="n">MeshWrapper</span><span class="p">(</span><span class="n">verts</span><span class="o">=</span><span class="n">shieldmesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">tris</span><span class="o">=</span><span class="n">shieldmesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Compute inductances and coupling</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">M11</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">inductance</span>
+<span class="n">M22</span> <span class="o">=</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">inductance</span>
+<span class="c1"># Constrain boundary to zero and consider only inneverts</span>
+<span class="n">M11</span> <span class="o">=</span> <span class="n">M11</span><span class="c1">#[coil.inner_verts][:, coil.inner_verts]</span>
+<span class="n">M22</span> <span class="o">=</span> <span class="n">M22</span><span class="p">[</span><span class="n">shieldcoil</span><span class="o">.</span><span class="n">inner_verts</span><span class="p">][:,</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">inner_verts</span><span class="p">]</span>
+<span class="c1"># Add rank-one matrix, so that M22 can be inverted (for zero mean functions)</span>
+<span class="c1">#M22 += np.ones_like(M22)/M22.shape[0]</span>
+<span class="c1">#M11 += np.ones_like(M11)/M11.shape[0]</span>
+
+
+
+<span class="n">M21</span> <span class="o">=</span> <span class="n">mutual_inductance_matrix_from_A</span><span class="p">(</span><span class="n">shieldcoil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
+<span class="n">M21</span> <span class="o">=</span> <span class="n">M21</span><span class="p">[</span><span class="n">shieldcoil</span><span class="o">.</span><span class="n">inner_verts</span><span class="p">]</span>
+
+<span class="c1"># Mapping from I1 to I2, constraining flux through shieldcoil to zero</span>
+<span class="n">P</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">M22</span><span class="p">,</span> <span class="n">M21</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 1 chunks since 8 GiB memory is available...
+Calculating potentials, chunk 1/1
+Inductance matrix computation took 12.33 seconds.
+Computing inductance matrix in 1 chunks since 8 GiB memory is available...
+Calculating potentials, chunk 1/1
+Inductance matrix computation took 12.41 seconds.
+Computing potential matrix
+</pre></div>
+</div>
+<p>Set up target and stray field points</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#Here, the target points are on a volumetric grid within a sphere</span>
+
+<span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">scaling_factor</span>
+
+<span class="n">sidelength</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">scaling_factor</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">zz</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;ij&#39;</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+<span class="n">target_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+
+<span class="c1">#Turn cube into sphere by rejecting points &quot;in the corners&quot;</span>
+<span class="n">target_points</span> <span class="o">=</span> <span class="n">target_points</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">target_points</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>  <span class="o">+</span> <span class="n">center</span>
+</pre></div>
+</div>
+<p>Create bfield specifications used when optimizing the coil geometry</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#The absolute target field amplitude is not of importance,</span>
+<span class="c1"># and it is scaled to match the C matrix in the optimization function</span>
+
+<span class="n">target_field</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">target_points</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">target_field</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">target_field</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">target_rel_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">target_field</span><span class="p">)</span>
+<span class="n">target_rel_error</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.01</span>
+
+<span class="n">target_abs_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">target_field</span><span class="p">)</span>
+<span class="n">target_abs_error</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.001</span>
+<span class="n">target_abs_error</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.005</span>
+
+<span class="n">target_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;coupling&#39;</span><span class="p">:</span><span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">+</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">inner_verts</span><span class="p">]</span><span class="nd">@P</span><span class="p">,</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="n">target_rel_error</span><span class="p">,</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="n">target_abs_error</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="n">target_field</span><span class="p">}</span>
+<span class="c1">#[:, :, coil.inner_verts]</span>
+
+<span class="n">objective_matrix</span> <span class="o">=</span> <span class="n">M11</span> <span class="o">-</span> <span class="n">M21</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">M22</span><span class="p">)</span> <span class="o">@</span> <span class="n">M21</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 1352 vertices by 160 target points... took 0.13 seconds.
+Computing magnetic field coupling matrix, 1352 vertices by 160 target points... took 0.11 seconds.
+</pre></div>
+</div>
+<p>Run QP solver</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mosek</span>
+
+<span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
+                                   <span class="p">[</span><span class="n">target_spec</span><span class="p">],</span>
+                                   <span class="n">objective</span><span class="o">=</span><span class="n">objective_matrix</span><span class="p">,</span>
+                                   <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;MOSEK&#39;</span><span class="p">,</span>
+                                   <span class="n">solver_opts</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mosek_params&#39;</span><span class="p">:{</span><span class="n">mosek</span><span class="o">.</span><span class="n">iparam</span><span class="o">.</span><span class="n">num_threads</span><span class="p">:</span> <span class="mi">8</span><span class="p">}},</span>
+                                   <span class="n">boundary_constraints</span><span class="o">=</span><span class="s1">&#39;all_zero&#39;</span>
+                                   <span class="p">)</span>
+
+<span class="n">shieldcoil</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">shieldcoil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="p">)))</span>
+
+<span class="n">shieldcoil</span><span class="o">.</span><span class="n">j</span><span class="p">[</span><span class="n">shieldcoil</span><span class="o">.</span><span class="n">inner_verts</span><span class="p">]</span> <span class="o">=</span> <span class="n">P</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span>
+
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+           <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
+
+<span class="n">plot_data_on_vertices</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+<span class="n">plot_data_on_vertices</span><span class="p">(</span><span class="n">shieldcoil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../../_images/sphx_glr_self-shielded_biplanar_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_self-shielded_biplanar_coil_design_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/l/bfieldtools/bfieldtools/coil_optimize.py:173: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+  if objective == &#39;minimum_inductive_energy&#39;:
+/l/bfieldtools/bfieldtools/coil_optimize.py:175: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
+  elif objective == &#39;minimum_resistive_energy&#39;:
+Custom objective passed, assuming it is a matrix of correct dimensions
+Pre-existing problem not passed, creating...
+Passing parameters to problem...
+Passing problem to solver...
+
+
+Problem
+  Name                   :
+  Objective sense        : min
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 2130
+  Cones                  : 1
+  Scalar variables       : 2339
+  Matrix variables       : 0
+  Integer variables      : 0
+
+Optimizer started.
+Problem
+  Name                   :
+  Objective sense        : min
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 2130
+  Cones                  : 1
+  Scalar variables       : 2339
+  Matrix variables       : 0
+  Integer variables      : 0
+
+Optimizer  - threads                : 8
+Optimizer  - solved problem         : the dual
+Optimizer  - Constraints            : 1169
+Optimizer  - Cones                  : 1
+Optimizer  - Scalar variables       : 2130              conic                  : 1170
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0
+Factor     - setup time             : 0.14              dense det. time        : 0.00
+Factor     - ML order time          : 0.02              GP order time          : 0.00
+Factor     - nonzeros before factor : 6.84e+05          after factor           : 6.84e+05
+Factor     - dense dim.             : 0                 flops                  : 2.78e+09
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
+0   3.2e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  7.06
+1   2.4e+01  7.5e-01  9.3e-01  4.03e-01   3.385694872e+00   2.534029741e+00   7.5e-01  7.11
+2   1.9e+01  5.8e-01  1.2e-01  6.32e-01   1.112996964e+01   1.059884908e+01   5.8e-01  7.16
+3   1.3e+01  4.0e-01  9.6e-02  3.05e+00   1.563937756e+01   1.539216722e+01   4.0e-01  7.23
+4   1.6e+00  5.0e-02  7.0e-03  2.40e+00   1.603331313e+01   1.601945469e+01   5.0e-02  7.30
+5   2.3e-01  7.2e-03  2.5e-04  1.25e+00   1.634522528e+01   1.634309853e+01   7.2e-03  7.37
+6   3.3e-02  1.0e-03  1.1e-05  1.03e+00   1.636629463e+01   1.636598330e+01   1.0e-03  7.43
+7   4.5e-04  1.4e-05  1.7e-08  1.00e+00   1.637286054e+01   1.637285628e+01   1.4e-05  7.51
+8   3.8e-05  1.2e-06  4.2e-10  9.99e-01   1.637294519e+01   1.637294483e+01   1.2e-06  7.56
+9   2.2e-07  6.8e-09  1.3e-13  1.00e+00   1.637295309e+01   1.637295309e+01   6.8e-09  7.64
+Optimizer terminated. Time: 7.69
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 1.6372953092e+01    nrm: 3e+01    Viol.  con: 1e-09    var: 0e+00    cones: 0e+00
+  Dual.    obj: 1.6372953091e+01    nrm: 5e+01    Viol.  con: 2e-08    var: 2e-11    cones: 0e+00
+</pre></div>
+</div>
+<p>Plot coil windings and target points</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">N_contours</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="n">loops</span><span class="p">,</span> <span class="n">loop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="n">N_contours</span><span class="p">)</span>
+<span class="n">sloops</span><span class="p">,</span> <span class="n">sloop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">shieldcoil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="n">N_contours</span><span class="p">)</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+           <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
+<span class="n">mlab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+
+<span class="n">plot_3d_current_loops</span><span class="p">(</span><span class="n">loops</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+<span class="n">plot_3d_current_loops</span><span class="p">(</span><span class="n">sloops</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+
+<span class="n">B_target</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span> <span class="o">+</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">j</span>
+
+<span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B_target</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+
+
+
+<span class="n">extent</span> <span class="o">=</span> <span class="mi">30</span>
+</pre></div>
+</div>
+<img alt="../../_images/sphx_glr_self-shielded_biplanar_coil_design_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_self-shielded_biplanar_coil_design_002.png" />
+<p>Compute field along major axes</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">extent</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="mi">101</span><span class="p">)</span> <span class="o">*</span> <span class="n">scaling_factor</span>
+
+<span class="n">y1</span> <span class="o">=</span> <span class="n">z1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
+
+<span class="n">line1_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">z1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+<span class="n">B_line1</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">line1_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span> <span class="o">+</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">line1_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">j</span>
+
+
+<span class="n">y2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">extent</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="mi">101</span><span class="p">)</span> <span class="o">*</span> <span class="n">scaling_factor</span>
+
+<span class="n">z2</span> <span class="o">=</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">y2</span><span class="p">)</span>
+
+<span class="n">line2_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">z2</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+<span class="n">B_line2</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">line2_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span> <span class="o">+</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">line2_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">j</span>
+
+
+
+<span class="n">z3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">extent</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="mi">101</span><span class="p">)</span> <span class="o">*</span> <span class="n">scaling_factor</span>
+
+<span class="n">x3</span> <span class="o">=</span> <span class="n">y3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">z1</span><span class="p">)</span>
+
+<span class="n">line3_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">x3</span><span class="p">,</span> <span class="n">y3</span><span class="p">,</span> <span class="n">z3</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+
+
+<span class="n">B_line3</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">line3_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span> <span class="o">+</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">line3_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">j</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax_idx</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="n">axes</span><span class="p">]):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">x1</span> <span class="o">/</span> <span class="n">scaling_factor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">B_line1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;X&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">y2</span> <span class="o">/</span> <span class="n">scaling_factor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">B_line2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">z3</span> <span class="o">/</span> <span class="n">scaling_factor</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">B_line3</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Z&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Field component </span><span class="si">%d</span><span class="s1">&#39;</span><span class="o">%</span> <span class="n">ax_idx</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Field amplitude (target field units)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Distance from origin&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;minor&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;major&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../../_images/sphx_glr_self-shielded_biplanar_coil_design_003.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_self-shielded_biplanar_coil_design_003.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 1352 vertices by 101 target points... took 0.09 seconds.
+Computing magnetic field coupling matrix, 1352 vertices by 101 target points... took 0.08 seconds.
+Computing magnetic field coupling matrix, 1352 vertices by 100 target points... took 0.08 seconds.
+Computing magnetic field coupling matrix, 1352 vertices by 100 target points... took 0.07 seconds.
+Computing magnetic field coupling matrix, 1352 vertices by 100 target points... took 0.08 seconds.
+Computing magnetic field coupling matrix, 1352 vertices by 100 target points... took 0.07 seconds.
+/l/bfieldtools/examples/coil_design/self-shielded_biplanar_coil_design.py:229: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
+  plt.show()
+</pre></div>
+</div>
+<p>Compute the field and scalar potential on a larger plane</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span><span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;ij&#39;</span><span class="p">)</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+<span class="n">points</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+<span class="n">CB1</span> <span class="o">=</span> <span class="n">magnetic_field_coupling_analytic</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+<span class="n">CB2</span> <span class="o">=</span> <span class="n">magnetic_field_coupling_analytic</span><span class="p">(</span><span class="n">shieldcoil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+
+<span class="n">CU1</span> <span class="o">=</span> <span class="n">scalar_potential_coupling</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+<span class="n">CU2</span> <span class="o">=</span> <span class="n">scalar_potential_coupling</span><span class="p">(</span><span class="n">shieldcoil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+
+<span class="n">B1</span> <span class="o">=</span> <span class="n">CB1</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span>
+<span class="n">B2</span> <span class="o">=</span> <span class="n">CB2</span> <span class="o">@</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">j</span>
+
+<span class="n">U1</span> <span class="o">=</span> <span class="n">CU1</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span>
+<span class="n">U2</span> <span class="o">=</span> <span class="n">CU2</span> <span class="o">@</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">j</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix analytically, 1352 vertices by 2500 target points... took 9.33 seconds.
+Computing magnetic field coupling matrix analytically, 1352 vertices by 2500 target points... took 9.58 seconds.
+Computing scalar potential coupling matrix, 1352 vertices by 2500 target points... took 10.39 seconds.
+Computing scalar potential coupling matrix, 1352 vertices by 2500 target points... took 10.46 seconds.
+</pre></div>
+</div>
+<p>Plot field and potential planar cross-section</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">B</span> <span class="o">=</span> <span class="p">(</span><span class="n">B1</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">B2</span><span class="o">.</span><span class="n">T</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">lw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">lw</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">lw</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">lw</span><span class="p">)</span>
+<span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+<span class="c1">#seed_points = 0.51*np.array([xx, -np.sqrt(1-xx**2)])</span>
+<span class="c1">#seed_points = np.hstack([seed_points, (0.51*np.array([xx, np.sqrt(1-xx**2)]))])</span>
+<span class="c1">#plt.streamplot(x,y, B[1], B[0], density=2, linewidth=lw, color=&#39;k&#39;,</span>
+<span class="c1">#               start_points=seed_points.T, integration_direction=&#39;both&#39;)</span>
+<span class="n">U</span> <span class="o">=</span> <span class="p">(</span><span class="n">U1</span> <span class="o">+</span> <span class="n">U2</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">U</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">U</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">U</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;seismic&#39;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;bicubic&#39;</span><span class="p">,</span>
+           <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">streamplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">density</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">lw</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
+               <span class="c1">#start_points=seed_points.T,</span>
+               <span class="n">integration_direction</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">)</span>
+
+<span class="n">cc1</span> <span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">2</span><span class="p">],</span> <span class="n">contours</span><span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.001</span><span class="p">])[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">cc2</span> <span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">shieldcoil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">2</span><span class="p">],</span> <span class="n">contours</span><span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.001</span><span class="p">])[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cc1</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">cc1</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cc2</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">cc2</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([])</span>
+</pre></div>
+</div>
+<img alt="../../_images/sphx_glr_self-shielded_biplanar_coil_design_004.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_self-shielded_biplanar_coil_design_004.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  29.592 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2230 MB</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-self-shielded-biplanar-coil-design-py">
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/dc2f992bd69cd010c0aae8f303524936/self-shielded_biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">self-shielded_biplanar_coil_design.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/ac201d89f64bc1a8ef4c9490e7a36ca5/self-shielded_biplanar_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">self-shielded_biplanar_coil_design.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, bfieldtools developers.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

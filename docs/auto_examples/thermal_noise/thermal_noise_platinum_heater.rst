@@ -194,7 +194,7 @@ Compute the field on a 3D grid and visualize isosurfaces.
 
  .. code-block:: none
 
-    Computing C matrix, 1011 vertices by 8000 target points... took 1.37 seconds.
+    Computing C matrix, 1011 vertices by 8000 target points... took 1.38 seconds.
 
 
 
@@ -252,9 +252,9 @@ Plot the noise level at horizontal planes at different distance.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  13.226 seconds)
+   **Total running time of the script:** ( 0 minutes  39.394 seconds)
 
-**Estimated memory usage:**  280 MB
+**Estimated memory usage:**  248 MB
 
 
 .. _sphx_glr_download_auto_examples_thermal_noise_thermal_noise_platinum_heater.py:

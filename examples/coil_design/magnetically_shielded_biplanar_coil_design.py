@@ -12,8 +12,7 @@ from mayavi import mlab
 import trimesh
 
 
-from bfieldtools.mesh_class import MeshWrapper, CouplingMatrix
-from bfieldtools.magnetic_field_mesh import compute_C, compute_U
+from bfieldtools.mesh_class import MeshWrapper
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
@@ -90,14 +89,6 @@ coil.plot_mesh(representation='surface')
 shield.plot_mesh()
 mlab.points3d(*target_points.T)
 
-
-###############################################################
-# Compute C matrices that are used to compute the generated magnetic field
-coil.C = CouplingMatrix(coil, compute_C)
-shield.C = compute_C(shield.mesh, target_points)
-shield.C = CouplingMatrix(shield, compute_C)
-
-
 ################################################################
 # Let's design a coil without taking the magnetic shield into account
 
@@ -114,11 +105,11 @@ target_abs_error = np.zeros_like(target_field)
 target_abs_error[:, 0] += 0.001
 target_abs_error[:, 1:3] += 0.005
 
-target_spec = {'C':coil.C(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
+target_spec = {'coupling':coil.B_coupling(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target':target_field}
 
 import mosek
 
-coil.I, coil.prob = optimize_streamfunctions(coil,
+coil.j, coil.prob = optimize_streamfunctions(coil,
                                    [target_spec],
                                    objective='minimum_inductive_energy',
                                    solver='MOSEK',
@@ -130,7 +121,7 @@ coil.I, coil.prob = optimize_streamfunctions(coil,
 ##############################################################
 # Plot coil windings and target points
 
-loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=10)
+loops, loop_values= scalar_contour(coil.mesh, coil.j, N_contours=10)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
@@ -138,7 +129,7 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f)
 
-B_target = coil.C(target_points) @ coil.I
+B_target = coil.B_coupling(target_points) @ coil.j
 
 mlab.quiver3d(*target_points.T, *B_target.T)
 
@@ -150,10 +141,10 @@ d = np.mean(np.diff(shield.mesh.vertices[shield.mesh.faces[:,0:2]],axis=1), axis
 points = shield.mesh.vertices - d*shield.mesh.vertex_normals
 
 # Calculate primary potential matrix at the shield surface
-P_prim = compute_U(coil.mesh, points)
+P_prim = coil.U_coupling(points)
 
 # Calculate linear collocation BEM matrix
-P_bem = compute_U(shield.mesh, points)
+P_bem = shield.U_coupling(points)
 
 # Recalculate diag elements according to de Munck paper
 #for diag_index in range(P_bem.shape[0]):
@@ -168,7 +159,7 @@ P_bem = compute_U(shield.mesh, points)
 # Solve equivalent stream function for the perfect linear mu-metal layer.
 # This is the equivalent surface current in the shield that would cause its
 # scalar magnetic potential to be constant
-shield.I =  np.linalg.solve(P_bem, P_prim @ coil.I)
+shield.j =  np.linalg.solve(P_bem, P_prim @ coil.j)
 
 ##########################################################
 # Plot the difference in field when taking the shield into account
@@ -177,9 +168,9 @@ f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
 mlab.clf()
 
-B_target = coil.C(target_points) @ coil.I
+B_target = coil.B_coupling(target_points) @ coil.j
 
-B_target_w_shield = coil.C(target_points) @ coil.I + shield.C(target_points) @ shield.I
+B_target_w_shield = coil.B_coupling(target_points) @ coil.j + shield.B_coupling(target_points) @ shield.j
 
 B_quiver = mlab.quiver3d(*target_points.T, *(B_target_w_shield - B_target).T, colormap='viridis', mode='arrow')
 f.scene.isometric_view()
@@ -211,14 +202,14 @@ fig.tight_layout(rect=[0, 0.03, 1, 0.95])
 
 shield.coupling = np.linalg.solve(P_bem, P_prim)
 
-secondary_C = shield.C(target_points) @ shield.coupling
+secondary_B_coupling = shield.B_coupling(target_points) @ shield.coupling
 
-total_C = coil.C(target_points) + secondary_C
+total_B_coupling = coil.B_coupling(target_points) + secondary_B_coupling
 
-target_spec_w_shield = {'C':total_C, 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
+target_spec_w_shield = {'coupling':total_B_coupling, 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target':target_field}
 
 
-coil.I2, coil.prob2 = optimize_streamfunctions(coil,
+coil.j2, coil.prob2 = optimize_streamfunctions(coil,
                                    [target_spec_w_shield],
                                    objective='minimum_inductive_energy',
                                    solver='MOSEK',
@@ -228,14 +219,14 @@ coil.I2, coil.prob2 = optimize_streamfunctions(coil,
 ##############################################################
 # Plot the newly designed coil windings and field at the target points
 
-loops, loop_values= scalar_contour(coil.mesh, coil.I2, N_contours=10)
+loops, loop_values= scalar_contour(coil.mesh, coil.j2, N_contours=10)
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
 mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f)
 
-B_target2 = total_C @ coil.I2
+B_target2 = total_B_coupling @ coil.j2
 mlab.quiver3d(*target_points.T, *B_target2.T)
 
 ###############################################################
@@ -245,41 +236,6 @@ f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
 mlab.clf()
 
-plot_data_on_vertices(coil.mesh, np.nan_to_num(100 * (coil.I-coil.I2)/coil.I), figure=f, colorbar=True)
+plot_data_on_vertices(coil.mesh, np.nan_to_num(100 * (coil.j-coil.j2)/coil.j), figure=f, colorbar=True)
 
 mlab.colorbar(title='Relative error (%)')
-
-
-###############################################################
-# Finally, plot the field lines when the shield is included into the model
-
-extent = 8
-N = 20
-X, Y, Z = np.meshgrid(np.linspace(-extent, extent, N)+7.5, np.linspace(-extent, extent, N), np.linspace(-extent, extent, N))
-
-r = np.array([X.flatten(), Y.flatten(), Z.flatten()]).T
-
-r = r[shield.mesh.contains(r)]
-
-
-coil.C_cyl = compute_C(coil.mesh, r)
-shield.C_cyl = compute_C(shield.mesh, r)
-
-secondary_C_cyl = shield.C_cyl @ shield.coupling
-
-total_C_cyl = coil.C_cyl + secondary_C_cyl
-
-
-Bfield = total_C_cyl @ coil.I2
-
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-           size=(800, 800))
-mlab.clf()
-
-quiv = mlab.quiver3d(*r.T, *Bfield.T)
-
-
-
-plot_3d_current_loops(loops, colors='auto', figure=f)
-
-shield.plot_mesh(representation='surface', opacity=0.1, cull_front=True)

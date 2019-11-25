@@ -1,6 +1,6 @@
 '''
 Thermal noise computation
-=========================
+==========================
 
 Three different examples:
    unit_sphere: DC Bnoise of a spherical shell at origin and comparison to analytical formula

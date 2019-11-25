@@ -8,7 +8,7 @@
 
 
 Thermal noise computation
-=========================
+==========================
 
 Three different examples:
    unit_sphere: DC Bnoise of a spherical shell at origin and comparison to analytical formula
@@ -75,11 +75,13 @@ Unit sphere
     Ban = mu0*np.sqrt(2*sigma*d*kB*T/(3*np.pi*(R)**2))
 
     plt.figure()
-    plt.plot(R, Ban,label='Analytic')
-    plt.plot(R, B[:,2],'x',label='Numerical')
+    plt.semilogy(R, Ban,label='Analytic')
+    plt.semilogy(R, B[:,2],'x',label='Numerical')
     plt.legend()
     plt.xlabel('Sphere radius')
     plt.ylabel('DC noise Bz (T/rHz)')
+    plt.tight_layout()
+
 
     RE = np.abs((B[:,2]-Ban))/np.abs(Ban)*100
     plt.figure()
@@ -113,34 +115,34 @@ Unit sphere
 
  .. code-block:: none
 
-    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
+    /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
-    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
-    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
-    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
-    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
-    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
-    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.07 seconds.
-    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
-    /l/bfieldtools/bfieldtools/thermal_noise.py:48: RuntimeWarning: invalid value encountered in sqrt
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing C matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
 
 
 
@@ -178,7 +180,7 @@ Unit disc, DC noise
     plt.legend()
     plt.xlabel('Distance d/R')
     plt.ylabel('DC noise Bz (T/rHz)')
-
+    plt.tight_layout()
 
     plt.figure()
     plt.plot(z, np.abs((B[:,2]-Ban))/np.abs(Ban)*100)
@@ -211,7 +213,86 @@ Unit disc, DC noise
 
  .. code-block:: none
 
-    Computing C matrix, 1207 vertices by 30 target points... took 0.04 seconds.
+    Computing magnetic field coupling matrix, 1207 vertices by 30 target points... took 0.04 seconds.
+
+
+
+Closed cylinder, DC noise
+---------------------
+
+
+.. code-block:: default
+
+
+    mesh = trimesh.load(pkg_resources.resource_filename('bfieldtools', 'example_meshes/closed_cylinder.stl'))
+    mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
+
+    vl = compute_current_modes(mesh)
+
+    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                   size=(800, 800))
+
+    visualize_current_modes(mesh,vl, 8, 1)
+
+    Np = 30
+
+    x = np.linspace(-0.95, 0.95, Np)
+    fp = np.array((x,np.zeros(x.shape), np.zeros(x.shape))).T
+
+    B = compute_dc_Bnoise(mesh,vl,fp,sigma,d,T)
+
+    a = 0.5
+    L = 2
+    rat = L/(2*a)
+    Gfact = 1/(8*np.pi) * ((3*rat**5+5*rat**3+2)/(rat**2*(1+rat**2)**2) + 3*np.arctan(rat))
+    Ban = np.sqrt(Gfact)*mu0*np.sqrt(kB*T*sigma*d)/a
+
+    plt.figure()
+    plt.semilogy(x, Ban*np.ones(x.shape),label='Analytic',linewidth = 2)
+    plt.semilogy(x, B[:,0],'x',label='Numerical')
+    plt.legend()
+    plt.xlabel('Distance along long axis')
+    plt.ylabel('DC noise long axis (T/rHz)')
+    plt.tight_layout()
+
+    plt.figure()
+    plt.semilogy(x, B[:,0],label='x')
+    plt.semilogy(x, B[:,1],label='y')
+    plt.semilogy(x, B[:,2],'--',label='z')
+    plt.legend()
+    plt.xlabel('Distance along long axis x')
+    plt.ylabel('DC noise (T/rHz)')
+
+
+
+
+
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /auto_examples/thermal_noise/images/sphx_glr_thermal_noise_simulation_007.png
+            :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /auto_examples/thermal_noise/images/sphx_glr_thermal_noise_simulation_008.png
+            :class: sphx-glr-multi-img
+
+.. image:: /auto_examples/thermal_noise/images/sphx_glr_thermal_noise_simulation_009.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    face_normals didn't match triangles, ignoring!
+    Computing magnetic field coupling matrix, 3842 vertices by 30 target points... took 0.16 seconds.
 
 
 
@@ -252,60 +333,30 @@ Unit disc, AC mode
     plt.tight_layout()
 
 
-.. image:: /auto_examples/thermal_noise/images/sphx_glr_thermal_noise_simulation_007.png
-    :class: sphx-glr-single-img
+.. code-block:: pytb
 
-.. image:: /auto_examples/thermal_noise/images/sphx_glr_thermal_noise_simulation_008.png
-    :class: sphx-glr-single-img
+    Traceback (most recent call last):
+      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 474, in _memory_usage
+        multiprocess=True)
+      File "/l/conda-envs/mne/lib/python3.6/site-packages/memory_profiler.py", line 336, in memory_usage
+        returned = f(*args, **kw)
+      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 465, in __call__
+        exec(self.code, self.globals)
+      File "/l/bfieldtools/examples/thermal_noise/thermal_noise_simulation.py", line 174, in <module>
+        Bf = compute_ac_Bnoise(mesh,vl,fp,freqs,sigma,d,T)
+      File "/l/bfieldtools/bfieldtools/thermal_noise.py", line 255, in compute_ac_Bnoise
+        B[j, :, 0] += (B_coupling[:, :, 0] @vec)**2
+    ValueError: shapes (1,3) and (1207,) not aligned: 3 (dim 1) != 1207 (dim 0)
 
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Computing C matrix, 1207 vertices by 1 target points... took 0.06 seconds.
-    Calculating potentials, chunk 1/1
-    Frequency 1.000000 computed
-    Frequency 1.268961 computed
-    Frequency 1.610262 computed
-    Frequency 2.043360 computed
-    Frequency 2.592944 computed
-    Frequency 3.290345 computed
-    Frequency 4.175319 computed
-    Frequency 5.298317 computed
-    Frequency 6.723358 computed
-    Frequency 8.531679 computed
-    Frequency 10.826367 computed
-    Frequency 13.738238 computed
-    Frequency 17.433288 computed
-    Frequency 22.122163 computed
-    Frequency 28.072162 computed
-    Frequency 35.622479 computed
-    Frequency 45.203537 computed
-    Frequency 57.361525 computed
-    Frequency 72.789538 computed
-    Frequency 92.367086 computed
-    Frequency 117.210230 computed
-    Frequency 148.735211 computed
-    Frequency 188.739182 computed
-    Frequency 239.502662 computed
-    Frequency 303.919538 computed
-    Frequency 385.662042 computed
-    Frequency 489.390092 computed
-    Frequency 621.016942 computed
-    Frequency 788.046282 computed
-    Frequency 1000.000000 computed
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  14.210 seconds)
+   **Total running time of the script:** ( 1 minutes  20.474 seconds)
 
-**Estimated memory usage:**  1899 MB
+**Estimated memory usage:**  692 MB
 
 
 .. _sphx_glr_download_auto_examples_thermal_noise_thermal_noise_simulation.py:

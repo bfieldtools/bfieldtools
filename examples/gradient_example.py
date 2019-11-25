@@ -10,7 +10,7 @@ import numpy as np
 from mayavi import mlab
 import trimesh
 
-from bfieldtools.laplacian_mesh import gradient
+from bfieldtools.mesh_calculus import gradient
 import pkg_resources
 
 #Load simple plane mesh that is centered on the origin

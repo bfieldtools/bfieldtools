@@ -154,9 +154,9 @@ For the math see:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.118 seconds)
+   **Total running time of the script:** ( 0 minutes  1.211 seconds)
 
-**Estimated memory usage:**  9 MB
+**Estimated memory usage:**  24 MB
 
 
 .. _sphx_glr_download_auto_examples_validation_validate_uniform_triangle.py:

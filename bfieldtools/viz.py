@@ -118,10 +118,6 @@ def plot_3d_current_loops(current_loops, colors=None, figure=None, figsize=(800,
     return figure
 
 
-
-
-
-
 def plot_cross_section(X, Y, data, axes=None, cmap=None, colorbar=False, contours=10, log=False, vmin=None, vmax=None):
     '''
     Plot scalar data on a plane

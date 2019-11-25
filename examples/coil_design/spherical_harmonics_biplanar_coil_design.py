@@ -8,12 +8,10 @@ in a target region between the two coil planes.
 '''
 
 import numpy as np
-import matplotlib.pyplot as plt
 from mayavi import mlab
 import trimesh
 
-from bfieldtools.mesh_class import MeshWrapper, CouplingMatrix
-from bfieldtools.magnetic_field_mesh import compute_C
+from bfieldtools.mesh_class import MeshWrapper
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
@@ -89,10 +87,6 @@ n_stray_points = len(stray_points)
 
 
 
-##############################################################
-# Compute C matrices that are used to compute the generated magnetic field
-
-coil.C = CouplingMatrix(coil, compute_C)
 
 
 ##############################################################
@@ -136,8 +130,8 @@ target_abs_error = np.zeros_like(target_field)
 target_abs_error[:, :] += 0.1
 #target_abs_error[:, 1:3] += 0.005
 
-target_spec = {'C':coil.C(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
-stray_spec = {'C':coil.C(stray_points), 'abs_error':0.01, 'rel_error':0, 'target_field':np.zeros((n_stray_points, 3))}
+target_spec = {'coupling':coil.B_coupling(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target':target_field}
+stray_spec = {'coupling':coil.B_coupling(stray_points), 'abs_error':0.01, 'rel_error':0, 'target':np.zeros((n_stray_points, 3))}
 
 bfield_specification = [target_spec, stray_spec]
 
@@ -145,7 +139,7 @@ bfield_specification = [target_spec, stray_spec]
 # Run QP solver
 import mosek
 
-coil.I, prob = optimize_streamfunctions(coil,
+coil.j, prob = optimize_streamfunctions(coil,
                                    [target_spec, stray_spec],
                                    objective='minimum_inductive_energy',
                                    solver='MOSEK',
@@ -157,7 +151,7 @@ coil.I, prob = optimize_streamfunctions(coil,
 
 N_contours = 10
 
-loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=N_contours)
+loops, loop_values= scalar_contour(coil.mesh, coil.j, N_contours=N_contours)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
@@ -165,6 +159,6 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f)
 
-B_target = coil.C(target_points) @ coil.I
+B_target = coil.B_coupling(target_points) @ coil.j
 
 mlab.quiver3d(*target_points.T, *B_target.T)

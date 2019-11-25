@@ -4,7 +4,7 @@ import quadpy
 
 from mayavi import mlab
 
-from .laplacian_mesh import gradient_matrix
+from .mesh_calculus import gradient_matrix
 from .utils import tri_normals_and_areas
 
 class sphbasis:

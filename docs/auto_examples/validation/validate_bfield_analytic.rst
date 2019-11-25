@@ -13,40 +13,21 @@ Validation of analytic mesh operator for magnetic field computation.
 
 
 
-.. image:: /auto_examples/validation/images/sphx_glr_validate_bfield_analytic_001.png
-    :class: sphx-glr-single-img
+.. code-block:: pytb
 
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image:: /auto_examples/validation/images/sphx_glr_validate_bfield_analytic_002.png
-            :class: sphx-glr-multi-img
-
-    *
-
-      .. image:: /auto_examples/validation/images/sphx_glr_validate_bfield_analytic_003.png
-            :class: sphx-glr-multi-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Computing C matrix, 676 vertices by 676 target points... took 0.20 seconds.
-    Computing C matrix, 676 vertices by 676 target points... took 1.33 seconds.
-    Relative RMS error 0.00522928695809424
-    Computing C matrix, 4701 vertices by 100 target points... took 0.27 seconds.
-    Computing C matrix, 4701 vertices by 100 target points... took 1.49 seconds.
+    Traceback (most recent call last):
+      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 474, in _memory_usage
+        multiprocess=True)
+      File "/l/conda-envs/mne/lib/python3.6/site-packages/memory_profiler.py", line 336, in memory_usage
+        returned = f(*args, **kw)
+      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 465, in __call__
+        exec(self.code, self.globals)
+      File "/l/bfieldtools/examples/validation/validate_bfield_analytic.py", line 34, in <module>
+        B0 = np.moveaxis(magnetic_field_coupling(coilmesh, test_points), 2, 0) @ weights
+    ValueError: shapes (676,676,3) and (676,) not aligned: 3 (dim 2) != 676 (dim 0)
 
 
 
-
-
-|
 
 
 .. code-block:: default
@@ -64,9 +45,8 @@ Validation of analytic mesh operator for magnetic field computation.
     if path not in sys.path:
         sys.path.insert(0,path)
 
-    from bfieldtools.laplacian_mesh import gradient
-    from bfieldtools.magnetic_field_mesh import compute_C
-    from bfieldtools.magnetic_field_mesh import compute_C_analytic
+    from bfieldtools.mesh_calculus import gradient
+    from bfieldtools.mesh_magnetics import magnetic_field_coupling, magnetic_field_coupling_analytic
     from bfieldtools.mesh_class import MeshWrapper
 
 
@@ -80,8 +60,8 @@ Validation of analytic mesh operator for magnetic field computation.
 
     test_points = coilmesh.vertices + np.array([0,1,0])
 
-    B0 = np.moveaxis(compute_C(coilmesh, test_points), 2, 0) @ weights
-    B1 = compute_C_analytic(coilmesh, test_points) @ weights
+    B0 = np.moveaxis(magnetic_field_coupling(coilmesh, test_points), 2, 0) @ weights
+    B1 = magnetic_field_coupling_analytic(coilmesh, test_points) @ weights
 
 
     s = mlab.triangular_mesh(*coilmesh.vertices.T, coilmesh.faces,
@@ -116,8 +96,8 @@ Validation of analytic mesh operator for magnetic field computation.
     mlab.points3d(*test_points.T, scale_factor=0.1)
 
     # Bfield for 1 Ampere current
-    B0 = np.moveaxis(compute_C(discmesh, test_points), 2, 0) @ weights
-    B1 = compute_C_analytic(discmesh, test_points) @ weights
+    B0 = np.moveaxis(magnetic_field_coupling(discmesh, test_points), 2, 0) @ weights
+    B1 = magnetic_field_coupling_analytic(discmesh, test_points) @ weights
 
     # Analytic formula for unit disc
     plt.plot(1e-7*2*np.pi/(np.sqrt(test_points[:,2]**2 + 1)**3))
@@ -133,9 +113,9 @@ Validation of analytic mesh operator for magnetic field computation.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.404 seconds)
+   **Total running time of the script:** ( 0 minutes  0.483 seconds)
 
-**Estimated memory usage:**  217 MB
+**Estimated memory usage:**  9 MB
 
 
 .. _sphx_glr_download_auto_examples_validation_validate_bfield_analytic.py:

@@ -1,6 +1,6 @@
 '''
 Contains a class used for wrapping a mesh (in the form of a Trimesh object) together with
-some convinient functions and properties.
+some convenient functions and properties.
 
 '''
 
@@ -13,8 +13,9 @@ import numpy as np
 from psutil import virtual_memory
 
 from . import utils
-from .laplacian_mesh import laplacian_matrix, mass_matrix
-from .mutual_inductance_mesh import self_inductance_matrix
+from .mesh_calculus import laplacian_matrix, mass_matrix
+from .mesh_inductance import self_inductance_matrix
+from .mesh_magnetics import magnetic_field_coupling, scalar_potential_coupling, vector_potential_coupling
 
 
 class LazyProperty():
@@ -94,9 +95,9 @@ class MeshWrapper:
                                                                          self.mesh.faces,
                                                                          self.mesh.edges)
 
-#        self.B_coupling = CouplingMatrix(self)
-#        self.U_coupling = CouplingMatrix(self)
-#        self.A_coupling = CouplingMatrix(self)
+        self.B_coupling = CouplingMatrix(self, magnetic_field_coupling)
+        self.U_coupling = CouplingMatrix(self, scalar_potential_coupling)
+        self.A_coupling = CouplingMatrix(self, vector_potential_coupling)
 
 
     @LazyProperty
@@ -145,14 +146,21 @@ class MeshWrapper:
         return inductance
 
 
-    @LazyProperty
     def resistance(self, resistivity=1.68*1e-8, thickness=1e-4):
         '''
         Compute and return resistance/resistivity matrix using Laplace matrix.
         Default resistivity set to that of copper.
-        NB! For now, the resistivity and thickness values are set in stone.
-        To continue using @LazyProperty, they could be moved into class attributes.
-        Alternatively, this LazyProperty could be turned into a method.
+        Parameters
+        ----------
+        Resistivity: float
+            Resistivity value in Ohm/meter
+        Thickness: float
+            Thickness of surface. NB! Must be small in comparison to observation distance
+
+        Returns
+        -------
+        R: array
+            Resistance matrix
         '''
 
         #Flip sign
@@ -227,6 +235,7 @@ def load_pickle(target_file):
 
     return obj
 
+
 class CouplingMatrix:
     '''
     General-use class that contains a data array (a coupling matrix)
@@ -291,6 +300,5 @@ class CouplingMatrix:
 
                 #Re-compute indices of queried points, now that all should exist
                 p_existing_point_idx, m_existing_point_idx = np.where((self.points == points[:, None]).all(axis=-1))
-
 
             return self.matrix[m_existing_point_idx]

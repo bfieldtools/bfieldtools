@@ -17,18 +17,10 @@ One-element validation
 
 
     import numpy as np
-    import matplotlib.pyplot as plt
-    import sys
-    path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
-    if path not in sys.path:
-        sys.path.insert(0,path)
 
-    from bfieldtools.integrals import triangle_potential_dipole_linear
-    from bfieldtools.integrals import omega
-    from bfieldtools.utils import tri_normals_and_areas
-    from bfieldtools.laplacian_mesh import gradient
-    from bfieldtools.magnetic_field_mesh import compute_U, compute_A
-    from bfieldtools.magnetic_field_mesh import compute_C, compute_C_analytic
+    from bfieldtools.mesh_calculus import gradient
+    from bfieldtools.mesh_magnetics import scalar_potential_coupling, vector_potential_coupling
+    from bfieldtools.mesh_magnetics import magnetic_field_coupling, magnetic_field_coupling_analytic
 
     import trimesh
     from mayavi import mlab
@@ -78,7 +70,7 @@ One-element validation
     for ii in range(7):
         mesh2 =mesh2.subdivide()
 
-    U = compute_U(mesh, mesh2.vertices) @ scalars
+    U = scalar_potential_coupling(mesh, mesh2.vertices) @ scalars
 
     s3= mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces, scalars=U, colormap='bwr')
     s3.enable_contours = True
@@ -97,7 +89,7 @@ One-element validation
         mesh3 = trimesh.Trimesh(points, tris)
         for ii in range(5):
             mesh3 =mesh3.subdivide()
-        A = compute_A(mesh, mesh3.vertices) @ scalars
+        A = vector_potential_coupling(mesh, mesh3.vertices) @ scalars
         vectors = mlab.quiver3d(*mesh3.vertices.T, *A, mode='2ddash', color=(0,0,1))
         vectors.glyph.glyph_source.glyph_position = 'center'
         vectors.actor.property.render_lines_as_tubes = True
@@ -112,8 +104,8 @@ One-element validation
     for ii in range(6):
         mesh2 =mesh2.subdivide()
 
-    B0 = np.moveaxis(compute_C(mesh, mesh2.vertices), 2, 0) @ scalars
-    B1 = compute_C_analytic(mesh, mesh2.vertices) @ scalars
+    B0 = np.moveaxis(magnetic_field_coupling(mesh, mesh2.vertices), 2, 0) @ scalars
+    B1 = magnetic_field_coupling_analytic(mesh, mesh2.vertices) @ scalars
     B1[0] = 0
     vectors = mlab.quiver3d(*mesh2.vertices.T, *B1, mode='arrow', color=(1,0,1))
     vectors.glyph.glyph_source.glyph_position = 'center'
@@ -124,28 +116,28 @@ One-element validation
 
 
 
-.. image:: /auto_examples/validation/images/sphx_glr_one_element_001.png
-    :class: sphx-glr-single-img
+.. code-block:: pytb
 
+    Traceback (most recent call last):
+      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 474, in _memory_usage
+        multiprocess=True)
+      File "/l/conda-envs/mne/lib/python3.6/site-packages/memory_profiler.py", line 336, in memory_usage
+        returned = f(*args, **kw)
+      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 465, in __call__
+        exec(self.code, self.globals)
+      File "/l/bfieldtools/examples/validation/one_element.py", line 87, in <module>
+        B0 = np.moveaxis(magnetic_field_coupling(mesh, mesh2.vertices), 2, 0) @ scalars
+    ValueError: shapes (7,4225,3) and (7,) not aligned: 3 (dim 2) != 7 (dim 0)
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Computing U matrix, 7 vertices by 16641 target points... took 0.25 seconds.
-    Computing C matrix, 7 vertices by 4225 target points... took 0.02 seconds.
-    Computing C matrix, 7 vertices by 4225 target points... took 0.05 seconds.
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.226 seconds)
+   **Total running time of the script:** ( 0 minutes  1.127 seconds)
 
-**Estimated memory usage:**  13 MB
+**Estimated memory usage:**  9 MB
 
 
 .. _sphx_glr_download_auto_examples_validation_one_element.py:

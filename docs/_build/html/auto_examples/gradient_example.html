@@ -109,7 +109,7 @@
 <span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.laplacian_mesh</span> <span class="k">import</span> <span class="n">gradient</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_calculus</span> <span class="k">import</span> <span class="n">gradient</span>
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 
 <span class="c1">#Load simple plane mesh that is centered on the origin</span>
@@ -126,11 +126,11 @@
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>shapely.geometry.Polygon not available!
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>SVG path loading unavailable!
 Traceback (most recent call last):
-  File &quot;/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/creation.py&quot;, line 22, in &lt;module&gt;
-    from shapely.geometry import Polygon
-ModuleNotFoundError: No module named &#39;shapely&#39;
+  File &quot;/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/path/exchange/svg_io.py&quot;, line 18, in &lt;module&gt;
+    from svg.path import parse_path
+ModuleNotFoundError: No module named &#39;svg&#39;
 </pre></div>
 </div>
 <p>Calculate the gradient (e.g., flow from potential)</p>
@@ -158,8 +158,8 @@ ModuleNotFoundError: No module named &#39;shapely&#39;
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_gradient_example_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_gradient_example_002.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.547 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  145 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.981 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  161 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-gradient-example-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/49a2ce7d7516d68a7f664d125027b0bc/gradient_example.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">gradient_example.py</span></code></a></p>

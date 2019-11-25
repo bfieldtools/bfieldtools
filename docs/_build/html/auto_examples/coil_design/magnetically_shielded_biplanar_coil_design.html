@@ -14,8 +14,8 @@
     <script type="text/javascript" src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Thermal noise computation" href="../thermal_noise/thermal_noise_simulation.html" />
-    <link rel="prev" title="Coil with minimal eddy currents" href="minimal_eddy_current_cylindrical_coil_design.html" />
+    <link rel="next" title="Analytical self-shielded biplanar coil design" href="self-shielded_biplanar_coil_design.html" />
+    <link rel="prev" title="Coil with interior holes" href="coil_with_holes.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -113,7 +113,6 @@ The coil is positioned close to the end of the shield to demonstrate the effect<
 
 
 <span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">MeshWrapper</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.magnetic_field_mesh</span> <span class="k">import</span> <span class="n">compute_C</span><span class="p">,</span> <span class="n">compute_U</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="k">import</span> <span class="n">optimize_streamfunctions</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="k">import</span> <span class="n">scalar_contour</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="k">import</span> <span class="n">plot_3d_current_loops</span><span class="p">,</span> <span class="n">plot_data_on_vertices</span>
@@ -148,7 +147,7 @@ The coil is positioned close to the end of the shield to demonstrate the effect<
 <span class="n">coil</span> <span class="o">=</span> <span class="n">MeshWrapper</span><span class="p">(</span><span class="n">mesh_obj</span><span class="o">=</span><span class="n">joined_planes</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Separate object for shield geometry</span>
-<span class="n">shieldmesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;/l/bfieldtools/bfieldtools/example_meshes/closed_cylinder.stl&#39;</span><span class="p">)</span>
+<span class="n">shieldmesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_obj</span><span class="o">=</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;bfieldtools&#39;</span><span class="p">,</span> <span class="s1">&#39;example_meshes/closed_cylinder.stl&#39;</span><span class="p">),</span> <span class="n">process</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">shieldmesh</span><span class="o">.</span><span class="n">apply_scale</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
 
 <span class="n">shield</span> <span class="o">=</span> <span class="n">MeshWrapper</span><span class="p">(</span><span class="n">mesh_obj</span><span class="o">=</span><span class="n">shieldmesh</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -194,16 +193,6 @@ The coil is positioned close to the end of the shield to demonstrate the effect<
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_magnetically_shielded_biplanar_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_magnetically_shielded_biplanar_coil_design_001.png" />
-<p>Compute C matrices that are used to compute the generated magnetic field</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">coil</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="n">compute_C</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">target_points</span><span class="p">)</span>
-<span class="n">shield</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="n">compute_C</span><span class="p">(</span><span class="n">shield</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">target_points</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3184 vertices by 672 target points... took 0.93 seconds.
-Computing C matrix, 962 vertices by 672 target points... took 0.26 seconds.
-</pre></div>
-</div>
 <p>Let’s design a coil without taking the magnetic shield into account</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#The absolute target field amplitude is not of importance,</span>
 <span class="c1"># and it is scaled to match the C matrix in the optimization function</span>
@@ -218,11 +207,11 @@ Computing C matrix, 962 vertices by 672 target points... took 0.26 seconds.
 <span class="n">target_abs_error</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.001</span>
 <span class="n">target_abs_error</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.005</span>
 
-<span class="n">target_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="n">coil</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="n">target_rel_error</span><span class="p">,</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="n">target_abs_error</span><span class="p">,</span> <span class="s1">&#39;target_field&#39;</span><span class="p">:</span><span class="n">target_field</span><span class="p">}</span>
+<span class="n">target_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;coupling&#39;</span><span class="p">:</span><span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">),</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="n">target_rel_error</span><span class="p">,</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="n">target_abs_error</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="n">target_field</span><span class="p">}</span>
 
 <span class="kn">import</span> <span class="nn">mosek</span>
 
-<span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">prob</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
+<span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">prob</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
                                    <span class="p">[</span><span class="n">target_spec</span><span class="p">],</span>
                                    <span class="n">objective</span><span class="o">=</span><span class="s1">&#39;minimum_inductive_energy&#39;</span><span class="p">,</span>
                                    <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;MOSEK&#39;</span><span class="p">,</span>
@@ -231,10 +220,14 @@ Computing C matrix, 962 vertices by 672 target points... took 0.26 seconds.
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing inductance matrix in 2 chunks since 9 GiB memory is available...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 3184 vertices by 672 target points... took 0.95 seconds.
+Computing inductance matrix in 2 chunks since 8 GiB memory is available...
 Calculating potentials, chunk 1/2
 Calculating potentials, chunk 2/2
-Inductance matrix computation took 68.90 seconds.
+Inductance matrix computation took 71.36 seconds.
+Pre-existing problem not passed, creating...
+Passing parameters to problem...
+Passing problem to solver...
 
 
 Problem
@@ -264,35 +257,35 @@ Optimizer  - Constraints            : 2897
 Optimizer  - Cones                  : 1
 Optimizer  - Scalar variables       : 6930              conic                  : 2898
 Optimizer  - Semi-definite variables: 0                 scalarized             : 0
-Factor     - setup time             : 1.97              dense det. time        : 0.00
-Factor     - ML order time          : 0.32              GP order time          : 0.00
+Factor     - setup time             : 1.89              dense det. time        : 0.00
+Factor     - ML order time          : 0.29              GP order time          : 0.00
 Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06
 Factor     - dense dim.             : 0                 flops                  : 4.93e+10
 ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
-0   6.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  77.63
-1   4.0e+01  6.2e-01  2.2e-01  1.05e+00   4.677130957e+01   4.602040536e+01   6.2e-01  78.31
-2   8.8e+00  1.4e-01  2.0e-02  1.19e+00   7.851531865e+01   7.839683819e+01   1.4e-01  78.94
-3   4.2e+00  6.6e-02  9.0e-03  1.30e+00   8.060276587e+01   8.055197009e+01   6.6e-02  79.54
-4   3.2e+00  5.0e-02  7.0e-03  1.01e+00   8.118900965e+01   8.114766773e+01   5.0e-02  80.19
-5   9.6e-02  1.5e-03  3.8e-05  1.09e+00   8.540388976e+01   8.540282440e+01   1.5e-03  80.87
-6   1.0e-02  1.6e-04  1.7e-06  1.01e+00   8.545287301e+01   8.545276641e+01   1.6e-04  81.62
-7   1.1e-03  1.7e-05  5.6e-08  1.00e+00   8.547050333e+01   8.547049238e+01   1.7e-05  82.65
-8   2.2e-04  3.5e-06  5.3e-09  9.99e-01   8.547222412e+01   8.547222185e+01   3.5e-06  83.78
-9   1.1e-04  1.7e-06  1.9e-09  1.00e+00   8.547245153e+01   8.547245040e+01   1.7e-06  84.69
-10  4.2e-06  6.6e-08  1.4e-11  1.00e+00   8.547266623e+01   8.547266619e+01   6.6e-08  86.07
-11  8.4e-07  1.6e-08  1.2e-11  1.00e+00   8.547267483e+01   8.547267416e+01   3.3e-10  87.22
-Optimizer terminated. Time: 87.84
+0   6.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  66.20
+1   4.0e+01  6.2e-01  2.2e-01  1.05e+00   4.677130957e+01   4.602040536e+01   6.2e-01  66.78
+2   8.8e+00  1.4e-01  2.0e-02  1.19e+00   7.851531865e+01   7.839683819e+01   1.4e-01  67.34
+3   4.2e+00  6.6e-02  9.0e-03  1.30e+00   8.060276587e+01   8.055197009e+01   6.6e-02  67.86
+4   3.2e+00  5.0e-02  7.0e-03  1.01e+00   8.118900965e+01   8.114766773e+01   5.0e-02  68.41
+5   9.6e-02  1.5e-03  3.8e-05  1.09e+00   8.540388976e+01   8.540282440e+01   1.5e-03  69.12
+6   1.0e-02  1.6e-04  1.7e-06  1.01e+00   8.545287301e+01   8.545276642e+01   1.6e-04  69.82
+7   1.1e-03  1.7e-05  5.6e-08  1.00e+00   8.547050333e+01   8.547049238e+01   1.7e-05  70.57
+8   2.2e-04  3.5e-06  5.3e-09  1.00e+00   8.547222399e+01   8.547222171e+01   3.5e-06  71.33
+9   1.1e-04  1.7e-06  1.9e-09  1.00e+00   8.547245155e+01   8.547245041e+01   1.7e-06  71.88
+10  4.2e-06  6.6e-08  1.4e-11  1.00e+00   8.547266623e+01   8.547266619e+01   6.6e-08  72.65
+11  4.7e-07  7.4e-09  6.7e-13  1.00e+00   8.547267390e+01   8.547267389e+01   7.3e-09  73.60
+Optimizer terminated. Time: 74.08
 
 
 Interior-point solution summary
   Problem status  : PRIMAL_AND_DUAL_FEASIBLE
   Solution status : OPTIMAL
-  Primal.  obj: 8.5472674826e+01    nrm: 2e+02    Viol.  con: 1e-10    var: 0e+00    cones: 0e+00
-  Dual.    obj: 8.5472674165e+01    nrm: 1e+03    Viol.  con: 1e-08    var: 1e-09    cones: 0e+00
+  Primal.  obj: 8.5472673901e+01    nrm: 2e+02    Viol.  con: 3e-09    var: 0e+00    cones: 0e+00
+  Dual.    obj: 8.5472673895e+01    nrm: 1e+03    Viol.  con: 3e-07    var: 4e-10    cones: 0e+00
 </pre></div>
 </div>
 <p>Plot coil windings and target points</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loops</span><span class="p">,</span> <span class="n">loop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loops</span><span class="p">,</span> <span class="n">loop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
            <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
@@ -300,38 +293,42 @@ Interior-point solution summary
 
 <span class="n">plot_3d_current_loops</span><span class="p">(</span><span class="n">loops</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
 
-<span class="n">B_target</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span>
+<span class="n">B_target</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span>
 
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B_target</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_magnetically_shielded_biplanar_coil_design_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_magnetically_shielded_biplanar_coil_design_002.png" />
 <p>Now, let’s compute the effect of the shield on the field produced by the coil</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Calculate primary potential matrix at the shield surface</span>
-<span class="n">P_prim</span> <span class="o">=</span> <span class="n">compute_U</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">shield</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Points slightly inside the shield</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">shield</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">shield</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span>
+<span class="n">points</span> <span class="o">=</span> <span class="n">shield</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span> <span class="o">-</span> <span class="n">d</span><span class="o">*</span><span class="n">shield</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertex_normals</span>
+
+<span class="c1"># Calculate primary potential matrix at the shield surface</span>
+<span class="n">P_prim</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">U_coupling</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
 
 <span class="c1"># Calculate linear collocation BEM matrix</span>
-<span class="n">P_bem</span> <span class="o">=</span> <span class="n">compute_U</span><span class="p">(</span><span class="n">shield</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">shield</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span>
+<span class="n">P_bem</span> <span class="o">=</span> <span class="n">shield</span><span class="o">.</span><span class="n">U_coupling</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
 
 <span class="c1"># Recalculate diag elements according to de Munck paper</span>
-<span class="k">for</span> <span class="n">diag_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">P_bem</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-    <span class="n">P_bem</span><span class="p">[</span><span class="n">diag_index</span><span class="p">,</span> <span class="n">diag_index</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">P_bem</span><span class="p">[</span><span class="n">diag_index</span><span class="p">,</span> <span class="n">diag_index</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">P_bem</span><span class="p">[</span><span class="n">diag_index</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="c1">#for diag_index in range(P_bem.shape[0]):</span>
+<span class="c1">#    P_bem[diag_index, diag_index] = 0</span>
+<span class="c1">#    P_bem[diag_index, diag_index] = -P_bem[diag_index, :].sum()</span>
 
 <span class="c1"># Matrix misses one rank, make it invertible</span>
 <span class="c1"># by rank-one update (sets potential of constant dipole layer)</span>
-<span class="n">P_bem</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">P_bem</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">/</span><span class="n">P_bem</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1">#P_bem += np.ones(P_bem.shape)/P_bem.shape[0]</span>
 
 
 <span class="c1"># Solve equivalent stream function for the perfect linear mu-metal layer.</span>
 <span class="c1"># This is the equivalent surface current in the shield that would cause its</span>
 <span class="c1"># scalar magnetic potential to be constant</span>
-<span class="n">shield</span><span class="o">.</span><span class="n">I</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">P_bem</span><span class="p">,</span> <span class="n">P_prim</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+<span class="n">shield</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">P_bem</span><span class="p">,</span> <span class="n">P_prim</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing U matrix, 3184 vertices by 962 target points... took 13.88 seconds.
-Computing U matrix, 962 vertices by 962 target points... took 4.01 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing scalar potential coupling matrix, 3184 vertices by 962 target points... took 13.00 seconds.
+Computing scalar potential coupling matrix, 962 vertices by 962 target points... took 4.23 seconds.
 </pre></div>
 </div>
 <p>Plot the difference in field when taking the shield into account</p>
@@ -339,9 +336,9 @@ Computing U matrix, 962 vertices by 962 target points... took 4.01 seconds.
            <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
 <span class="n">mlab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 
-<span class="n">B_target</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span>
+<span class="n">B_target</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span>
 
-<span class="n">B_target_w_shield</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">I</span> <span class="o">+</span> <span class="n">shield</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">@</span> <span class="n">shield</span><span class="o">.</span><span class="n">I</span>
+<span class="n">B_target_w_shield</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span> <span class="o">+</span> <span class="n">shield</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">shield</span><span class="o">.</span><span class="n">j</span>
 
 <span class="n">B_quiver</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">B_target_w_shield</span> <span class="o">-</span> <span class="n">B_target</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;arrow&#39;</span><span class="p">)</span>
 <span class="n">f</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">isometric_view</span><span class="p">()</span>
@@ -371,20 +368,21 @@ Computing U matrix, 962 vertices by 962 target points... took 4.01 seconds.
 <img alt="../../_images/sphx_glr_magnetically_shielded_biplanar_coil_design_003.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_magnetically_shielded_biplanar_coil_design_003.png" />
 <img alt="../../_images/sphx_glr_magnetically_shielded_biplanar_coil_design_004.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_magnetically_shielded_biplanar_coil_design_004.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>This object has no scalar data
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 962 vertices by 672 target points... took 0.27 seconds.
+This object has no scalar data
 </pre></div>
 </div>
 <p>Let’s redesign the coil taking the shield into account prospectively</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">shield</span><span class="o">.</span><span class="n">coupling</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">P_bem</span><span class="p">,</span> <span class="n">P_prim</span><span class="p">)</span>
 
-<span class="n">secondary_C</span> <span class="o">=</span> <span class="p">(</span><span class="n">shield</span><span class="o">.</span><span class="n">C</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">@</span> <span class="n">shield</span><span class="o">.</span><span class="n">coupling</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">secondary_B_coupling</span> <span class="o">=</span> <span class="n">shield</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">shield</span><span class="o">.</span><span class="n">coupling</span>
 
-<span class="n">total_C</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">C</span> <span class="o">+</span> <span class="n">secondary_C</span>
+<span class="n">total_B_coupling</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">+</span> <span class="n">secondary_B_coupling</span>
 
-<span class="n">target_spec_w_shield</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;C&#39;</span><span class="p">:</span><span class="n">total_C</span><span class="p">,</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="n">target_rel_error</span><span class="p">,</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="n">target_abs_error</span><span class="p">,</span> <span class="s1">&#39;target_field&#39;</span><span class="p">:</span><span class="n">target_field</span><span class="p">}</span>
+<span class="n">target_spec_w_shield</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;coupling&#39;</span><span class="p">:</span><span class="n">total_B_coupling</span><span class="p">,</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="n">target_rel_error</span><span class="p">,</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="n">target_abs_error</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="n">target_field</span><span class="p">}</span>
 
 
-<span class="n">coil</span><span class="o">.</span><span class="n">I2</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">prob2</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
+<span class="n">coil</span><span class="o">.</span><span class="n">j2</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">prob2</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
                                    <span class="p">[</span><span class="n">target_spec_w_shield</span><span class="p">],</span>
                                    <span class="n">objective</span><span class="o">=</span><span class="s1">&#39;minimum_inductive_energy&#39;</span><span class="p">,</span>
                                    <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;MOSEK&#39;</span><span class="p">,</span>
@@ -393,7 +391,12 @@ Computing U matrix, 962 vertices by 962 target points... took 4.01 seconds.
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Problem
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Pre-existing problem not passed, creating...
+Passing parameters to problem...
+Passing problem to solver...
+
+
+Problem
   Name                   :
   Objective sense        : min
   Type                   : CONIC (conic optimization problem)
@@ -420,45 +423,40 @@ Optimizer  - Constraints            : 2897
 Optimizer  - Cones                  : 1
 Optimizer  - Scalar variables       : 6930              conic                  : 2898
 Optimizer  - Semi-definite variables: 0                 scalarized             : 0
-Factor     - setup time             : 1.88              dense det. time        : 0.00
-Factor     - ML order time          : 0.28              GP order time          : 0.00
+Factor     - setup time             : 1.83              dense det. time        : 0.00
+Factor     - ML order time          : 0.29              GP order time          : 0.00
 Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06
 Factor     - dense dim.             : 0                 flops                  : 4.93e+10
 ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
-0   6.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  68.36
-1   3.7e+01  5.8e-01  3.6e-01  1.09e+00   4.344673635e+01   4.275006379e+01   5.8e-01  68.96
-2   5.9e+00  9.1e-02  1.5e-02  1.23e+00   5.743682235e+01   5.735225303e+01   9.1e-02  69.60
-3   2.3e+00  3.7e-02  5.0e-03  1.23e+00   5.886873114e+01   5.883918399e+01   3.7e-02  70.20
-4   7.7e-01  1.2e-02  1.0e-03  1.09e+00   5.952390006e+01   5.951485524e+01   1.2e-02  70.77
-5   6.1e-01  9.4e-03  7.3e-04  1.02e+00   5.962053624e+01   5.961346752e+01   9.4e-03  71.33
-6   9.1e-02  1.4e-03  4.8e-05  1.02e+00   5.986565873e+01   5.986466682e+01   1.4e-03  72.09
-7   7.4e-03  1.1e-04  1.1e-06  9.99e-01   5.993844588e+01   5.993836570e+01   1.1e-04  72.84
-8   5.5e-03  8.6e-05  7.1e-07  1.00e+00   5.994005206e+01   5.993999214e+01   8.6e-05  73.43
-9   4.3e-03  6.7e-05  5.0e-07  9.99e-01   5.994130700e+01   5.994125973e+01   6.7e-05  74.00
-10  1.4e-03  2.2e-05  9.0e-08  1.00e+00   5.994398039e+01   5.994396533e+01   2.2e-05  74.56
-11  1.5e-04  2.3e-06  3.1e-09  1.00e+00   5.994529199e+01   5.994529038e+01   2.3e-06  75.17
-12  3.7e-06  5.7e-08  8.5e-12  1.00e+00   5.994544991e+01   5.994544988e+01   5.7e-08  75.81
-13  1.8e-06  2.9e-08  1.1e-12  1.00e+00   5.994545192e+01   5.994545193e+01   2.9e-08  76.91
-14  9.2e-07  1.4e-08  8.2e-13  1.00e+00   5.994545292e+01   5.994545292e+01   1.4e-08  77.79
-Optimizer terminated. Time: 78.28
+0   6.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  65.83
+1   4.0e+01  6.2e-01  3.8e-01  1.08e+00   4.298424044e+01   4.225697886e+01   6.2e-01  66.41
+2   8.4e+00  1.3e-01  2.0e-02  1.24e+00   6.738470925e+01   6.726360387e+01   1.3e-01  66.97
+3   1.4e+00  2.2e-02  2.9e-03  1.32e+00   6.906336903e+01   6.904939755e+01   2.2e-02  67.73
+4   5.8e-01  9.1e-03  7.8e-04  1.06e+00   6.974530407e+01   6.973947021e+01   9.1e-03  68.29
+5   5.0e-02  7.8e-04  1.8e-05  1.03e+00   7.028043714e+01   7.027992526e+01   7.8e-04  68.97
+6   2.2e-02  3.4e-04  5.2e-06  9.94e-01   7.031558326e+01   7.031536097e+01   3.4e-04  69.52
+7   3.2e-04  5.0e-06  9.3e-09  1.00e+00   7.034176335e+01   7.034176003e+01   5.0e-06  70.27
+8   1.2e-05  1.9e-07  6.9e-11  1.00e+00   7.034214965e+01   7.034214952e+01   1.9e-07  71.02
+9   4.1e-07  6.3e-09  3.4e-12  1.00e+00   7.034216406e+01   7.034216411e+01   6.3e-09  71.78
+Optimizer terminated. Time: 72.26
 
 
 Interior-point solution summary
   Problem status  : PRIMAL_AND_DUAL_FEASIBLE
   Solution status : OPTIMAL
-  Primal.  obj: 5.9945452924e+01    nrm: 1e+02    Viol.  con: 6e-09    var: 0e+00    cones: 0e+00
-  Dual.    obj: 5.9945452920e+01    nrm: 9e+02    Viol.  con: 1e-06    var: 4e-10    cones: 0e+00
+  Primal.  obj: 7.0342164063e+01    nrm: 1e+02    Viol.  con: 3e-09    var: 0e+00    cones: 0e+00
+  Dual.    obj: 7.0342164107e+01    nrm: 1e+03    Viol.  con: 5e-07    var: 2e-10    cones: 0e+00
 </pre></div>
 </div>
 <p>Plot the newly designed coil windings and field at the target points</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loops</span><span class="p">,</span> <span class="n">loop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">I2</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loops</span><span class="p">,</span> <span class="n">loop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">j2</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
            <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
 <span class="n">mlab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 
 <span class="n">plot_3d_current_loops</span><span class="p">(</span><span class="n">loops</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
 
-<span class="n">B_target2</span> <span class="o">=</span> <span class="n">total_C</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">I2</span>
+<span class="n">B_target2</span> <span class="o">=</span> <span class="n">total_B_coupling</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j2</span>
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B_target2</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -468,58 +466,19 @@ Interior-point solution summary
            <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
 <span class="n">mlab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
 
-<span class="n">plot_data_on_vertices</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="o">-</span><span class="n">coil</span><span class="o">.</span><span class="n">I2</span><span class="p">)</span><span class="o">/</span><span class="n">coil</span><span class="o">.</span><span class="n">I</span><span class="p">),</span> <span class="n">figure</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plot_data_on_vertices</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="o">-</span><span class="n">coil</span><span class="o">.</span><span class="n">j2</span><span class="p">)</span><span class="o">/</span><span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">),</span> <span class="n">figure</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">mlab</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Relative error (%)&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_magnetically_shielded_biplanar_coil_design_006.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_magnetically_shielded_biplanar_coil_design_006.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/l/bfieldtools/examples/coil_design/magnetically_shielded_biplanar_coil_design.py:244: RuntimeWarning: invalid value encountered in true_divide
-  plot_data_on_vertices(coil.mesh, np.nan_to_num(100 * (coil.I-coil.I2)/coil.I), figure=f, colorbar=True)
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/l/bfieldtools/examples/coil_design/magnetically_shielded_biplanar_coil_design.py:239: RuntimeWarning: invalid value encountered in true_divide
+  plot_data_on_vertices(coil.mesh, np.nan_to_num(100 * (coil.j-coil.j2)/coil.j), figure=f, colorbar=True)
 </pre></div>
 </div>
-<p>Finally, plot the field lines when the shield is included into the model</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">extent</span> <span class="o">=</span> <span class="mi">8</span>
-<span class="n">N</span> <span class="o">=</span> <span class="mi">20</span>
-<span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">extent</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span><span class="o">+</span><span class="mf">7.5</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">extent</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">extent</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
-
-<span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Z</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span><span class="o">.</span><span class="n">T</span>
-
-<span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="n">shield</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">r</span><span class="p">)]</span>
-
-
-<span class="n">coil</span><span class="o">.</span><span class="n">C_cyl</span> <span class="o">=</span> <span class="n">compute_C</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
-<span class="n">shield</span><span class="o">.</span><span class="n">C_cyl</span> <span class="o">=</span> <span class="n">compute_C</span><span class="p">(</span><span class="n">shield</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
-
-<span class="n">secondary_C_cyl</span> <span class="o">=</span> <span class="p">(</span><span class="n">shield</span><span class="o">.</span><span class="n">C_cyl</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">@</span> <span class="n">shield</span><span class="o">.</span><span class="n">coupling</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-
-<span class="n">total_C_cyl</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">C_cyl</span> <span class="o">+</span> <span class="n">secondary_C_cyl</span>
-
-
-<span class="n">Bfield</span> <span class="o">=</span> <span class="n">total_C_cyl</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">I2</span>
-
-<span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-           <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
-<span class="n">mlab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
-
-<span class="n">quiv</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">r</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">Bfield</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-
-
-
-<span class="n">plot_3d_current_loops</span><span class="p">(</span><span class="n">loops</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
-
-<span class="n">shield</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">(</span><span class="n">representation</span><span class="o">=</span><span class="s1">&#39;surface&#39;</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">cull_front</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<img alt="../../_images/sphx_glr_magnetically_shielded_biplanar_coil_design_007.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_magnetically_shielded_biplanar_coil_design_007.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing C matrix, 3184 vertices by 4856 target points... took 5.18 seconds.
-Computing C matrix, 962 vertices by 4856 target points... took 1.56 seconds.
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 7 minutes  9.468 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  7947 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 5 minutes  34.876 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  7854 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-magnetically-shielded-biplanar-coil-design-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/d20da49d29b51d4a225535782a83c2f5/magnetically_shielded_biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">magnetically_shielded_biplanar_coil_design.py</span></code></a></p>

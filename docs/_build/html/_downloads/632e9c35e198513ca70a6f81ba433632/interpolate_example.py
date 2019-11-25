@@ -14,7 +14,7 @@ import trimesh
 import numpy as np
 from scipy.linalg import eigh
 
-from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix
+from bfieldtools.mesh_calculus import laplacian_matrix, mass_matrix
 from bfieldtools import utils
 
 import pkg_resources

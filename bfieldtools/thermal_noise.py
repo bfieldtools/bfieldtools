@@ -7,9 +7,9 @@ import numpy as np
 from scipy.linalg import eigh
 from mayavi import mlab
 
-from .magnetic_field_mesh import compute_C
-from .laplacian_mesh import laplacian_matrix, mass_matrix, laplacian_matrix_w_holes, mass_matrix_w_holes
-from .mutual_inductance_mesh import self_inductance_matrix
+from .mesh_magnetics import magnetic_field_coupling
+from .mesh_calculus import laplacian_matrix, mass_matrix, laplacian_matrix_w_holes, mass_matrix_w_holes
+from .mesh_inductance import self_inductance_matrix
 from . import utils
 
 
@@ -98,13 +98,13 @@ def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T):
 
     kB = 1.38064852e-23 #Boltzmann constant
 
-    C = compute_C(mesh, fp)
+    B_coupling = magnetic_field_coupling(mesh, fp)
 
     B = np.zeros(fp.shape)
     for i in range(vl.shape[1]):
         vec = vl[:, i] * np.sqrt(4 * kB * T * sigma * d)
 
-        B += (C @ vec)**2
+        B += (B_coupling @ vec)**2
 
     B = np.sqrt(B) #RMS
 
@@ -138,13 +138,13 @@ def compute_dc_Bnoise_covar(mesh, vl, fp, sigma, d, T):
 
     kB = 1.38064852e-23 #Boltzmann constant
 
-    C = compute_C(mesh, fp)
+    B_coupling = magnetic_field_coupling(mesh, fp)
 
     eps = 4*kB*T*sigma*d*np.eye(vl.shape[1])
 
     B = np.zeros((fp.shape[0], fp.shape[0], 3))
     for i in range(3):
-        B[:, :, i] = C[:, i, :] @ vl @ eps @ (vl.T) @ (C[:, i, :].T)
+        B[:, :, i] = B_coupling[:, i, :] @ vl @ eps @ (vl.T) @ (B_coupling[:, i, :].T)
 
     return B
 
@@ -205,7 +205,7 @@ def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T):
     kB = 1.38064852e-23 #Boltzmann constant
 
     #Compute field
-    C = compute_C(mesh, fp)
+    B_coupling = magnetic_field_coupling(mesh, fp)
 
     #Compute mutual inductance at "hat basis"
     Mind = self_inductance_matrix(mesh)
@@ -252,9 +252,9 @@ def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T):
 
         for i in range(vl.shape[0]):
             vec = currents[i] * vl[:, i]
-            B[j, :, 0] += (C[:, :, 0] @vec)**2
-            B[j, :, 1] += (C[:, :, 1] @ vec)**2
-            B[j, :, 2] += (C[:, :, 2] @ vec)**2
+            B[j, :, 0] += (B_coupling[:, :, 0] @vec)**2
+            B[j, :, 1] += (B_coupling[:, :, 1] @ vec)**2
+            B[j, :, 2] += (B_coupling[:, :, 2] @ vec)**2
         print("Frequency %f computed" % (f))
 
     B = np.sqrt(B) #RMS
