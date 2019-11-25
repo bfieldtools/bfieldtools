@@ -107,26 +107,6 @@ Examples related to coil design.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing a high-order spherical harmonic field in a targ...">
-
-.. only:: html
-
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_spherical_harmonics_biplanar_coil_design_thumb.png
-
-        :ref:`sphx_glr_auto_examples_coil_design_spherical_harmonics_biplanar_coil_design.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/coil_design/spherical_harmonics_biplanar_coil_design
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing a field profile defined by spherical harmonics.">
 
 .. only:: html
@@ -144,6 +124,26 @@ Examples related to coil design.
    :hidden:
 
    /auto_examples/coil_design/spherical_harmonics_coil_design
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing a high-order spherical harmonic field in a targ...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_spherical_harmonics_biplanar_coil_design_thumb.png
+
+        :ref:`sphx_glr_auto_examples_coil_design_spherical_harmonics_biplanar_coil_design.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/coil_design/spherical_harmonics_biplanar_coil_design
 
 .. raw:: html
 
@@ -353,26 +353,6 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Test and validation of potential of linearly distributed dipolar density">
-
-.. only:: html
-
-    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_linear_dipole_thumb.png
-
-        :ref:`sphx_glr_auto_examples_validation_validate_linear_dipole.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/validation/validate_linear_dipole
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="Analytic B">
 
 .. only:: html
@@ -390,6 +370,26 @@ Example scripts validating the core functionality of `bfieldtools`
    :hidden:
 
    /auto_examples/validation/validate_bfield_analytic
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Test and validation of potential of linearly distributed dipolar density">
+
+.. only:: html
+
+    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_linear_dipole_thumb.png
+
+        :ref:`sphx_glr_auto_examples_validation_validate_linear_dipole.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/validation/validate_linear_dipole
 
 .. raw:: html
 

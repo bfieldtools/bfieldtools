@@ -28,9 +28,10 @@ coil.mesh.vertices += np.array([0,-1,0])
 weights = np.zeros(coilmesh.vertices.shape[0])
 weights[coil.inner_verts] = 1
 
-test_points = coilmesh.vertices + np.array([0,1,0])
+test_points = coilmesh.vertices.copy()
+test_points[:, 1] = 0
 
-lmax = 10
+lmax = 12
 
 sph = sphbasis(20)
 
@@ -39,9 +40,9 @@ sph_C = compute_sphcoeffs_mesh(coil.mesh, lmax)
 alms = sph_C[0] @ weights
 blms = sph_C[1] @ weights
 
-blms = np.zeros_like(alms)
+alms = np.zeros_like(alms)
 
-B0 = np.moveaxis(magnetic_field_coupling(coilmesh, test_points), 2, 0) @ weights
+B0 = (magnetic_field_coupling(coilmesh, test_points) @ weights).T
 B1 = sph.field(test_points, alms, blms, lmax).T
 
 
@@ -52,7 +53,9 @@ s.enable_contours = True
 s.actor.property.render_lines_as_tubes = True
 s.actor.property.line_width = 3.0
 
-mlab.quiver3d(*test_points.T, *B0, color=(1,0,0))
-mlab.quiver3d(*test_points.T, *B1, color=(0,0,1))
+mlab.quiver3d(*test_points.T, *B0, color=(1,0,0), scale_factor=0.5e7, vmin=0, vmax=2e-7)
+mlab.quiver3d(*test_points.T, *B1, color=(0,0,1), scale_factor=0.5e7, vmin=0, vmax=2e-7)
+s.scene.isometric_view()
+
 
 print('Relative RMS error',  np.sqrt(np.mean((B1-B0)**2))/np.sqrt(np.mean((B0)**2)))

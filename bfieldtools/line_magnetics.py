@@ -118,6 +118,7 @@ def magnetic_field_current_loops(vertices, points, loops):
             if None use all vertices in the order of vertices.
             Example: Giving array of 4 vertices, the closed loop can be
             defined as loops = np.array([[0,1,2,3,0]])
+
     """
     bfield = np.zeros((len(loops), len(points), 3))
     for ii, loop in enumerate(loops):
@@ -202,6 +203,7 @@ def scalar_potential(vertices, points):
     Returns
     -------
     Scalar magnetic potential (Npoints, )
+
     '''
 
     N_verts = len(vertices)
@@ -284,7 +286,9 @@ def flux(vertices, loops, vertices_other, Nquad=2):
 
 
 if __name__ == "__main__":
-    """ Plot field of a circular current path
+    """
+    Plot field of a circular current path
+
     """
     x = np.linspace(-1, 1, 200)
     Ntheta = 5

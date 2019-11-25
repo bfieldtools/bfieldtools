@@ -34,7 +34,7 @@ spherical harmonics.
     from bfieldtools.viz import plot_3d_current_loops
 
 
-    from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis, plotsph, sphfittools
+    from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis, sphfittools
 
 
     import pkg_resources
@@ -134,6 +134,11 @@ spherical harmonics.
 
  .. code-block:: none
 
+    SVG path loading unavailable!
+    Traceback (most recent call last):
+      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/path/exchange/svg_io.py", line 18, in <module>
+        from svg.path import parse_path
+    ModuleNotFoundError: No module named 'svg'
     l = 1 computed
     l = 2 computed
     l = 3 computed
@@ -147,19 +152,8 @@ Create bfield specifications used when optimizing the coil geometry
 .. code-block:: default
 
 
-    #The absolute target field amplitude is not of importance,
-    # and it is scaled to match the C matrix in the optimization function
 
-    target_abs_error = np.zeros_like(target_blms)
-    target_abs_error += 0.01
-
-    #target_field = np.zeros_like(target_points)
-    #target_field[:, 0] += 1
-
-    #target_abs_error = np.zeros_like(target_points)
-    #target_abs_error += 0.01
-
-    target_spec = {'coupling':coil.C_blms, 'rel_error':None, 'abs_error':target_abs_error, 'target_field':target_blms}
+    target_spec = {'coupling':coil.C_blms, 'rel_error':0, 'abs_error':0.01, 'target':target_blms}
 
 
 
@@ -175,15 +169,12 @@ Run QP solver
 
     import mosek
 
-    I, prob = optimize_streamfunctions(coil,
+    coil.j, prob = optimize_streamfunctions(coil,
                                        [target_spec],
                                        objective='minimum_inductive_energy',
                                        solver='MOSEK',
                                        solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
                                        )
-
-    coil.j = np.zeros(coil.mesh.vertices.shape[0])
-    coil.j[coil.inner_verts] = I
 
     B_target = coil.B_coupling(target_points) @ coil.j
 
@@ -204,21 +195,76 @@ Run QP solver
 
 
 
-.. code-block:: pytb
 
-    Traceback (most recent call last):
-      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 474, in _memory_usage
-        multiprocess=True)
-      File "/l/conda-envs/mne/lib/python3.6/site-packages/memory_profiler.py", line 336, in memory_usage
-        returned = f(*args, **kw)
-      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 465, in __call__
-        exec(self.code, self.globals)
-      File "/l/bfieldtools/examples/coil_design/spherical_harmonics_coil_design.py", line 139, in <module>
-        solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
-      File "/l/bfieldtools/bfieldtools/coil_optimize.py", line 193, in optimize_streamfunctions
-        C = spec['coupling'][:, :, indices]
-    IndexError: too many indices for array
+.. rst-class:: sphx-glr-script-out
 
+ Out:
+
+ .. code-block:: none
+
+    Computing inductance matrix in 2 chunks since 8 GiB memory is available...
+    Calculating potentials, chunk 1/2
+    Calculating potentials, chunk 2/2
+    Inductance matrix computation took 70.08 seconds.
+    Pre-existing problem not passed, creating...
+    Passing parameters to problem...
+    Passing problem to solver...
+
+
+    Problem
+      Name                   :                 
+      Objective sense        : min             
+      Type                   : CONIC (conic optimization problem)
+      Constraints            : 2946            
+      Cones                  : 1               
+      Scalar variables       : 5795            
+      Matrix variables       : 0               
+      Integer variables      : 0               
+
+    Optimizer started.
+    Problem
+      Name                   :                 
+      Objective sense        : min             
+      Type                   : CONIC (conic optimization problem)
+      Constraints            : 2946            
+      Cones                  : 1               
+      Scalar variables       : 5795            
+      Matrix variables       : 0               
+      Integer variables      : 0               
+
+    Optimizer  - threads                : 8               
+    Optimizer  - solved problem         : the dual        
+    Optimizer  - Constraints            : 2897
+    Optimizer  - Cones                  : 1
+    Optimizer  - Scalar variables       : 2946              conic                  : 2898            
+    Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+    Factor     - setup time             : 0.90              dense det. time        : 0.00            
+    Factor     - ML order time          : 0.30              GP order time          : 0.00            
+    Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06        
+    Factor     - dense dim.             : 0                 flops                  : 3.26e+10        
+    ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+    0   1.0e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  40.05 
+    1   1.4e+00  1.4e-01  2.9e-01  -5.70e-01  4.541786587e-01   9.355049528e-01   1.4e-01  40.52 
+    2   2.6e-01  2.6e-02  1.5e-02  1.01e+00   3.792613273e-01   3.617956708e-01   2.6e-02  40.87 
+    3   1.1e-02  1.1e-03  9.4e-05  1.20e+00   3.063693271e-01   3.040294637e-01   1.1e-03  41.32 
+    4   2.5e-04  2.4e-05  3.8e-07  1.04e+00   2.902837007e-01   2.902580349e-01   2.4e-05  41.76 
+    5   9.4e-06  9.1e-07  3.1e-09  1.00e+00   2.894031176e-01   2.894027587e-01   9.1e-07  42.14 
+    6   5.5e-08  5.4e-09  1.4e-12  1.00e+00   2.893970282e-01   2.893970253e-01   5.4e-09  42.64 
+    Optimizer terminated. Time: 42.85   
+
+
+    Interior-point solution summary
+      Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+      Solution status : OPTIMAL
+      Primal.  obj: 2.8939702817e-01    nrm: 2e+00    Viol.  con: 1e-08    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 2.8939702529e-01    nrm: 1e+01    Viol.  con: 8e-06    var: 6e-14    cones: 0e+00  
+    Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.25 seconds.
+    l = 1 computed
+    l = 2 computed
+    l = 3 computed
+    l = 4 computed
+    Condition number = 1.890216
+    Normalized RMS error = 0.157768%
 
 
 
@@ -242,11 +288,19 @@ Plot coil windings and target points
 
     mlab.quiver3d(*target_points.T, *B_target.T)
 
+
+.. image:: /auto_examples/coil_design/images/sphx_glr_spherical_harmonics_coil_design_002.png
+    :class: sphx-glr-single-img
+
+
+
+
+
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  11.958 seconds)
+   **Total running time of the script:** ( 2 minutes  57.785 seconds)
 
-**Estimated memory usage:**  14 MB
+**Estimated memory usage:**  7964 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_spherical_harmonics_coil_design.py:

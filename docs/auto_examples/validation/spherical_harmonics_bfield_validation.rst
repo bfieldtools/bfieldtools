@@ -15,21 +15,46 @@ Spherical harmonics B-field computation validation
 
 
 
-.. code-block:: pytb
-
-    Traceback (most recent call last):
-      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 474, in _memory_usage
-        multiprocess=True)
-      File "/l/conda-envs/mne/lib/python3.6/site-packages/memory_profiler.py", line 336, in memory_usage
-        returned = f(*args, **kw)
-      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 465, in __call__
-        exec(self.code, self.globals)
-      File "/l/bfieldtools/examples/validation/spherical_harmonics_bfield_validation.py", line 44, in <module>
-        B0 = np.moveaxis(magnetic_field_coupling(coilmesh, test_points), 2, 0) @ weights
-    ValueError: shapes (676,676,3) and (676,) not aligned: 3 (dim 2) != 676 (dim 0)
+.. image:: /auto_examples/validation/images/sphx_glr_spherical_harmonics_bfield_validation_001.png
+    :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
 
+ Out:
+
+ .. code-block:: none
+
+    l = 1 computed
+    l = 2 computed
+    l = 3 computed
+    l = 4 computed
+    l = 5 computed
+    l = 6 computed
+    l = 7 computed
+    l = 8 computed
+    l = 9 computed
+    l = 10 computed
+    l = 11 computed
+    l = 12 computed
+    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.18 seconds.
+    /l/bfieldtools/bfieldtools/sphtools.py:347: RuntimeWarning: invalid value encountered in multiply
+      derxlm *= -1*np.sin(theta) #this comes from dXlm(cos(theta))/dtheta = dXlm(cos(theta))/dcos(theta)*(-sin(theta))
+    /l/bfieldtools/bfieldtools/sphtools.py:371: RuntimeWarning: divide by zero encountered in true_divide
+      sinxlm = m/(np.sin(theta))*self.xlm(l,m, theta)
+    /l/bfieldtools/bfieldtools/sphtools.py:371: RuntimeWarning: invalid value encountered in multiply
+      sinxlm = m/(np.sin(theta))*self.xlm(l,m, theta)
+    /l/bfieldtools/bfieldtools/sphtools.py:710: RuntimeWarning: invalid value encountered in multiply
+      Philm *= acoeffs[idx] # Fixed b -> a
+    /l/bfieldtools/bfieldtools/sphtools.py:401: RuntimeWarning: invalid value encountered in multiply
+      dthylm = np.sqrt(2)*self.derxlm(l,m, theta)*np.sin(m*phi)
+    Relative RMS error nan
+
+
+
+
+
+|
 
 
 .. code-block:: default
@@ -57,9 +82,10 @@ Spherical harmonics B-field computation validation
     weights = np.zeros(coilmesh.vertices.shape[0])
     weights[coil.inner_verts] = 1
 
-    test_points = coilmesh.vertices + np.array([0,1,0])
+    test_points = coilmesh.vertices.copy()
+    test_points[:, 1] = 0
 
-    lmax = 10
+    lmax = 12
 
     sph = sphbasis(20)
 
@@ -68,9 +94,9 @@ Spherical harmonics B-field computation validation
     alms = sph_C[0] @ weights
     blms = sph_C[1] @ weights
 
-    blms = np.zeros_like(alms)
+    alms = np.zeros_like(alms)
 
-    B0 = np.moveaxis(magnetic_field_coupling(coilmesh, test_points), 2, 0) @ weights
+    B0 = (magnetic_field_coupling(coilmesh, test_points) @ weights).T
     B1 = sph.field(test_points, alms, blms, lmax).T
 
 
@@ -81,16 +107,18 @@ Spherical harmonics B-field computation validation
     s.actor.property.render_lines_as_tubes = True
     s.actor.property.line_width = 3.0
 
-    mlab.quiver3d(*test_points.T, *B0, color=(1,0,0))
-    mlab.quiver3d(*test_points.T, *B1, color=(0,0,1))
+    mlab.quiver3d(*test_points.T, *B0, color=(1,0,0), scale_factor=0.5e7, vmin=0, vmax=2e-7)
+    mlab.quiver3d(*test_points.T, *B1, color=(0,0,1), scale_factor=0.5e7, vmin=0, vmax=2e-7)
+    s.scene.isometric_view()
+
 
     print('Relative RMS error',  np.sqrt(np.mean((B1-B0)**2))/np.sqrt(np.mean((B0)**2)))
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  11.496 seconds)
+   **Total running time of the script:** ( 0 minutes  37.849 seconds)
 
-**Estimated memory usage:**  9 MB
+**Estimated memory usage:**  87 MB
 
 
 .. _sphx_glr_download_auto_examples_validation_spherical_harmonics_bfield_validation.py:

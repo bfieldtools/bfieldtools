@@ -50,6 +50,9 @@ for i in range(Np):
     Btemp = compute_dc_Bnoise(mesh,vl,fp,sigma,d,T)
     B[i] = Btemp
 
+scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+               size=(800, 800))
+
 visualize_current_modes(mesh,vl, 40, 5)
 
 Ban = mu0*np.sqrt(2*sigma*d*kB*T/(3*np.pi*(R)**2))
@@ -82,7 +85,7 @@ vl = compute_current_modes(mesh)
 scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                size=(800, 800))
 
-visualize_current_modes(mesh,vl, 40, 5)
+visualize_current_modes(mesh,vl, 42, 5, contours=False)
 
 Np = 30
 
@@ -109,7 +112,7 @@ plt.ylabel('Relative error (%)')
 
 ##############################################################################
 #Closed cylinder, DC noise
-#---------------------
+#--------------------------
 
 mesh = trimesh.load(pkg_resources.resource_filename('bfieldtools', 'example_meshes/closed_cylinder.stl'))
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
@@ -161,8 +164,6 @@ mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 
 
-scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-               size=(800, 800))
 vl = compute_current_modes(mesh)
 
 fp = np.zeros((1,3))

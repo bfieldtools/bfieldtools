@@ -112,7 +112,7 @@ plt.ylabel('Relative error (%)')
 
 ##############################################################################
 #Closed cylinder, DC noise
-#---------------------
+#--------------------------
 
 mesh = trimesh.load(pkg_resources.resource_filename('bfieldtools', 'example_meshes/closed_cylinder.stl'))
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)

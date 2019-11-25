@@ -46,6 +46,7 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, sw=None, reg=None, tol
 
     and
     A * x = b
+
     '''
 
     P = .5 * (P + P.T)  # make sure P is symmetric

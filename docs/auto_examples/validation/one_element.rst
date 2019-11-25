@@ -18,7 +18,6 @@ One-element validation
 
     import numpy as np
 
-    from bfieldtools.mesh_calculus import gradient
     from bfieldtools.mesh_magnetics import scalar_potential_coupling, vector_potential_coupling
     from bfieldtools.mesh_magnetics import magnetic_field_coupling, magnetic_field_coupling_analytic
 
@@ -104,10 +103,10 @@ One-element validation
     for ii in range(6):
         mesh2 =mesh2.subdivide()
 
-    B0 = np.moveaxis(magnetic_field_coupling(mesh, mesh2.vertices), 2, 0) @ scalars
+    B0 = magnetic_field_coupling(mesh, mesh2.vertices) @ scalars
     B1 = magnetic_field_coupling_analytic(mesh, mesh2.vertices) @ scalars
-    B1[0] = 0
-    vectors = mlab.quiver3d(*mesh2.vertices.T, *B1, mode='arrow', color=(1,0,1))
+    #B1[0] = 0
+    vectors = mlab.quiver3d(*mesh2.vertices.T, *B1.T, mode='arrow', color=(1,0,1))
     vectors.glyph.glyph_source.glyph_position = 'center'
     #vectors.actor.property.render_lines_as_tubes = True
     #vectors.actor.property.line_width = 3.0
@@ -116,28 +115,28 @@ One-element validation
 
 
 
-.. code-block:: pytb
+.. image:: /auto_examples/validation/images/sphx_glr_one_element_001.png
+    :class: sphx-glr-single-img
 
-    Traceback (most recent call last):
-      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 474, in _memory_usage
-        multiprocess=True)
-      File "/l/conda-envs/mne/lib/python3.6/site-packages/memory_profiler.py", line 336, in memory_usage
-        returned = f(*args, **kw)
-      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 465, in __call__
-        exec(self.code, self.globals)
-      File "/l/bfieldtools/examples/validation/one_element.py", line 87, in <module>
-        B0 = np.moveaxis(magnetic_field_coupling(mesh, mesh2.vertices), 2, 0) @ scalars
-    ValueError: shapes (7,4225,3) and (7,) not aligned: 3 (dim 2) != 7 (dim 0)
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Computing scalar potential coupling matrix, 7 vertices by 16641 target points... took 0.26 seconds.
+    Computing magnetic field coupling matrix, 7 vertices by 4225 target points... took 0.03 seconds.
+    Computing magnetic field coupling matrix analytically, 7 vertices by 4225 target points... took 0.05 seconds.
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.127 seconds)
+   **Total running time of the script:** ( 0 minutes  1.219 seconds)
 
-**Estimated memory usage:**  9 MB
+**Estimated memory usage:**  10 MB
 
 
 .. _sphx_glr_download_auto_examples_validation_one_element.py:
