@@ -190,14 +190,17 @@ def optimize_streamfunctions(meshobj,
     for spec in bfield_specification:
 
 
-        C = spec['coupling'][:, :, indices]
+
 
         #Reshape so that values on axis 1 are x1, y1, z1, x2, y2, z2, etc.
         #If not 3D matrix, assuming the use of spherical harmonics
-        if C.ndim == 3:
+        if spec['coupling'].ndim == 3:
+            C = spec['coupling'][:, :, indices]
 
             C = C.transpose((2, 0, 1))
             C = C.reshape((C.shape[0], -1)).T
+        else:
+            C = spec['coupling'][:, indices]
 
         #Apply relative error to bounds
         if spec['rel_error'] is not None:
