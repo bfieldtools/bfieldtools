@@ -885,7 +885,7 @@ class plotsph:
     Class for visualization of spherical harmonics and basis vector functions.
     '''
 
-    def plotYlms(sph, lmax):
+    def plotYlms(sph, lmax, polar=False):
         '''
         Plots real spherical harmonics up to lmax.
         Inspired by https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html.
@@ -895,28 +895,40 @@ class plotsph:
         sph: spherical harmonics analysis object
         lmax: int
             maximum degree l
-
+        polar: boolean
+            plot polar representation?
         '''
 
         theta = np.reshape(sph.sp[:,1], (sph.Np, sph.Np))
         phi = np.reshape(sph.sp[:,2], (sph.Np, sph.Np))
-        r = 0.3
+        r = 0.4
         x=r*np.sin(theta)*np.cos(phi)
         y=r*np.sin(theta)*np.sin(phi)
         z=r*np.cos(theta)
 
-
-        for l in range(1, lmax+1):
-            for m in range(l):
-                ylm = sph.ylm(l,m,theta.flatten(),phi.flatten())
-                ylm = np.reshape(ylm, (sph.Np, sph.Np))
-
-                mlab.mesh(x - m, y - l, z, scalars=ylm, colormap='bwr')
-                ylm /= ylm.max()
-                mlab.mesh(ylm * x - m, ylm * y - l, ylm * z + 1.3,
-                          scalars=np.abs(ylm), colormap='Spectral')
-
-        mlab.view(90, 70, 6.2, (-1.3, -2.9, 0.25))
+        if polar:
+            for l in range(1, lmax+1):
+                for m in range(l):
+                    ylm = sph.ylm(l,m,theta.flatten(),phi.flatten())
+                    ylm = np.reshape(ylm, (sph.Np, sph.Np))
+    
+                    mlab.mesh(x - m, y - l, z, scalars=ylm, colormap='bwr')
+                    ylm /= ylm.max()
+                    mlab.mesh(ylm * x - m, ylm * y - l, ylm * z + 1.3,
+                              scalars=np.abs(ylm), colormap='Spectral')
+    
+            mlab.view(90, 70, 6.2, (-1.3, -2.9, 0.25))
+        else:
+            for l in range(0, lmax+1):
+                for m in range(-l,l+1):
+                    ylm = sph.ylm(l,m,theta.flatten(),phi.flatten())
+                    ylm = np.reshape(ylm, (sph.Np, sph.Np))
+    
+                    mlab.mesh(x - m, y - l, z, scalars=ylm, colormap='bwr')
+    
+            mlab.view(0,180)
+        
+        
 
 
     def plotYlm(sph, l,m):
