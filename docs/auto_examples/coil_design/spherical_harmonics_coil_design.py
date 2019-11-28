@@ -23,7 +23,7 @@ from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
 
 
-from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis, plotsph, sphfittools
+from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis, sphfittools
 
 
 import pkg_resources
@@ -113,34 +113,20 @@ mlab.quiver3d(*target_points.T, *sphfield.T)
 ##############################################################
 # Create bfield specifications used when optimizing the coil geometry
 
-#The absolute target field amplitude is not of importance,
-# and it is scaled to match the C matrix in the optimization function
 
-target_abs_error = np.zeros_like(target_blms)
-target_abs_error += 0.01
-
-#target_field = np.zeros_like(target_points)
-#target_field[:, 0] += 1
-
-#target_abs_error = np.zeros_like(target_points)
-#target_abs_error += 0.01
-
-target_spec = {'coupling':coil.C_blms, 'rel_error':None, 'abs_error':target_abs_error, 'target_field':target_blms}
+target_spec = {'coupling':coil.C_blms, 'rel_error':0, 'abs_error':0.01, 'target':target_blms}
 
 
 ##############################################################
 # Run QP solver
 import mosek
 
-I, prob = optimize_streamfunctions(coil,
+coil.j, prob = optimize_streamfunctions(coil,
                                    [target_spec],
                                    objective='minimum_inductive_energy',
                                    solver='MOSEK',
                                    solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
                                    )
-
-coil.j = np.zeros(coil.mesh.vertices.shape[0])
-coil.j[coil.inner_verts] = I
 
 B_target = coil.B_coupling(target_points) @ coil.j
 

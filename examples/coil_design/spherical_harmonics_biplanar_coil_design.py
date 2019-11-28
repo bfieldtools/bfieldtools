@@ -108,8 +108,8 @@ alm = np.zeros((lmax*(lmax+2),))
 blm = np.zeros((lmax*(lmax+2),))
 
 #
-alm[22]+=1
-#blm[0]+=1
+#alm[22]+=1
+blm[22]+=1
 
 sphfield = sph.field(target_points, alm, blm, lmax)
 
@@ -123,14 +123,7 @@ mlab.quiver3d(*target_points.T, *sphfield.T)
 
 
 
-target_rel_error = np.zeros_like(target_field)
-#target_rel_error[:, 0] += 0.01
-
-target_abs_error = np.zeros_like(target_field)
-target_abs_error[:, :] += 0.1
-#target_abs_error[:, 1:3] += 0.005
-
-target_spec = {'coupling':coil.B_coupling(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target':target_field}
+target_spec = {'coupling':coil.B_coupling(target_points), 'rel_error':0, 'abs_error':0.1, 'target':target_field}
 stray_spec = {'coupling':coil.B_coupling(stray_points), 'abs_error':0.01, 'rel_error':0, 'target':np.zeros((n_stray_points, 3))}
 
 bfield_specification = [target_spec, stray_spec]

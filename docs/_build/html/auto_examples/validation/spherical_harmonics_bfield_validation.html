@@ -104,17 +104,36 @@
 </div>
 <div class="sphx-glr-example-title section" id="spherical-harmonics-b-field-computation-validation">
 <span id="sphx-glr-auto-examples-validation-spherical-harmonics-bfield-validation-py"></span><h1>Spherical harmonics B-field computation validation<a class="headerlink" href="#spherical-harmonics-b-field-computation-validation" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-pytb notranslate"><div class="highlight"><pre><span></span>Traceback (most recent call last):
-  File &quot;/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;, line 474, in _memory_usage
-    multiprocess=True)
-  File &quot;/l/conda-envs/mne/lib/python3.6/site-packages/memory_profiler.py&quot;, line 336, in memory_usage
-    returned = f(*args, **kw)
-  File &quot;/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;, line 465, in __call__
-    exec(self.code, self.globals)
-  File &quot;/l/bfieldtools/examples/validation/spherical_harmonics_bfield_validation.py&quot;, line 44, in &lt;module&gt;
-    B0 = np.moveaxis(magnetic_field_coupling(coilmesh, test_points), 2, 0) @ weights
-ValueError: shapes (676,676,3) and (676,) not aligned: 3 (dim 2) != 676 (dim 0)
+<img alt="../../_images/sphx_glr_spherical_harmonics_bfield_validation_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_spherical_harmonics_bfield_validation_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>l = 1 computed
+l = 2 computed
+l = 3 computed
+l = 4 computed
+l = 5 computed
+l = 6 computed
+l = 7 computed
+l = 8 computed
+l = 9 computed
+l = 10 computed
+l = 11 computed
+l = 12 computed
+Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.18 seconds.
+/l/bfieldtools/bfieldtools/sphtools.py:347: RuntimeWarning: invalid value encountered in multiply
+  derxlm *= -1*np.sin(theta) #this comes from dXlm(cos(theta))/dtheta = dXlm(cos(theta))/dcos(theta)*(-sin(theta))
+/l/bfieldtools/bfieldtools/sphtools.py:371: RuntimeWarning: divide by zero encountered in true_divide
+  sinxlm = m/(np.sin(theta))*self.xlm(l,m, theta)
+/l/bfieldtools/bfieldtools/sphtools.py:371: RuntimeWarning: invalid value encountered in multiply
+  sinxlm = m/(np.sin(theta))*self.xlm(l,m, theta)
+/l/bfieldtools/bfieldtools/sphtools.py:710: RuntimeWarning: invalid value encountered in multiply
+  Philm *= acoeffs[idx] # Fixed b -&gt; a
+/l/bfieldtools/bfieldtools/sphtools.py:401: RuntimeWarning: invalid value encountered in multiply
+  dthylm = np.sqrt(2)*self.derxlm(l,m, theta)*np.sin(m*phi)
+Relative RMS error nan
 </pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
@@ -138,9 +157,10 @@ ValueError: shapes (676,676,3) and (676,) not aligned: 3 (dim 2) != 676 (dim 0)
 <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">weights</span><span class="p">[</span><span class="n">coil</span><span class="o">.</span><span class="n">inner_verts</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
-<span class="n">test_points</span> <span class="o">=</span> <span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">test_points</span> <span class="o">=</span> <span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">test_points</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
-<span class="n">lmax</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">lmax</span> <span class="o">=</span> <span class="mi">12</span>
 
 <span class="n">sph</span> <span class="o">=</span> <span class="n">sphbasis</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
 
@@ -149,9 +169,9 @@ ValueError: shapes (676,676,3) and (676,) not aligned: 3 (dim 2) != 676 (dim 0)
 <span class="n">alms</span> <span class="o">=</span> <span class="n">sph_C</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">@</span> <span class="n">weights</span>
 <span class="n">blms</span> <span class="o">=</span> <span class="n">sph_C</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">@</span> <span class="n">weights</span>
 
-<span class="n">blms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">alms</span><span class="p">)</span>
+<span class="n">alms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">alms</span><span class="p">)</span>
 
-<span class="n">B0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">magnetic_field_coupling</span><span class="p">(</span><span class="n">coilmesh</span><span class="p">,</span> <span class="n">test_points</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">@</span> <span class="n">weights</span>
+<span class="n">B0</span> <span class="o">=</span> <span class="p">(</span><span class="n">magnetic_field_coupling</span><span class="p">(</span><span class="n">coilmesh</span><span class="p">,</span> <span class="n">test_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">weights</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
 <span class="n">B1</span> <span class="o">=</span> <span class="n">sph</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">test_points</span><span class="p">,</span> <span class="n">alms</span><span class="p">,</span> <span class="n">blms</span><span class="p">,</span> <span class="n">lmax</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
 
 
@@ -162,14 +182,16 @@ ValueError: shapes (676,676,3) and (676,) not aligned: 3 (dim 2) != 676 (dim 0)
 <span class="n">s</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">render_lines_as_tubes</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">s</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">line_width</span> <span class="o">=</span> <span class="mf">3.0</span>
 
-<span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">test_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
-<span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">test_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">test_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">scale_factor</span><span class="o">=</span><span class="mf">0.5e7</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">2e-7</span><span class="p">)</span>
+<span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">test_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">scale_factor</span><span class="o">=</span><span class="mf">0.5e7</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">2e-7</span><span class="p">)</span>
+<span class="n">s</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">isometric_view</span><span class="p">()</span>
+
 
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Relative RMS error&#39;</span><span class="p">,</span>  <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">B1</span><span class="o">-</span><span class="n">B0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">B0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  11.496 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  9 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  37.849 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  87 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-validation-spherical-harmonics-bfield-validation-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/67d134fa1c63df76dadd6c4a97cb9255/spherical_harmonics_bfield_validation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">spherical_harmonics_bfield_validation.py</span></code></a></p>

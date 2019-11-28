@@ -47,7 +47,7 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 #External imports
-autodoc_mock_imports = ["numpy", "scipy", "trimesh", "mayavi", "quadpy", "cvxopt", "numba", "psutil"]
+autodoc_mock_imports = ["numpy", "scipy", "trimesh", "mayavi", "quadpy", "cvxopt", "cvxpy", "numba", "psutil"]
 
 #Configure sphinx-gallery
 

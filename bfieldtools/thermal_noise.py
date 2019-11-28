@@ -252,19 +252,18 @@ def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T):
 
         for i in range(vl.shape[0]):
             vec = currents[i] * vl[:, i]
-            B[j, :, 0] += (B_coupling[:, :, 0] @vec)**2
-            B[j, :, 1] += (B_coupling[:, :, 1] @ vec)**2
-            B[j, :, 2] += (B_coupling[:, :, 2] @ vec)**2
+            B[j, :, 0] += (B_coupling[:, 0, :] @vec)**2
+            B[j, :, 1] += (B_coupling[:, 1, :] @ vec)**2
+            B[j, :, 2] += (B_coupling[:, 2, :] @ vec)**2
         print("Frequency %f computed" % (f))
 
     B = np.sqrt(B) #RMS
 
     return B
 
-def visualize_current_modes(mesh, vl, Nmodes, scale, contours=True, colormap='bwr'):
+def visualize_current_modes(mesh, vl, Nmodes, scale, contours=True, colormap='bwr', dist=0.5):
     '''
     Visualizes current modes up to Nmodes.
-    TODO: make this more flexible.
 
     Parameters
     ----------
@@ -282,26 +281,32 @@ def visualize_current_modes(mesh, vl, Nmodes, scale, contours=True, colormap='bw
         Which (matplotlib) colormap to use
 
     '''
-    verts = mesh.vertices
-    tris = mesh.faces
 
-    for ii in range(Nmodes):
-        n = int(np.sqrt(Nmodes))
-        i = ii % n
-        j = int(ii/n)
+    N1 = np.floor(np.sqrt(Nmodes))
+    dx = (mesh.vertices[:,0].max() - mesh.vertices[:,0].min())*(1+dist)
+    dy = (mesh.vertices[:,1].max() - mesh.vertices[:,1].min())*(1+dist)
 
-        x = scale*verts[:, 0] + i*(np.max(verts[:, 0]) - np.min(verts[:, 0]))*1.2
-        y = scale*verts[:, 1]+ j*(np.max(verts[:, 1]) - np.min(verts[:, 1]))*1.2
-        z = scale*verts[:, 2]
+    i = 0
+    j = 0
+    for n in range(Nmodes):
+        print(i,j)
+        points = mesh.vertices.copy()
+        points[:,0] += i*dx
+        points[:,1] += j*dy
+        s = mlab.triangular_mesh(*points.T, mesh.faces,
+                             scalars=vl[:, n], colormap=colormap)
 
-        limit = np.max(np.abs(vl[:, ii]))
-
-        s = mlab.triangular_mesh(x, y, z, tris, scalars=vl[:, ii], colormap=colormap)
+        limit = np.max(np.abs(vl[:, n]))
 
         s.module_manager.scalar_lut_manager.number_of_colors = 256
         s.module_manager.scalar_lut_manager.data_range = np.array([-limit,limit])
         s.actor.mapper.interpolate_scalars_before_mapping = True
         s.enable_contours = contours
 
+        if i<N1:
+            i+=1
+        else:
+            j+=1
+            i=0
 
     return s

@@ -7,7 +7,6 @@ One-element validation
 
 import numpy as np
 
-from bfieldtools.mesh_calculus import gradient
 from bfieldtools.mesh_magnetics import scalar_potential_coupling, vector_potential_coupling
 from bfieldtools.mesh_magnetics import magnetic_field_coupling, magnetic_field_coupling_analytic
 
@@ -84,10 +83,10 @@ mesh2 = trimesh.Trimesh(points, tris)
 for ii in range(6):
     mesh2 =mesh2.subdivide()
 
-B0 = np.moveaxis(magnetic_field_coupling(mesh, mesh2.vertices), 2, 0) @ scalars
+B0 = magnetic_field_coupling(mesh, mesh2.vertices) @ scalars
 B1 = magnetic_field_coupling_analytic(mesh, mesh2.vertices) @ scalars
-B1[0] = 0
-vectors = mlab.quiver3d(*mesh2.vertices.T, *B1, mode='arrow', color=(1,0,1))
+#B1[0] = 0
+vectors = mlab.quiver3d(*mesh2.vertices.T, *B1.T, mode='arrow', color=(1,0,1))
 vectors.glyph.glyph_source.glyph_position = 'center'
 #vectors.actor.property.render_lines_as_tubes = True
 #vectors.actor.property.line_width = 3.0

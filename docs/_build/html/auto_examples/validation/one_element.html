@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="API Reference" href="../../source/modules.html" />
-    <link rel="prev" title="Analytic B-field computation" href="validate_bfield_analytic.html" />
+    <link rel="prev" title="Linear dipole" href="validate_linear_dipole.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -106,7 +106,6 @@
 <span id="sphx-glr-auto-examples-validation-one-element-py"></span><h1>One-element validation<a class="headerlink" href="#one-element-validation" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_calculus</span> <span class="k">import</span> <span class="n">gradient</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="k">import</span> <span class="n">scalar_potential_coupling</span><span class="p">,</span> <span class="n">vector_potential_coupling</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="k">import</span> <span class="n">magnetic_field_coupling</span><span class="p">,</span> <span class="n">magnetic_field_coupling_analytic</span>
 
@@ -183,29 +182,24 @@
 <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
     <span class="n">mesh2</span> <span class="o">=</span><span class="n">mesh2</span><span class="o">.</span><span class="n">subdivide</span><span class="p">()</span>
 
-<span class="n">B0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">magnetic_field_coupling</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">mesh2</span><span class="o">.</span><span class="n">vertices</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">@</span> <span class="n">scalars</span>
+<span class="n">B0</span> <span class="o">=</span> <span class="n">magnetic_field_coupling</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">mesh2</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span> <span class="o">@</span> <span class="n">scalars</span>
 <span class="n">B1</span> <span class="o">=</span> <span class="n">magnetic_field_coupling_analytic</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">mesh2</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span> <span class="o">@</span> <span class="n">scalars</span>
-<span class="n">B1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">vectors</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">mesh2</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;arrow&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="c1">#B1[0] = 0</span>
+<span class="n">vectors</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">mesh2</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B1</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;arrow&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
 <span class="n">vectors</span><span class="o">.</span><span class="n">glyph</span><span class="o">.</span><span class="n">glyph_source</span><span class="o">.</span><span class="n">glyph_position</span> <span class="o">=</span> <span class="s1">&#39;center&#39;</span>
 <span class="c1">#vectors.actor.property.render_lines_as_tubes = True</span>
 <span class="c1">#vectors.actor.property.line_width = 3.0</span>
 </pre></div>
 </div>
-<div class="highlight-pytb notranslate"><div class="highlight"><pre><span></span>Traceback (most recent call last):
-  File &quot;/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;, line 474, in _memory_usage
-    multiprocess=True)
-  File &quot;/l/conda-envs/mne/lib/python3.6/site-packages/memory_profiler.py&quot;, line 336, in memory_usage
-    returned = f(*args, **kw)
-  File &quot;/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;, line 465, in __call__
-    exec(self.code, self.globals)
-  File &quot;/l/bfieldtools/examples/validation/one_element.py&quot;, line 87, in &lt;module&gt;
-    B0 = np.moveaxis(magnetic_field_coupling(mesh, mesh2.vertices), 2, 0) @ scalars
-ValueError: shapes (7,4225,3) and (7,) not aligned: 3 (dim 2) != 7 (dim 0)
+<img alt="../../_images/sphx_glr_one_element_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_one_element_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing scalar potential coupling matrix, 7 vertices by 16641 target points... took 0.26 seconds.
+Computing magnetic field coupling matrix, 7 vertices by 4225 target points... took 0.03 seconds.
+Computing magnetic field coupling matrix analytically, 7 vertices by 4225 target points... took 0.05 seconds.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.127 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  9 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.219 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  10 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-validation-one-element-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/37ee6f673509c949cb4c77cf5f6617e5/one_element.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">one_element.py</span></code></a></p>

@@ -4,10 +4,10 @@ bfieldtools package
 Submodules
 ----------
 
-bfieldtools.bfield\_line module
--------------------------------
+bfieldtools.line\_magnetics module
+----------------------------------
 
-.. automodule:: bfieldtools.bfield_line
+.. automodule:: bfieldtools.line_magnetics
    :members:
    :undoc-members:
    :show-inheritance:
@@ -28,18 +28,18 @@ bfieldtools.contour module
    :undoc-members:
    :show-inheritance:
 
-bfieldtools.laplacian\_mesh module
+bfieldtools.mesh\_calculus module
 ----------------------------------
 
-.. automodule:: bfieldtools.laplacian_mesh
+.. automodule:: bfieldtools.mesh_calculus
    :members:
    :undoc-members:
    :show-inheritance:
 
-bfieldtools.magnetic\_field\_mesh module
+bfieldtools.mesh\_magnetics module
 ----------------------------------------
 
-.. automodule:: bfieldtools.magnetic_field_mesh
+.. automodule:: bfieldtools.mesh_magnetics
    :members:
    :undoc-members:
    :show-inheritance:
@@ -52,10 +52,10 @@ bfieldtools.mesh\_class module
    :undoc-members:
    :show-inheritance:
 
-bfieldtools.mutual\_inductance\_mesh module
+bfieldtools.mesh\_inductance module
 -------------------------------------------
 
-.. automodule:: bfieldtools.mutual_inductance_mesh
+.. automodule:: bfieldtools.mesh_inductance
    :members:
    :undoc-members:
    :show-inheritance:

@@ -24,6 +24,7 @@ class LazyProperty():
     http://blog.pythonisito.com/2008/08/lazy-descriptors.html
     On first invocation, a lazy property calls a function that populates
     the property (acts as a method). Afterwards, it acts like a normal property.
+
     '''
 
     def __init__(self, func):
@@ -46,6 +47,7 @@ class MeshWrapper:
 
     The mesh surface can consist of a single contiguous surface or several separate
     surfaces within a single mesh object.
+
     '''
 
     def __init__(self, verts=None, tris=None, mesh_file=None, mesh_obj=None, process=False, fix_normals=True):
@@ -104,6 +106,7 @@ class MeshWrapper:
     def laplacian(self):
         '''
         Compute and return surface laplacian matrix.
+
         '''
         laplacian = laplacian_matrix(self.mesh)
 
@@ -114,6 +117,7 @@ class MeshWrapper:
     def mass(self):
         '''
         Compute and return mesh mass matrix.
+
         '''
         mass = mass_matrix(self.mesh, self.dual_areas)
 
@@ -124,6 +128,7 @@ class MeshWrapper:
     def inductance(self):
         '''
         Compute and return mutual inductance matrix. If mesh consists of multiple separate sub-meshes, compute these separately.
+
         '''
 
         #Available RAM in Gigabytes
@@ -161,6 +166,7 @@ class MeshWrapper:
         -------
         R: array
             Resistance matrix
+
         '''
 
         #Flip sign
@@ -180,6 +186,7 @@ class MeshWrapper:
     def plot_mesh(self, representation='wireframe', opacity=0.5, color=(0, 0, 0), cull_front=False, cull_back=False):
         '''
         Simply plot the mesh surface in mayavi.
+
         '''
 
         mesh = mlab.triangular_mesh(*self.mesh.vertices.T, self.mesh.faces,
@@ -198,6 +205,7 @@ class MeshWrapper:
         ----------
         target_file: str
             File name or file object to save to
+
         """
 
         pickle.dump(obj=self, file=open(target_file, 'wb'))
@@ -212,6 +220,7 @@ def save_pickle(obj, target_file):
     obj: object to save to file
     target_file: str
         file name or file object to save to
+
     """
 
     pickle.dump(obj=obj, file=open(target_file, 'wb'), protocol=-1)
@@ -229,6 +238,7 @@ def load_pickle(target_file):
     -------
     obj: loaded MeshWrapper object
 
+
     """
 
     obj = pickle.load(open(target_file, 'rb'))
@@ -244,6 +254,7 @@ class CouplingMatrix:
     When called, returns the coupling matrix for queried points.
     If some output has already been computed, use pre-computed values instead
     and only compute missing parts.
+
 
     '''
     def __init__(self, parent, function):
@@ -274,6 +285,7 @@ class CouplingMatrix:
         Returns
         -------
             (N_points, ...) numpy array
+
         '''
 
         if len(self.points) == 0:
