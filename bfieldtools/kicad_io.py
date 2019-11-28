@@ -42,7 +42,7 @@ def python_to_kicad(loops, filename, plane_axes, origin, layer, net, scaling=1, 
     return
 
 
-def kicad_to_python(file_directory, layers, stand_off, scale_factor = 10e2):
+def kicad_to_python(file_directory, layers, stand_off, plane_axes, scale_factor = 10e2, origin = (0,0)):
 
     '''
     Author: Elias Lius
@@ -55,8 +55,12 @@ def kicad_to_python(file_directory, layers, stand_off, scale_factor = 10e2):
             On which layers this coil is in kicad-file, e.g., ['F.Cu', 'In1.Cu']
         stand_off: float
             Amount of plane's stand off from the origin
+        plane_axes: tuple with length 2
+            specifies the X- and Y-dimensions used for the PCB
         scale_factor: float
             As KiCad handles everything in mm, the wanted scale must be adjusted. Default value is 10e2.
+        origin: (2, ) array-like
+            Cancelling the origin shift done when coils were converted to kicad-file. Default (0,0,0)
 
     Outputs:
         vert_start: starts of the line segments in new plane imported from kicad
@@ -69,6 +73,7 @@ def kicad_to_python(file_directory, layers, stand_off, scale_factor = 10e2):
     seg_start = np.zeros((1,3), dtype=np.float64)
     seg_end = np.zeros((1,3), dtype=np.float64)
     filedir = file_directory
+    norm_dir = np.array([1,2,3])[np.logical_not(np.isin([1,2,3], plane_axes))][0]
     with open(filedir, 'r') as infile:
         k = 0
         for line in infile:
@@ -77,13 +82,13 @@ def kicad_to_python(file_directory, layers, stand_off, scale_factor = 10e2):
             txt = line.split()
 
             if len(txt) > 0 and txt[0] == '(segment' and (txt[-3] == layers[0]  or txt[-3] == layers[1]):
-                seg_start[:,1] = stand_off
-                seg_end[:,1] = stand_off
+                seg_start[:,norm_dir] = stand_off
+                seg_end[:,norm_dir] = stand_off
 
-                seg_start[k,0] = float(txt[2])/scale_factor
-                seg_end[k,0] = float(txt[5])/scale_factor
-                seg_start[k,2] = float(txt[3])/scale_factor
-                seg_end[k,2] = float(txt[6])/scale_factor
+                seg_start[k,plane_axes[0]] = float(txt[2])/scale_factor - origin[0]
+                seg_end[k,plane_axes[0]] = float(txt[5])/scale_factor - origin[0]
+                seg_start[k,plane_axes[1]] = float(txt[3])/scale_factor - origin[1]
+                seg_end[k,plane_axes[1]] = float(txt[6])/scale_factor - origin[1]
 
 
                 seg_start = np.append(seg_start, [[0,0,0]], axis = 0)
