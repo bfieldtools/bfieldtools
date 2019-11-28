@@ -733,7 +733,7 @@ class sphbasis:
         B1: N_lmax x N x 3 array
             magnetic field at p for each alpha_lm
         B2: N_lmax x N x 3 array
-            magnetic field at p for each alpha_lm
+            magnetic field at p for each beta_lm
 
         '''
         L = lmax*(lmax+2)+1
@@ -767,7 +767,7 @@ class sphbasis:
         B1[np.isinf(B1)] = 0
         B2[np.isinf(B2)] = 0
 
-        return B1, B2
+        return np.moveaxis(B1, 2, 0), np.moveaxis(B2, 2, 0)
 
 class sphfittools:
     '''
