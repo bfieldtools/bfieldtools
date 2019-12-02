@@ -42,7 +42,7 @@ def python_to_kicad(loops, filename, plane_axes, origin, layer, net, scaling=1, 
     return
 
 
-def kicad_to_python(file_directory, layers, stand_off, plane_axes, scale_factor = 10e2, origin = (0,0)):
+def kicad_to_python(file_directory, layers, stand_off, stack_spacing, stack, plane_axes, scale_factor = 10e2, origin = (0,0)):
 
     '''
     Author: Elias Lius
@@ -55,8 +55,14 @@ def kicad_to_python(file_directory, layers, stand_off, plane_axes, scale_factor 
             On which layers this coil is in kicad-file, e.g., ['F.Cu', 'In1.Cu']
         stand_off: float
             Amount of plane's stand off from the origin
+        stack_spcing: float
+            spacing between the leyers
+        stack: int
+            the index of the stack
         plane_axes: tuple with length 2
             specifies the X- and Y-dimensions used for the PCB
+        stack_spacing: float
+            specifies the distance between the stacks
         scale_factor: float
             As KiCad handles everything in mm, the wanted scale must be adjusted. Default value is 10e2.
         origin: (2, ) array-like
@@ -82,8 +88,12 @@ def kicad_to_python(file_directory, layers, stand_off, plane_axes, scale_factor 
             txt = line.split()
 
             if len(txt) > 0 and txt[0] == '(segment' and (txt[-3] == layers[0]  or txt[-3] == layers[1]):
-                seg_start[:,norm_dir] = stand_off
-                seg_end[:,norm_dir] = stand_off
+                if txt[-3] == layers[1]:
+                    seg_start[k,norm_dir] =  stand_off + stack*stack_spacing + 0.5*stack_spacing #for back layer of the stack the spacing is 1.5 timest the defined stack_spacing + standoff
+                    seg_end[k,norm_dir] =   stand_off + stack*stack_spacing + 0.5*stack_spacing
+                else:
+                    seg_start[k,norm_dir] = stand_off + stack*stack_spacing   #for back layer of the stack the spacing is stand_off + stack_spacing
+                    seg_end[k,norm_dir] = stand_off + stack*stack_spacing
 
                 seg_start[k,plane_axes[0]] = float(txt[2])/scale_factor - origin[0]
                 seg_end[k,plane_axes[0]] = float(txt[5])/scale_factor - origin[0]
@@ -171,5 +181,7 @@ def shifted_kicad_to_python(file_directory, layers, orig_plane, scale_factor = 1
         new_seg_ends = seg_end - er
 
         return new_seg_starts, new_seg_ends
+
+
 
 
