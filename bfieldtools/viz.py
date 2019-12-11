@@ -288,7 +288,8 @@ def plot_data_on_faces(mesh, data, figure=None, figsize=(800, 800), cmap=None, c
     return figure
 
 
-def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), cmap=None, colorbar=False, ncolors=32, interpolate=True):
+def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), cmap=None, colorbar=False, ncolors=32,
+                          interpolate=True, opacity=1.0, cull_front=False, cull_back=False, autoscale=False):
     '''
     Plot scalar data defined on the vertices of a mesh.
 
@@ -310,6 +311,8 @@ def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), cmap=None
         Number of colors to use
     interpolate: Boolean
         If True, interpolate scalar data for smoother look
+    opacity: float
+        Opacity of rendered mesh
     Returns
     -------
     fig: mlab figure
@@ -328,14 +331,17 @@ def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), cmap=None
             cmap='RdBu'
 
 
-    surf = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=data, colormap=cmap)
-    mlab.colorbar(surf)
+    surf = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=data, colormap=cmap, opacity=opacity)
+    surf.actor.property.frontface_culling = cull_front
+    surf.actor.property.backface_culling = cull_back
+    if colorbar:
+        mlab.colorbar(surf)
     surf.actor.mapper.interpolate_scalars_before_mapping = interpolate
 
     lutmanager = surf.parent.scalar_lut_manager
     lutmanager.number_of_colors = ncolors
 
-    if cmap == 'RdBu':
+    if cmap == 'RdBu' and autoscale:
         rangemax = np.max(np.abs(data))
         lutmanager.data_range = np.array([-rangemax*1.01,rangemax*1.01])
         lutmanager.use_default_range = False
