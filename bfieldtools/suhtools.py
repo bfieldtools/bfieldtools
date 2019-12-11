@@ -65,20 +65,32 @@ class suhbasis():
             self.eigenvals = vals[1:]
         else:
 
+            if self.boundaries:
+                L = laplacian_matrix_w_holes(self.mesh, self.inner_vertices, self.boundaries)
+                M = mass_matrix_w_holes(self.mesh, self.inner_vertices, self.boundaries)
 
-            L = laplacian_matrix_w_holes(self.mesh, self.inner_vertices, self.boundaries)
-            M = mass_matrix_w_holes(self.mesh, self.inner_vertices, self.boundaries)
 
-            v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
-            u, v = eigsh(-L, self.Nc, M, which='SA', v0 = v0)
+                v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
+                u, v = eigsh(-L, self.Nc, M, which='SA', v0 = v0)
 
-            #Assign values per vertex
-            vl = np.zeros((self.mesh.vertices.shape[0], v.shape[1]))
+                #Assign values per vertex
+                vl = np.zeros((self.mesh.vertices.shape[0], v.shape[1]))
 
-            vl[self.inner_vertices] = v[:-len(self.boundaries)]
+                vl[self.inner_vertices] = v[:-len(self.boundaries)]
 
-            for b_idx, b in enumerate(self.boundaries):
-                vl[b] = v[len(self.inner_vertices) + b_idx]
+                for b_idx, b in enumerate(self.boundaries):
+                    vl[b] = v[len(self.inner_vertices) + b_idx]
+            else:
+                v0 = np.ones(L[self.inner_vertices][:, self.inner_vertices].shape[1]) # avoid random basis for symmetric geometries
+                u, v = eigsh(-L[self.inner_vertices][:, self.inner_vertices],
+                             self.Nc,
+                             M[self.inner_vertices][:, self.inner_vertices],
+                             which='SA', v0 = v0)
+
+                vl = np.zeros((self.mesh.vertices.shape[0], v.shape[1]))
+
+                vl[self.inner_vertices] = v
+
 
             # Insert values to the inner verts
             self.basis = vl

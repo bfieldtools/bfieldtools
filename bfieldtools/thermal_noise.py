@@ -13,7 +13,7 @@ from .mesh_inductance import self_inductance_matrix
 from . import utils
 
 
-def compute_current_modes(mesh, boundaries=None):
+def compute_current_modes(mesh, boundaries=None, return_eigenvals=False):
     '''
     Computes eddy-current modes for a mesh using surface laplacian.
     Uses Dirichlet boundary condition, i.e., stream function is zero at boundary:
@@ -41,7 +41,7 @@ def compute_current_modes(mesh, boundaries=None):
         L_holes = laplacian_matrix_w_holes(mesh, inner_verts, boundaries)
         M_holes = mass_matrix_w_holes(mesh, inner_verts, boundaries)
 
-        u, v = eigh(-L_holes, M_holes)
+        u, v = eigh(-L_holes.todense(), M_holes.todense())
 
 
         #Normalize the laplacien eigenvectors
@@ -68,7 +68,10 @@ def compute_current_modes(mesh, boundaries=None):
         for i in range(v.shape[1]):
             vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
 
-    return vl
+    if return_eigenvals:
+        return vl, u
+    else:
+        return vl
 
 def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T):
     '''
