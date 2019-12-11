@@ -105,7 +105,7 @@ def laplacian_matrix_w_holes(mesh, inner_vertices, boundaries):
     return L_holes.tocsr()
 
 
-def mass_matrix(mesh, da=None):
+def mass_matrix(mesh, da=None, lumped=False):
     '''
     Computes mass matrix of mesh.
 
@@ -113,25 +113,58 @@ def mass_matrix(mesh, da=None):
     ----------
     mesh: Trimesh Mesh object
 
+    da: Pre-computed dual areas
+        Optionally, provide pre-computed dual areas
+
+    lumped: Boolean
+        If True, use lumped approximation of mass matrix. If False (default),
+        compute exact matrix. See Reuters et al 2009, page 3 (DOI: 10.1016/j.cag.2009.03.005)
+
     Returns
     -------
     Mesh mass matrix (Nvertices, Nvertices)
 
     '''
-    if da is None:
-        from .utils import dual_areas
-        da = dual_areas(mesh.faces, mesh.area_faces)
 
-    A = spdiags(da, 0, mesh.vertices.shape[0], mesh.vertices.shape[0]).tocsr()
+    if lumped:
+        if da is None:
+            from .utils import dual_areas
+            da = dual_areas(mesh.faces, mesh.area_faces)
 
-    return A
+        M = spdiags(da, 0, mesh.vertices.shape[0], mesh.vertices.shape[0]).tocsr()
+    else:
+        N = mesh.vertices.shape[0]
+
+        ii = []
+        jj = []
+        area = []
+        # Loop over edges in triangles
+        for i in range(3):
+            i1 = (i+1) % 3
+            i2 = (i+2) % 3
+            ii.append(mesh.faces[:, i1])
+            jj.append(mesh.faces[:, i2])
+            area.append(mesh.area_faces/12)
+
+        ii = np.ravel(ii)
+        jj = np.ravel(jj)
+        area = np.ravel(area)
+        # Build sparse matrix
+        M = csr_matrix((area, (ii, jj)), shape=(N, N), dtype=float)
+        # Sum contribution from both triangles (alpha and beta angles)
+        # neighbouring the edge
+        M = M + M.T
+        M = M + spdiags(M.sum(axis=0), 0, N, N)
 
 
-def mass_matrix_w_holes(mesh, inner_vertices, boundaries, da=None):
+    return M
+
+
+def mass_matrix_w_holes(mesh, inner_vertices, boundaries, da=None, lumped=False):
     '''
     Computes mass matrix of mesh with added boundaries (see laplacian_matrix_w_holes)
     '''
-    M = mass_matrix(mesh, da)
+    M = mass_matrix(mesh, da, lumped)
 
     Minner = M[inner_vertices, :][:, inner_vertices]
     m = M.diagonal()
