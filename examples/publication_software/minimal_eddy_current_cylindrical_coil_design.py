@@ -11,10 +11,10 @@ from mayavi import mlab
 import trimesh
 
 
-from bfieldtools.mesh_class import MeshWrapper, CouplingMatrix
-from bfieldtools.magnetic_field_mesh import compute_C
+from bfieldtools.mesh_class import MeshWrapper
+
 from bfieldtools.coil_optimize import optimize_streamfunctions
-from bfieldtools.mutual_inductance_mesh import mutual_inductance_matrix
+from bfieldtools.mesh_inductance import mutual_inductance_matrix
 from bfieldtools.contour import scalar_contour, simplify_contour
 from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
 
@@ -109,16 +109,13 @@ mlab.points3d(*target_points.T)
 ###############################################################
 # Compute C matrices that are used to compute the generated magnetic field
 
-coil.C = CouplingMatrix(coil, compute_C)
-shield.C = CouplingMatrix(shield, compute_C)
-
 mutual_inductance = mutual_inductance_matrix(coil.mesh, shield.mesh)
 
 # Take into account the field produced by currents induced into the shield
 # NB! This expression is for instantaneous step-function switching of coil current, see Eq. 18 in G.N. Peeren, 2003.
 
-shield.coupling = np.linalg.solve(-shield.inductance, mutual_inductance.T)
-secondary_C = shield.C(target_points) @ -shield.coupling
+shield.M_coupling = np.linalg.solve(-shield.inductance, mutual_inductance.T)
+secondary_C = shield.B_coupling(target_points) @ -shield.M_coupling
 
 ###############################################################
 # Create bfield specifications used when optimizing the coil geometry
@@ -135,10 +132,10 @@ target_abs_error = np.zeros_like(target_field)
 target_abs_error[:, 1] += 0.001
 target_abs_error[:, 0::2] += 0.005
 
-target_spec = {'C':coil.C(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
+target_spec = {'coupling':coil.B_coupling(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target':target_field}
 
 
-induction_spec = {'C':secondary_C, 'abs_error':0.1, 'rel_error':0, 'target_field':np.zeros(target_field.shape)}
+induction_spec = {'coupling':secondary_C, 'abs_error':0.1, 'rel_error':0, 'target':np.zeros(target_field.shape)}
 
 ###############################################################
 # Run QP solver
@@ -173,7 +170,7 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.005)
 
-B_target = coil.C(target_points) @ coil.I
+B_target = coil.B_coupling(target_points) @ coil.I
 
 mlab.quiver3d(*target_points.T, *B_target.T)
 
@@ -194,7 +191,7 @@ coil.unshielded_I, coil.unshielded_prob = optimize_streamfunctions(coil,
                                    solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
                                    )
 
-shield.unshielded_induced_I = shield.coupling @ coil.unshielded_I
+shield.unshielded_induced_I = shield.M_coupling @ coil.unshielded_I
 
 loops, loop_values= scalar_contour(coil.mesh, coil.unshielded_I, N_contours=10)
 
@@ -204,35 +201,11 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.005)
 
-B_target_unshielded = coil.C(target_points) @ coil.unshielded_I
+B_target_unshielded = coil.B_coupling(target_points) @ coil.unshielded_I
 
 mlab.quiver3d(*target_points.T, *B_target_unshielded.T)
 
 plot_data_on_vertices(shield.mesh, shield.unshielded_induced_I, ncolors=256, figure=f)
-
-
-#mlab.title('Coils which ignore the conductive shield')
-
-
-import numpy as np
-from mayavi import mlab
-
-s = mlab.triangular_mesh(*shield.mesh.vertices.T, shield.mesh.faces, scalars=time_decay[0] @ shield.induced_I)
-
-import time as Time
-@mlab.animate(delay=10, ui=False)
-def anim():
-    i = 0
-    while True:
-        if i >= 50:
-            i=0
-        s.mlab_source.scalars = time_decay[i] @ shield.induced_I
-#        Time.sleep(1)
-        i+=1
-        yield
-
-anim()
-#mlab.show()
 
 
 ####################################################################
@@ -284,7 +257,7 @@ plt.plot(1/l)
 
 
 #shield.coupling = np.linalg.solve(-shield.inductance, mutual_inductance.T)
-#secondary_C = shield.C(target_points) @ -shield.coupling
+#secondary_C = shield.B_coupling(target_points) @ -shield.coupling
 
 
 
@@ -302,9 +275,9 @@ for idx, t in enumerate(time):
      time_decay[idx] = U @ np.diag(np.exp(-l*t)) @ Uinv
 
 
-B_t = shield.C(target_points) @ (time_decay @ shield.induced_I).T
+B_t = shield.B_coupling(target_points) @ (time_decay @ shield.induced_I).T
 
-unshieldedB_t = shield.C(target_points) @ (time_decay @ shield.unshielded_induced_I).T
+unshieldedB_t = shield.B_coupling(target_points) @ (time_decay @ shield.unshielded_induced_I).T
 
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
