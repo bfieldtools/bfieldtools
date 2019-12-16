@@ -180,12 +180,12 @@ def mesh2line_mutual_inductance(mesh, line_vertices):
     Nw = len(weights)
     Nt = len(line_vertices)
     Nv = len(mesh.vertices)
-    A = vector_potential_coupling(mesh, quadpoints.reshape(-1, 3)).reshape(3, Nt, Nw, Nv)
+    M = vector_potential_coupling(mesh, quadpoints.reshape(-1, 3)).reshape(3, Nt, Nw, Nv)
 
     # Integrate over quadrature points
-    A = np.sum(A*weights[None, None, :, None], axis=2)
+    M = np.sum(M*weights[None, None, :, None], axis=2)
 
-    # Scale by segment lengths, integrate
-    M = np.sum(segments.T[:, :, None] * A, axis=(0,1))
+    # Scale by segment lengths, integrate over xyz-axis and segments
+    M = np.sum(segments.T[:, :, None] * M, axis=(0,1))
 
     return M
