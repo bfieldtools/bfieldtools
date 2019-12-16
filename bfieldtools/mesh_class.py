@@ -177,9 +177,6 @@ class MeshWrapper:
 
         resistance = resistivity / thickness * negative_laplacian
 
-        #Set boundary vertices to zero
-        resistance[self.boundary_verts, :][:, self.boundary_verts] = 0
-
         return resistance
 
 
