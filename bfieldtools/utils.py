@@ -62,6 +62,59 @@ def get_quad_points(verts, tris, method='sevenpoint', index=None):
 
     return w, qp
 
+def get_line_quad_points(line_vertices, method='midpoint', index=None):
+    """ Get quad points and weights from quadrature rules implemented in
+        quadpy
+
+        Parameters
+        ----------
+        line_vertices: array-like [Nverts x 3]
+            Assumes vertices are connected according to index, last index connects to first
+
+        Returns
+        -------
+        w: array-like  (Nquad, )
+            quadrature weights
+        qp: array-like (Nverts, Nquad)
+            quadrature points for each edge connecting the vertices
+
+    """
+    methods = [k for k in quadpy.line_segment.__dict__.keys()]# if k[0].isupper()]
+    if method in methods:
+        try:
+            rule = quadpy.line_segment.__dict__[method]()
+        except(TypeError) as error:
+            if index is not None:
+                rule = quadpy.line_segment.__dict__[method](index)
+            else:
+                print('The method requires index (check quadpy documentation)')
+                raise error
+    else:
+        raise ValueError('method: '+method+' not in the available list of methods: ' + methods)
+
+
+    x = rule.points
+    w = rule.weights
+
+#    tris -> edges
+
+    qp = np.zeros((len(line_vertices), len(w), 3))
+
+    for i in range(len(line_vertices)):
+        p0 = line_vertices[i]
+
+
+        if i == len(line_vertices) - 1:
+            p1 = line_vertices[0]
+        else:
+            p1 = line_vertices[i+1]
+
+        B = np.array([p1-p0])
+
+        qp[i] = x[:, None] @ B/2 + B/2 + p0
+
+    return w, qp
+
 
 @jit
 def assemble_matrix(tris, Nverts, triangle_data):

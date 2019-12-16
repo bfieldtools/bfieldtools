@@ -4,7 +4,7 @@ including both self- and mutual-inductance.
 '''
 
 import numpy as np
-from .utils import (get_quad_points, assemble_matrix_chunk, assemble_matrix2)
+from .utils import (get_quad_points, get_line_quad_points, assemble_matrix_chunk, assemble_matrix2)
 from .integrals import triangle_potential_uniform as triangle_potential
 from .integrals import triangle_potential_approx
 from .mesh_magnetics import vector_potential_coupling
@@ -148,5 +148,44 @@ def mutual_inductance_matrix_from_A(mesh1, mesh2, planar=False):
     # Dot product with current patterns and sum over triangle neighbourhoods
     Gx, Gy, Gz = gradient_matrix(mesh2, rotated=True)
     M = A[0].T@Gx + A[1].T@Gy + A[2].T@Gz
+
+    return M
+
+
+def mesh2line_mutual_inductance(mesh, line_vertices):
+    '''
+    Mutual inductance of a closed line segment loop (last segment connecting to first)
+    and a triangle mesh
+
+    Parameters
+    ----------
+    mesh: Trimesh mesh object
+    line_vertices: points connected in index order (N_points, 3)
+
+    Returns
+    -------
+
+    M: mutual inductance vector with shape (N_vertices,)
+
+
+    '''
+
+    # Calculate quadrature points
+    weights, quadpoints = get_line_quad_points(line_vertices, 'gauss_legendre', 3)
+    # Ne x Nquad x  3 (x,y,z)
+
+    segments=np.roll(line_vertices, shift=-1, axis=0) - line_vertices
+
+    # Compute vector potential to quadrature points
+    Nw = len(weights)
+    Nt = len(line_vertices)
+    Nv = len(mesh.vertices)
+    A = vector_potential_coupling(mesh, quadpoints.reshape(-1, 3)).reshape(3, Nt, Nw, Nv)
+
+    # Integrate over quadrature points
+    A = np.sum(A*weights[None, None, :, None], axis=2)
+
+    # Scale by segment lengths, integrate
+    M = np.sum(segments.T[:, :, None] * A, axis=(0,1))
 
     return M
