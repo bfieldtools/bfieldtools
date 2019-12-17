@@ -42,7 +42,7 @@ def python_to_kicad(loops, filename, plane_axes, origin, layer, net, scaling=1, 
     return
 
 
-def kicad_to_python(file_directory, layers, stand_off, stack_spacing, stack, plane_axes, scale_factor = 10e2, origin = (0,0)):
+def kicad_to_python(file_directory, layers, stand_off, stack_spacing, stack, plane_axes, scale_factor = 10e2, origin = (0,0), net = None):
 
     '''
     Author: Elias Lius
@@ -67,6 +67,8 @@ def kicad_to_python(file_directory, layers, stand_off, stack_spacing, stack, pla
             As KiCad handles everything in mm, the wanted scale must be adjusted. Default value is 10e2.
         origin: (2, ) array-like
             Cancelling the origin shift done when coils were converted to kicad-file. Default (0,0,0)
+        Net: Int
+            Defines the net-class from which the segments are searched. Default None
 
     Outputs:
         vert_start: starts of the line segments in new plane imported from kicad
@@ -84,27 +86,47 @@ def kicad_to_python(file_directory, layers, stand_off, stack_spacing, stack, pla
         k = 0
         for line in infile:
             line = line.replace( ')', '')
-            #line = line.replace('(', '')
             txt = line.split()
-
-            if len(txt) > 0 and txt[0] == '(segment' and (txt[-3] == layers[0]  or txt[-3] == layers[1]):
-                if txt[-3] == layers[1]:
-                    seg_start[k,norm_dir] =  stand_off + stack*stack_spacing + 0.5*stack_spacing #for back layer of the stack the spacing is 1.5 timest the defined stack_spacing + standoff
-                    seg_end[k,norm_dir] =   stand_off + stack*stack_spacing + 0.5*stack_spacing
-                else:
-                    seg_start[k,norm_dir] = stand_off + stack*stack_spacing   #for back layer of the stack the spacing is stand_off + stack_spacing
-                    seg_end[k,norm_dir] = stand_off + stack*stack_spacing
-
-                seg_start[k,plane_axes[0]] = float(txt[2])/scale_factor - origin[0]
-                seg_end[k,plane_axes[0]] = float(txt[5])/scale_factor - origin[0]
-                seg_start[k,plane_axes[1]] = float(txt[3])/scale_factor - origin[1]
-                seg_end[k,plane_axes[1]] = float(txt[6])/scale_factor - origin[1]
-
-
-                seg_start = np.append(seg_start, [[0,0,0]], axis = 0)
-                seg_end = np.append(seg_end, [[0,0,0]], axis = 0)
-
-                k += 1
+            if len(txt) > 0 and txt[0] == '(segment' and txt[-2] == '(tstamp': #Checks if there is something weird written on the segment lines
+                txt = txt[0:-2]
+            if not net:
+                if len(txt) > 0 and txt[0] == '(segment' and (txt[-3] == layers[0]  or txt[-3] == layers[1]):
+                    if txt[-3] == layers[1]:
+                        seg_start[k,norm_dir] =  stand_off + stack*stack_spacing + 0.5*stack_spacing #for back layer of the stack the spacing is 1.5 timest the defined stack_spacing + standoff
+                        seg_end[k,norm_dir] =   stand_off + stack*stack_spacing + 0.5*stack_spacing
+                    else:
+                        seg_start[k,norm_dir] = stand_off + stack*stack_spacing   #for back layer of the stack the spacing is stand_off + stack_spacing
+                        seg_end[k,norm_dir] = stand_off + stack*stack_spacing
+    
+                    seg_start[k,plane_axes[0]] = float(txt[2])/scale_factor - origin[0]
+                    seg_end[k,plane_axes[0]] = float(txt[5])/scale_factor - origin[0]
+                    seg_start[k,plane_axes[1]] = float(txt[3])/scale_factor - origin[1]
+                    seg_end[k,plane_axes[1]] = float(txt[6])/scale_factor - origin[1]
+    
+    
+                    seg_start = np.append(seg_start, [[0,0,0]], axis = 0)
+                    seg_end = np.append(seg_end, [[0,0,0]], axis = 0)
+    
+                    k += 1
+            else:
+                if len(txt) > 0 and txt[0] == '(segment' and (txt[-3] == layers[0]  or txt[-3] == layers[1] or txt[-1] == str(net)):
+                    if txt[-3] == layers[1]:
+                        seg_start[k,norm_dir] =  stand_off + stack*stack_spacing + 0.5*stack_spacing #for back layer of the stack the spacing is 1.5 timest the defined stack_spacing + standoff
+                        seg_end[k,norm_dir] =   stand_off + stack*stack_spacing + 0.5*stack_spacing
+                    else:
+                        seg_start[k,norm_dir] = stand_off + stack*stack_spacing   #for back layer of the stack the spacing is stand_off + stack_spacing
+                        seg_end[k,norm_dir] = stand_off + stack*stack_spacing
+    
+                    seg_start[k,plane_axes[0]] = float(txt[2])/scale_factor - origin[0]
+                    seg_end[k,plane_axes[0]] = float(txt[5])/scale_factor - origin[0]
+                    seg_start[k,plane_axes[1]] = float(txt[3])/scale_factor - origin[1]
+                    seg_end[k,plane_axes[1]] = float(txt[6])/scale_factor - origin[1]
+    
+    
+                    seg_start = np.append(seg_start, [[0,0,0]], axis = 0)
+                    seg_end = np.append(seg_end, [[0,0,0]], axis = 0)
+    
+                    k += 1
 
         seg_start = seg_start[:-1]
         seg_end = seg_end[:-1]
@@ -181,6 +203,7 @@ def shifted_kicad_to_python(file_directory, layers, orig_plane, scale_factor = 1
         new_seg_ends = seg_end - er
 
         return new_seg_starts, new_seg_ends
+
 
 
 
