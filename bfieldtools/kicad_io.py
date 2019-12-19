@@ -228,7 +228,7 @@ def segment_looper(seg_starts, seg_ends, start_ind, up_low):
             List of segments with no matches with current specifications
     """
     
-    
+    import numpy as np
     match_order = [] #initialize match_order-list
     no_match = []
     indices = np.arange(len(seg_starts)) #initialize the list of indices of the segments
