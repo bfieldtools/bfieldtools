@@ -78,7 +78,7 @@ for ii, func in enumerate((triangle_potential_uniform,
         pot4 = func(RR4, tn)[:,0]
         mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, color=(0.5,0.5,0.5),
                              opacity=0.5)
-    if ii==1:oome
+    if ii==1:
         pot2 = func(RR2, tn, ta)[:,0,1]
         pot3 = func(RR3, tn, ta)[:,0,1]
         pot4 = func(RR4, tn, ta)[:,0,1]
@@ -94,7 +94,8 @@ for ii, func in enumerate((triangle_potential_uniform,
         r2[:,0] = mesh.vertices[0]
         r2[:,2] = mesh.vertices[2]
         u[:, 2] = np.linalg.det(r2)/np.linalg.det(mesh.vertices)
-        mlab.quiver3d(*r.T, *u.T, colormap='viridis', mode='arrow')
+        q = mlab.quiver3d(*r.T, *u.T, colormap='viridis', mode='arrow')
+        q.glyph.glyph.scale_factor = 0.25
 
 
     if ii==2:
@@ -112,7 +113,8 @@ for ii, func in enumerate((triangle_potential_uniform,
         u = np.zeros(meshq.vertices.shape)
         u[:, 2] = 1
         r = meshq.vertices
-        mlab.quiver3d(*r.T, *u.T, colormap='viridis', mode='arrow')
+        q = mlab.quiver3d(*r.T, *u.T, colormap='viridis', mode='arrow')
+        q.glyph.glyph.scale_factor = 0.2
 
 
     M = max(max(abs(pot2)),max(abs(pot3)),max(abs(pot4)))
@@ -122,6 +124,9 @@ for ii, func in enumerate((triangle_potential_uniform,
                                  vmax = M)
         s.actor.mapper.interpolate_scalars_before_mapping = True
         s.module_manager.scalar_lut_manager.number_of_colors = 32
+
+    # Move camera a bit
+    s.scene.camera.pitch(-2)
 
 
 

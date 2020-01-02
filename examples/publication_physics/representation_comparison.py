@@ -70,9 +70,11 @@ def plot_basis_fields(C, comps):
 #                             colormap='seismic', vmin=-m, vmax=m, opacity=0.7)
 #        s.actor.property.backface_culling = True
         m = np.max(abs((C[:,:,n].T*mesh_field.vertex_normals.T).sum(axis=0)))
-        mlab.triangular_mesh(*p2.T, mesh.faces,
+        s= mlab.triangular_mesh(*p2.T, mesh.faces,
                              scalars=(C[:,:,n].T*mesh_field.vertex_normals.T).sum(axis=0),
                              colormap='seismic', vmin=-m, vmax=m)
+        s.actor.mapper.interpolate_scalars_before_mapping = True
+        s.module_manager.scalar_lut_manager.number_of_colors = 32
         i+=1
 #        if i==5:
 #            i=0

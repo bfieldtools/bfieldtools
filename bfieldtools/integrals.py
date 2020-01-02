@@ -53,7 +53,7 @@ def omega(R):
 
         Parameters
         ----------
-        R : (N, ..., 3, 3) array of points (Neval, ..., Nverts, xyz)
+        R : array of points (Neval, (Ntri), Nverts, xyz)
             Points correspond to relative coordinates (x,y,z) of
             N triangles/evaluation points for
             the 3 corners of the triangles/triangle.
@@ -63,7 +63,7 @@ def omega(R):
 
         Returns
         -------
-        sa: (Neval, 3) ???
+        sa: (Neval, (Ntri))
             Solid angles of triangle(s) at evaluation points
     """
     # Distances
@@ -95,8 +95,8 @@ def triangle_potential_uniform(R, tn, planar=False):
         Parameters
         ----------
 
-        R : (N, (Ntri), 3, 3) array
-            Displacement vectors (Neval, ...., Ntri_verts, xyz)
+        R : (Neval, (Ntri), 3, 3) array
+            Displacement vectors (Neval, (Ntri), Ntri_verts, xyz)
         tn : ((Ntri), 3) array
             Triangle normals (Ntri, dir)
         planar: boolean
@@ -104,9 +104,9 @@ def triangle_potential_uniform(R, tn, planar=False):
 
         Returns
         -------
-        result: result:  ndarray (...., Ntri, Ntri_verts)
-            Resultant 1/r potential for each node (Ntri_verts)
-            in each triangle (Ntri) in the displacement vectors R
+        result: result:  ndarray (Neval, (Ntri))
+            Resultant 1/r potential for each triangle (Ntri)
+            at the field evaluation points (Neval)
 
     """
     if len(R.shape) > 3:

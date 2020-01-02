@@ -58,6 +58,15 @@ def laplacian_matrix_w_holes(mesh, inner_vertices, boundaries):
     Mesh vertices not present in inner_vertices or boundaries are assumed to be
     on the outer boundary of the mesh, which is set to zero.
 
+    For the discretization see:
+    https://www.cs.cmu.edu/~kmcrane/Projects/Other/SwissArmyLaplacian.pdf
+    page 232
+
+    When the values on the boundary are constrained equal, we have only one
+    degree of freedom and the element corresponding to that corresponds
+    to summing the individual elements in the original matrix
+
+
     Parameters
     ----------
     mesh: Trimesh Mesh object
