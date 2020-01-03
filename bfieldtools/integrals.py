@@ -5,6 +5,16 @@ Analytic integral for vectorized field / potential computation
 
 import numpy as np
 
+def determinant(a):
+    det = a[...,0,0]*(a[...,1,1]*a[...,2,2] - a[...,2,1]*a[...,1,2])
+    det += a[...,0,1]*(a[...,1,2]*a[...,2,0] - a[...,2,2]*a[...,1,0])
+    det += a[...,0,2]*(a[...,1,0]*a[...,2,1] - a[...,2,0]*a[...,1,1])
+    return det
+
+def norm(vecs):
+    return np.sqrt(np.einsum('...i,...i',vecs,vecs))
+
+
 def gamma0(R, reg=1e-13, symmetrize=True):
     """ Integrals over the edges of a triangle called gamma_0 (line charge potentials).
 
@@ -22,25 +32,27 @@ def gamma0(R, reg=1e-13, symmetrize=True):
 
     """
     edges = np.roll(R[0], 1, -2) - np.roll(R[0], 2, -2)
-    dotprods1 = np.sum(np.roll(R, 1, -2)*edges, axis=-1)
-    dotprods2 = np.sum(np.roll(R, 2, -2)*edges, axis=-1)
-    en = np.linalg.norm(edges, axis=-1)
+#    dotprods1 = np.sum(np.roll(R, 1, -2)*edges, axis=-1)
+#    dotprods2 = np.sum(np.roll(R, 2, -2)*edges, axis=-1)
+    dotprods1 = np.einsum('...i,...i', np.roll(R, 1, -2), edges)
+    dotprods2 = np.einsum('...i,...i', np.roll(R, 2, -2), edges)
+    en = norm(edges)
     del edges
-    n = np.linalg.norm(R, axis=-1)
+    n = norm(R)
     # Regularize s.t. neither the denominator or the numerator can be zero
     # Avoid numerical issues directly at the edge
-    res = np.log((np.roll(n, 2, -1)*en + dotprods2 + reg)
-                 / (np.roll(n, 1, -1)*en + dotprods1 + reg))
+    nn1 = np.roll(n, 2, -1)*en
+    nn2 = np.roll(n, 1, -1)*en
+    res = np.log((nn1 + dotprods2 + reg) / (nn2 + dotprods1 + reg))
 
     # Symmetrize the result since on the negative extension of the edge
     # there's division of two small values resulting numerical instabilities
     # (also incompatible with adding the reg value)
     if symmetrize:
-        res2 = -np.log((np.roll(n, 2, -1)*en - dotprods2 + reg)
-                       / (np.roll(n, 1, -1)*en - dotprods1 + reg))
+        res2 = -np.log((nn1 - dotprods2 + reg) / (nn2 - dotprods1 + reg))
         res = np.where(dotprods1+dotprods2 > 0, res, res2)
     res /= en
-    return -res # TODO: there should be minus, since we want this to be positive
+    return -res  # TODO: there should be minus, since we want this to be positive
 
 
 def omega(R):
@@ -67,15 +79,16 @@ def omega(R):
             Solid angles of triangle(s) at evaluation points
     """
     # Distances
-    d = np.linalg.norm(R, axis=-1)
+    d = norm(R)
     # Scalar triple products
-    stp = np.linalg.det(R)
+    stp = determinant(R)
     # Denominator
     denom = np.prod(d, axis=-1)
     for i in range(3):
         j = (i+1) % 3
         k = (i+2) % 3
-        denom += np.sum(R[..., i, :]*R[..., j, :], axis=-1)*d[..., k]
+#        denom += np.sum(R[..., i, :]*R[..., j, :], axis=-1)*d[..., k]
+        denom += np.einsum('...i,...i', R[..., i, :], R[..., j, :])*d[..., k]
     # Solid angles
     sa = 2*np.arctan2(stp, denom)
     return sa
@@ -113,14 +126,18 @@ def triangle_potential_uniform(R, tn, planar=False):
         tn_ax = tn[:, None, :]
     else:
         tn_ax = tn
-    summands = -gamma0(R)*np.sum(tn_ax*np.cross(np.roll(R, 1, -2),
-                                               np.roll(R, 2, -2), axis=-1), axis=-1)
+    summands = np.sum(tn_ax*np.cross(np.roll(R, 1, -2),
+                                     np.roll(R, 2, -2), axis=-1), axis=-1)
+#    summands = -gamma0(R)*np.sum(tn_ax*np.cross(np.roll(R, 1, -2),
+#                                               np.roll(R, 2, -2), axis=-1), axis=-1)
+    result = np.einsum('...i,...i', -gamma0(R), summands)
     if not planar:
-        csigned = np.sum(np.take(R, 0, -2)*tn, axis=-1)
-        result = np.sum(summands, axis=-1) - csigned*omega(R)
+#        csigned = np.sum(np.take(R, 0, -2)*tn, axis=-1)
+        csigned = np.einsum('...i,...i', np.take(R, 0, -2), tn)
+        result -= csigned*omega(R)
     else:
         print('Assuming all the triangles are in the same plane!')
-        result = np.sum(summands, axis=-1)
+#        result = np.sum(summands, axis=-1)
     return result
 
 
@@ -205,3 +222,4 @@ def triangle_potential_dipole_linear(R, tn, ta, planar=False):
     else:
         print('Assuming all the triangles are in the same plane!')
     return result/(2*ta[:,None])
+

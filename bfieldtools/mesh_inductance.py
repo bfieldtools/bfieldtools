@@ -91,7 +91,7 @@ def self_inductance_matrix(mesh, Nchunks=1):
     return mutual_inductance_matrix(mesh, mesh, Nchunks=Nchunks)
 
 
-def mutual_inductance_matrix(mesh1, mesh2, Nchunks=1):
+def mutual_inductance_matrix(mesh1, mesh2, Nchunks=1, quad_index=0):
     """ Calculate a mutual inductance matrix for hat basis functions
         (stream functions) between two surface meshes
 
@@ -111,7 +111,8 @@ def mutual_inductance_matrix(mesh1, mesh2, Nchunks=1):
     """
 
     # Calculate quadrature points
-    weights, quadpoints = get_quad_points(mesh2.vertices, mesh2.faces, 'centroid')
+    weights, quadpoints = get_quad_points(mesh2.vertices, mesh2.faces,
+                                          'newton_cotes_open', quad_index)
     # Nt x Nquad x  3 (x,y,z)
 
     # Compute vector potential to quadrature points
@@ -132,6 +133,11 @@ def mutual_inductance_matrix(mesh1, mesh2, Nchunks=1):
     return M
 
 
+def triangle_self_coupling(mesh):
+    """ TODO: Self coupling can be integrated analytically
+        https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=475946
+    """
+    pass
 
 #############
 #DEPRECATED VERSION, LEFT COMMENTED FOR NOW
