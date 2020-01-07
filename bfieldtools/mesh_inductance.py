@@ -74,24 +74,27 @@ from .mesh_calculus import gradient_matrix
 #    return M * 1e-7
 
 
-def self_inductance_matrix(mesh, Nchunks=1):
+def self_inductance_matrix(mesh, Nchunks=1, quad_degree=1):
     """ Calculate a self inductance matrix for hat basis functions
         (stream functions) in the triangular mesh described by
 
         Parameters
         ----------
         mesh: Trimesh mesh object
-
+        Nchunks: int
+            Number of serial chunks to divide the computation into
+        quad_degree: int >= 0
+            Quadrature degree (Open Newton-Cotes) to use. Self-inductance requires higher degree than mutual inductance
         Returns
         -------
         M: (Nvertices x Nvertices) array
             Self.inductance matrix of `mesh`
     """
 
-    return mutual_inductance_matrix(mesh, mesh, Nchunks=Nchunks)
+    return mutual_inductance_matrix(mesh, mesh, Nchunks=Nchunks, quad_degree=quad_degree)
 
 
-def mutual_inductance_matrix(mesh1, mesh2, Nchunks=1, quad_index=0):
+def mutual_inductance_matrix(mesh1, mesh2, Nchunks=1, quad_degree=0):
     """ Calculate a mutual inductance matrix for hat basis functions
         (stream functions) between two surface meshes
 
@@ -100,8 +103,10 @@ def mutual_inductance_matrix(mesh1, mesh2, Nchunks=1, quad_index=0):
 
         mesh1: Trimesh mesh object for mesh 1
         mesh2: Trimesh mesh object for mesh 2
-        planar: boolean
-            If True, use planar assumption when calculating
+        Nchunks: int
+            Number of serial chunks to divide the computation into
+        quad_degree: int >= 0
+            Quadrature degree (Open Newton-Cotes) to use. Self-inductance requires higher degree than mutual inductance
 
         Returns
         -------
@@ -112,7 +117,7 @@ def mutual_inductance_matrix(mesh1, mesh2, Nchunks=1, quad_index=0):
 
     # Calculate quadrature points
     weights, quadpoints = get_quad_points(mesh2.vertices, mesh2.faces,
-                                          'newton_cotes_open', quad_index)
+                                          'newton_cotes_open', quad_degree)
     # Nt x Nquad x  3 (x,y,z)
 
     # Compute vector potential to quadrature points

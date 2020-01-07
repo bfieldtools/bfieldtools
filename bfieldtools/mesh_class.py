@@ -127,19 +127,23 @@ class MeshWrapper:
     @LazyProperty
     def inductance(self):
         '''
-        Compute and return mutual inductance matrix. If mesh consists of multiple separate sub-meshes, compute these separately.
+        Compute and return mutual inductance matrix.
 
         '''
 
-        #Available RAM in Gigabytes
-        mem = virtual_memory().available >> 30
+        #Available RAM in megabytes
+        mem = virtual_memory().available >> 20
 
-        #Estimate of memory use
-        mem_per_vertex = 8 / 2000
 
-        n_chunks = int(np.ceil(mem_per_vertex / mem * len(self.mesh.vertices)))
+        #Estimate of memory usage in megabytes for a single chunk, when quad_degree=2 (very close with quad_degree=1)
+        mem_use = 0.04 * len(self.mesh.vertices)**1.75
 
-        print('Computing inductance matrix in %d chunks since %d GiB memory is available...'%(n_chunks, mem))
+        print('Estimating %d MiB required for %d vertices...'%(mem_use, len(self.mesh.vertices)))
+
+        #Chunk computation so that available memory is sufficient
+        n_chunks = int(np.ceil(mem_use/mem))
+
+        print('Computing inductance matrix in %d chunks since %d MiB memory is available...'%(n_chunks, mem))
 
         start = time()
 
