@@ -74,7 +74,7 @@ from .mesh_calculus import gradient_matrix
 #    return M * 1e-7
 
 
-def self_inductance_matrix(mesh, Nchunks=1, quad_degree=1):
+def self_inductance_matrix(mesh, Nchunks=1, quad_degree=2):
     """ Calculate a self inductance matrix for hat basis functions
         (stream functions) in the triangular mesh described by
 
