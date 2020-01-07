@@ -4,77 +4,14 @@ including both self- and mutual-inductance.
 '''
 
 import numpy as np
-from .utils import (get_quad_points, get_line_quad_points, assemble_matrix_chunk, assemble_matrix2)
-from .integrals import triangle_potential_uniform as triangle_potential
-from .integrals import triangle_potential_approx
+from .utils import get_quad_points, get_line_quad_points
 from .mesh_magnetics import vector_potential_coupling
 from .mesh_calculus import gradient_matrix
-
-#############
-#DEPRECATED VERSION, LEFT COMMENTED FOR NOW
-#
-#def self_inductance_matrix(mesh, planar=False, Nchunks=1, approx=False):
-#    """ Calculate a self inductance matrix for hat basis functions
-#        (stream functions) in the triangular mesh described by
-#
-#        Parameters
-#        ----------
-#        mesh: Trimesh mesh object
-#
-#        Returns
-#        -------
-#        M: (Nvertices x Nvertices) array
-#            Self.inductance matrix of `mesh`
-#    """
-#    R = mesh.vertices[mesh.faces]  # Nt x 3 (corners) x 3 (xyz)
-#    # Calculate edge vectors for each triangle
-#    edges = np.roll(R, 1, -2) - np.roll(R, 2, -2)  # Nt x 3 (edges) x 3 (x,y,z)
-#    # Calculate quadrature points
-#    weights, quadpoints = get_quad_points(mesh.vertices, mesh.faces, 'centroid')
-#    # Nt x Nquad x  3 (x,y,z)
-#
-#
-#    M = np.zeros((mesh.vertices.shape[0], mesh.vertices.shape[0]))
-#
-#    for n in range(Nchunks):
-#        RR = quadpoints[n::Nchunks, :, None, None, :] - R[None, None, :, :, :]
-#
-#        # Loop evaluation triangles (quadpoints) in chunks
-#        # Init not needed
-##        tri_data = np.zeros((len(quadpoints[n::Nchunks]), edges.shape[0],
-##                             edges.shape[1], edges.shape[1]))
-#
-#
-#        print('Calculating potentials, chunk %d/%d' % (n + 1, Nchunks))
-#        if approx:
-#            pots = triangle_potential_approx(RR, mesh.area_faces) # Ntri_eval, Nquad, Ntri_source
-#            # Recalculate the nearby potentials with analytical formula
-#            # "diagonal" indices
-##           i0 = i1 = np.arange(RR.shape[0])
-#            # Find 1-neighbourhood around vertices
-#            fsparse = mesh.faces_sparse.tocsc()[:,n::Nchunks]
-#            nb_inds = np.nonzero((fsparse.T @ fsparse).toarray())
-#            i0=nb_inds[0]
-#            i1=nb_inds[1]
-#            # RR  and normals of the neighbourhoods
-#            RR_nb = RR[:,:,n::Nchunks,:,:][i0,:,i1,:,:]
-#            RR_nb = np.moveaxis(RR_nb, 0, 1)
-#            n_nb = mesh.face_normals[n::Nchunks][i1]
-#            pots[:, :, n::Nchunks][i0, :, i1] = triangle_potential(RR_nb, n_nb, planar=planar).T # Ntri_eval, Nquad, Ntri_source
-#        else:
-#            pots = triangle_potential(RR, mesh.face_normals, planar=planar) # Ntri_eval, Nquad, Ntri_source
-#        pots = np.sum(pots*weights[None, :, None], axis=1) # Ntri_eval, Ntri_source
-#
-#        tri_data = np.sum(edges[None, :, None, :, :] * edges[n::Nchunks, None, :, None, :], axis=-1) # i,j,k,l
-#        tri_data /= (mesh.area_faces[n::Nchunks, None] * mesh.area_faces[None, :] * 4)[:, :, None, None]
-#        tri_data *= (mesh.area_faces[n::Nchunks, None] * pots)[:, :, None, None]
-#
-#        M += assemble_matrix_chunk(mesh.faces, mesh.vertices.shape[0], tri_data, n, Nchunks)
-#
-#    return M * 1e-7
+from psutil import virtual_memory
 
 
-def self_inductance_matrix(mesh, Nchunks=1, quad_degree=2):
+
+def self_inductance_matrix(mesh, Nchunks=None, quad_degree=2):
     """ Calculate a self inductance matrix for hat basis functions
         (stream functions) in the triangular mesh described by
 
@@ -83,18 +20,20 @@ def self_inductance_matrix(mesh, Nchunks=1, quad_degree=2):
         mesh: Trimesh mesh object
         Nchunks: int
             Number of serial chunks to divide the computation into
-        quad_degree: int >= 0
-            Quadrature degree (Open Newton-Cotes) to use. Self-inductance requires higher degree than mutual inductance
+        quad_degree: int >= 1
+            Quadrature degree (Dunavant scheme) to use. Self-inductance requires higher degree than mutual inductance
         Returns
         -------
         M: (Nvertices x Nvertices) array
             Self.inductance matrix of `mesh`
     """
+    if quad_degree <= 2:
+        print('Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.')
 
     return mutual_inductance_matrix(mesh, mesh, Nchunks=Nchunks, quad_degree=quad_degree)
 
 
-def mutual_inductance_matrix(mesh1, mesh2, Nchunks=1, quad_degree=0):
+def mutual_inductance_matrix(mesh1, mesh2, Nchunks=None, quad_degree=1):
     """ Calculate a mutual inductance matrix for hat basis functions
         (stream functions) between two surface meshes
 
@@ -105,8 +44,8 @@ def mutual_inductance_matrix(mesh1, mesh2, Nchunks=1, quad_degree=0):
         mesh2: Trimesh mesh object for mesh 2
         Nchunks: int
             Number of serial chunks to divide the computation into
-        quad_degree: int >= 0
-            Quadrature degree (Open Newton-Cotes) to use. Self-inductance requires higher degree than mutual inductance
+        quad_degree: int >= 1
+            Quadrature degree (Dunavant scheme) to use. Self-inductance requires higher degree than mutual inductance
 
         Returns
         -------
@@ -115,9 +54,25 @@ def mutual_inductance_matrix(mesh1, mesh2, Nchunks=1, quad_degree=0):
 
     """
 
+    if Nchunks is None:
+        #Available RAM in megabytes
+        mem = virtual_memory().available >> 20
+
+
+        #Estimate of memory usage in megabytes for a single chunk, when quad_degree=2 (very close with quad_degree=1)
+        mem_use = 0.04 * len(mesh1.vertices) * len(mesh2.vertices)
+
+        print('Estimating %d MiB required for %d times %d vertices...'%(mem_use, len(mesh1.vertices), len(mesh2.vertices)))
+
+        #Chunk computation so that available memory is sufficient
+        Nchunks = int(np.ceil(mem_use/mem))
+
+        print('Computing inductance matrix in %d chunks since %d MiB memory is available...'%(Nchunks, mem))
+
+
     # Calculate quadrature points
     weights, quadpoints = get_quad_points(mesh2.vertices, mesh2.faces,
-                                          'newton_cotes_open', quad_degree)
+                                          'dunavant_0'+str(quad_degree))
     # Nt x Nquad x  3 (x,y,z)
 
     # Compute vector potential to quadrature points
@@ -144,51 +99,8 @@ def triangle_self_coupling(mesh):
     """
     pass
 
-#############
-#DEPRECATED VERSION, LEFT COMMENTED FOR NOW
-#
-#def mutual_inductance_matrix(mesh1, mesh2, planar=False):
-#    """ Calculate a mutual inductance matrix for hat basis functions
-#        (stream functions) between two surface meshes
-#
-#        Parameters
-#        ----------
-#
-#        mesh1: Trimesh mesh object for mesh 1
-#        mesh2: Trimesh mesh object for mesh 2
-#        planar: boolean
-#            If True, use planar assumption when calculating
-#
-#        Returns
-#        -------
-#        M: (Nvertices1 x Nvertices2) array
-#            Mutual inductance matrix between mesh1 and mesh2
-#
-#    """
-#    R = mesh1.vertices[mesh1.faces]  # Nt x 3 (corners) x 3 (xyz)
-#    # Calculate quadrature points
-#    weights, quadpoints = get_quad_points(mesh2.vertices, mesh2.faces, 'centroid')
-#    # Nt x Nquad x  3 (x,y,z)
-#
-#    RR = quadpoints[:, :, None, None, :] - R[None, None, :, :, :]
-#    print('Calculating potentials')
-#    pots = triangle_potential(RR, mesh1.face_normals, planar=planar) # Ntri_eval, Nquad, Ntri_source
-#    pots = np.sum(pots * weights[None, :, None], axis=1) # Ntri_eval, Ntri_source
-#
-#    # Calculate edge vectors for each triangle
-#    edges1 = np.roll(R, 1, -2) - np.roll(R, 2, -2)  # Nt x 3 (edges) x 3 (x,y,z)
-#    edges2 = np.roll(mesh2.vertices[mesh2.faces], 1, -2) - np.roll(mesh2.vertices[mesh2.faces], 2, -2)  # Nt x 3 (edges) x 3 (x,y,z)
-#
-#    tri_data = np.sum(edges1[None, :, None, :, :] * edges2[:, None, :, None, :], axis=-1) # i,j,k,l
-#    tri_data /= (mesh2.area_faces[:, None] * mesh1.area_faces[None, :] * 4)[:, :, None, None]
-#    tri_data *= (mesh2.area_faces[:, None] * pots)[:, :, None, None]
-#    print('Inserting stuff into M-matrix')
-#
-#    M = assemble_matrix2(mesh1.faces, mesh2.faces, mesh1.vertices.shape[0], mesh2.vertices.shape[0], tri_data)
-#    return M * 1e-7
 
-
-def mesh2line_mutual_inductance(mesh, line_vertices):
+def mesh2line_mutual_inductance(mesh, line_vertices, quad_degree=3):
     '''
     Mutual inductance of a closed line segment loop (last segment connecting to first)
     and a triangle mesh
@@ -207,7 +119,7 @@ def mesh2line_mutual_inductance(mesh, line_vertices):
     '''
 
     # Calculate quadrature points
-    weights, quadpoints = get_line_quad_points(line_vertices, 'gauss_legendre', 3)
+    weights, quadpoints = get_line_quad_points(line_vertices, 'gauss_legendre', quad_degree)
     # Ne x Nquad x  3 (x,y,z)
 
     segments=np.roll(line_vertices, shift=-1, axis=0) - line_vertices

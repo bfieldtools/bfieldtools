@@ -10,7 +10,6 @@ import pickle
 from mayavi import mlab
 import trimesh
 import numpy as np
-from psutil import virtual_memory
 
 from . import utils
 from .mesh_calculus import laplacian_matrix, mass_matrix
@@ -131,23 +130,9 @@ class MeshWrapper:
 
         '''
 
-        #Available RAM in megabytes
-        mem = virtual_memory().available >> 20
-
-
-        #Estimate of memory usage in megabytes for a single chunk, when quad_degree=2 (very close with quad_degree=1)
-        mem_use = 0.04 * len(self.mesh.vertices)**1.75
-
-        print('Estimating %d MiB required for %d vertices...'%(mem_use, len(self.mesh.vertices)))
-
-        #Chunk computation so that available memory is sufficient
-        n_chunks = int(np.ceil(mem_use/mem))
-
-        print('Computing inductance matrix in %d chunks since %d MiB memory is available...'%(n_chunks, mem))
-
         start = time()
 
-        inductance = self_inductance_matrix(self.mesh, Nchunks=n_chunks)
+        inductance = self_inductance_matrix(self.mesh)
 
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)
