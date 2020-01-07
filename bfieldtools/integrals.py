@@ -205,8 +205,9 @@ def triangle_potential_dipole_linear(R, tn, ta, planar=False):
         Returns
         -------
         result:  ndarray (...., Ntri, Ntri_verts)
-            Resultant dipolar potential for each node (Ntri_verts)
-            in each triangle (Ntri) in the displacement vectors R
+            Resultant dipolar potential for each shape functions (Ntri_verts)
+            in each triangle (Ntri) at the points
+            corresponding to displacement vectors in R
 
     """
     if len(R.shape) > 3:

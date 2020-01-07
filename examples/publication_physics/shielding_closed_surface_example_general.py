@@ -17,14 +17,14 @@ if path in sys.path:
 import numpy as np
 import matplotlib.pyplot as plt
 from mayavi import mlab
-import trimesh
+#import trimesh
 
 from bfieldtools.mesh_class import MeshWrapper
-from bfieldtools.magnetic_field_mesh import compute_C
-from bfieldtools.magnetic_field_mesh import compute_C_analytic
-from bfieldtools.magnetic_field_mesh import compute_U
+from bfieldtools.mesh_magnetics import magnetic_field_coupling as compute_C
+from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic as compute_C_analytic
+from bfieldtools.mesh_magnetics import scalar_potential_coupling as compute_U
 from bfieldtools.coil_optimize import optimize_streamfunctions
-from bfieldtools.mutual_inductance_mesh import mutual_inductance_matrix_from_A
+from bfieldtools.mesh_inductance import mutual_inductance_matrix
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
 from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis
@@ -50,7 +50,7 @@ M22 = current2.inductance
 # Add rank-one matrix, so that M22 can be inverted
 M22 += np.ones_like(M22)/M22.shape[0]
 M11 += np.ones_like(M11)/M11.shape[0]
-M21 = mutual_inductance_matrix_from_A(mesh2, mesh1)
+M21 = mutual_inductance_matrix(mesh2, mesh1)
 # Mapping from I1 to I2
 P = -np.linalg.solve(M22, M21)
 
@@ -58,7 +58,7 @@ A1, Beta1 = compute_sphcoeffs_mesh(mesh1, 7)
 A2, Beta2 = compute_sphcoeffs_mesh(mesh2, 7)
 
 sb = sphbasis(10)
-F1 = (sb.basis_fields(mesh1.vertices, 3)[1]*mesh1.vertex_normals).sum(axis=-1)
+F1 = (np.moveaxis(sb.basis_fields(mesh1.vertices, 3)[1],0,2)*mesh1.vertex_normals).sum(axis=-1)
 #F2 = (sb.basis_fields(mesh2.vertices, 3)[0]*mesh2.vertex_normals).sum(axis=-1)
 
 x = y = np.linspace(-0.8, 0.8, 150)
@@ -73,6 +73,7 @@ CB2 = compute_C_analytic(mesh2, points)
 CU1 = compute_U(mesh1, points)
 CU2 = compute_U(mesh2, points)
 
+CU11 = compute_U(mesh1, points)
 #%% Specify spherical harmonic and calculate corresponding shielded field
 #alpha = np.zeros(A1.shape[0])
 #alpha[2] = 1

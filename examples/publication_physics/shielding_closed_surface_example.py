@@ -17,14 +17,13 @@ Calculate and plot field of a closed shielded current
 import numpy as np
 import matplotlib.pyplot as plt
 from mayavi import mlab
-import trimesh
 
 from bfieldtools.mesh_class import MeshWrapper
-from bfieldtools.magnetic_field_mesh import compute_C
-from bfieldtools.magnetic_field_mesh import compute_C_analytic
-from bfieldtools.magnetic_field_mesh import compute_U
+from bfieldtools.mesh_magnetics import magnetic_field_coupling as compute_C
+from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic as compute_C_analytic
+from bfieldtools.mesh_magnetics import scalar_potential_coupling as compute_U
 from bfieldtools.coil_optimize import optimize_streamfunctions
-from bfieldtools.mutual_inductance_mesh import mutual_inductance_matrix_from_A
+from bfieldtools.mesh_inductance import mutual_inductance_matrix
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
 
@@ -42,7 +41,7 @@ current2 = MeshWrapper(mesh_obj=mesh2)
 
 M22 = current2.inductance
 M22 += np.ones_like(M22)/M22.shape[0] # zero mean
-M21 = mutual_inductance_matrix_from_A(mesh2, mesh1)
+M21 = mutual_inductance_matrix(mesh2, mesh1)
 
 x = y = np.linspace(-1.01, 1.01, 150)
 X,Y = np.meshgrid(x, y, indexing='ij')
