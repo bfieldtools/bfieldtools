@@ -73,7 +73,7 @@ def compute_current_modes(mesh, boundaries=None, return_eigenvals=False):
     else:
         return vl
 
-def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T):
+def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T, Nchunks = 1):
     '''
     Computes the magnetic noise at DC due to thermal motion of charge carriers (Jonhson-Nyquist noise)
     in a relatively thin conductor.
@@ -101,7 +101,7 @@ def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T):
 
     kB = 1.38064852e-23 #Boltzmann constant
 
-    B_coupling = magnetic_field_coupling(mesh, fp)
+    B_coupling = magnetic_field_coupling(mesh, fp, Nchunks)
 
     B = np.zeros(fp.shape)
     for i in range(vl.shape[1]):
@@ -113,7 +113,7 @@ def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T):
 
     return B
 
-def compute_dc_Bnoise_covar(mesh, vl, fp, sigma, d, T):
+def compute_dc_Bnoise_covar(mesh, vl, fp, sigma, d, T, Nchunks = 1):
     '''
     Computes the magnetic noise covariance at DC due to thermal motion of charge carriers (Jonhson-Nyquist noise)
     in a relatively thin conductor.
@@ -141,7 +141,7 @@ def compute_dc_Bnoise_covar(mesh, vl, fp, sigma, d, T):
 
     kB = 1.38064852e-23 #Boltzmann constant
 
-    B_coupling = magnetic_field_coupling(mesh, fp)
+    B_coupling = magnetic_field_coupling(mesh, fp, Nchunks)
 
     eps = 4*kB*T*sigma*d*np.eye(vl.shape[1])
 
@@ -179,7 +179,7 @@ def integrate_Bnoise_covar(B_covar, weighting=None):
     return Bnoise_integrated**0.5
 
 
-def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T):
+def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T, Nchunks = 1):
     '''
     Computes the AC magnetic noise due to thermal motion of charge carriers (Jonhson-Nyquist noise)
     in a relatively thin conductor.
@@ -208,10 +208,10 @@ def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T):
     kB = 1.38064852e-23 #Boltzmann constant
 
     #Compute field
-    B_coupling = magnetic_field_coupling(mesh, fp)
+    B_coupling = magnetic_field_coupling(mesh, fp, Nchunks)
 
     #Compute mutual inductance at "hat basis"
-    Mind = self_inductance_matrix(mesh)
+    Mind = self_inductance_matrix(mesh, Nchunks)
     Mind = 0.5*(Mind+Mind.T) #I think that this enforces M to be symmetric
 
     #Transform mutual inductance to eddy-current basis

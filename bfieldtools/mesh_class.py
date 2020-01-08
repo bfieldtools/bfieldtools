@@ -10,7 +10,6 @@ import pickle
 from mayavi import mlab
 import trimesh
 import numpy as np
-from psutil import virtual_memory
 
 from . import utils
 from .mesh_calculus import laplacian_matrix, mass_matrix
@@ -127,23 +126,13 @@ class MeshWrapper:
     @LazyProperty
     def inductance(self):
         '''
-        Compute and return mutual inductance matrix. If mesh consists of multiple separate sub-meshes, compute these separately.
+        Compute and return mutual inductance matrix.
 
         '''
 
-        #Available RAM in Gigabytes
-        mem = virtual_memory().available >> 30
-
-        #Estimate of memory use
-        mem_per_vertex = 8 / 2000
-
-        n_chunks = int(np.ceil(mem_per_vertex / mem * len(self.mesh.vertices)))
-
-        print('Computing inductance matrix in %d chunks since %d GiB memory is available...'%(n_chunks, mem))
-
         start = time()
 
-        inductance = self_inductance_matrix(self.mesh, Nchunks=n_chunks)
+        inductance = self_inductance_matrix(self.mesh)
 
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)
