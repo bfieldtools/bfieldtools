@@ -36,11 +36,11 @@ Validation of analytic mesh operator for magnetic field computation.
 
  .. code-block:: none
 
-    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.19 seconds.
-    Computing magnetic field coupling matrix analytically, 676 vertices by 676 target points... took 1.39 seconds.
-    Relative RMS error 0.00522928695809424
-    Computing magnetic field coupling matrix, 4701 vertices by 100 target points... took 0.29 seconds.
-    Computing magnetic field coupling matrix analytically, 4701 vertices by 100 target points... took 1.76 seconds.
+    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.17 seconds.
+    Computing magnetic field coupling matrix analytically, 676 vertices by 676 target points... took 0.64 seconds.
+    Relative RMS error 0.00522928695809423
+    Computing magnetic field coupling matrix, 4701 vertices by 100 target points... took 0.28 seconds.
+    Computing magnetic field coupling matrix analytically, 4701 vertices by 100 target points... took 0.70 seconds.
 
 
 
@@ -126,9 +126,9 @@ Validation of analytic mesh operator for magnetic field computation.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.925 seconds)
+   **Total running time of the script:** ( 0 minutes  3.023 seconds)
 
-**Estimated memory usage:**  219 MB
+**Estimated memory usage:**  172 MB
 
 
 .. _sphx_glr_download_auto_examples_validation_validate_bfield_analytic.py:

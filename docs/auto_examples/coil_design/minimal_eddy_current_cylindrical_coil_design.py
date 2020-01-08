@@ -13,7 +13,7 @@ import trimesh
 
 from bfieldtools.mesh_class import MeshWrapper
 from bfieldtools.coil_optimize import optimize_streamfunctions
-from bfieldtools.mesh_inductance import mutual_inductance_matrix
+from bfieldtools.mesh_properties import mutual_inductance_matrix
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
 

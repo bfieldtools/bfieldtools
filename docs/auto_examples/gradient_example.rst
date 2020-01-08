@@ -103,9 +103,9 @@ The same but rotated (e.g. current density from a stream function)
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.981 seconds)
+   **Total running time of the script:** ( 0 minutes  2.999 seconds)
 
-**Estimated memory usage:**  161 MB
+**Estimated memory usage:**  163 MB
 
 
 .. _sphx_glr_download_auto_examples_gradient_example.py:

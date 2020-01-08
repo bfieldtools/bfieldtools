@@ -134,11 +134,6 @@ spherical harmonics.
 
  .. code-block:: none
 
-    SVG path loading unavailable!
-    Traceback (most recent call last):
-      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/path/exchange/svg_io.py", line 18, in <module>
-        from svg.path import parse_path
-    ModuleNotFoundError: No module named 'svg'
     l = 1 computed
     l = 2 computed
     l = 3 computed
@@ -202,13 +197,16 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 2 chunks since 8 GiB memory is available...
-    Calculating potentials, chunk 1/2
-    Calculating potentials, chunk 2/2
-    Inductance matrix computation took 70.08 seconds.
+    Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
+    Estimating 405514 MiB required for 3184 times 3184 vertices...
+    Computing inductance matrix in 42 chunks since 9739 MiB memory is available...
+    Computing potential matrix
+    Inductance matrix computation took 83.77 seconds.
     Pre-existing problem not passed, creating...
     Passing parameters to problem...
     Passing problem to solver...
+    /l/conda-envs/mne/lib/python3.6/site-packages/cvxpy/reductions/solvers/solving_chain.py:170: UserWarning: You are solving a parameterized problem that is not DPP. Because the problem is not DPP, subsequent solves will not be faster than the first one.
+      "You are solving a parameterized problem that is not DPP. "
 
 
     Problem
@@ -238,33 +236,33 @@ Run QP solver
     Optimizer  - Cones                  : 1
     Optimizer  - Scalar variables       : 2946              conic                  : 2898            
     Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
-    Factor     - setup time             : 0.90              dense det. time        : 0.00            
+    Factor     - setup time             : 0.89              dense det. time        : 0.00            
     Factor     - ML order time          : 0.30              GP order time          : 0.00            
     Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06        
     Factor     - dense dim.             : 0                 flops                  : 3.26e+10        
     ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
-    0   1.0e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  40.05 
-    1   1.4e+00  1.4e-01  2.9e-01  -5.70e-01  4.541786587e-01   9.355049528e-01   1.4e-01  40.52 
-    2   2.6e-01  2.6e-02  1.5e-02  1.01e+00   3.792613273e-01   3.617956708e-01   2.6e-02  40.87 
-    3   1.1e-02  1.1e-03  9.4e-05  1.20e+00   3.063693271e-01   3.040294637e-01   1.1e-03  41.32 
-    4   2.5e-04  2.4e-05  3.8e-07  1.04e+00   2.902837007e-01   2.902580349e-01   2.4e-05  41.76 
-    5   9.4e-06  9.1e-07  3.1e-09  1.00e+00   2.894031176e-01   2.894027587e-01   9.1e-07  42.14 
-    6   5.5e-08  5.4e-09  1.4e-12  1.00e+00   2.893970282e-01   2.893970253e-01   5.4e-09  42.64 
-    Optimizer terminated. Time: 42.85   
+    0   5.1e+00  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  47.75 
+    1   6.5e-01  1.3e-01  1.5e-01  -2.05e-01  3.739101039e-01   3.031242313e-01   1.3e-01  48.22 
+    2   1.4e-01  2.8e-02  1.1e-02  1.27e+00   3.792209690e-01   3.449893155e-01   2.8e-02  48.66 
+    3   2.0e-02  4.0e-03  5.9e-04  1.23e+00   3.472781773e-01   3.434850664e-01   4.0e-03  49.03 
+    4   6.1e-04  1.2e-04  3.0e-06  1.05e+00   3.329119146e-01   3.327902648e-01   1.2e-04  49.51 
+    5   1.9e-07  3.8e-08  1.5e-11  1.00e+00   3.328469398e-01   3.328468910e-01   3.8e-08  50.10 
+    6   1.2e-10  3.5e-11  6.3e-18  1.00e+00   3.328467742e-01   3.328467742e-01   7.2e-14  50.65 
+    Optimizer terminated. Time: 50.87   
 
 
     Interior-point solution summary
       Problem status  : PRIMAL_AND_DUAL_FEASIBLE
       Solution status : OPTIMAL
-      Primal.  obj: 2.8939702817e-01    nrm: 2e+00    Viol.  con: 1e-08    var: 0e+00    cones: 0e+00  
-      Dual.    obj: 2.8939702529e-01    nrm: 1e+01    Viol.  con: 8e-06    var: 6e-14    cones: 0e+00  
-    Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.25 seconds.
+      Primal.  obj: 3.3284677423e-01    nrm: 2e+00    Viol.  con: 8e-14    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 3.3284677420e-01    nrm: 1e+01    Viol.  con: 4e-11    var: 1e-12    cones: 0e+00  
+    Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.24 seconds.
     l = 1 computed
     l = 2 computed
     l = 3 computed
     l = 4 computed
     Condition number = 1.890216
-    Normalized RMS error = 0.157768%
+    Normalized RMS error = 0.157204%
 
 
 
@@ -298,9 +296,9 @@ Plot coil windings and target points
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  57.785 seconds)
+   **Total running time of the script:** ( 3 minutes  23.266 seconds)
 
-**Estimated memory usage:**  7964 MB
+**Estimated memory usage:**  3681 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_spherical_harmonics_coil_design.py:

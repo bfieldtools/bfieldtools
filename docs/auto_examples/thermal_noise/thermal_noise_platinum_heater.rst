@@ -128,7 +128,7 @@ Compute the normalized thermal current modes, and thereafter compute the
 
  .. code-block:: none
 
-    Computing C matrix, 1011 vertices by 30 target points... took 0.03 seconds.
+    Computing magnetic field coupling matrix, 1011 vertices by 30 target points... took 0.03 seconds.
 
 
 
@@ -194,7 +194,7 @@ Compute the field on a 3D grid and visualize isosurfaces.
 
  .. code-block:: none
 
-    Computing C matrix, 1011 vertices by 8000 target points... took 1.38 seconds.
+    Computing magnetic field coupling matrix, 1011 vertices by 8000 target points... took 1.53 seconds.
 
 
 
@@ -252,9 +252,9 @@ Plot the noise level at horizontal planes at different distance.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  39.394 seconds)
+   **Total running time of the script:** ( 0 minutes  19.595 seconds)
 
-**Estimated memory usage:**  248 MB
+**Estimated memory usage:**  962 MB
 
 
 .. _sphx_glr_download_auto_examples_thermal_noise_thermal_noise_platinum_heater.py:

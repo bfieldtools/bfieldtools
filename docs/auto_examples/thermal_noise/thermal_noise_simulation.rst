@@ -44,18 +44,6 @@ Three different examples:
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    SVG path loading unavailable!
-    Traceback (most recent call last):
-      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/path/exchange/svg_io.py", line 18, in <module>
-        from svg.path import parse_path
-    ModuleNotFoundError: No module named 'svg'
-
 
 
 Unit sphere
@@ -132,32 +120,26 @@ Unit sphere
 
     /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.09 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
     Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
     Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.07 seconds.
-    /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
-      vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.07 seconds.
-    /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
-      vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.07 seconds.
-    /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
-      vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
-    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.07 seconds.
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.09 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
     Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
     /l/bfieldtools/bfieldtools/thermal_noise.py:69: RuntimeWarning: invalid value encountered in sqrt
       vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
     Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.08 seconds.
+    Computing magnetic field coupling matrix, 2562 vertices by 1 target points... took 0.09 seconds.
     0 0
     1 0
     2 0
@@ -397,7 +379,7 @@ Closed cylinder, DC noise
     2 1
     0 2
     1 2
-    Computing magnetic field coupling matrix, 3842 vertices by 30 target points... took 0.14 seconds.
+    Computing magnetic field coupling matrix, 3842 vertices by 30 target points... took 0.15 seconds.
 
 
 
@@ -447,7 +429,8 @@ Unit disc, AC mode
  .. code-block:: none
 
     Computing magnetic field coupling matrix, 1207 vertices by 1 target points... took 0.06 seconds.
-    Calculating potentials, chunk 1/1
+    Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
+    Computing potential matrix
     Frequency 1.000000 computed
     Frequency 1.268961 computed
     Frequency 1.610262 computed
@@ -484,9 +467,9 @@ Unit disc, AC mode
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  32.243 seconds)
+   **Total running time of the script:** ( 1 minutes  15.703 seconds)
 
-**Estimated memory usage:**  2312 MB
+**Estimated memory usage:**  5072 MB
 
 
 .. _sphx_glr_download_auto_examples_thermal_noise_thermal_noise_simulation.py:
