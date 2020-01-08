@@ -6,6 +6,8 @@ The effect of the shield is prospectively taken into account while designing the
 The coil is positioned close to the end of the shield to demonstrate the effect
 '''
 
+PLOT = False
+SAVE_FIGURES = False
 
 import numpy as np
 from mayavi import mlab
@@ -82,25 +84,21 @@ target_points = target_points[np.linalg.norm(target_points, axis=1) < sidelength
 
 
 #Plot coil, shield and target points
+if PLOT:
+    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                    size=(800, 800))
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                size=(800, 800))
-
-coil.plot_mesh(representation='surface')
-shield.plot_mesh(representation='surface', cull_front=True)
-mlab.points3d(*target_points.T)
-
-
-f.scene.isometric_view()
-f.scene.camera.zoom(1.2)
-mlab.savefig('/l/bfieldtools/examples/publication_software/shielded_biplanar_geometry.png', figure=f, magnification=6)
+    coil.plot_mesh(representation='surface')
+    shield.plot_mesh(representation='surface', cull_front=True)
+    mlab.points3d(*target_points.T)
 
 
+    f.scene.isometric_view()
+    f.scene.camera.zoom(1.2)
 
-###############################################################
-# Compute C matrices that are used to compute the generated magnetic field
-coil.C = CouplingMatrix(coil, compute_C)
-shield.C = CouplingMatrix(shield, compute_C)
+    if SAVE_FIGURES:
+        mlab.savefig('/l/bfieldtools/examples/publication_software/shielded_biplanar_geometry.png', figure=f, magnification=6)
+        mlab.close()
 
 
 ################################################################
@@ -117,7 +115,7 @@ target_abs_error = np.zeros_like(target_field)
 target_abs_error[:, 0] += 0.005
 target_abs_error[:, 1:3] += 0.01
 
-target_spec = {'C':coil.C(target_points), 'rel_error':0, 'abs_error':target_abs_error, 'target_field':target_field}
+target_spec = {'coupling':coil.B_coupling(target_points), 'rel_error':0, 'abs_error':target_abs_error, 'target':target_field}
 
 import mosek
 
@@ -135,25 +133,26 @@ coil.I, coil.prob = optimize_streamfunctions(coil,
 
 loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=10)
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-           size=(800, 800))
-mlab.clf()
+if PLOT:
+    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+               size=(800, 800))
+    mlab.clf()
 
-plot_3d_current_loops(loops, colors='auto', figure=f)
+    plot_3d_current_loops(loops, colors='auto', figure=f)
 
-B_target = coil.C(target_points) @ coil.I
+    B_target = coil.B_coupling(target_points) @ coil.I
 
-mlab.quiver3d(*target_points.T, *B_target.T, mode='arrow', scale_factor=0.75)
-
-
-
-
-f.scene.isometric_view()
-f.scene.camera.zoom(0.95)
-mlab.savefig('/l/bfieldtools/examples/publication_software/shielded_biplanar_ignored.png', figure=f, magnification=6)
+    mlab.quiver3d(*target_points.T, *B_target.T, mode='arrow', scale_factor=0.75)
 
 
 
+
+    f.scene.isometric_view()
+    f.scene.camera.zoom(0.95)
+
+    if SAVE_FIGURES:
+        mlab.savefig('/l/bfieldtools/examples/publication_software/shielded_biplanar_ignored.png', figure=f, magnification=6)
+        mlab.close()
 #################################################################
 # Now, let's compute the effect of the shield on the field produced by the coil
 
@@ -185,28 +184,29 @@ shield.I =  np.linalg.solve(P_bem, P_prim @ coil.I)
 ##########################################################
 # Plot the difference in field when taking the shield into account
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-           size=(800, 800))
-mlab.clf()
+if PLOT:
+    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+               size=(800, 800))
+    mlab.clf()
 
-B_target = coil.C(target_points) @ coil.I
+    B_target = coil.B_coupling(target_points) @ coil.I
 
-B_target_w_shield = coil.C(target_points) @ coil.I + shield.C(target_points) @ shield.I
+    B_target_w_shield = coil.B_coupling(target_points) @ coil.I + shield.B_coupling(target_points) @ shield.I
 
-B_quiver = mlab.quiver3d(*target_points.T, *(B_target_w_shield - B_target).T, colormap='viridis', mode='arrow')
-f.scene.isometric_view()
-mlab.colorbar(B_quiver, title='Difference in magnetic field (a.u.)')
+    B_quiver = mlab.quiver3d(*target_points.T, *(B_target_w_shield - B_target).T, colormap='viridis', mode='arrow')
+    f.scene.isometric_view()
+    mlab.colorbar(B_quiver, title='Difference in magnetic field (a.u.)')
 
 ###############################################################
 # Let's redesign the coil taking the shield into account prospectively
 
 shield.coupling = np.linalg.solve(P_bem, P_prim)
 
-secondary_C = shield.C(target_points) @ shield.coupling
+secondary_C = shield.B_coupling(target_points) @ shield.coupling
 
-total_C = coil.C(target_points) + secondary_C
+total_C = coil.B_coupling(target_points) + secondary_C
 
-target_spec_w_shield = {'C':total_C, 'rel_error':0, 'abs_error':target_abs_error, 'target_field':target_field}
+target_spec_w_shield = {'coupling':total_C, 'rel_error':0, 'abs_error':target_abs_error, 'target':target_field}
 
 
 coil.I2, coil.prob2 = optimize_streamfunctions(coil,
@@ -220,22 +220,25 @@ coil.I2, coil.prob2 = optimize_streamfunctions(coil,
 # Plot the newly designed coil windings and field at the target points
 
 loops, loop_values= scalar_contour(coil.mesh, coil.I2, N_contours=10)
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-           size=(800, 800))
-mlab.clf()
 
-plot_3d_current_loops(loops, colors='auto', figure=f)
+if PLOT:
+    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+               size=(800, 800))
+    mlab.clf()
 
-B_target2 = total_C @ coil.I2
-mlab.quiver3d(*target_points.T, *B_target2.T, mode='arrow', scale_factor=0.75)
+    plot_3d_current_loops(loops, colors='auto', figure=f)
+
+    B_target2 = total_C @ coil.I2
+    mlab.quiver3d(*target_points.T, *B_target2.T, mode='arrow', scale_factor=0.75)
 
 
 
 
-f.scene.isometric_view()
-f.scene.camera.zoom(0.95)
-mlab.savefig('/l/bfieldtools/examples/publication_software/shielded_biplanar_prospective.png', figure=f, magnification=6)
-
+    f.scene.isometric_view()
+    f.scene.camera.zoom(0.95)
+    if SAVE_FIGURES:
+        mlab.savefig('/l/bfieldtools/examples/publication_software/shielded_biplanar_prospective.png', figure=f, magnification=6)
+        mlab.close()
 
 ###############################################################
 # Plot difference in field
@@ -246,32 +249,33 @@ import matplotlib.pyplot as plt
 
 
 
+if PLOT:
+    fig, axes = plt.subplots(1, 3, figsize=(12, 3))
 
-fig, axes = plt.subplots(1, 3, figsize=(12, 3))
+    axnames = ['X', 'Y', 'Z']
 
-axnames = ['X', 'Y', 'Z']
+    #fig.suptitle('Component-wise effect of magnetic shield on target field amplitude distribution')
+    for ax_idx, ax in enumerate(axes):
 
-#fig.suptitle('Component-wise effect of magnetic shield on target field amplitude distribution')
-for ax_idx, ax in enumerate(axes):
+        sns.kdeplot(B_target[:, ax_idx], label='Coil without shield', ax=ax, shade=True, legend=False)
+        sns.kdeplot(B_target_w_shield[:, ax_idx], label='Coil with shield', ax=ax, shade=True, legend=False)
+        sns.kdeplot(B_target2[:, ax_idx], label='Coil designed with shield', ax=ax, shade=True, legend=False)
+    #    ax.set_title(axnames[ax_idx])
+        ax.get_yaxis().set_visible(False)
 
-    sns.kdeplot(B_target[:, ax_idx], label='Coil without shield', ax=ax, shade=True, legend=False)
-    sns.kdeplot(B_target_w_shield[:, ax_idx], label='Coil with shield', ax=ax, shade=True, legend=False)
-    sns.kdeplot(B_target2[:, ax_idx], label='Coil designed with shield', ax=ax, shade=True, legend=False)
-#    ax.set_title(axnames[ax_idx])
-    ax.get_yaxis().set_visible(False)
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['left'].set_visible(False)
 
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_visible(False)
+        ax.set_xlabel('Magnetic field on %s-axis'%axnames[ax_idx])
 
-    ax.set_xlabel('Magnetic field on %s-axis'%axnames[ax_idx])
+        if ax_idx == 0:
+            ax.legend()
 
-    if ax_idx == 0:
-        ax.legend()
+    fig.tight_layout(rect=[0, 0.03, 1, 0.95])
 
-fig.tight_layout(rect=[0, 0.03, 1, 0.95])
-
-plt.savefig('/l/bfieldtools/examples/publication_software/shielding_effect.pdf')
+    if SAVE_FIGURES:
+        plt.savefig('/l/bfieldtools/examples/publication_software/shielding_effect.pdf')
 
 
 
@@ -279,46 +283,46 @@ plt.savefig('/l/bfieldtools/examples/publication_software/shielding_effect.pdf')
 
 ###############################################################
 # Plot the difference in stream functions
+#
+#f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+#           size=(800, 800))
+#mlab.clf()
+#
+#plot_data_on_vertices(coil.mesh, np.nan_to_num(100 * (coil.I-coil.I2)/coil.I), figure=f, colorbar=True)
+#
+#mlab.colorbar(title='Relative error (%)')
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-           size=(800, 800))
-mlab.clf()
-
-plot_data_on_vertices(coil.mesh, np.nan_to_num(100 * (coil.I-coil.I2)/coil.I), figure=f, colorbar=True)
-
-mlab.colorbar(title='Relative error (%)')
-
-
-###############################################################
-# Finally, plot the field lines when the shield is included into the model
-
-extent = 8
-N = 20
-X, Y, Z = np.meshgrid(np.linspace(-extent, extent, N)+7.5, np.linspace(-extent, extent, N), np.linspace(-extent, extent, N))
-
-r = np.array([X.flatten(), Y.flatten(), Z.flatten()]).T
-
-r = r[shield.mesh.contains(r)]
-
-
-coil.C_cyl = compute_C(coil.mesh, r)
-shield.C_cyl = compute_C(shield.mesh, r)
-
-secondary_C_cyl = shield.C_cyl @ shield.coupling
-
-total_C_cyl = coil.C_cyl + secondary_C_cyl
-
-
-Bfield = total_C_cyl @ coil.I2
-
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-           size=(800, 800))
-mlab.clf()
-
-quiv = mlab.quiver3d(*r.T, *Bfield.T)
-
-
-
-plot_3d_current_loops(loops, colors='auto', figure=f)
-
-shield.plot_mesh(representation='surface', opacity=0.1, cull_front=True)
+#
+################################################################
+## Finally, plot the field lines when the shield is included into the model
+#
+#extent = 8
+#N = 20
+#X, Y, Z = np.meshgrid(np.linspace(-extent, extent, N)+7.5, np.linspace(-extent, extent, N), np.linspace(-extent, extent, N))
+#
+#r = np.array([X.flatten(), Y.flatten(), Z.flatten()]).T
+#
+#r = r[shield.mesh.contains(r)]
+#
+#
+#coil.C_cyl = compute_C(coil.mesh, r)
+#shield.C_cyl = compute_C(shield.mesh, r)
+#
+#secondary_C_cyl = shield.C_cyl @ shield.coupling
+#
+#total_C_cyl = coil.C_cyl + secondary_C_cyl
+#
+#
+#Bfield = total_C_cyl @ coil.I2
+#
+#f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+#           size=(800, 800))
+#mlab.clf()
+#
+#quiv = mlab.quiver3d(*r.T, *Bfield.T)
+#
+#
+#
+#plot_3d_current_loops(loops, colors='auto', figure=f)
+#
+#shield.plot_mesh(representation='surface', opacity=0.1, cull_front=True)

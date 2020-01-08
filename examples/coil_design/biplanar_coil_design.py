@@ -141,7 +141,7 @@ mlab.quiver3d(*target_points.T, *B_target.T)
 
 
 ##############################################################
-# Plot cross-section of magentic field and magnetic potential of the discretized loops
+# Plot cross-section of magnetic field and magnetic potential of the discretized loops
 
 from bfieldtools.line_magnetics import magnetic_field, scalar_potential
 

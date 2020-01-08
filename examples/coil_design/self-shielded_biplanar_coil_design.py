@@ -20,7 +20,7 @@ import trimesh
 
 from bfieldtools.mesh_class import MeshWrapper
 from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic, scalar_potential_coupling
-from bfieldtools.mesh_inductance import mutual_inductance_matrix_from_A
+from bfieldtools.mesh_properties import mutual_inductance_matrix_from_A
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
