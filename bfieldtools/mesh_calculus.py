@@ -7,19 +7,24 @@ import numpy as np
 from scipy.sparse import csr_matrix, coo_matrix, spdiags, hstack, vstack
 
 
-def laplacian_matrix(mesh):
+def laplacian_matrix(mesh, material_param=None):
     """
     Sparse Laplace(-Beltrami) operator
 
     Parameters
     ----------
     mesh: Trimesh Mesh object
+    material_param: material parameter for each triangle
 
     Returns
     -------
     Cotangent weights: w_ij = - 0.5* (cot(alpha) + cot(beta))
 
     """
+    if material_param is None:
+        p = 1
+    else:
+        p = material_param
     N = mesh.vertices.shape[0]
     R = mesh.vertices[mesh.faces]  # Nt x 3 (corners) x 3 (xyz)
 
@@ -35,7 +40,9 @@ def laplacian_matrix(mesh):
         i2 = (i+2) % 3
         ii.append(mesh.faces[:, i1])
         jj.append(mesh.faces[:, i2])
-        cot.append(-0.5*(edges[:, i1, :]*edges[:, i2, :]).sum(axis=-1)/(2*mesh.area_faces))
+        c = -0.5*(edges[:, i1, :]*edges[:, i2, :]).sum(axis=-1)/(2*mesh.area_faces)
+        # Append cot with cotangent terms multiplied by material parameter
+        cot.append(c*p)
 
     ii = np.ravel(ii)
     jj = np.ravel(jj)
