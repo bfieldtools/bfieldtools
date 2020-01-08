@@ -6,10 +6,23 @@ including both self- and mutual-inductance.
 import numpy as np
 from .utils import get_quad_points, get_line_quad_points
 from .mesh_magnetics import vector_potential_coupling
-from .mesh_calculus import gradient_matrix
+from .mesh_calculus import gradient_matrix, laplacian_matrix
 from psutil import virtual_memory
 
+def resistance_matrix(mesh, sheet_resistance):
+    """ Resistance matrix
 
+        Parameters
+        ----------
+        mesh: Trimesh mesh object
+        sheet_resistance: (N_faces) array
+                            "1/sigma*d" constant resistance for each face
+        Returns
+        -------
+        R: (Nvertices x Nvertices) array
+            resistance matrix of `mesh`
+    """
+    return -laplacian_matrix(mesh, sheet_resistance)
 
 def self_inductance_matrix(mesh, Nchunks=None, quad_degree=2):
     """ Calculate a self inductance matrix for hat basis functions
