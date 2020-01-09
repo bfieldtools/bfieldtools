@@ -13,7 +13,7 @@ Surface harmonics == Laplace-Beltrami eigenfunctions
 
 """
 
-from .mesh_calculus import laplacian_matrix, mass_matrix, laplacian_matrix_w_holes, mass_matrix_w_holes
+from .mesh_calculus import laplacian_matrix, mass_matrix
 from .mesh_magnetics import magnetic_field_coupling
 from scipy.sparse.linalg import eigsh
 import numpy as np
@@ -66,8 +66,8 @@ class suhbasis():
         else:
 
             if self.boundaries:
-                L = laplacian_matrix_w_holes(self.mesh, self.inner_vertices, self.boundaries)
-                M = mass_matrix_w_holes(self.mesh, self.inner_vertices, self.boundaries)
+                L = laplacian_matrix(self.mesh, None, self.inner_vertices, self.boundaries)
+                M = mass_matrix(self.mesh, self.inner_vertices, self.boundaries)
 
 
                 v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries

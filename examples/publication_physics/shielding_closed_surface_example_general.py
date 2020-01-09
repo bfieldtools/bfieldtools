@@ -19,12 +19,12 @@ import matplotlib.pyplot as plt
 from mayavi import mlab
 #import trimesh
 
-from bfieldtools.mesh_class import Conductor
+from bfieldtools.mesh_class import MeshWrapper
 from bfieldtools.mesh_magnetics import magnetic_field_coupling as compute_C
 from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic as compute_C_analytic
 from bfieldtools.mesh_magnetics import scalar_potential_coupling as compute_U
 from bfieldtools.coil_optimize import optimize_streamfunctions
-from bfieldtools.mesh_properties import mutual_inductance_matrix
+from bfieldtools.mesh_inductance import mutual_inductance_matrix
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
 from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis
@@ -42,8 +42,8 @@ for i in range(4):
 mesh1  = filter_laplacian(mesh1)
 mesh2  = filter_laplacian(mesh2, 0.9)
 
-current1 = Conductor(mesh_obj=mesh1)
-current2 = Conductor(mesh_obj=mesh2)
+current1 = MeshWrapper(mesh_obj=mesh1)
+current2 = MeshWrapper(mesh_obj=mesh2)
 
 M11 = current1.inductance
 M22 = current2.inductance
@@ -73,7 +73,6 @@ CB2 = compute_C_analytic(mesh2, points)
 CU1 = compute_U(mesh1, points)
 CU2 = compute_U(mesh2, points)
 
-CU11 = compute_U(mesh1, points)
 #%% Specify spherical harmonic and calculate corresponding shielded field
 #alpha = np.zeros(A1.shape[0])
 #alpha[2] = 1
