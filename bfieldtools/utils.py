@@ -182,7 +182,7 @@ def dual_areas(tris, ta):
     return areas/3
 
 
-def find_mesh_boundaries(verts, tris, edges):
+def find_mesh_boundaries(mesh):
     '''
     Finds the open boundaries of a mesh by finding the edges that only
     belong to a single triangle. Returns an index array of inner vertices
@@ -191,40 +191,46 @@ def find_mesh_boundaries(verts, tris, edges):
 
     Parameters
     ----------
-    verts
-    tris
-    edges
+    mesh: trimesh mesh object
 
     Returns
     -------
-    boundary_verts
-    inner_verts
-    boundary_tris
-    inner_tris
+    boundaries: list of array-like
 
     '''
+    inner_vertices = np.arange(0, np.len(mesh.vertices))
 
-    unique, unique_idx, unique_count = np.unique(np.sort(edges, axis=-1), axis=0,
-                                                 return_index=True,
-                                                 return_counts=True)
+    outline = mesh.outline(process=False)
 
-    #If edge only used in one triangle, it is a boundary edge
-    boundary_edges = edges[unique_idx[np.where(unique_count == 1)]]
+    boundaries = []
+    for idx, i in enumerate(outline.entities):
+            boundaries.append(i.points)
 
-    #Create index arrays for boundary vertices
-    boundary_verts = np.unique(boundary_edges.flatten())
-    inner_verts = np.delete(np.arange(0, len(verts)), boundary_verts)
+            inner_vertices = np.setdiff1d(inner_vertices, i.points)
 
-    #Find triangles using boundary vertices
-    boundary_tris = np.array([], dtype=np.int)
-    for vert in boundary_verts:
-        boundary_tris = np.append(boundary_tris, np.where(np.any(tris == vert, axis=-1) is True)[0])
+    return boundaries, inner_vertices
 
-    #Create index arrays for boundary triangles
-    boundary_tris = np.unique(boundary_tris)
-    inner_tris = np.delete(np.arange(0, len(tris)), boundary_tris)
-
-    return boundary_verts, inner_verts, boundary_tris, inner_tris
+#    unique, unique_idx, unique_count = np.unique(np.sort(edges, axis=-1), axis=0,
+#                                                 return_index=True,
+#                                                 return_counts=True)
+#
+#    #If edge only used in one triangle, it is a boundary edge
+#    boundary_edges = edges[unique_idx[np.where(unique_count == 1)]]
+#
+#    #Create index arrays for boundary vertices
+#    boundary_verts = np.unique(boundary_edges.flatten())
+#    inner_verts = np.delete(np.arange(0, len(verts)), boundary_verts)
+#
+#    #Find triangles using boundary vertices
+#    boundary_tris = np.array([], dtype=np.int)
+#    for vert in boundary_verts:
+#        boundary_tris = np.append(boundary_tris, np.where(np.any(tris == vert, axis=-1) is True)[0])
+#
+#    #Create index arrays for boundary triangles
+#    boundary_tris = np.unique(boundary_tris)
+#    inner_tris = np.delete(np.arange(0, len(tris)), boundary_tris)
+#
+#    return boundary_verts, inner_verts, boundary_tris, inner_tris
 
 
 
