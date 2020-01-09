@@ -7,16 +7,23 @@ import numpy as np
 from scipy.sparse import csr_matrix, coo_matrix, spdiags, hstack, vstack
 
 
-def laplacian_matrix(mesh, material_param=None):
+def laplacian_matrix(mesh, material_param=None, inner_vertices=None, holes=None):
     """
     Sparse Laplace(-Beltrami) operator
+
+    If holes are present, mesh vertices not present in inner_vertices or holes
+    are assumed to be on the outer boundary of the mesh, which is set to zero.
 
     Parameters
     ----------
     mesh: Trimesh Mesh object
     material_param: array-like with length N_triangles
         material parameter for each triangle
-
+    inner_vertices: list (default None)
+        contains mesh vertex indices corresponding to inner holes
+    holes: list with length N_holes (default None)
+        each list element contains array-like of mesh vertex indices corresponding to each
+        mesh hole
     Returns
     -------
     Cotangent weights: w_ij = - 0.5* (cot(alpha) + cot(beta))
@@ -55,15 +62,20 @@ def laplacian_matrix(mesh, material_param=None):
     L = L + L.T
     L = L - spdiags(L.sum(axis=0), 0, N, N)
 
+    if inner_vertices and holes:
+       L = _laplacian_matrix_w_holes(L, inner_vertices, holes)
+    elif inner_vertices or holes:
+        raise ValueError('You need to specify both inner_vertices and holes')
+
     return L
 
 
-def laplacian_matrix_w_holes(mesh, inner_vertices, boundaries, material_param=None):
+def _laplacian_matrix_w_holes(L, inner_vertices, holes):
     '''
     Computes Laplacian matrix with additional boundary constraint
-    for inner boundaris: the transverse gradient at the inner boundaries are
-
-    Mesh vertices not present in inner_vertices or boundaries are assumed to be
+    for inner boundaris: the transverse gradient at the inner holes is zero,
+    i.e. the value on the hole boundary is constant
+    Mesh vertices not present in inner_vertices or holes are assumed to be
     on the outer boundary of the mesh, which is set to zero.
 
     For the discretization see:
@@ -77,35 +89,31 @@ def laplacian_matrix_w_holes(mesh, inner_vertices, boundaries, material_param=No
 
     Parameters
     ----------
-    mesh: Trimesh Mesh object
+    L: Laplacian matrix computes without boundary conditions
 
     inner_vertices: list
-        contains mesh vertex indices corresponding to inner boundaries
-    boundaries: list with length N_holes
-        each list element contains mesh vertex indices corresponding to each
-        mesh holes
-    material_param: array-like with length N_triangles
-        material parameter for each triangle
+        contains mesh vertex indices corresponding to inner holes
+    holes: list with length N_holes
+        each list element contains array-like of mesh vertex indices corresponding to each
+        mesh hole
 
     Returns
     -------
     L_holes: Cotangent weights
         First N_inner_vertices elements correspond to inner mesh vertices,
-        last N_holes elements correspond to the values at the boundaries
+        last N_holes elements correspond to the values at the holes
 
     '''
 
-    L = laplacian_matrix(mesh, material_param)
-
     Linner = L[inner_vertices, :][:, inner_vertices]
 
-    Lb = [None]*len(boundaries)
+    Lb = [None]*len(holes)
 
-    #Start constructing the Laplacian matrix including the values at the inner boundaries
+    #Start constructing the Laplacian matrix including the values at the inner holes
     L_holes = Linner
 
     #Add columns
-    for b_idx, b in enumerate(boundaries):
+    for b_idx, b in enumerate(holes):
         #Hole contribution in original Laplacian matrix
         Lb[b_idx] = coo_matrix(np.sum(L[b,:][:, inner_vertices], axis=0))
 
@@ -113,9 +121,9 @@ def laplacian_matrix_w_holes(mesh, inner_vertices, boundaries, material_param=No
         L_holes = hstack((L_holes, Lb[b_idx].T))
 
     #Add rows, including new diagonal
-    for b_idx, b in enumerate(boundaries):
+    for b_idx, b in enumerate(holes):
         #Construct the added-on diagonal part
-        concat = np.zeros((len(boundaries),1))
+        concat = np.zeros((len(holes),1))
         concat[b_idx] = -np.sum(Lb[b_idx])
 
         #Add on the values at the bottom of the matrix, including the diagonal part
@@ -124,7 +132,7 @@ def laplacian_matrix_w_holes(mesh, inner_vertices, boundaries, material_param=No
     return L_holes.tocsr()
 
 
-def mass_matrix(mesh, da=None, lumped=False):
+def mass_matrix(mesh, da=None, lumped=False, inner_vertices=None, holes=None):
     '''
     Computes mass matrix of mesh.
 
@@ -146,10 +154,8 @@ def mass_matrix(mesh, da=None, lumped=False):
     '''
 
     if lumped:
-        if da is None:
-            from .utils import dual_areas
-            da = dual_areas(mesh.faces, mesh.area_faces)
-
+        from .utils import dual_areas
+        da = dual_areas(mesh.faces, mesh.area_faces)
         M = spdiags(da, 0, mesh.vertices.shape[0], mesh.vertices.shape[0]).tocsr()
     else:
         N = mesh.vertices.shape[0]
@@ -175,21 +181,24 @@ def mass_matrix(mesh, da=None, lumped=False):
         M = M + M.T
         M = M + spdiags(M.sum(axis=0), 0, N, N)
 
+    if inner_vertices and holes:
+       M = _mass_matrix_w_holes(M, inner_vertices, holes)
+    elif inner_vertices or holes:
+        raise ValueError('You need to specify both inner_vertices and holes')
 
     return M
 
 
-def mass_matrix_w_holes(mesh, inner_vertices, boundaries, da=None, lumped=False):
+def _mass_matrix_w_holes(M, inner_vertices, holes, lumped=False):
     '''
-    Computes mass matrix of mesh with added boundaries (see laplacian_matrix_w_holes)
+    Computes mass matrix of mesh with added holes (see laplacian_matrix_w_holes)
     '''
-    M = mass_matrix(mesh, da, lumped)
 
     Minner = M[inner_vertices, :][:, inner_vertices]
     m = M.diagonal()
 
     M_holes = Minner.diagonal()
-    for b_idx, b in enumerate(boundaries):
+    for b_idx, b in enumerate(holes):
         M_holes = np.concatenate((M_holes, np.array([np.sum(m[b])])))
 
     M_holes = spdiags(M_holes, diags=0, m=M_holes.shape[0], n=M_holes.shape[0], format='csr')

@@ -42,7 +42,7 @@ def self_inductance_matrix(mesh, Nchunks=None, quad_degree=2):
             Self.inductance matrix of `mesh`
     """
     if quad_degree <= 2:
-        print('Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.')
+        print('Computing self-inductance matrix using rough quadrature (degree=%d). For higher accuracy, set quad_degree to 4 or more.'%quad_degree)
 
     return mutual_inductance_matrix(mesh, mesh, Nchunks=Nchunks, quad_degree=quad_degree)
 
@@ -74,9 +74,9 @@ def mutual_inductance_matrix(mesh1, mesh2, Nchunks=None, quad_degree=1):
 
 
         #Estimate of memory usage in megabytes for a single chunk, when quad_degree=2 (very close with quad_degree=1)
-        mem_use = 0.04 * len(mesh1.vertices) * len(mesh2.vertices)
+        mem_use = 0.033 * (len(mesh1.vertices) * len(mesh2.vertices))**0.9
 
-        print('Estimating %d MiB required for %d times %d vertices...'%(mem_use, len(mesh1.vertices), len(mesh2.vertices)))
+        print('Estimating %d MiB required for %d by %d vertices...'%(mem_use, len(mesh1.vertices), len(mesh2.vertices)))
 
         #Chunk computation so that available memory is sufficient
         Nchunks = int(np.ceil(mem_use/mem))
