@@ -116,7 +116,7 @@ class Conductor:
 #
 #            boundaries = ...
 #
-#            laplacian = laplacian_matrix_w_holes
+#            laplacian = laplacian_matrix(...)
 
         return laplacian
 

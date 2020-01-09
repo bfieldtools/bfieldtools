@@ -8,7 +8,7 @@ from scipy.linalg import eigh
 from mayavi import mlab
 
 from .mesh_magnetics import magnetic_field_coupling
-from .mesh_calculus import laplacian_matrix, mass_matrix, laplacian_matrix_w_holes, mass_matrix_w_holes
+from .mesh_calculus import laplacian_matrix, mass_matrix
 from .mesh_properties import self_inductance_matrix
 from . import utils
 
@@ -38,8 +38,8 @@ def compute_current_modes(mesh, boundaries=None, return_eigenvals=False):
     boundary_verts, inner_verts, boundary_tris, inner_tris = utils.find_mesh_boundaries(mesh.vertices, mesh.faces, mesh.edges)
 
     if boundaries:
-        L_holes = laplacian_matrix_w_holes(mesh, inner_verts, boundaries)
-        M_holes = mass_matrix_w_holes(mesh, inner_verts, boundaries)
+        L_holes = laplacian_matrix(mesh, None, inner_verts, boundaries)
+        M_holes = mass_matrix(mesh, inner_verts, boundaries)
 
         u, v = eigh(-L_holes.todense(), M_holes.todense())
 
