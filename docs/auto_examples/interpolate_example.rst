@@ -138,9 +138,9 @@ Plot subdivided mesh and interpolated scalars
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.679 seconds)
+   **Total running time of the script:** ( 0 minutes  1.211 seconds)
 
-**Estimated memory usage:**  40 MB
+**Estimated memory usage:**  25 MB
 
 
 .. _sphx_glr_download_auto_examples_interpolate_example.py:

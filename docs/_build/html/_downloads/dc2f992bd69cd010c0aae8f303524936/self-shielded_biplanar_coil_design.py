@@ -20,7 +20,7 @@ import trimesh
 
 from bfieldtools.mesh_class import MeshWrapper
 from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic, scalar_potential_coupling
-from bfieldtools.mesh_inductance import mutual_inductance_matrix_from_A
+from bfieldtools.mesh_properties import mutual_inductance_matrix
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
@@ -76,7 +76,7 @@ M22 = M22[shieldcoil.inner_verts][:, shieldcoil.inner_verts]
 
 
 
-M21 = mutual_inductance_matrix_from_A(shieldcoil.mesh, coil.mesh)
+M21 = mutual_inductance_matrix(shieldcoil.mesh, coil.mesh)
 M21 = M21[shieldcoil.inner_verts]
 
 # Mapping from I1 to I2, constraining flux through shieldcoil to zero

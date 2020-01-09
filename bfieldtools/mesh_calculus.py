@@ -14,7 +14,8 @@ def laplacian_matrix(mesh, material_param=None):
     Parameters
     ----------
     mesh: Trimesh Mesh object
-    material_param: material parameter for each triangle
+    material_param: array-like with length N_triangles
+        material parameter for each triangle
 
     Returns
     -------
@@ -57,7 +58,7 @@ def laplacian_matrix(mesh, material_param=None):
     return L
 
 
-def laplacian_matrix_w_holes(mesh, inner_vertices, boundaries):
+def laplacian_matrix_w_holes(mesh, inner_vertices, boundaries, material_param=None):
     '''
     Computes Laplacian matrix with additional boundary constraint
     for inner boundaris: the transverse gradient at the inner boundaries are
@@ -83,6 +84,8 @@ def laplacian_matrix_w_holes(mesh, inner_vertices, boundaries):
     boundaries: list with length N_holes
         each list element contains mesh vertex indices corresponding to each
         mesh holes
+    material_param: array-like with length N_triangles
+        material parameter for each triangle
 
     Returns
     -------
@@ -92,7 +95,7 @@ def laplacian_matrix_w_holes(mesh, inner_vertices, boundaries):
 
     '''
 
-    L = laplacian_matrix(mesh)
+    L = laplacian_matrix(mesh, material_param)
 
     Linner = L[inner_vertices, :][:, inner_vertices]
 

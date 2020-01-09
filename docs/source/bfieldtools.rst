@@ -55,7 +55,7 @@ bfieldtools.mesh\_class module
 bfieldtools.mesh\_inductance module
 -------------------------------------------
 
-.. automodule:: bfieldtools.mesh_inductance
+.. automodule:: bfieldtools.mesh_properties
    :members:
    :undoc-members:
    :show-inheritance:

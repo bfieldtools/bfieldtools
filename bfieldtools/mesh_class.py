@@ -13,7 +13,7 @@ import numpy as np
 
 from . import utils
 from .mesh_calculus import laplacian_matrix, mass_matrix
-from .mesh_inductance import self_inductance_matrix
+from .mesh_properties import self_inductance_matrix
 from .mesh_magnetics import magnetic_field_coupling, scalar_potential_coupling, vector_potential_coupling
 
 

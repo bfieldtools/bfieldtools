@@ -6,6 +6,9 @@ Example showing a basic biplanar coil producing homogeneous field in a target
 region between the two coil planes.
 
 '''
+PLOT = False
+SAVE_FIGURES = False
+
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -91,26 +94,24 @@ n_stray_points = len(stray_points)
 
 ####################################
 # Plot geometry
+if PLOT:
+    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+               size=(800, 800))
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-           size=(800, 800))
+    coil.plot_mesh(representation='wireframe', opacity=0.1, color=(0, 0, 0))
+    coil.plot_mesh(representation='surface', opacity=0.1, color=(0, 0, 0))
+    mlab.points3d(*target_points.T, color=(0,0,1))
+    mlab.points3d(*stray_points.T, scale_factor=0.3, color=(1,0,0))
 
-coil.plot_mesh(representation='wireframe', opacity=0.1, color=(0, 0, 0))
-coil.plot_mesh(representation='surface', opacity=0.1, color=(0, 0, 0))
-mlab.points3d(*target_points.T, color=(0,0,1))
-mlab.points3d(*stray_points.T, scale_factor=0.3, color=(1,0,0))
+    f.scene.isometric_view()
+    f.scene.camera.zoom(1.5)
 
-f.scene.isometric_view()
-f.scene.camera.zoom(1.5)
-mlab.savefig('/l/bfieldtools/examples/publication_software/biplanar_geometry.png', figure=f, magnification=6)
+    if SAVE_FIGURES:
+        mlab.savefig('/l/bfieldtools/examples/publication_software/biplanar_geometry.png', figure=f, magnification=6)
 
-mlab.close()
+    mlab.close()
 
 
-##############################################################
-# Compute C matrices that are used to compute the generated magnetic field
-
-coil.C = CouplingMatrix(coil, compute_C)
 
 ##############################################################
 # Create bfield specifications used when optimizing the coil geometry
@@ -128,8 +129,8 @@ target_abs_error = np.zeros_like(target_field)
 target_abs_error[:, 0] += 0.001
 target_abs_error[:, 1:3] += 0.005
 
-target_spec = {'C':coil.C(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target_field':target_field}
-stray_spec = {'C':coil.C(stray_points), 'abs_error':0.01, 'rel_error':0, 'target_field':np.zeros((n_stray_points, 3))}
+target_spec = {'coupling':coil.B_coupling(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target':target_field}
+stray_spec = {'coupling':coil.B_coupling(stray_points), 'abs_error':0.01, 'rel_error':0, 'target':np.zeros((n_stray_points, 3))}
 
 bfield_specification = [target_spec, stray_spec]
 
@@ -151,67 +152,69 @@ N_contours = 4
 
 loops, loop_values= scalar_contour(coil.mesh, coil.I, N_contours=N_contours)
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-           size=(800, 800))
-mlab.clf()
+if PLOT:
+    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+               size=(800, 800))
+    mlab.clf()
 
-plot_3d_current_loops(loops, colors='auto', figure=f)
+    plot_3d_current_loops(loops, colors='auto', figure=f)
 
-B_target = coil.C(target_points) @ coil.I
+    B_target = coil.B_coupling(target_points) @ coil.I
 
-mlab.quiver3d(*target_points.T, *B_target.T, mode='arrow', scale_factor=1)
+    mlab.quiver3d(*target_points.T, *B_target.T, mode='arrow', scale_factor=1)
 
 
-f.scene.isometric_view()
-f.scene.camera.zoom(0.95)
-mlab.savefig('/l/bfieldtools/examples/publication_software/biplanar_loops.png', figure=f, magnification=6)
+    f.scene.isometric_view()
+    f.scene.camera.zoom(0.95)
+    if SAVE_FIGURES:
+        mlab.savefig('/l/bfieldtools/examples/publication_software/biplanar_loops.png', figure=f, magnification=6)
 
-mlab.close()
+    mlab.close()
 
 ##############################################################
 # Plot cross-section of magentic field and magnetic potential of the discretized loops
-
-from bfieldtools.bfield_line import bfield_line_segments, scalarpot_current_loops
-from bfieldtools.viz import plot_cross_section
-
-x = y = np.linspace(-12, 12, 250)
-X,Y = np.meshgrid(x, y, indexing='ij')
-points = np.zeros((X.flatten().shape[0], 3))
-points[:, 0] = X.flatten()
-points[:, 1] = Y.flatten()
-
-B = np.zeros_like(points)
-U = np.zeros((points.shape[0],))
-for loop_idx in range(len(loops)):
-    B += bfield_line_segments(np.vstack((loops[loop_idx], loops[loop_idx][0])), points)
-    U += scalarpot_current_loops(np.vstack((loops[loop_idx], loops[loop_idx][0])), points)
-
-#plot_cross_section(X, Y)
-
-
-B = B.T[:2].reshape(2, x.shape[0], y.shape[0])
-lw = np.sqrt(B[0]**2 + B[1]**2)
-lw = 2*lw/np.max(lw)
-
-U = U.reshape(x.shape[0], y.shape[0])
-
-#U /= np.max(U)
-plt.figure()
-
-from matplotlib import colors
-
-#plt.contourf(X,Y, U.T, cmap='seismic', levels=1024, interpolate=True)
-plt.pcolormesh(X, Y, U.T, cmap='seismic', shading='gouraud')
-#plt.imshow(U, vmin=-1.0, vmax=1.0, cmap='seismic', interpolation='bicubic',
-#           extent=(x.min(), x.max(), y.min(), y.max()))
-
-seed_points=points[:,:2]*0.3
-
-plt.streamplot(x,y, B[1], B[0], density=2, linewidth=lw, color='k', integration_direction='both',
-               start_points=seed_points)
-plt.axis('equal')
-plt.axis('off')
-for loop in loops:
-    plt.plot(loop[:,1], loop[:,0], 'k', linewidth=4, alpha=0.1)
-
-plt.tight_layout()
+#
+#from bfieldtools.bfield_line import bfield_line_segments, scalarpot_current_loops
+#from bfieldtools.viz import plot_cross_section
+#
+#x = y = np.linspace(-12, 12, 250)
+#X,Y = np.meshgrid(x, y, indexing='ij')
+#points = np.zeros((X.flatten().shape[0], 3))
+#points[:, 0] = X.flatten()
+#points[:, 1] = Y.flatten()
+#
+#B = np.zeros_like(points)
+#U = np.zeros((points.shape[0],))
+#for loop_idx in range(len(loops)):
+#    B += bfield_line_segments(np.vstack((loops[loop_idx], loops[loop_idx][0])), points)
+#    U += scalarpot_current_loops(np.vstack((loops[loop_idx], loops[loop_idx][0])), points)
+#
+##plot_cross_section(X, Y)
+#
+#
+#B = B.T[:2].reshape(2, x.shape[0], y.shape[0])
+#lw = np.sqrt(B[0]**2 + B[1]**2)
+#lw = 2*lw/np.max(lw)
+#
+#U = U.reshape(x.shape[0], y.shape[0])
+#
+##U /= np.max(U)
+#plt.figure()
+#
+#from matplotlib import colors
+#
+##plt.contourf(X,Y, U.T, cmap='seismic', levels=1024, interpolate=True)
+#plt.pcolormesh(X, Y, U.T, cmap='seismic', shading='gouraud')
+##plt.imshow(U, vmin=-1.0, vmax=1.0, cmap='seismic', interpolation='bicubic',
+##           extent=(x.min(), x.max(), y.min(), y.max()))
+#
+#seed_points=points[:,:2]*0.3
+#
+#plt.streamplot(x,y, B[1], B[0], density=2, linewidth=lw, color='k', integration_direction='both',
+#               start_points=seed_points)
+#plt.axis('equal')
+#plt.axis('off')
+#for loop in loops:
+#    plt.plot(loop[:,1], loop[:,0], 'k', linewidth=4, alpha=0.1)
+#
+#plt.tight_layout()

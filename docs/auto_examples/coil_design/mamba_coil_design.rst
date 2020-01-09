@@ -65,18 +65,6 @@ regions arranged in a grid.
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    SVG path loading unavailable!
-    Traceback (most recent call last):
-      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/path/exchange/svg_io.py", line 18, in <module>
-        from svg.path import parse_path
-    ModuleNotFoundError: No module named 'svg'
-
 
 
 Set up target and stray field points. Here, the target points are on a planar
@@ -175,7 +163,7 @@ Compute coupling matrix that is used to compute the generated magnetic field, cr
 
  .. code-block:: none
 
-    Computing C matrix, 3184 vertices by 512 target points... took 0.84 seconds.
+    Computing magnetic field coupling matrix, 3184 vertices by 512 target points... took 0.68 seconds.
 
 
 
@@ -205,13 +193,16 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing inductance matrix in 2 chunks since 7 GiB memory is available...
-    Calculating potentials, chunk 1/2
-    Calculating potentials, chunk 2/2
-    Inductance matrix computation took 70.82 seconds.
+    Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
+    Estimating 405514 MiB required for 3184 times 3184 vertices...
+    Computing inductance matrix in 42 chunks since 9800 MiB memory is available...
+    Computing potential matrix
+    Inductance matrix computation took 86.23 seconds.
     Pre-existing problem not passed, creating...
     Passing parameters to problem...
     Passing problem to solver...
+    /l/conda-envs/mne/lib/python3.6/site-packages/cvxpy/reductions/solvers/solving_chain.py:170: UserWarning: You are solving a parameterized problem that is not DPP. Because the problem is not DPP, subsequent solves will not be faster than the first one.
+      "You are solving a parameterized problem that is not DPP. "
 
 
     Problem
@@ -241,33 +232,32 @@ Run QP solver
     Optimizer  - Cones                  : 1
     Optimizer  - Scalar variables       : 5970              conic                  : 2898            
     Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
-    Factor     - setup time             : 1.78              dense det. time        : 0.00            
-    Factor     - ML order time          : 0.37              GP order time          : 0.00            
+    Factor     - setup time             : 1.62              dense det. time        : 0.00            
+    Factor     - ML order time          : 0.30              GP order time          : 0.00            
     Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06        
     Factor     - dense dim.             : 0                 flops                  : 4.53e+10        
     ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
-    0   2.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  73.46 
-    1   9.2e+00  3.8e-01  3.3e-01  3.18e-01   8.720442621e+01   8.663738472e+01   3.8e-01  74.14 
-    2   6.5e+00  2.7e-01  2.4e-01  3.48e-01   1.226961211e+02   1.222523302e+02   2.7e-01  74.71 
-    3   3.4e+00  1.4e-01  1.3e-01  3.68e-01   1.987899646e+02   1.985326339e+02   1.4e-01  75.32 
-    4   1.1e+00  4.6e-02  2.1e-02  1.11e+00   3.144686625e+02   3.143947436e+02   4.6e-02  75.90 
-    5   4.4e-01  1.8e-02  6.2e-03  9.35e-01   3.445450804e+02   3.445201507e+02   1.8e-02  76.46 
-    6   3.2e-02  1.3e-03  1.2e-04  9.84e-01   3.765035939e+02   3.765016483e+02   1.3e-03  77.26 
-    7   8.4e-04  3.5e-05  5.6e-07  1.00e+00   3.791913665e+02   3.791913288e+02   3.5e-05  78.02 
-    8   3.7e-04  1.5e-05  1.7e-07  1.00e+00   3.792467051e+02   3.792466888e+02   1.5e-05  78.59 
-    9   6.2e-06  2.6e-07  4.0e-10  1.00e+00   3.792916856e+02   3.792916853e+02   2.6e-07  79.34 
-    10  7.4e-07  3.1e-08  1.7e-11  1.00e+00   3.792923899e+02   3.792923899e+02   3.1e-08  79.92 
-    11  3.7e-07  1.5e-08  4.1e-12  1.00e+00   3.792924377e+02   3.792924377e+02   1.5e-08  81.02 
-    12  3.9e-07  7.7e-09  2.0e-12  1.00e+00   3.792924617e+02   3.792924617e+02   7.7e-09  81.92 
-    13  1.1e-06  3.9e-09  3.8e-12  1.00e+00   3.792924737e+02   3.792924738e+02   3.9e-09  82.91 
-    Optimizer terminated. Time: 83.34   
+    0   2.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  92.49 
+    1   1.1e+01  4.6e-01  4.8e-01  2.12e-01   6.597411176e+01   6.533623471e+01   4.6e-01  93.07 
+    2   6.0e+00  2.5e-01  2.3e-01  2.10e-01   1.540986144e+02   1.537101559e+02   2.5e-01  93.67 
+    3   5.0e+00  2.1e-01  1.9e-01  6.31e-01   1.799383624e+02   1.796052015e+02   2.1e-01  94.17 
+    4   9.7e-01  4.0e-02  1.7e-02  7.68e-01   3.380757286e+02   3.380076296e+02   4.0e-02  94.86 
+    5   5.0e-01  2.1e-02  7.3e-03  8.87e-01   3.735298693e+02   3.734982875e+02   2.1e-02  95.40 
+    6   2.9e-01  1.2e-02  3.5e-03  9.19e-01   3.945710275e+02   3.945537579e+02   1.2e-02  95.91 
+    7   1.4e-01  5.7e-03  1.2e-03  9.36e-01   4.128020623e+02   4.127949103e+02   5.7e-03  96.48 
+    8   2.1e-02  8.8e-04  8.3e-05  9.65e-01   4.284418731e+02   4.284412976e+02   8.8e-04  97.07 
+    9   2.7e-03  1.1e-04  3.8e-06  9.95e-01   4.319789642e+02   4.319788943e+02   1.1e-04  97.60 
+    10  2.6e-05  1.1e-06  3.7e-09  9.97e-01   4.325195035e+02   4.325195028e+02   1.1e-06  98.17 
+    11  3.4e-06  1.4e-07  2.0e-10  1.00e+00   4.325241783e+02   4.325241781e+02   1.4e-07  98.73 
+    12  2.7e-07  6.6e-09  4.5e-12  1.00e+00   4.325248512e+02   4.325248513e+02   6.6e-09  99.85 
+    Optimizer terminated. Time: 100.27  
 
 
     Interior-point solution summary
       Problem status  : PRIMAL_AND_DUAL_FEASIBLE
       Solution status : OPTIMAL
-      Primal.  obj: 3.7929247369e+02    nrm: 8e+02    Viol.  con: 2e-08    var: 0e+00    cones: 0e+00  
-      Dual.    obj: 3.7929247376e+02    nrm: 4e+02    Viol.  con: 0e+00    var: 2e-10    cones: 0e+00  
+      Primal.  obj: 4.3252485119e+02    nrm: 9e+02    Viol.  con: 3e-08    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 4.3252485126e+02    nrm: 5e+02    Viol.  con: 0e+00    var: 2e-09    cones: 0e+00  
 
 
 
@@ -302,9 +292,9 @@ Plot coil windings and target points
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 3 minutes  39.183 seconds)
+   **Total running time of the script:** ( 4 minutes  13.713 seconds)
 
-**Estimated memory usage:**  7903 MB
+**Estimated memory usage:**  3678 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_mamba_coil_design.py:

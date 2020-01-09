@@ -37,13 +37,15 @@ Spherical harmonics B-field computation validation
     l = 10 computed
     l = 11 computed
     l = 12 computed
-    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.18 seconds.
+    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.16 seconds.
     /l/bfieldtools/bfieldtools/sphtools.py:347: RuntimeWarning: invalid value encountered in multiply
       derxlm *= -1*np.sin(theta) #this comes from dXlm(cos(theta))/dtheta = dXlm(cos(theta))/dcos(theta)*(-sin(theta))
     /l/bfieldtools/bfieldtools/sphtools.py:371: RuntimeWarning: divide by zero encountered in true_divide
       sinxlm = m/(np.sin(theta))*self.xlm(l,m, theta)
     /l/bfieldtools/bfieldtools/sphtools.py:371: RuntimeWarning: invalid value encountered in multiply
       sinxlm = m/(np.sin(theta))*self.xlm(l,m, theta)
+    /l/bfieldtools/bfieldtools/sphtools.py:204: RuntimeWarning: invalid value encountered in matmul
+      svec[i] = np.transpose(vmat)@vec[i]
     /l/bfieldtools/bfieldtools/sphtools.py:710: RuntimeWarning: invalid value encountered in multiply
       Philm *= acoeffs[idx] # Fixed b -> a
     /l/bfieldtools/bfieldtools/sphtools.py:401: RuntimeWarning: invalid value encountered in multiply
@@ -116,9 +118,9 @@ Spherical harmonics B-field computation validation
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  37.849 seconds)
+   **Total running time of the script:** ( 0 minutes  42.273 seconds)
 
-**Estimated memory usage:**  87 MB
+**Estimated memory usage:**  9 MB
 
 
 .. _sphx_glr_download_auto_examples_validation_spherical_harmonics_bfield_validation.py:

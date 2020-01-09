@@ -125,18 +125,18 @@ One-element validation
 
  .. code-block:: none
 
-    Computing scalar potential coupling matrix, 7 vertices by 16641 target points... took 0.26 seconds.
+    Computing scalar potential coupling matrix, 7 vertices by 16641 target points... took 0.20 seconds.
     Computing magnetic field coupling matrix, 7 vertices by 4225 target points... took 0.03 seconds.
-    Computing magnetic field coupling matrix analytically, 7 vertices by 4225 target points... took 0.05 seconds.
+    Computing magnetic field coupling matrix analytically, 7 vertices by 4225 target points... took 0.03 seconds.
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.219 seconds)
+   **Total running time of the script:** ( 0 minutes  1.224 seconds)
 
-**Estimated memory usage:**  10 MB
+**Estimated memory usage:**  13 MB
 
 
 .. _sphx_glr_download_auto_examples_validation_one_element.py:

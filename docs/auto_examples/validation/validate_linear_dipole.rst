@@ -180,9 +180,9 @@ p_tris = points[tris]
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.076 seconds)
+   **Total running time of the script:** ( 0 minutes  1.405 seconds)
 
-**Estimated memory usage:**  24 MB
+**Estimated memory usage:**  9 MB
 
 
 .. _sphx_glr_download_auto_examples_validation_validate_linear_dipole.py:
