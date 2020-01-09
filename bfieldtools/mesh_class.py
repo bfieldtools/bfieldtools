@@ -38,7 +38,7 @@ class LazyProperty():
         return result
 
 
-class MeshWrapper:
+class Conductor:
     '''
     Class that is used for surface mesh field calculations, e.g. coil design.
     Computation functions are typically external functions that are called
@@ -88,17 +88,20 @@ class MeshWrapper:
             self.mesh = utils.fix_normals(self.mesh)
 
 
-        #Useful mesh metrics etc, more can be added
-        self.dual_areas = utils.dual_areas(self.mesh.faces, self.mesh.area_faces)
 
-        self.boundary_verts, self.inner_verts,\
-        self.boundary_tris, self.inner_tris = utils.find_mesh_boundaries(self.mesh.vertices,
-                                                                         self.mesh.faces,
-                                                                         self.mesh.edges)
+        self.boundaries, self.inner_verts = utils.find_mesh_boundaries(self.mesh)
+
+#
+#        if self.opts['hole_definition'] is 'longest':
+#            self.holes =
 
         self.B_coupling = CouplingMatrix(self, magnetic_field_coupling)
         self.U_coupling = CouplingMatrix(self, scalar_potential_coupling)
         self.A_coupling = CouplingMatrix(self, vector_potential_coupling)
+
+
+        self.s = None
+        self.problem = None
 
 
     @LazyProperty
@@ -107,7 +110,13 @@ class MeshWrapper:
         Compute and return surface laplacian matrix.
 
         '''
+#        if not self.opt['holes']:
         laplacian = laplacian_matrix(self.mesh)
+#        else:
+#
+#            boundaries = ...
+#
+#            laplacian = laplacian_matrix_w_holes
 
         return laplacian
 
@@ -118,7 +127,8 @@ class MeshWrapper:
         Compute and return mesh mass matrix.
 
         '''
-        mass = mass_matrix(self.mesh, self.dual_areas)
+
+        mass = mass_matrix(self.mesh, self.opt['lumped'])
 
         return mass
 
@@ -132,7 +142,7 @@ class MeshWrapper:
 
         start = time()
 
-        inductance = self_inductance_matrix(self.mesh)
+        inductance = self_inductance_matrix(self.mesh, Nchunks=self.opts['Nchunks'])
 
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)
