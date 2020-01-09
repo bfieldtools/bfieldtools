@@ -14,7 +14,7 @@ from mayavi import mlab
 import trimesh
 
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import Conductor
 
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.mesh_properties import mutual_inductance_matrix_from_A
@@ -55,10 +55,10 @@ coilmesh1 = coilmesh1.subdivide()
 
 
 #Create mesh class object
-coil = MeshWrapper(verts=coilmesh1.vertices*0.75, tris=coilmesh1.faces, fix_normals=True)
+coil = Conductor(verts=coilmesh1.vertices*0.75, tris=coilmesh1.faces, fix_normals=True)
 
 # Separate object for shield geometry
-shield = MeshWrapper(verts=coilmesh2.vertices.copy()*1.1, tris=coilmesh2.faces.copy(), fix_normals=True)
+shield = Conductor(verts=coilmesh2.vertices.copy()*1.1, tris=coilmesh2.faces.copy(), fix_normals=True)
 #shield.mesh.vertices[:,2] -= 3
 #shield.mesh.vertices *= np.array([1.2, 1.2, 1.2])
 #

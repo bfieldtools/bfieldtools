@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from mayavi import mlab
 import trimesh
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import Conductor
 from bfieldtools.magnetic_field_mesh import compute_C
 from bfieldtools.magnetic_field_mesh import compute_C_analytic
 from bfieldtools.magnetic_field_mesh import compute_U
@@ -56,8 +56,8 @@ mesh1 = coil_plus.union(coil_minus)
 mesh2 = mesh1.copy()
 mesh2.apply_scale(1.4)
 
-current1 = MeshWrapper(mesh_obj=mesh1)
-current2 = MeshWrapper(mesh_obj=mesh2)
+current1 = Conductor(mesh_obj=mesh1)
+current2 = Conductor(mesh_obj=mesh2)
 
 M11 = current1.inductance
 M22 = current2.inductance

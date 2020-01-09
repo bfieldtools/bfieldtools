@@ -11,7 +11,7 @@ from mayavi import mlab
 import trimesh
 
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import Conductor
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.mesh_properties import mutual_inductance_matrix
 from bfieldtools.contour import scalar_contour
@@ -40,10 +40,10 @@ coilmesh = trimesh.Trimesh(coilmesh.vertices + center_offset,
                             coilmesh.faces, process=False)
 
 #Create mesh class object
-coil = MeshWrapper(verts=coilmesh.vertices, tris=coilmesh.faces, fix_normals=True)
+coil = Conductor(verts=coilmesh.vertices, tris=coilmesh.faces, fix_normals=True)
 
 # Separate object for shield geometry
-shield = MeshWrapper(mesh_file=pkg_resources.resource_filename('bfieldtools', 'example_meshes/cylinder.stl'), process=True, fix_normals=True)
+shield = Conductor(mesh_file=pkg_resources.resource_filename('bfieldtools', 'example_meshes/cylinder.stl'), process=True, fix_normals=True)
 
 ###############################################################
 # Set up target  points and plot geometry

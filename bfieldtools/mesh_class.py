@@ -51,7 +51,7 @@ class Conductor:
 
     def __init__(self, verts=None, tris=None, mesh_file=None, mesh_obj=None, process=False, fix_normals=True):
         '''
-        Initialize MeshWrapper object.
+        Initialize Conductor object.
         First priority is to use given Trimesh object (mesh_obj).
         Second priority is to load mesh from file (mesh_file).
         Third priority is to use given verts and tris arrays (verts, tris).
@@ -195,7 +195,7 @@ class Conductor:
 
     def save_pickle(self, target_file):
         """
-        Save the MeshWrapper object using a pickled Python file
+        Save the Conductor object using a pickled Python file
 
         Parameters
         ----------
@@ -209,7 +209,7 @@ class Conductor:
 
 def save_pickle(obj, target_file):
     """
-    Save the MeshWrapper object using a pickled Python file
+    Save the Conductor object using a pickled Python file
 
     Parameters
     ----------
@@ -224,7 +224,7 @@ def save_pickle(obj, target_file):
 
 def load_pickle(target_file):
     """
-    Load pickled MeshWrapper object from file
+    Load pickled Conductor object from file
 
     Parameters
     -----------
@@ -232,7 +232,7 @@ def load_pickle(target_file):
         File name or file object to load from
     Returns
     -------
-    obj: loaded MeshWrapper object
+    obj: loaded Conductor object
 
 
     """

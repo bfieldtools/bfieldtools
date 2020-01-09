@@ -16,7 +16,7 @@ path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
 if path not in sys.path:
     sys.path.insert(0,path)
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import Conductor
 from bfieldtools.integrals import triangle_potential_dipole_linear
 from bfieldtools.utils import assemble_matrix
 from bfieldtools.magnetic_field_mesh import compute_U
@@ -42,7 +42,7 @@ coilmesh.vertices[:, 0] *= 0.5
 coilmesh.vertices[:, 0] += 0.25
 coilmesh.vertices[:, 1:2] -= coilmesh.vertices[:, 1:2].mean(axis=0)
 coilmesh.vertices[:, 1:2] += cube.vertices[:, 1:2].mean(axis=0)
-coil = MeshWrapper(mesh_obj = coilmesh)
+coil = Conductor(mesh_obj = coilmesh)
 
 #%%
 fig = mlab.figure(bgcolor=(1,1,1))

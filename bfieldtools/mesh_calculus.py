@@ -298,7 +298,7 @@ def curl(vecs, mesh):
 #if __name__ == "__main__":
 #    import numpy as np
 #    from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix
-#    from bfieldtools.mesh_class import MeshWrapper
+#    from bfieldtools.mesh_class import Conductor
 #    import trimesh
 #    import pkg_resources
 #
@@ -306,7 +306,7 @@ def curl(vecs, mesh):
 #    file_obj = pkg_resources.resource_filename('bfieldtools',
 #                        'example_meshes/10x10_plane.obj')
 #    mesh = trimesh.load(file_obj, process=True)
-#    coil = MeshWrapper(mesh_obj = mesh)
+#    coil = Conductor(mesh_obj = mesh)
 #
 #    # All three Laplacians should be the same
 #    L = laplacian_matrix(mesh)

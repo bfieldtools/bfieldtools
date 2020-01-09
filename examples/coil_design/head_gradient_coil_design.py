@@ -11,7 +11,7 @@ from mayavi import mlab
 import trimesh
 
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import Conductor
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
@@ -45,7 +45,7 @@ helmetmesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools'
 #joined_planes = coil_plus.union(coil_minus)
 
 #Create mesh class object
-coil = MeshWrapper(verts=helmetmesh.vertices, tris=helmetmesh.faces, fix_normals=True)
+coil = Conductor(verts=helmetmesh.vertices, tris=helmetmesh.faces, fix_normals=True)
 
 ###############################################################
 #Set up target and stray field points.

@@ -132,7 +132,7 @@ def optimize_streamfunctions(meshobj,
 
     Parameters
     ----------
-    meshobj: MeshWrapper object
+    meshobj: Conductor object
         Contains Trimesh mesh
     bfield_specification: list
         List in which element is a dictionary containing a field specification.
