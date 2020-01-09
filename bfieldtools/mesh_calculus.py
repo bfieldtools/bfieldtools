@@ -272,7 +272,7 @@ def divergence_matrix(mesh):
     A = spdiags(a, 0, a.shape[0], a.shape[0])
     return -Gx.T*A, -Gy.T*A, -Gz.T*A
 
-def adjoint_curl_matrix(mesh):
+def curl_matrix(mesh):
     """ Adjoint curl of tangential vector field
     """
     from .utils import tri_normals_and_areas
@@ -288,17 +288,17 @@ def divergence(vecs, mesh):
     Dx, Dy, Dz = divergence_matrix(mesh)
     return Dx @ vecs[:, 0] + Dx @ vecs[:, 1] + Dx @ vecs[:, 2]
 
-def adjoint_curl(vecs, mesh):
+def curl(vecs, mesh):
     """ Adjoint curl applied to tangential vector field
     """
-    Cx, Cy, Cz = adjoint_curl_matrix(mesh)
+    Cx, Cy, Cz = curl_matrix(mesh)
     return Cx @ vecs[:, 0] + Cx @ vecs[:, 1] + Cx @ vecs[:, 2]
 
 
 #if __name__ == "__main__":
 #    import numpy as np
 #    from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix
-#    from bfieldtools.mesh_class import MeshWrapper
+#    from bfieldtools.mesh_class import Conductor
 #    import trimesh
 #    import pkg_resources
 #
@@ -306,7 +306,7 @@ def adjoint_curl(vecs, mesh):
 #    file_obj = pkg_resources.resource_filename('bfieldtools',
 #                        'example_meshes/10x10_plane.obj')
 #    mesh = trimesh.load(file_obj, process=True)
-#    coil = MeshWrapper(mesh_obj = mesh)
+#    coil = Conductor(mesh_obj = mesh)
 #
 #    # All three Laplacians should be the same
 #    L = laplacian_matrix(mesh)

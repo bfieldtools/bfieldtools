@@ -18,7 +18,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mayavi import mlab
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import Conductor
 from bfieldtools.mesh_magnetics import magnetic_field_coupling as compute_C
 from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic as compute_C_analytic
 from bfieldtools.mesh_magnetics import scalar_potential_coupling as compute_U
@@ -36,8 +36,8 @@ from trimesh.creation import icosphere
 mesh1 = icosphere(3, 0.5)
 mesh2 = icosphere(3, 1.0)
 
-current1 = MeshWrapper(mesh_obj=mesh1)
-current2 = MeshWrapper(mesh_obj=mesh2)
+current1 = Conductor(mesh_obj=mesh1)
+current2 = Conductor(mesh_obj=mesh2)
 
 M22 = current2.inductance
 M22 += np.ones_like(M22)/M22.shape[0] # zero mean

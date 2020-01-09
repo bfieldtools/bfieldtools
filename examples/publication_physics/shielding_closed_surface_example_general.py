@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from mayavi import mlab
 #import trimesh
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import Conductor
 from bfieldtools.mesh_magnetics import magnetic_field_coupling as compute_C
 from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic as compute_C_analytic
 from bfieldtools.mesh_magnetics import scalar_potential_coupling as compute_U
@@ -42,8 +42,8 @@ for i in range(4):
 mesh1  = filter_laplacian(mesh1)
 mesh2  = filter_laplacian(mesh2, 0.9)
 
-current1 = MeshWrapper(mesh_obj=mesh1)
-current2 = MeshWrapper(mesh_obj=mesh2)
+current1 = Conductor(mesh_obj=mesh1)
+current2 = Conductor(mesh_obj=mesh2)
 
 M11 = current1.inductance
 M22 = current2.inductance

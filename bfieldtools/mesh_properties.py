@@ -24,6 +24,7 @@ def resistance_matrix(mesh, sheet_resistance):
     """
     return -laplacian_matrix(mesh, sheet_resistance)
 
+
 def self_inductance_matrix(mesh, Nchunks=None, quad_degree=2):
     """ Calculate a self inductance matrix for hat basis functions
         (stream functions) in the triangular mesh described by

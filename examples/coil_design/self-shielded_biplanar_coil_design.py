@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 from mayavi import mlab
 import trimesh
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import Conductor
 from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic, scalar_potential_coupling
 from bfieldtools.mesh_properties import mutual_inductance_matrix
 from bfieldtools.coil_optimize import optimize_streamfunctions
@@ -52,12 +52,12 @@ coil_minus = trimesh.Trimesh(planemesh.vertices + center_offset - standoff,
 joined_planes = coil_plus.union(coil_minus)
 
 #Create mesh class object
-coil = MeshWrapper(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
+coil = Conductor(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
 
 shieldmesh = joined_planes.copy()
 shieldmesh.vertices *= np.array([1.5, 1.5, 1.5])
 
-shieldcoil = MeshWrapper(verts=shieldmesh.vertices, tris=shieldmesh.faces, fix_normals=True)
+shieldcoil = Conductor(verts=shieldmesh.vertices, tris=shieldmesh.faces, fix_normals=True)
 
 
 

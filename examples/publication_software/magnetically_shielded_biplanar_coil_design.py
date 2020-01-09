@@ -14,7 +14,7 @@ from mayavi import mlab
 import trimesh
 
 
-from bfieldtools.mesh_class import MeshWrapper, CouplingMatrix
+from bfieldtools.mesh_class import Conductor, CouplingMatrix
 from bfieldtools.magnetic_field_mesh import compute_C, compute_U
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
@@ -47,13 +47,13 @@ coil_minus = trimesh.Trimesh(planemesh.vertices + center_offset - standoff,
 joined_planes = coil_plus.union(coil_minus)
 
 #Create mesh class object
-coil = MeshWrapper(mesh_obj=joined_planes, fix_normals=True)
+coil = Conductor(mesh_obj=joined_planes, fix_normals=True)
 
 # Separate object for shield geometry
 shieldmesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/closed_cylinder_remeshed.stl'), process=True)
 shieldmesh.apply_scale(15)
 
-shield = MeshWrapper(mesh_obj=shieldmesh, process=True, fix_normals=True)
+shield = Conductor(mesh_obj=shieldmesh, process=True, fix_normals=True)
 
 
 ###############################################################

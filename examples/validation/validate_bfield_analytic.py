@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 from bfieldtools.mesh_calculus import gradient
 from bfieldtools.mesh_magnetics import magnetic_field_coupling, magnetic_field_coupling_analytic
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import Conductor
 import pkg_resources
 
 
@@ -19,7 +19,7 @@ import pkg_resources
 file_obj = pkg_resources.resource_filename('bfieldtools',
                     'example_meshes/10x10_plane.obj')
 coilmesh = trimesh.load(file_obj, process=False)
-coil = MeshWrapper(mesh_obj = coilmesh)
+coil = Conductor(mesh_obj = coilmesh)
 weights = np.zeros(coilmesh.vertices.shape[0])
 weights[coil.inner_verts] = 1
 
@@ -47,7 +47,7 @@ file_obj = pkg_resources.resource_filename('bfieldtools',
 discmesh = trimesh.load(file_obj, process=True)
 for ii in range(3):
     discmesh = discmesh.subdivide()
-disc = MeshWrapper(mesh_obj = discmesh)
+disc = Conductor(mesh_obj = discmesh)
 weights = np.zeros(discmesh.vertices.shape[0])
 weights[disc.inner_verts] = 1
 mlab.figure()
