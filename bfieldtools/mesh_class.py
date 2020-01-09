@@ -142,7 +142,8 @@ class Conductor:
 
         start = time()
 
-        inductance = self_inductance_matrix(self.mesh, Nchunks=self.opts['Nchunks'])
+        # TODO opts?
+        inductance = self_inductance_matrix(self.mesh)# , Nchunks=self.opts['Nchunks'])
 
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)

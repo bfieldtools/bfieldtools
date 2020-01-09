@@ -198,7 +198,7 @@ def find_mesh_boundaries(mesh):
     boundaries: list of array-like
 
     '''
-    inner_vertices = np.arange(0, np.len(mesh.vertices))
+    inner_vertices = np.arange(0, len(mesh.vertices))
 
     outline = mesh.outline(process=False)
 

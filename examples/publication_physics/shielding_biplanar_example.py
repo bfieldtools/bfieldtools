@@ -20,11 +20,11 @@ from mayavi import mlab
 import trimesh
 
 from bfieldtools.mesh_class import Conductor
-from bfieldtools.magnetic_field_mesh import compute_C
-from bfieldtools.magnetic_field_mesh import compute_C_analytic
-from bfieldtools.magnetic_field_mesh import compute_U
+from bfieldtools.mesh_magnetics import magnetic_field_coupling as compute_C
+from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic as compute_C_analytic
+from bfieldtools.mesh_magnetics import scalar_potential_coupling as compute_U
 from bfieldtools.coil_optimize import optimize_streamfunctions
-from bfieldtools.mutual_inductance_mesh import mutual_inductance_matrix_from_A
+from bfieldtools.mesh_properties import mutual_inductance_matrix
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
 from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis
@@ -67,7 +67,7 @@ M22 = M22[current2.inner_verts][:, current2.inner_verts]
 # Add rank-one matrix, so that M22 can be inverted (for zero mean functions)
 #M22 += np.ones_like(M22)/M22.shape[0]
 #M11 += np.ones_like(M11)/M11.shape[0]
-M21 = mutual_inductance_matrix_from_A(mesh2, mesh1)
+M21 = mutual_inductance_matrix(mesh2, mesh1)
 M21 = M21[current2.inner_verts][:, current1.inner_verts]
 # Mapping from I1 to I2, constraining flux through mesh2 to zero
 P = -np.linalg.solve(M22, M21)
