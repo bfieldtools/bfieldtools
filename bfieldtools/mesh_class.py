@@ -90,7 +90,7 @@ class Conductor:
 
 
         self.boundaries, self.inner_verts = utils.find_mesh_boundaries(self.mesh)
-
+        self.set_holes()
 #
 #        if self.opts['hole_definition'] is 'longest':
 #            self.holes =
@@ -103,6 +103,41 @@ class Conductor:
         self.s = None
         self.problem = None
 
+    def set_holes(self, outer=None):
+        """ Set indices of holes to self.holes
+
+            outer: int or array_like, indices of outer boundaries in
+                    self.boundaries. One boundary index per mesh component.
+                    If None, outer are set the longest boundary in each
+                    mesh component
+        """
+        if len(self.boundaries) == 0:
+            # The mesh is watertight
+            self.holes = []
+            return
+        if outer is None:
+            # Have to determine if there multiple bodies and label
+            # the boundaries according to them
+            comps = trimesh.graph.connected_components(self.mesh.edges)
+            b_labels = np.zeros(len(self.boundaries))
+            for m, b in enumerate(self.boundaries):
+                for n, c in enumerate(comps):
+                    if b[0] in c:
+                        b_labels[m] = n
+            b_lengths = np.array([len(b) for b in self.boundaries])
+            # Determine outer by finding the boundary of max lenght
+            # for each component
+            outer = []
+            b_inds = np.arange(len(self.boundaries))
+            for n in range(len(comps)):
+                mask = b_labels == n
+                outer.append(b_inds[mask][b_lengths[mask].argmax()])
+        inds = list(np.setdiff1d(np.arange(len(self.boundaries)), outer))
+        if len(inds) == 0:
+            # The non-watertight meshes contain no holes
+            self.holes = []
+        else:
+            self.holes = self.boundaries[inds]
 
     @LazyProperty
     def laplacian(self):
@@ -110,14 +145,11 @@ class Conductor:
         Compute and return surface laplacian matrix.
 
         '''
-#        if not self.opt['holes']:
-        laplacian = laplacian_matrix(self.mesh)
-#        else:
-#
-#            boundaries = ...
-#
-#            laplacian = laplacian_matrix(...)
-
+        if len(self.holes) == 0:
+            laplacian = laplacian_matrix(self.mesh)
+        else:
+            laplacian = laplacian_matrix(self.mesh, None, self.inner_vertices,
+                                         self.holes)
         return laplacian
 
 
@@ -127,8 +159,8 @@ class Conductor:
         Compute and return mesh mass matrix.
 
         '''
-
-        mass = mass_matrix(self.mesh, self.opt['lumped'])
+        # TODO opts?
+        mass = mass_matrix(self.mesh), #self.opt['lumped'])
 
         return mass
 
