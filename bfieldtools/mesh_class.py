@@ -13,7 +13,7 @@ import numpy as np
 
 from . import utils
 from .mesh_calculus import laplacian_matrix, mass_matrix
-from .mesh_properties import self_inductance_matrix
+from .mesh_properties import self_inductance_matrix, resistance_matrix
 from .mesh_magnetics import magnetic_field_coupling, scalar_potential_coupling, vector_potential_coupling
 
 
@@ -183,15 +183,15 @@ class Conductor:
         return inductance
 
 
-    def resistance(self, resistivity=1.68*1e-8, thickness=1e-4):
+    def resistance(self, resistivity=1.68*1e-8, thickness=1e-4, full_rank=True):
         '''
         Compute and return resistance/resistivity matrix using Laplace matrix.
         Default resistivity set to that of copper.
         Parameters
         ----------
-        Resistivity: float
+        Resistivity: float or array (Nfaces)
             Resistivity value in Ohm/meter
-        Thickness: float
+        Thickness: float or array (Nfaces)
             Thickness of surface. NB! Must be small in comparison to observation distance
 
         Returns
@@ -201,13 +201,14 @@ class Conductor:
 
         '''
 
-        #Flip sign
-        negative_laplacian = -1 * self.laplacian.todense()
+        sheet_resistance = resistivity / thickness
+        resistance =  resistance_matrix(self.mesh, sheet_resistance).todense()
 
-        #Compensate for rank n-1 by adding offset
-        negative_laplacian += np.ones(negative_laplacian.shape)/negative_laplacian.shape[0]
-
-        resistance = resistivity / thickness * negative_laplacian
+        # Compensate for rank n-1 by adding offset, otherwise this
+        # operator map constant vectors to zero
+        if full_rank:
+            scale = np.mean(sheet_resistance)
+            resistance += np.ones(resistance.shape)/resistance.shape[0]*scale
 
         return resistance
 
