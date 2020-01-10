@@ -49,7 +49,10 @@ class Conductor:
 
     '''
 
-    def __init__(self, verts=None, tris=None, mesh_file=None, mesh_obj=None, process=False, fix_normals=True):
+    def __init__(self, verts=None, tris=None, mesh_file=None,
+                 mesh_obj=None, process=False, fix_normals=True,
+                 resistivity=1.68*1e-8, thickness=1e-4,
+                 opts = {}):
         '''
         Initialize Conductor object.
         First priority is to use given Trimesh object (mesh_obj).
@@ -87,13 +90,18 @@ class Conductor:
         if fix_normals:
             self.mesh = utils.fix_normals(self.mesh)
 
+        self.opts = {'outer_boundaries':None, 'mass_lumped':False,
+                     'resistance_full_rank': True, 'outer_boundaries':None}
+        for key, val in opts.items():
+            self.opts[key] = val
 
 
         self.boundaries, self.inner_verts = utils.find_mesh_boundaries(self.mesh)
-        self.set_holes()
-#
-#        if self.opts['hole_definition'] is 'longest':
-#            self.holes =
+
+        self.set_holes(self.opts['outer_boundaries'])
+
+        self.resistivity = resistivity
+        self.thickness = thickness
 
         self.B_coupling = CouplingMatrix(self, magnetic_field_coupling)
         self.U_coupling = CouplingMatrix(self, scalar_potential_coupling)
@@ -103,19 +111,20 @@ class Conductor:
         self.s = None
         self.problem = None
 
-    def set_holes(self, outer=None):
+
+    def set_holes(self, outer_boundaries=None):
         """ Set indices of holes to self.holes
 
-            outer: int or array_like, indices of outer boundaries in
+            outer_boundaries: int or array_like, indices of outer boundaries in
                     self.boundaries. One boundary index per mesh component.
-                    If None, outer are set the longest boundary in each
-                    mesh component
+                    If None, outer_boundaries are set the longest
+                    boundary in each mesh component
         """
         if len(self.boundaries) == 0:
             # The mesh is watertight
             self.holes = []
             return
-        if outer is None:
+        if outer_boundaries is None:
             # Have to determine if there multiple bodies and label
             # the boundaries according to them
             comps = trimesh.graph.connected_components(self.mesh.edges)
@@ -125,19 +134,22 @@ class Conductor:
                     if b[0] in c:
                         b_labels[m] = n
             b_lengths = np.array([len(b) for b in self.boundaries])
-            # Determine outer by finding the boundary of max lenght
+            # Determine outer_boundaries by finding the boundary of max lenght
             # for each component
-            outer = []
+            outer_boundaries = []
             b_inds = np.arange(len(self.boundaries))
             for n in range(len(comps)):
                 mask = b_labels == n
-                outer.append(b_inds[mask][b_lengths[mask].argmax()])
-        inds = list(np.setdiff1d(np.arange(len(self.boundaries)), outer))
-        if len(inds) == 0:
+                outer_boundaries.append(b_inds[mask][b_lengths[mask].argmax()])
+
+        self.opts['outer_boundaries'] = outer_boundaries
+        hole_inds = list(np.setdiff1d(np.arange(len(self.boundaries)),
+                                 outer_boundaries))
+        if len(hole_inds) == 0:
             # The non-watertight meshes contain no holes
             self.holes = []
         else:
-            self.holes = self.boundaries[inds]
+            self.holes = self.boundaries[hole_inds]
 
     @LazyProperty
     def laplacian(self):
@@ -159,8 +171,11 @@ class Conductor:
         Compute and return mesh mass matrix.
 
         '''
-        # TODO opts?
-        mass = mass_matrix(self.mesh), #self.opt['lumped'])
+        if len(self.holes) == 0:
+            mass = mass_matrix(self.mesh, self.opt['mass_lumped'])
+        else:
+            mass = mass_matrix(self.mesh, self.opt['mass_lumped'],
+                               self.inner_vertices, self.holes)
 
         return mass
 
@@ -182,8 +197,8 @@ class Conductor:
 
         return inductance
 
-
-    def resistance(self, resistivity=1.68*1e-8, thickness=1e-4, full_rank=True):
+    @LazyProperty
+    def resistance(self):
         '''
         Compute and return resistance/resistivity matrix using Laplace matrix.
         Default resistivity set to that of copper.
@@ -201,12 +216,12 @@ class Conductor:
 
         '''
 
-        sheet_resistance = resistivity / thickness
+        sheet_resistance = self.resistivity / self.thickness
         resistance =  resistance_matrix(self.mesh, sheet_resistance).todense()
 
         # Compensate for rank n-1 by adding offset, otherwise this
         # operator map constant vectors to zero
-        if full_rank:
+        if self.opts['resistance_full_rank']:
             scale = np.mean(sheet_resistance)
             resistance += np.ones(resistance.shape)/resistance.shape[0]*scale
 
