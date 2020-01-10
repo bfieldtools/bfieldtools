@@ -34,7 +34,9 @@ class LazyProperty():
     def __get__(self, obj, klass=None):
         if obj is None:
             return None
+
         result = obj.__dict__[self.__name__] = self._func(obj)
+
         return result
 
 
@@ -72,6 +74,13 @@ class Conductor:
             If True,  Trimesh will pre-process the mesh.
         fix_normals: boolean
             If True,  normals+winding should be set so that they always point "out" from the origin.
+        Resistivity: float or array (Nfaces)
+            Resistivity value in Ohm/meter
+        Thickness: float or array (Nfaces)
+            Thickness of surface. NB! Must be small in comparison to observation distance
+        opts: dict
+            Options for Conductor object. Default settings are:
+                ...
 
         '''
 
@@ -90,8 +99,10 @@ class Conductor:
         if fix_normals:
             self.mesh = utils.fix_normals(self.mesh)
 
+        #Populate options dictionary with defaults if not specified
         self.opts = {'outer_boundaries':None, 'mass_lumped':False,
                      'resistance_full_rank': True, 'outer_boundaries':None}
+
         for key, val in opts.items():
             self.opts[key] = val
 
@@ -100,8 +111,8 @@ class Conductor:
 
         self.set_holes(self.opts['outer_boundaries'])
 
-        self.resistivity = resistivity
-        self.thickness = thickness
+        self.__dict__['resistivity'] = resistivity
+        self.__dict__['thickness'] = thickness
 
         self.B_coupling = CouplingMatrix(self, magnetic_field_coupling)
         self.U_coupling = CouplingMatrix(self, scalar_potential_coupling)
@@ -172,9 +183,9 @@ class Conductor:
 
         '''
         if len(self.holes) == 0:
-            mass = mass_matrix(self.mesh, self.opt['mass_lumped'])
+            mass = mass_matrix(self.mesh, self.opts['mass_lumped'])
         else:
-            mass = mass_matrix(self.mesh, self.opt['mass_lumped'],
+            mass = mass_matrix(self.mesh, self.opts['mass_lumped'],
                                self.inner_vertices, self.holes)
 
         return mass
@@ -197,17 +208,22 @@ class Conductor:
 
         return inductance
 
+
+    def __setattr__(self, name, value):
+
+        self.__dict__[name] = value
+
+        #If resistance-affecting parameter is changed after the resistance matrix has been computed,
+        #then flush old result and re-compute
+        if (name == "resistivity" or name == "thickness") and 'resistance' in self.__dict__.keys():
+            self.resistance = self._resistance() #Re-compute with new parameters
+
+
     @LazyProperty
     def resistance(self):
         '''
         Compute and return resistance/resistivity matrix using Laplace matrix.
-        Default resistivity set to that of copper.
-        Parameters
-        ----------
-        Resistivity: float or array (Nfaces)
-            Resistivity value in Ohm/meter
-        Thickness: float or array (Nfaces)
-            Thickness of surface. NB! Must be small in comparison to observation distance
+        Conductivity and thickness are class parameters
 
         Returns
         -------
@@ -216,8 +232,15 @@ class Conductor:
 
         '''
 
+        return self._resistance()
+
+
+    def _resistance(self):
+        '''
+        Back-end of resistance matrix computation
+        '''
         sheet_resistance = self.resistivity / self.thickness
-        resistance =  resistance_matrix(self.mesh, sheet_resistance).todense()
+        resistance =  resistance_matrix(self.mesh, sheet_resistance).toarray()
 
         # Compensate for rank n-1 by adding offset, otherwise this
         # operator map constant vectors to zero
@@ -226,6 +249,7 @@ class Conductor:
             resistance += np.ones(resistance.shape)/resistance.shape[0]*scale
 
         return resistance
+
 
 
     def plot_mesh(self, representation='wireframe', opacity=0.5, color=(0, 0, 0), cull_front=False, cull_back=False):
@@ -359,3 +383,16 @@ class CouplingMatrix:
                 p_existing_point_idx, m_existing_point_idx = np.where((self.points == points[:, None]).all(axis=-1))
 
             return self.matrix[m_existing_point_idx]
+
+#
+#class StreamFunction:
+#    def __init__(self, conductor, init=None):
+#
+#
+
+
+
+
+
+
+
