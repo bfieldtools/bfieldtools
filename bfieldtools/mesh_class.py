@@ -150,6 +150,7 @@ class Conductor:
         self.U_coupling = CouplingMatrix(self, scalar_potential_coupling)
         self.A_coupling = CouplingMatrix(self, vector_potential_coupling)
 
+        # Matrices in free-weight basis
         self.matrices = {'laplacian': None, 'mass': None, 'inductance': None,
                         'resistance': None}
 
@@ -512,12 +513,12 @@ class StreamFunction:
 
     @property
     def power(self):
-        R = self.__dict__['resistance']
+        R = self.matrices['resistance']
         return self.f.T @ R @ self.f
 
     @property
     def magnetic_energy(self):
-        M = self.__dict__['inductance']
+        M = self.matrices['inductance']
         return 0.5 * self.f.T @ M @ self.f
 
     def plot(self):
