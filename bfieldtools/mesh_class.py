@@ -242,13 +242,26 @@ class Conductor:
 
 
     def __setattr__(self, name, value):
-
+        '''
+        Modified set-function to take into account post-hoc changes to e.g. resistance
+        '''
         self.__dict__[name] = value
 
         #If resistance-affecting parameter is changed after the resistance matrix has been computed,
         #then flush old result and re-compute
         if (name == "resistivity" or name == "thickness") and 'resistance' in self.__dict__.keys():
             self.resistance = self._resistance() #Re-compute with new parameters
+
+
+    def __getattr_(self, name):
+        '''
+        Modified get-function to implement basis mapping
+        '''
+
+        if name
+
+
+        return self.__dict__[name]
 
 
     @LazyProperty
