@@ -101,7 +101,7 @@ class Conductor:
 
         #Populate options dictionary with defaults if not specified
         self.opts = {'outer_boundaries':None, 'mass_lumped':False,
-                     'resistance_full_rank': True, 'outer_boundaries':None}
+                     'resistance_full_rank': True, 'inductance_nchunks':None}
 
         for key, val in opts.items():
             self.opts[key] = val
@@ -200,8 +200,8 @@ class Conductor:
 
         start = time()
 
-        # TODO opts?
-        inductance = self_inductance_matrix(self.mesh)# , Nchunks=self.opts['Nchunks'])
+        inductance = self_inductance_matrix(self.mesh),
+                        Nchunks=self.opts['inductance_nchunks'])
 
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)
