@@ -111,6 +111,9 @@ class Conductor:
 
         self.set_holes(self.opts['outer_boundaries'])
 
+        self.d2v = utils.dof2verts(self.mesh, self.inner_vertices, self.holes)
+        self.v2d = self.d2v.T
+
         self.__dict__['resistivity'] = resistivity
         self.__dict__['thickness'] = thickness
 
@@ -200,8 +203,8 @@ class Conductor:
 
         start = time()
 
-        inductance = self_inductance_matrix(self.mesh),
-                        Nchunks=self.opts['inductance_nchunks'])
+        inductance = self_inductance_matrix(self.mesh,
+                                            Nchunks=self.opts['inductance_nchunks'])
 
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)
@@ -384,10 +387,67 @@ class CouplingMatrix:
 
             return self.matrix[m_existing_point_idx]
 
-#
-#class StreamFunction:
-#    def __init__(self, conductor, init=None):
-#
+
+class StreamFunction:
+    """ Class for representing stream function(s) on a conductor
+
+        Handles the mapping between the degrees of freedom in the
+        stream function (dof) and the vertex weights (w)
+
+        Parameters:
+            vals:
+                array of shape (N,) or (N,M) where N corresponds to
+                the number of degrees of freedom in the conductor or the
+                the number of vertices in the conductor.
+
+                Multiple (M) stream functions can be stored in the object
+                by specifying vals with shape (N,M)
+            conductor:
+                Conductor object
+    """
+    def __init__(self, vals, conductor):
+        self.conductor = conductor
+        self.d2v = self.conductor.d2v
+        self.v2d = self.conductor.v2d
+        self.set_stream_func(vals)
+
+    def set_stream_func(self, vals):
+        """ Set stream function values to the object
+
+            Can also be used for re-setting the values
+
+            Parameters:
+                vals:
+                    array of shape (N,) or (N,M) where N corresponds to
+                    the number of degrees of freedom in the conductor or the
+                    the number of vertices in the conductor.
+        """
+        if len(vals) == len(self.conductor.mesh.vertices):
+            self.dof = self.v2d @ vals
+        elif len(vals) == len(self.conductor.inner_vertices) + len(self.conductor.holes):
+            self.dof = vals
+        else:
+            raise ValueError('the length of vals must either correspond to that of DOF or vertex weights')
+
+
+    @property
+    def w(self):
+        return self.v2d @ self.dof
+
+    @property
+    def d(self):
+        return self.dof
+
+    @property
+    def power(self):
+        return self.d.T @ self.conductor.resistance @ self.d
+
+    @property
+    def magnetic_energy(self):
+        return 0.5 * self.d.T @ self.conductor.inductance @ self.d
+
+    def plot(self):
+        pass
 
 
 
