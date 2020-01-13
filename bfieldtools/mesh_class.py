@@ -115,7 +115,7 @@ class Conductor:
         #Populate options dictionary with defaults if not specified
         self.opts = {'outer_boundaries':None, 'mass_lumped':False,
                      'resistance_full_rank': True, 'inductance_nchunks':None,
-                     'streamfunction_basis':'vertex'}
+                     'streamfunction_basis':'vertex', 'N_suh': 100}
 
         for key, val in opts.items():
             self.opts[key] = val
@@ -133,7 +133,7 @@ class Conductor:
         #######################################################################
 
         self.f2v = utils.free2vert(self.mesh, self.inner_verts, self.holes)
-        self.v2f = self.f2v.T
+        self.v2f = utils.vert2free(self.mesh, self.inner_verts, self.holes)
 
         self.basis_name = self.opts['streamfunction_basis']
         self.set_basis()
@@ -150,14 +150,19 @@ class Conductor:
         self.U_coupling = CouplingMatrix(self, scalar_potential_coupling)
         self.A_coupling = CouplingMatrix(self, vector_potential_coupling)
 
+        self.matrices = {'laplacian': None, 'mass': None, 'inductance': None,
+                        'resistance': None}
+
 
     def set_basis(self):
-        if self.opts['streamfunction_basis'] == 'suh':
-            self.basis = SuhBasis(self.mesh, self.mesh.is_watertight,
-                                  self.inner_vertices, self.holes)
-        elif self.opts['streamfunction_basis'] == 'free':
+        if self.basis_name == 'suh':
+            self.suh_basis = SuhBasis(self.mesh, self.opts['N_suh'],
+                                  self.mesh.is_watertight,
+                                  self.inner_verts, self.holes)
+            self.basis = self.suh_basis.basis
+        elif self.basis_name == 'free':
             self.basis = np.eye(len(self.inner_verts) + len(self.holes()))
-        elif self.opts['streamfunction_basis'] == 'vertex':
+        elif self.basis_name == 'vertex':
             self.basis = self.v2f
         else:
             raise ValueError('streamfunction_basis must free, vertex or suh')
@@ -202,8 +207,8 @@ class Conductor:
             self.holes = self.boundaries[hole_inds]
 
 
-    @LazyProperty
-    def laplacian(self):
+#    @LazyProperty
+    def _laplacian(self):
         '''
         Compute and return surface laplacian matrix.
 
@@ -216,8 +221,8 @@ class Conductor:
         return laplacian
 
 
-    @LazyProperty
-    def mass(self):
+#    @LazyProperty
+    def _mass(self):
         '''
         Compute and return mesh mass matrix.
 
@@ -231,8 +236,8 @@ class Conductor:
         return mass
 
 
-    @LazyProperty
-    def inductance(self):
+#    @LazyProperty
+    def _inductance(self):
         '''
         Compute and return mutual inductance matrix.
 
@@ -246,8 +251,8 @@ class Conductor:
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)
 
-        U = self.v2f
-        return U @ inductance @ U.T
+        U = self.f2v
+        return U.T @ inductance @ U
 
 
     def __setattr__(self, name, value):
@@ -258,40 +263,45 @@ class Conductor:
 
         #If resistance-affecting parameter is changed after the resistance matrix has been computed,
         #then flush old result and re-compute
-        if (name == "resistivity" or name == "thickness") and 'resistance' in self.__dict__.keys():
-            self.resistance = self._resistance() #Re-compute with new parameters
+        if (name == "resistivity" or name == "thickness") and self.matrices['resistance'] is not None:
+            self.matrices['resistance'] = self._resistance() #Re-compute with new parameters
 
         if name == 'basis_name':
             self.set_basis()
 
 
-    def __getattr_(self, name):
+    def __getattr__(self, name):
         '''
         Modified get-function to implement basis mapping
         '''
 
-        if name in ('laplacian', 'mass', 'resistance', 'inductance'):
-            M = self.__dict__[name]
+        if name in self.matrices.keys():
+            M = self.matrices[name]
+            if M is None:
+                try:
+                    M = self.matrices[name] = getattr(self, '_'+name)()
+                except KeyError:
+                    raise ValueError(name + ' not available')
             U = self.basis
             return U.T @ M @ U
 
         return self.__dict__[name]
 
 
-    @LazyProperty
-    def resistance(self):
-        '''
-        Compute and return resistance/resistivity matrix using Laplace matrix.
-        Conductivity and thickness are class parameters
-
-        Returns
-        -------
-        R: array
-            Resistance matrix
-
-        '''
-
-        return self._resistance()
+#    @LazyProperty
+#    def resistance(self):
+#        '''
+#        Compute and return resistance/resistivity matrix using Laplace matrix.
+#        Conductivity and thickness are class parameters
+#
+#        Returns
+#        -------
+#        R: array
+#            Resistance matrix
+#
+#        '''
+#
+#        return self._resistance()
 
 
     def _resistance(self):
@@ -307,8 +317,8 @@ class Conductor:
             scale = np.mean(sheet_resistance)
             resistance += np.ones(resistance.shape)/resistance.shape[0]*scale
 
-        U = self.v2f
-        return U @ resistance @ U.T
+        U = self.f2v
+        return U.T @ resistance @ U
 
 
 
@@ -502,11 +512,13 @@ class StreamFunction:
 
     @property
     def power(self):
-        return self.d.T @ self.conductor.resistance @ self.d
+        R = self.__dict__['resistance']
+        return self.f.T @ R @ self.f
 
     @property
     def magnetic_energy(self):
-        return 0.5 * self.d.T @ self.conductor.inductance @ self.d
+        M = self.__dict__['inductance']
+        return 0.5 * self.f.T @ M @ self.f
 
     def plot(self):
         pass

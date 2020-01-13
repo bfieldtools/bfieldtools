@@ -8,10 +8,10 @@ Created on Mon Oct 21 09:25:44 2019
 Calculate and plot field of a closed shielded current
 """
 
-#import sys
-#path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
-#if path in sys.path:
-#    sys.path.insert(0, path)
+import sys
+path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
+if path in sys.path:
+    sys.path.insert(0, path)
 
 
 import numpy as np
