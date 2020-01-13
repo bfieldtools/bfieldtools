@@ -4,7 +4,7 @@ Contains functions for computing thermal noise in conductive thin objects.
 '''
 
 import numpy as np
-from scipy.linalg import eigh
+from scipy.linalg import eigh, eigsh
 from mayavi import mlab
 
 from .mesh_magnetics import magnetic_field_coupling
@@ -73,7 +73,7 @@ def compute_current_modes(mesh, boundaries=None, return_eigenvals=False):
     else:
         return vl
 
-def compute_current_modes_ind_res(mesh, sheet_resistance, freqs, T, Nchunks = 4, quad_degree = 2, boundaries=None, return_eigenvals=False):
+def compute_current_modes_ind_res(mesh, sheet_resistance, freqs, T, Nmodes = 100, Nchunks = 4, quad_degree = 2, boundaries=None, return_eigenvals=False):
     '''
     Parameters
     ----------
@@ -96,8 +96,8 @@ def compute_current_modes_ind_res(mesh, sheet_resistance, freqs, T, Nchunks = 4,
     M = self_inductance_matrix(mesh, Nchunks = Nchunks, quad_degree = quad_degree)
     M = 0.5*(M+M.T)
 
-    u, v = eigh(R.todense()[inner_verts][:, inner_verts], M[inner_verts][:, inner_verts])
-
+#    u, v = eigh(R.todense()[inner_verts][:, inner_verts], M[inner_verts][:, inner_verts])
+    u, v = eigsh(R[inner_verts][:, inner_verts], k = Nmodes, M = M[inner_verts][:, inner_verts])
     Nfreqs = freqs.shape[0]
     #Normalize the laplacien eigenvectors
     vl = np.zeros((M.shape[0],M.shape[1],Nfreqs))
