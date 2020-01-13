@@ -9,7 +9,7 @@ from mayavi import mlab
 
 from .mesh_magnetics import magnetic_field_coupling
 from .mesh_calculus import laplacian_matrix, mass_matrix
-from .mesh_inductance import self_inductance_matrix, resistance_matrix
+from .mesh_properties import self_inductance_matrix, resistance_matrix
 from . import utils
 
 
@@ -87,21 +87,21 @@ def compute_current_modes_ind_res(mesh, sheet_resistance, freqs, T, Nchunks = 4,
         The normalized eddy-current modes vl[:,i]
 
     '''
-    
+
     kB = 1.38064852e-23
-    
+
     boundary_verts, inner_verts = utils.find_mesh_boundaries(mesh)
-    
+
     R = resistance_matrix(mesh, sheet_resistance = sheet_resistance)
     M = self_inductance_matrix(mesh, Nchunks = Nchunks, quad_degree = quad_degree)
     M = 0.5*(M+M.T)
-    
+
     u, v = eigh(R.todense()[inner_verts][:, inner_verts], M[inner_verts][:, inner_verts])
-    
+
     Nfreqs = freqs.shape[0]
     #Normalize the laplacien eigenvectors
     vl = np.zeros((M.shape[0],M.shape[1],Nfreqs))
-    
+
     for i in range(v.shape[1]):
         amp = 2*np.sqrt(kB*T/u[i])*np.sqrt(1/(1+(2*np.pi*freqs/u[i])**2))
         vl[inner_verts, i,:] = ((np.zeros((Nfreqs,v.shape[0])) +  v[:, i]).T)*amp
@@ -109,13 +109,13 @@ def compute_current_modes_ind_res(mesh, sheet_resistance, freqs, T, Nchunks = 4,
     if return_eigenvals:
         return vl, u
     else:
-        return vl 
+        return vl
 
 def noise_covar(mesh, vl, fp):
     B_coupling = magnetic_field_coupling(mesh, fp)
     b = np.einsum('ihj,jlk->ilhk', B_coupling, vl)
     Bcov = np.einsum('jihk,lihk->jlhk', b,b)
-    
+
     return Bcov
 
 def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T, Nchunks = 1):

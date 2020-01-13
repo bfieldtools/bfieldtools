@@ -132,14 +132,11 @@ class Conductor:
         # Set up stream function basis
         #######################################################################
 
-        self.f2v = utils.dof2verts(self.mesh, self.inner_vertices, self.holes)
+        self.f2v = utils.free2vert(self.mesh, self.inner_verts, self.holes)
         self.v2f = self.f2v.T
 
-#
-#        if 'basis' == 'suh':
-#            self.basis = SuhBasis(self.mesh, )
-#        else:
-#            self.basis
+        self.basis_name = self.opts['streamfunction_basis']
+        self.set_basis()
 
         #######################################################################
         # Set up physical properties and coupling matrices
@@ -154,6 +151,16 @@ class Conductor:
         self.A_coupling = CouplingMatrix(self, vector_potential_coupling)
 
 
+    def set_basis(self):
+        if self.opts['streamfunction_basis'] == 'suh':
+            self.basis = SuhBasis(self.mesh, self.mesh.is_watertight,
+                                  self.inner_vertices, self.holes)
+        elif self.opts['streamfunction_basis'] == 'free':
+            self.basis = np.eye(len(self.inner_verts) + len(self.holes()))
+        elif self.opts['streamfunction_basis'] == 'vertex':
+            self.basis = self.v2f
+        else:
+            raise ValueError('streamfunction_basis must free, vertex or suh')
 
     def set_holes(self, outer_boundaries=None):
         """ Set indices of holes to self.holes
@@ -194,6 +201,7 @@ class Conductor:
         else:
             self.holes = self.boundaries[hole_inds]
 
+
     @LazyProperty
     def laplacian(self):
         '''
@@ -201,9 +209,9 @@ class Conductor:
 
         '''
         if len(self.holes) == 0:
-            laplacian = laplacian_matrix(self.mesh, None, self.inner_vertices)
+            laplacian = laplacian_matrix(self.mesh, None, self.inner_verts)
         else:
-            laplacian = laplacian_matrix(self.mesh, None, self.inner_vertices,
+            laplacian = laplacian_matrix(self.mesh, None, self.inner_verts,
                                          self.holes)
         return laplacian
 
@@ -215,10 +223,10 @@ class Conductor:
 
         '''
         if len(self.holes) == 0:
-            mass = mass_matrix(self.mesh, self.opts['mass_lumped'], self.inner_vertices)
+            mass = mass_matrix(self.mesh, self.opts['mass_lumped'], self.inner_verts)
         else:
             mass = mass_matrix(self.mesh, self.opts['mass_lumped'],
-                               self.inner_vertices, self.holes)
+                               self.inner_verts, self.holes)
 
         return mass
 
@@ -238,7 +246,8 @@ class Conductor:
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)
 
-        return inductance
+        U = self.v2f
+        return U @ inductance @ U.T
 
 
     def __setattr__(self, name, value):
@@ -252,14 +261,19 @@ class Conductor:
         if (name == "resistivity" or name == "thickness") and 'resistance' in self.__dict__.keys():
             self.resistance = self._resistance() #Re-compute with new parameters
 
+        if name == 'basis_name':
+            self.set_basis()
+
 
     def __getattr_(self, name):
         '''
         Modified get-function to implement basis mapping
         '''
 
-        if name
-
+        if name in ('laplacian', 'mass', 'resistance', 'inductance'):
+            M = self.__dict__[name]
+            U = self.basis
+            return U.T @ M @ U
 
         return self.__dict__[name]
 
@@ -293,7 +307,8 @@ class Conductor:
             scale = np.mean(sheet_resistance)
             resistance += np.ones(resistance.shape)/resistance.shape[0]*scale
 
-        return resistance
+        U = self.v2f
+        return U @ resistance @ U.T
 
 
 
@@ -404,9 +419,11 @@ class CouplingMatrix:
 
         if len(self.points) == 0:
             self.matrix = self.function(self.parent.mesh, points, *fun_args)
+            # Convert to all-vertices to free vertices
+            self.matrix = self.matrix @ self.parent.v2f
             self.points = points
 
-            return self.matrix
+            M = self.matrix
 
         else:
             #Check which points exist and which need to be computed
@@ -418,6 +435,7 @@ class CouplingMatrix:
                 missing_points = points[missing_point_idx]
 
                 new_matrix_elems = self.function(self.parent.mesh, missing_points, *fun_args)
+                new_matrix_elems = new_matrix_elems @ self.parent.v2f
 
 
                 #Append newly computed point to coupling matrix, update bookkeeping
@@ -427,7 +445,9 @@ class CouplingMatrix:
                 #Re-compute indices of queried points, now that all should exist
                 p_existing_point_idx, m_existing_point_idx = np.where((self.points == points[:, None]).all(axis=-1))
 
-            return self.matrix[m_existing_point_idx]
+            M = self.matrix[m_existing_point_idx]
+
+        return M @ self.parent.basis
 
 
 class StreamFunction:

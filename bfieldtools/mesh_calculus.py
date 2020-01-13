@@ -63,7 +63,7 @@ def laplacian_matrix(mesh, material_param=None, inner_vertices=None, holes=None)
     L = L - spdiags(L.sum(axis=0), 0, N, N)
 
     #If inner_vertices are specified, return matrix only for those vertices
-    if inner_vertices:
+    if inner_vertices is not None:
         L = L[inner_vertices, :][:, inner_vertices]
 
         #If holes specified, add matrix entries corresponding to them
@@ -187,7 +187,7 @@ def mass_matrix(mesh, lumped=False, inner_vertices=None, holes=None):
         M = M + spdiags(M.sum(axis=0), 0, N, N)
 
     #If inner_vertices specified, return only values for inner_vertices
-    if inner_vertices:
+    if inner_vertices is not None:
         #If holes are specifed, add corresponding values
         if holes:
             M = _mass_matrix_w_holes(M, inner_vertices, holes)

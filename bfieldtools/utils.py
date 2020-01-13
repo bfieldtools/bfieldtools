@@ -233,7 +233,7 @@ def find_mesh_boundaries(mesh):
 #    return boundary_verts, inner_verts, boundary_tris, inner_tris
 
 
-def dof2vert(mesh, inner_vertices, holes):
+def free2vert(mesh, inner_vertices, holes):
     """ Linear mapping of the degrees of freedom in the stream function
         discretization to weights in all vertices
 
@@ -258,8 +258,8 @@ def dof2vert(mesh, inner_vertices, holes):
 
     return d2v
 
-def vert2dof(mesh, inner_vertices, holes):
-    return dof2vert.T
+def vert2free(mesh, inner_vertices, holes):
+    return free2vert.T
 
 
 def fibonacci_sphere(samples=10, center=np.array([0, 0, 0]), radius=1, randomize=True):
