@@ -15,6 +15,7 @@ from . import utils
 from .mesh_calculus import laplacian_matrix, mass_matrix
 from .mesh_properties import self_inductance_matrix, resistance_matrix
 from .mesh_magnetics import magnetic_field_coupling, scalar_potential_coupling, vector_potential_coupling
+from .suhtools import SuhBasis
 
 
 class LazyProperty():
@@ -80,9 +81,17 @@ class Conductor:
             Thickness of surface. NB! Must be small in comparison to observation distance
         opts: dict
             Options for Conductor object. Default settings are:
-                ...
+                'outer_boundaries':None,
+                'mass_lumped':False,
+                'resistance_full_rank': True,
+                'inductance_nchunks':None,
+                'basis':'free' (other: suh, vertex)
+
 
         '''
+        #######################################################################
+        # Load mesh, do mesh pre-processing
+        #######################################################################
 
         if mesh_obj: #First, if Trimesh object is given as parameter then use that directly
             self.mesh = mesh_obj
@@ -99,20 +108,43 @@ class Conductor:
         if fix_normals:
             self.mesh = utils.fix_normals(self.mesh)
 
+        #######################################################################
+        # Apply options
+        #######################################################################
+
         #Populate options dictionary with defaults if not specified
         self.opts = {'outer_boundaries':None, 'mass_lumped':False,
-                     'resistance_full_rank': True, 'inductance_nchunks':None}
+                     'resistance_full_rank': True, 'inductance_nchunks':None,
+                     'streamfunction_basis':'vertex'}
 
         for key, val in opts.items():
             self.opts[key] = val
 
 
-        self.boundaries, self.inner_verts = utils.find_mesh_boundaries(self.mesh)
+        #######################################################################
+        # Set up holes/boundaries
+        #######################################################################
 
+        self.boundaries, self.inner_verts = utils.find_mesh_boundaries(self.mesh)
         self.set_holes(self.opts['outer_boundaries'])
 
-        self.d2v = utils.dof2verts(self.mesh, self.inner_vertices, self.holes)
-        self.v2d = self.d2v.T
+        #######################################################################
+        # Set up stream function basis
+        #######################################################################
+
+        self.f2v = utils.dof2verts(self.mesh, self.inner_vertices, self.holes)
+        self.v2f = self.f2v.T
+
+#
+#        if 'basis' == 'suh':
+#            self.basis = SuhBasis(self.mesh, )
+#        else:
+#            self.basis
+
+        #######################################################################
+        # Set up physical properties and coupling matrices
+        #######################################################################
+
 
         self.__dict__['resistivity'] = resistivity
         self.__dict__['thickness'] = thickness
@@ -121,9 +153,6 @@ class Conductor:
         self.U_coupling = CouplingMatrix(self, scalar_potential_coupling)
         self.A_coupling = CouplingMatrix(self, vector_potential_coupling)
 
-
-        self.s = None
-        self.problem = None
 
 
     def set_holes(self, outer_boundaries=None):
@@ -172,7 +201,7 @@ class Conductor:
 
         '''
         if len(self.holes) == 0:
-            laplacian = laplacian_matrix(self.mesh)
+            laplacian = laplacian_matrix(self.mesh, None, self.inner_vertices)
         else:
             laplacian = laplacian_matrix(self.mesh, None, self.inner_vertices,
                                          self.holes)
@@ -186,7 +215,7 @@ class Conductor:
 
         '''
         if len(self.holes) == 0:
-            mass = mass_matrix(self.mesh, self.opts['mass_lumped'])
+            mass = mass_matrix(self.mesh, self.opts['mass_lumped'], self.inner_vertices)
         else:
             mass = mass_matrix(self.mesh, self.opts['mass_lumped'],
                                self.inner_vertices, self.holes)
@@ -396,9 +425,9 @@ class StreamFunction:
 
         Parameters:
             vals:
-                array of shape (N,) or (N,M) where N corresponds to
-                the number of degrees of freedom in the conductor or the
-                the number of vertices in the conductor.
+                    array of shape (N,) or (N,M) where N corresponds to
+                    the number of free vertices in the conductor or the
+                    the number of all vertices in the conductor.
 
                 Multiple (M) stream functions can be stored in the object
                 by specifying vals with shape (N,M)
@@ -407,8 +436,8 @@ class StreamFunction:
     """
     def __init__(self, vals, conductor):
         self.conductor = conductor
-        self.d2v = self.conductor.d2v
-        self.v2d = self.conductor.v2d
+        self.f2v = self.conductor.f2v
+        self.v2f = self.conductor.v2f
         self.set_stream_func(vals)
 
     def set_stream_func(self, vals):
@@ -419,24 +448,24 @@ class StreamFunction:
             Parameters:
                 vals:
                     array of shape (N,) or (N,M) where N corresponds to
-                    the number of degrees of freedom in the conductor or the
-                    the number of vertices in the conductor.
+                    the number of free vertices in the conductor or the
+                    the number of all vertices in the conductor.
         """
         if len(vals) == len(self.conductor.mesh.vertices):
-            self.dof = self.v2d @ vals
+            self.free = self.v2f @ vals
         elif len(vals) == len(self.conductor.inner_vertices) + len(self.conductor.holes):
-            self.dof = vals
+            self.free = vals
         else:
-            raise ValueError('the length of vals must either correspond to that of DOF or vertex weights')
+            raise ValueError('the length of vals must either correspond to that of free vertices or vertex weights')
 
 
     @property
     def w(self):
-        return self.v2d @ self.dof
+        return self.v2f @ self.free
 
     @property
-    def d(self):
-        return self.dof
+    def f(self):
+        return self.free
 
     @property
     def power(self):

@@ -19,11 +19,11 @@ from scipy.sparse.linalg import eigsh
 import numpy as np
 from mayavi import mlab
 
-class suhbasis():
+class SuhBasis():
     """ Class for representing magnetic field using surface harmonics
     """
 
-    def __init__(self, mesh, Nc, closed_mesh=True, inner_vertices=None, boundaries=None):
+    def __init__(self, mesh, Nc, closed_mesh=True, inner_vertices=None, holes=None):
         """
         Parameters
             mesh : Trimesh-object representing the boundary on which
@@ -35,10 +35,8 @@ class suhbasis():
         self.mesh = mesh
         self.Nc = Nc
         self.inner_vertices = inner_vertices
-        self.boundaries = boundaries
+        self.holes = holes
         self.calculate_basis(closed_mesh)
-
-
 
     def calculate_basis(self, closed_mesh=True):
         """ Calculate basis functions as eigenfunctions of the laplacian
@@ -51,50 +49,23 @@ class suhbasis():
         if closed_mesh:
             assert self.mesh.is_watertight
 
-        L = laplacian_matrix(self.mesh)
-        M = mass_matrix(self.mesh)
-#        M = self_inductance_matrix(self.mesh) # Use inductance as mass matrix
-#        M += np.ones_like(M)*np.max(M) # For closed mesh include constant function to make it invertible
+        L = laplacian_matrix(self.mesh, None, self.inner_vertices, self.holes)
+        M = mass_matrix(self.mesh, False, self.inner_vertices, self.holes)
 
         if closed_mesh:
-            v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
-            vals, funcs = eigsh(-L, self.Nc+1, M, which='SA', v0 = v0)
-
-            # The first function is constant and does not yield any field
-            self.basis = funcs[:,1:]
-            self.eigenvals = vals[1:]
+            N0 = 1
+            N = self.Nc + 1
         else:
+            N0 = 0
+            N = self.Nc
 
-            if self.boundaries:
-                L = laplacian_matrix(self.mesh, None, self.inner_vertices, self.boundaries)
-                M = mass_matrix(self.mesh, self.inner_vertices, self.boundaries)
+        v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
+        u, v = eigsh(-L, N, M, which='SA', v0 = v0)
 
+        # The first function is constant and does not yield any field
+        self.basis = v[:,N0:]
+        self.eigenvals = u[N0:]
 
-                v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
-                u, v = eigsh(-L, self.Nc, M, which='SA', v0 = v0)
-
-                #Assign values per vertex
-                vl = np.zeros((self.mesh.vertices.shape[0], v.shape[1]))
-
-                vl[self.inner_vertices] = v[:-len(self.boundaries)]
-
-                for b_idx, b in enumerate(self.boundaries):
-                    vl[b] = v[len(self.inner_vertices) + b_idx]
-            else:
-                v0 = np.ones(L[self.inner_vertices][:, self.inner_vertices].shape[1]) # avoid random basis for symmetric geometries
-                u, v = eigsh(-L[self.inner_vertices][:, self.inner_vertices],
-                             self.Nc,
-                             M[self.inner_vertices][:, self.inner_vertices],
-                             which='SA', v0 = v0)
-
-                vl = np.zeros((self.mesh.vertices.shape[0], v.shape[1]))
-
-                vl[self.inner_vertices] = v
-
-
-            # Insert values to the inner verts
-            self.basis = vl
-            self.eigenvals = u
 
 
     def field(self, coeffs, points):
@@ -102,7 +73,7 @@ class suhbasis():
 
             Parameters
 
-            coeffs : (Nc,) array of basis function coefficients
+            coeffs : (self.Nc,) array of basis function coefficients
             points : (N_points, 3) field evaluation points
 
             Returns:
@@ -116,7 +87,7 @@ class suhbasis():
 
             Return:
 
-                Fields (3, N_points, N_coeffs)
+                Fields (3, N_points, self.Nc)
         """
         B_coupling = magnetic_field_coupling(mesh, points)
 
@@ -158,6 +129,12 @@ class suhbasis():
                 i=0
 
 
+class SuhBasis2(SuhBasis):
+    '''
+    Implement more general version here
+    '''
+    def __init__(self):
+        pass
 
 if __name__ == '__main__':
     """ Simple testing script
