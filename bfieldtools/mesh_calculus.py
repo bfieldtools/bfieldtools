@@ -62,9 +62,16 @@ def laplacian_matrix(mesh, material_param=None, inner_vertices=None, holes=None)
     L = L + L.T
     L = L - spdiags(L.sum(axis=0), 0, N, N)
 
-    if inner_vertices and holes:
-       L = _laplacian_matrix_w_holes(L, inner_vertices, holes)
-    elif inner_vertices or holes:
+    #If inner_vertices are specified, return matrix only for those vertices
+    if inner_vertices:
+        L = L[inner_vertices, :][:, inner_vertices]
+
+        #If holes specified, add matrix entries corresponding to them
+        if holes:
+            L = _laplacian_matrix_w_holes(L, inner_vertices, holes)
+
+    #Catch if only holes specified, but not inner_vertices
+    elif holes:
         raise ValueError('You need to specify both inner_vertices and holes')
 
     return L
@@ -105,12 +112,10 @@ def _laplacian_matrix_w_holes(L, inner_vertices, holes):
 
     '''
 
-    Linner = L[inner_vertices, :][:, inner_vertices]
-
     Lb = [None]*len(holes)
 
     #Start constructing the Laplacian matrix including the values at the inner holes
-    L_holes = Linner
+    L_holes = L.copy()
 
     #Add columns
     for b_idx, b in enumerate(holes):
@@ -132,7 +137,7 @@ def _laplacian_matrix_w_holes(L, inner_vertices, holes):
     return L_holes.tocsr()
 
 
-def mass_matrix(mesh, da=None, lumped=False, inner_vertices=None, holes=None):
+def mass_matrix(mesh, lumped=False, inner_vertices=None, holes=None):
     '''
     Computes mass matrix of mesh.
 
@@ -181,9 +186,14 @@ def mass_matrix(mesh, da=None, lumped=False, inner_vertices=None, holes=None):
         M = M + M.T
         M = M + spdiags(M.sum(axis=0), 0, N, N)
 
-    if inner_vertices and holes:
-       M = _mass_matrix_w_holes(M, inner_vertices, holes)
-    elif inner_vertices or holes:
+    #If inner_vertices specified, return only values for inner_vertices
+    if inner_vertices:
+        #If holes are specifed, add corresponding values
+        if holes:
+            M = _mass_matrix_w_holes(M, inner_vertices, holes)
+        else:
+            M = M[inner_vertices, :][:, inner_vertices]
+    if holes:
         raise ValueError('You need to specify both inner_vertices and holes')
 
     return M

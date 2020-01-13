@@ -15,6 +15,7 @@ from . import utils
 from .mesh_calculus import laplacian_matrix, mass_matrix
 from .mesh_properties import self_inductance_matrix, resistance_matrix
 from .mesh_magnetics import magnetic_field_coupling, scalar_potential_coupling, vector_potential_coupling
+from .suhtools import SuhBasis
 
 
 class LazyProperty():
@@ -34,7 +35,9 @@ class LazyProperty():
     def __get__(self, obj, klass=None):
         if obj is None:
             return None
+
         result = obj.__dict__[self.__name__] = self._func(obj)
+
         return result
 
 
@@ -72,8 +75,23 @@ class Conductor:
             If True,  Trimesh will pre-process the mesh.
         fix_normals: boolean
             If True,  normals+winding should be set so that they always point "out" from the origin.
+        Resistivity: float or array (Nfaces)
+            Resistivity value in Ohm/meter
+        Thickness: float or array (Nfaces)
+            Thickness of surface. NB! Must be small in comparison to observation distance
+        opts: dict
+            Options for Conductor object. Default settings are:
+                'outer_boundaries':None,
+                'mass_lumped':False,
+                'resistance_full_rank': True,
+                'inductance_nchunks':None,
+                'basis':'free' (other: suh, vertex)
+
 
         '''
+        #######################################################################
+        # Load mesh, do mesh pre-processing
+        #######################################################################
 
         if mesh_obj: #First, if Trimesh object is given as parameter then use that directly
             self.mesh = mesh_obj
@@ -90,26 +108,51 @@ class Conductor:
         if fix_normals:
             self.mesh = utils.fix_normals(self.mesh)
 
+        #######################################################################
+        # Apply options
+        #######################################################################
+
+        #Populate options dictionary with defaults if not specified
         self.opts = {'outer_boundaries':None, 'mass_lumped':False,
-                     'resistance_full_rank': True, 'outer_boundaries':None}
+                     'resistance_full_rank': True, 'inductance_nchunks':None,
+                     'streamfunction_basis':'vertex'}
+
         for key, val in opts.items():
             self.opts[key] = val
 
 
-        self.boundaries, self.inner_verts = utils.find_mesh_boundaries(self.mesh)
+        #######################################################################
+        # Set up holes/boundaries
+        #######################################################################
 
+        self.boundaries, self.inner_verts = utils.find_mesh_boundaries(self.mesh)
         self.set_holes(self.opts['outer_boundaries'])
 
-        self.resistivity = resistivity
-        self.thickness = thickness
+        #######################################################################
+        # Set up stream function basis
+        #######################################################################
+
+        self.f2v = utils.dof2verts(self.mesh, self.inner_vertices, self.holes)
+        self.v2f = self.f2v.T
+
+#
+#        if 'basis' == 'suh':
+#            self.basis = SuhBasis(self.mesh, )
+#        else:
+#            self.basis
+
+        #######################################################################
+        # Set up physical properties and coupling matrices
+        #######################################################################
+
+
+        self.__dict__['resistivity'] = resistivity
+        self.__dict__['thickness'] = thickness
 
         self.B_coupling = CouplingMatrix(self, magnetic_field_coupling)
         self.U_coupling = CouplingMatrix(self, scalar_potential_coupling)
         self.A_coupling = CouplingMatrix(self, vector_potential_coupling)
 
-
-        self.s = None
-        self.problem = None
 
 
     def set_holes(self, outer_boundaries=None):
@@ -158,7 +201,7 @@ class Conductor:
 
         '''
         if len(self.holes) == 0:
-            laplacian = laplacian_matrix(self.mesh)
+            laplacian = laplacian_matrix(self.mesh, None, self.inner_vertices)
         else:
             laplacian = laplacian_matrix(self.mesh, None, self.inner_vertices,
                                          self.holes)
@@ -172,9 +215,9 @@ class Conductor:
 
         '''
         if len(self.holes) == 0:
-            mass = mass_matrix(self.mesh, self.opt['mass_lumped'])
+            mass = mass_matrix(self.mesh, self.opts['mass_lumped'], self.inner_vertices)
         else:
-            mass = mass_matrix(self.mesh, self.opt['mass_lumped'],
+            mass = mass_matrix(self.mesh, self.opts['mass_lumped'],
                                self.inner_vertices, self.holes)
 
         return mass
@@ -189,25 +232,43 @@ class Conductor:
 
         start = time()
 
-        # TODO opts?
-        inductance = self_inductance_matrix(self.mesh)# , Nchunks=self.opts['Nchunks'])
+        inductance = self_inductance_matrix(self.mesh,
+                                            Nchunks=self.opts['inductance_nchunks'])
 
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)
 
         return inductance
 
+
+    def __setattr__(self, name, value):
+        '''
+        Modified set-function to take into account post-hoc changes to e.g. resistance
+        '''
+        self.__dict__[name] = value
+
+        #If resistance-affecting parameter is changed after the resistance matrix has been computed,
+        #then flush old result and re-compute
+        if (name == "resistivity" or name == "thickness") and 'resistance' in self.__dict__.keys():
+            self.resistance = self._resistance() #Re-compute with new parameters
+
+
+    def __getattr_(self, name):
+        '''
+        Modified get-function to implement basis mapping
+        '''
+
+        if name
+
+
+        return self.__dict__[name]
+
+
     @LazyProperty
     def resistance(self):
         '''
         Compute and return resistance/resistivity matrix using Laplace matrix.
-        Default resistivity set to that of copper.
-        Parameters
-        ----------
-        Resistivity: float or array (Nfaces)
-            Resistivity value in Ohm/meter
-        Thickness: float or array (Nfaces)
-            Thickness of surface. NB! Must be small in comparison to observation distance
+        Conductivity and thickness are class parameters
 
         Returns
         -------
@@ -216,8 +277,15 @@ class Conductor:
 
         '''
 
+        return self._resistance()
+
+
+    def _resistance(self):
+        '''
+        Back-end of resistance matrix computation
+        '''
         sheet_resistance = self.resistivity / self.thickness
-        resistance =  resistance_matrix(self.mesh, sheet_resistance).todense()
+        resistance =  resistance_matrix(self.mesh, sheet_resistance).toarray()
 
         # Compensate for rank n-1 by adding offset, otherwise this
         # operator map constant vectors to zero
@@ -226,6 +294,7 @@ class Conductor:
             resistance += np.ones(resistance.shape)/resistance.shape[0]*scale
 
         return resistance
+
 
 
     def plot_mesh(self, representation='wireframe', opacity=0.5, color=(0, 0, 0), cull_front=False, cull_back=False):
@@ -359,3 +428,73 @@ class CouplingMatrix:
                 p_existing_point_idx, m_existing_point_idx = np.where((self.points == points[:, None]).all(axis=-1))
 
             return self.matrix[m_existing_point_idx]
+
+
+class StreamFunction:
+    """ Class for representing stream function(s) on a conductor
+
+        Handles the mapping between the degrees of freedom in the
+        stream function (dof) and the vertex weights (w)
+
+        Parameters:
+            vals:
+                    array of shape (N,) or (N,M) where N corresponds to
+                    the number of free vertices in the conductor or the
+                    the number of all vertices in the conductor.
+
+                Multiple (M) stream functions can be stored in the object
+                by specifying vals with shape (N,M)
+            conductor:
+                Conductor object
+    """
+    def __init__(self, vals, conductor):
+        self.conductor = conductor
+        self.f2v = self.conductor.f2v
+        self.v2f = self.conductor.v2f
+        self.set_stream_func(vals)
+
+    def set_stream_func(self, vals):
+        """ Set stream function values to the object
+
+            Can also be used for re-setting the values
+
+            Parameters:
+                vals:
+                    array of shape (N,) or (N,M) where N corresponds to
+                    the number of free vertices in the conductor or the
+                    the number of all vertices in the conductor.
+        """
+        if len(vals) == len(self.conductor.mesh.vertices):
+            self.free = self.v2f @ vals
+        elif len(vals) == len(self.conductor.inner_vertices) + len(self.conductor.holes):
+            self.free = vals
+        else:
+            raise ValueError('the length of vals must either correspond to that of free vertices or vertex weights')
+
+
+    @property
+    def w(self):
+        return self.v2f @ self.free
+
+    @property
+    def f(self):
+        return self.free
+
+    @property
+    def power(self):
+        return self.d.T @ self.conductor.resistance @ self.d
+
+    @property
+    def magnetic_energy(self):
+        return 0.5 * self.d.T @ self.conductor.inductance @ self.d
+
+    def plot(self):
+        pass
+
+
+
+
+
+
+
+
