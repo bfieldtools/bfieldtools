@@ -234,7 +234,7 @@ def find_mesh_boundaries(mesh):
 
 
 def free2vert(mesh, inner_vertices, holes):
-    """ Linear mapping of the degrees of freedom in the stream function
+    """ Linear mapping of the free weights in the stream function
         discretization to weights in all vertices
 
         Parameters:
@@ -251,6 +251,7 @@ def free2vert(mesh, inner_vertices, holes):
     M = len(inner_vertices) + len(holes)
     ii = list(inner_vertices) # indices of inner vertices
     jj = list(np.arange(M)) # indices of inner vertices in dof
+    # Hole values maps to value for each hole vertex
     for n, h in enumerate(holes):
         ii.extend(list(h)) # indices of hole indices
         jj.extend([len(inner_vertices)+n]*len(h)) # len(h) times index of hole in dof
@@ -259,7 +260,34 @@ def free2vert(mesh, inner_vertices, holes):
     return d2v
 
 def vert2free(mesh, inner_vertices, holes):
-    return free2vert.T
+    """ Linear mapping of the all weight in the stream function
+        discretization to free weights
+
+        Parameters:
+            mesh: Trimesh object
+            inner_vertices: list of indices of the inner vertices of the mesh
+            holes: list of indices for holes in the mesh
+
+        Returns:
+            MxN sparse array, where N==mesh.vertices.shape[0]
+            and M == len(inner_vertices) + len(holes)
+    """
+    from scipy.sparse import csr_matrix
+    N = mesh.vertices.shape[0]
+    M = len(inner_vertices) + len(holes)
+    ii = list(inner_vertices) # indices of inner vertices
+    jj = list(np.arange(M)) # indices of inner vertices in dof
+    vals = np.ones(M)
+    ind = len(inner_vertices)
+    for n, h in enumerate(holes):
+        ii.extend(list(h)) # indices of hole indices
+        jj.extend([len(inner_vertices)+n]*len(h)) # len(h) times index of hole in free values
+        # Values at holes map to their average (ok, when constant boundary condition satisfied)
+        vals[ind:ind+n] /= len(h)
+        ind += len(h)
+    v2d = csr_matrix((vals, (jj, ii)), shape=(M, N), dtype=float)
+
+    return v2d
 
 
 def fibonacci_sphere(samples=10, center=np.array([0, 0, 0]), radius=1, randomize=True):
