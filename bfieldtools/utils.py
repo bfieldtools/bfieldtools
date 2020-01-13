@@ -233,6 +233,34 @@ def find_mesh_boundaries(mesh):
 #    return boundary_verts, inner_verts, boundary_tris, inner_tris
 
 
+def dof2vert(mesh, inner_vertices, holes):
+    """ Linear mapping of the degrees of freedom in the stream function
+        discretization to weights in all vertices
+
+        Parameters:
+            mesh: Trimesh object
+            inner_vertices: list of indices of the inner vertices of the mesh
+            holes: list of indices for holes in the mesh
+
+        Returns:
+            NxM sparse array, where N==mesh.vertices.shape[0]
+            and M == len(inner_vertices) + len(holes)
+    """
+    from scipy.sparse import csr_matrix
+    N = mesh.vertices.shape[0]
+    M = len(inner_vertices) + len(holes)
+    ii = list(inner_vertices) # indices of inner vertices
+    jj = list(np.arange(M)) # indices of inner vertices in dof
+    for n, h in enumerate(holes):
+        ii.extend(list(h)) # indices of hole indices
+        jj.extend([len(inner_vertices)+n]*len(h)) # len(h) times index of hole in dof
+    d2v = csr_matrix((np.ones(M), (ii, jj)), shape=(N, M), dtype=float)
+
+    return d2v
+
+def vert2dof(mesh, inner_vertices, holes):
+    return dof2vert.T
+
 
 def fibonacci_sphere(samples=10, center=np.array([0, 0, 0]), radius=1, randomize=True):
     '''

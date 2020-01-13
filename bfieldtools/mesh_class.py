@@ -388,7 +388,7 @@ class CouplingMatrix:
 #class StreamFunction:
 #    def __init__(self, conductor, init=None):
 #
-#
+
 
 
 
