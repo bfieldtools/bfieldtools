@@ -124,8 +124,7 @@ def optimize_streamfunctions(meshobj,
                              objective='minimum_inductive_energy',
                              solver=None,
                              solver_opts={},
-                             problem=None,
-                             boundary_constraints='all_zero'):
+                             problem=None):
     '''
     Quadratic optimization of coil stream function according to a specified objective,
     while keeping specified target field at target points within given constraints.
@@ -153,17 +152,10 @@ def optimize_streamfunctions(meshobj,
     problem: CVXPY problem object
         If passed, will use already existing problem (MUST BE SAME DIMENSIONS) to
         skip DCP processing/reformulation time.
-    boundary_constraints: string or dict
-        Specifies how boundaries are handled. If 'all_zero' (default), boundary vertices are not included
-        in the optimization, and are set at zero. If dict, must have entries
-            'zero_eq_indices' (list of ints)
-            'iso_eq_indices'  (list of lists of ints)
-        which contain the vertex indices for which the stream function is set to zero or
-        to be equal across elements.
 
     Returns
     -------
-    I: vector
+    s: vector
         Vector with length len(`meshobj.mesh.vertices`), containing the optimized current density values
         at each mesh vertex
     prob: CVXPY problem object
@@ -176,32 +168,23 @@ def optimize_streamfunctions(meshobj,
     elif objective == 'minimum_resistive_energy':
         objective = (0, 1)
 
-    #If boundaries are all zero, don't include them in the optimization
-    if boundary_constraints == 'all_zero':
-        indices = meshobj.inner_verts
-    else:
-        indices = np.arange(0, len(meshobj.mesh.vertices))
 
     #Initialize inequality constraint matrix and constraints
-    constraint_matrix = np.zeros((0, len(indices)))
+    constraint_matrix = np.zeros((0, meshobj.basis.shape[1]))
     upper_bounds = np.zeros((0, ))
     lower_bounds = np.zeros((0, ))
 
     #Populate inequality constraints with bfield specifications
     for spec in bfield_specification:
 
-
-
-
         #Reshape so that values on axis 1 are x1, y1, z1, x2, y2, z2, etc.
         #If not 3D matrix, assuming the use of spherical harmonics
         if spec['coupling'].ndim == 3:
-            C = spec['coupling'][:, :, indices]
-
-            C = C.transpose((2, 0, 1))
+            C = spec['coupling'].transpose((2, 0, 1))
             C = C.reshape((C.shape[0], -1)).T
         else:
-            C = spec['coupling'][:, indices]
+            raise ValueError('Spherical harmonics should be reimplemented!')
+            C = spec['coupling']
 
         #Apply relative error to bounds
         if spec['rel_error'] is not None:
@@ -229,17 +212,17 @@ def optimize_streamfunctions(meshobj,
     #Construct quadratic objective matrix
     if objective == (1, 0):
 
-        quadratic_matrix = meshobj.inductance[indices][:, indices]
+        quadratic_matrix = meshobj.inductance
 
     elif objective == (0, 1):
 
-        quadratic_matrix = meshobj.resistance[indices][:, indices]
+        quadratic_matrix = meshobj.resistance
 
     elif type(objective) == tuple:
 
-        L = meshobj.inductance[indices][:, indices]
+        L = meshobj.inductance
 
-        R = meshobj.resistance[indices][:, indices]
+        R = meshobj.resistance
 
         print('Scaling inductance and resistance matrices before optimization. This requires eigenvalue computation, hold on.')
 
@@ -251,7 +234,7 @@ def optimize_streamfunctions(meshobj,
         quadratic_matrix = (objective[0] * L  + objective[1] * scaled_R)
     else:
         print('Custom objective passed, assuming it is a matrix of correct dimensions')
-        quadratic_matrix = objective[indices][:, indices]
+        quadratic_matrix = objective
 
     #Scale whole quadratic term according to largest eigenvalue
     max_eval_quad = largest_eigh(quadratic_matrix, eigvals=(quadratic_matrix.shape[0]-1, quadratic_matrix.shape[0]-1))[0][0]
@@ -279,17 +262,6 @@ def optimize_streamfunctions(meshobj,
 
         constraints = [G@x >= lb, G@x <= ub]
 
-        if type(boundary_constraints) == dict:
-            if boundary_constraints['zero_eq_indices'] is not None:
-                print('Passing boundary zero equality constraint')
-                constraints += [x[boundary_constraints['zero_eq_indices']] == np.zeros_like(boundary_constraints['zero_eq_indices'])]
-
-            if boundary_constraints['iso_eq_indices'] is not None:
-                print('Passing boundary equality constraints')
-                for i in range(len(boundary_constraints['iso_eq_indices'])):
-                    for j in range(1, len(boundary_constraints['iso_eq_indices'][i])):
-                        constraints += [x[boundary_constraints['iso_eq_indices'][i][j]] == x[boundary_constraints['iso_eq_indices'][i][0]]]
-
         problem = cp.Problem(objective,
                           constraints)
     else:
@@ -315,9 +287,7 @@ def optimize_streamfunctions(meshobj,
     print('Passing problem to solver...')
     problem.solve(solver=solver, verbose=True, **solver_opts)
 
-    #Build final I vector with zeros on boundary elements, scale by same singular value as constraint matrix
+    #extract optimized streamfunction, scale by same singular value as constraint matrix
+    s = problem.variables()[0].value / s[0]
 
-    I = np.zeros((len(meshobj.mesh.vertices),))
-    I[indices] = problem.variables()[0].value / s[0]
-
-    return I, problem
+    return s, problem
