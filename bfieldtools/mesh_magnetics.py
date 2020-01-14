@@ -10,11 +10,11 @@ import time
 
 from .utils import get_quad_points
 from .mesh_calculus import gradient_matrix
-from .integrals import triangle_potential_dipole_linear, triangle_potential_uniform
+from .integrals import triangle_potential_dipole_linear, triangle_potential_uniform, triangle_potential_approx
 
 
 
-def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1):
+def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False):
     '''
     Given a mesh, computes the "C matrix" which gives the magnetic field at
     some target points due to currents (stream function) on a surface mesh.
@@ -33,6 +33,10 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1):
         Coupling matrix for surface current in the mesh to the evaluation points)
 
     '''
+
+    if analytic:
+        return magnetic_field_coupling_analytic(mesh, r, Nchunks)
+
     mu0 = 4 * np.pi * 1e-7
     coef = mu0 / (4 * np.pi)
 
@@ -203,7 +207,7 @@ def scalar_potential_coupling(mesh, r, Nchunks=None):
     return Uv*coeff
 
 
-def vector_potential_coupling(mesh, r, Nchunks=None):
+def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=3):
     """
     Compute vector potential matrices (one for each coordinate)
     from linear stream functions using analytic integral
@@ -212,6 +216,8 @@ def vector_potential_coupling(mesh, r, Nchunks=None):
 
     mesh: Trimesh mesh object describing mesh
     r: target points (Np, 3)
+    approx_far: Boolean (True)
+        If True, use approximate calculation for triangles that are not close to r
 
     Returns
     -------
@@ -236,13 +242,21 @@ def vector_potential_coupling(mesh, r, Nchunks=None):
     Af = np.zeros((R2.shape[0], mesh.faces.shape[0]))
     print('Computing potential matrix')
 
-    for R2chunk in R2chunks:
+    for chunk_idx, R2chunk in enumerate(R2chunks):
+#        print('Computing chunk %d/%d'%(chunk_idx+1, Nchunks))
         RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
         i1 = i0+RRchunk.shape[0]
-        Pi = triangle_potential_uniform(RRchunk, mesh.face_normals, False)
-        Af[i0:i1] = Pi
+        if approx_far:
+            near, far = _split_by_distance(mesh, RRchunk, margin)
+            Af[i0:i1, near] = triangle_potential_uniform(RRchunk[:, near], mesh.face_normals[near], False)
+            Af[i0:i1, far] = triangle_potential_approx(RRchunk[:, far], mesh.area_faces[far], reg=0)
+        else:
+            Af[i0:i1] = triangle_potential_uniform(RRchunk, mesh.face_normals, False)
 #        print((100*i1)//R2.shape[0], '% computed')
         i0=i1
+
+    #Free some memory by deleting old variables
+    del R1, R2, RRchunk, R2chunks, near, far
 
     # Rotated gradients (currents)
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
@@ -250,3 +264,18 @@ def vector_potential_coupling(mesh, r, Nchunks=None):
     Av = np.array([Af @ Gx, Af @ Gy, Af @ Gz])
 
     return Av*coeff
+
+
+def _split_by_distance(mesh, RR, margin=3):
+    avg_sidelength = 8/np.sqrt(3)*np.mean(mesh.area_faces[::100])
+#    np.mean(np.linalg.norm(np.diff(mesh.vertices[mesh.edges[::1000]], axis=1), axis=-1))
+
+    RRnorm = np.linalg.norm(RR, axis=-1)
+    near = np.nonzero(np.min(RRnorm, axis=(0, 2)) < avg_sidelength * margin)[0]
+
+    far = np.setdiff1d(np.arange(0, len(mesh.faces)), near, assume_unique=True)
+
+#    print('near: %d, far: %d'%(len(near), len(far)))
+    return near, far
+
+

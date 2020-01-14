@@ -149,7 +149,7 @@ def triangle_potential_uniform(R, tn, planar=False):
     return result
 
 
-def triangle_potential_approx(R, ta, planar=False, reg=1e-12):
+def triangle_potential_approx(R, ta, reg=1e-12):
     """ 1/r potential of a uniform triangle using centroid approximation
 
         Calculates 1/R potentials for triangle centroids
@@ -162,8 +162,7 @@ def triangle_potential_approx(R, ta, planar=False, reg=1e-12):
             Displacement vectors (Neval, ...., Ntri_verts, xyz)
         ta : (Ntri) array
             Triangle areas
-        planar: boolean
-            If True, use planar geometry assumption for speed
+
         reg: float
             Regularization value used in approximation
 
@@ -174,7 +173,7 @@ def triangle_potential_approx(R, ta, planar=False, reg=1e-12):
             in each triangle (Ntri) in the displacement vectors R
 
     """
-    result = 1/(np.linalg.norm(np.mean(R, axis=-2), axis=-1) + reg)*ta
+    result = 1/(norm(np.mean(R, axis=-2)) + reg)*ta
     return result
 
 
