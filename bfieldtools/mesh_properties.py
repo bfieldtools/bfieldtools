@@ -74,7 +74,7 @@ def mutual_inductance_matrix(mesh1, mesh2, Nchunks=None, quad_degree=1):
 
 
         #Estimate of memory usage in megabytes for a single chunk, when quad_degree=2 (very close with quad_degree=1)
-        mem_use = 0.033 * (len(mesh1.vertices) * len(mesh2.vertices))**0.9
+        mem_use = 0.033 * (len(mesh1.vertices) * len(mesh2.vertices))**0.86
 
         print('Estimating %d MiB required for %d by %d vertices...'%(mem_use, len(mesh1.vertices), len(mesh2.vertices)))
 
