@@ -462,7 +462,7 @@ class CouplingMatrix:
         return M @ self.parent.basis
 
 
-class StreamFunction:
+class StreamFunction(np.ndarray):
     """ Class for representing stream function(s) on a conductor
 
         Handles the mapping between the degrees of freedom in the
@@ -479,49 +479,79 @@ class StreamFunction:
             conductor:
                 Conductor object
     """
-    def __init__(self, vals, conductor, vals_basis=None):
+
+
+    def __new__(cls, vals, conductor):
+        # Input array is an already formed ndarray instance
+        # We first cast to be our class type
+
+        self = np.asarray(vals).view(cls)
         self.conductor = conductor
 
-        if vals_basis is None:
-            vals_basis = self.conductor.basis
+        # Finally, we must return the newly created object:
+        return self
+#
+#    def __init__(self, vals, conductor, vals_basis=None):
+#        self.conductor = conductor
+#
+#        if vals_basis is None:
+#            vals_basis = self.conductor.basis
+#
+#        self.basis_name = self.conductor.basis_name
+#        self.basis = self.conductor.basis
+#
+#        self.f2v = self.conductor.f2v
+#        self.v2f = self.conductor.v2f
+#
+#        self.set_stream_func(vals_basis, vals)
+
+
+
+    def __array_finalize__(self, obj):
+        # see InfoArray.__array_finalize__ for comments
+        if obj is None: return
+
+        self.conductor = getattr(obj, 'conductor', None)
+
 
         self.basis_name = self.conductor.basis_name
         self.basis = self.conductor.basis
 
         self.f2v = self.conductor.f2v
         self.v2f = self.conductor.v2f
-
-        self.set_stream_func(vals_basis, vals)
-
-    def set_stream_func(self, vals_basis, vals):
-        """ Set stream function values to the object
-
-            Can also be used for re-setting the values
-
-            Parameters:
-                vals:
-                    array of shape (N,) or (N,M) where N corresponds to
-                    the number of free vertices in the conductor or the
-                    the number of all vertices in the conductor.
-        """
-
-        if vals_basis == 'free':
-            self.free = vals
-
-        elif vals_basis == 'suh':
-            try:
-                self.free = self.basis @ vals
-            except:
-                raise ValueError('It seems like the Conductor object this StreamFunction belongs to is not in "suh"-basis')
-
-        elif vals_basis == 'vertex':
-            self.free = self.v2f @ vals
-
-        else:
-            raise ValueError('Unknown basis name for stream function')
-
-#    def __repr__(self):
-#        return self.free @ self.basis
+#
+#        self.set_stream_func(vals)
+#
+#
+#    def set_stream_func(self, vals_basis, vals):
+#        """ Set stream function values to the object
+#
+#            Can also be used for re-setting the values
+#
+#            Parameters:
+#                vals:
+#                    array of shape (N,) or (N,M) where N corresponds to
+#                    the number of free vertices in the conductor or the
+#                    the number of all vertices in the conductor.
+#        """
+#
+#        if vals_basis == 'free':
+#            self.free = vals
+#
+#        elif vals_basis == 'suh':
+#            try:
+#                self.free = self.basis @ vals
+#            except:
+#                raise ValueError('It seems like the Conductor object this StreamFunction belongs to is not in "suh"-basis')
+#
+#        elif vals_basis == 'vertex':
+#            self.free = self.v2f @ vals
+#
+#        else:
+#            raise ValueError('Unknown basis name for stream function')
+#
+##    def __repr__(self):
+##        return self.free @ self.basis
 
     @property
     def v(self):

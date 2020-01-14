@@ -290,6 +290,6 @@ def optimize_streamfunctions(conductor,
     problem.solve(solver=solver, verbose=True, **solver_opts)
 
     #extract optimized streamfunction, scale by same singular value as constraint matrix
-    s = StreamFunction(problem.variables()[0].value / s[0], conductor)
+    s = StreamFunction(problem.variables()[0].value / s[0], conductor=conductor)
 
     return s, problem
