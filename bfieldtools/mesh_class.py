@@ -85,7 +85,8 @@ class Conductor:
                 'mass_lumped':False,
                 'resistance_full_rank': True,
                 'inductance_nchunks':None,
-                'basis':'free' (other: suh, vertex)
+                'basis_name':'free' (other: suh, vertex)
+                'N_suh': 100
 
 
         '''
@@ -125,17 +126,17 @@ class Conductor:
         # Set up holes/boundaries
         #######################################################################
 
-        self.boundaries, self.inner_verts = utils.find_mesh_boundaries(self.mesh)
+        self.boundaries, self.inner_vertices = utils.find_mesh_boundaries(self.mesh)
         self.set_holes(self.opts['outer_boundaries'])
 
         #######################################################################
         # Set up stream function basis
         #######################################################################
 
-        self.f2v = utils.free2vert(self.mesh, self.inner_verts, self.holes)
-        self.v2f = utils.vert2free(self.mesh, self.inner_verts, self.holes)
+        self.f2v = utils.free2vert(self.mesh, self.inner_vertices, self.holes)
+        self.v2f = utils.vert2free(self.mesh, self.inner_vertices, self.holes)
 
-        self.basis_name = self.opts['streamfunction_basis']
+        self.basis_name = self.opts['basis_name']
         self.set_basis()
 
         #######################################################################
@@ -159,12 +160,12 @@ class Conductor:
         if self.basis_name == 'suh':
             self.suh_basis = SuhBasis(self.mesh, self.opts['N_suh'],
                                   self.mesh.is_watertight,
-                                  self.inner_verts, self.holes)
+                                  self.inner_vertices, self.holes)
             self.basis = self.suh_basis.basis
         elif self.basis_name == 'free':
-            self.basis = np.eye(len(self.inner_verts) + len(self.holes()))
+            self.basis = np.eye(len(self.inner_vertices) + len(self.holes))
         elif self.basis_name == 'vertex':
-            self.basis = self.v2f
+            self.basis = self.v2f.toarray()
         else:
             raise ValueError('streamfunction_basis must free, vertex or suh')
 
@@ -215,9 +216,9 @@ class Conductor:
 
         '''
         if len(self.holes) == 0:
-            laplacian = laplacian_matrix(self.mesh, None, self.inner_verts)
+            laplacian = laplacian_matrix(self.mesh, None, self.inner_vertices)
         else:
-            laplacian = laplacian_matrix(self.mesh, None, self.inner_verts,
+            laplacian = laplacian_matrix(self.mesh, None, self.inner_vertices,
                                          self.holes)
         return laplacian
 
@@ -229,10 +230,10 @@ class Conductor:
 
         '''
         if len(self.holes) == 0:
-            mass = mass_matrix(self.mesh, self.opts['mass_lumped'], self.inner_verts)
+            mass = mass_matrix(self.mesh, self.opts['mass_lumped'], self.inner_vertices)
         else:
             mass = mass_matrix(self.mesh, self.opts['mass_lumped'],
-                               self.inner_verts, self.holes)
+                               self.inner_vertices, self.holes)
 
         return mass
 
@@ -283,8 +284,8 @@ class Conductor:
                     M = self.matrices[name] = getattr(self, '_'+name)()
                 except KeyError:
                     raise ValueError(name + ' not available')
-            U = self.basis
-            return U.T @ M @ U
+
+            return self.basis.T @ M @ self.basis
 
         return self.__dict__[name]
 
@@ -431,7 +432,7 @@ class CouplingMatrix:
         if len(self.points) == 0:
             self.matrix = self.function(self.parent.mesh, points, *fun_args)
             # Convert to all-vertices to free vertices
-            self.matrix = self.matrix @ self.parent.f2v
+            self.matrix = self.matrix @ self.parent.f2v.toarray()
             self.points = points
 
             M = self.matrix
@@ -446,7 +447,7 @@ class CouplingMatrix:
                 missing_points = points[missing_point_idx]
 
                 new_matrix_elems = self.function(self.parent.mesh, missing_points, *fun_args)
-                new_matrix_elems = new_matrix_elems @ self.parent.f2v
+                new_matrix_elems = new_matrix_elems @ self.parent.f2v.toarray()
 
 
                 #Append newly computed point to coupling matrix, update bookkeeping

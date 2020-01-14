@@ -6,6 +6,8 @@ from scipy.linalg import eigh as largest_eigh
 import quadprog
 import cvxpy as cp
 
+from .mesh_class import StreamFunction
+
 def cvxpy_solve_qp(P, G, h, solver=cp.MOSEK, tolerance=None):
 
     P = .5 * (P + P.T)
@@ -119,7 +121,7 @@ def quadprog_solve_qp(P, q, G=None, h=None, A=None, b=None):
     return quadprog.solve_qp(qp_G, qp_a, qp_C, qp_b, meq)[0]
 
 
-def optimize_streamfunctions(meshobj,
+def optimize_streamfunctions(conductor,
                              bfield_specification,
                              objective='minimum_inductive_energy',
                              solver=None,
@@ -131,7 +133,7 @@ def optimize_streamfunctions(meshobj,
 
     Parameters
     ----------
-    meshobj: Conductor object
+    conductor: Conductor object
         Contains Trimesh mesh
     bfield_specification: list
         List in which element is a dictionary containing a field specification.
@@ -156,7 +158,7 @@ def optimize_streamfunctions(meshobj,
     Returns
     -------
     s: vector
-        Vector with length len(`meshobj.mesh.vertices`), containing the optimized current density values
+        Vector with length len(`conductor.mesh.vertices`), containing the optimized current density values
         at each mesh vertex
     prob: CVXPY problem object
         CVXPY problem object containing data, formulation, solution, metric etc
@@ -170,7 +172,7 @@ def optimize_streamfunctions(meshobj,
 
 
     #Initialize inequality constraint matrix and constraints
-    constraint_matrix = np.zeros((0, meshobj.basis.shape[1]))
+    constraint_matrix = np.zeros((0, conductor.basis.shape[1]))
     upper_bounds = np.zeros((0, ))
     lower_bounds = np.zeros((0, ))
 
@@ -212,17 +214,17 @@ def optimize_streamfunctions(meshobj,
     #Construct quadratic objective matrix
     if objective == (1, 0):
 
-        quadratic_matrix = meshobj.inductance
+        quadratic_matrix = conductor.inductance
 
     elif objective == (0, 1):
 
-        quadratic_matrix = meshobj.resistance
+        quadratic_matrix = conductor.resistance
 
     elif type(objective) == tuple:
 
-        L = meshobj.inductance
+        L = conductor.inductance
 
-        R = meshobj.resistance
+        R = conductor.resistance
 
         print('Scaling inductance and resistance matrices before optimization. This requires eigenvalue computation, hold on.')
 
@@ -288,6 +290,6 @@ def optimize_streamfunctions(meshobj,
     problem.solve(solver=solver, verbose=True, **solver_opts)
 
     #extract optimized streamfunction, scale by same singular value as constraint matrix
-    s = problem.variables()[0].value / s[0]
+    s = StreamFunction(problem.variables()[0].value / s[0], conductor)
 
     return s, problem
