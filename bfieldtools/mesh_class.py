@@ -466,7 +466,7 @@ class StreamFunction:
     """ Class for representing stream function(s) on a conductor
 
         Handles the mapping between the degrees of freedom in the
-        stream function (dof) and the vertex weights (w)
+        stream function (dof) and the vertex weights (v)
 
         Parameters:
             vals:
@@ -479,13 +479,21 @@ class StreamFunction:
             conductor:
                 Conductor object
     """
-    def __init__(self, vals, conductor):
+    def __init__(self, vals, conductor, vals_basis=None):
         self.conductor = conductor
+
+        if vals_basis is None:
+            vals_basis = self.conductor.basis
+
+        self.basis_name = self.conductor.basis_name
+        self.basis = self.conductor.basis
+
         self.f2v = self.conductor.f2v
         self.v2f = self.conductor.v2f
-        self.set_stream_func(vals)
 
-    def set_stream_func(self, vals):
+        self.set_stream_func(vals_basis, vals)
+
+    def set_stream_func(self, vals_basis, vals):
         """ Set stream function values to the object
 
             Can also be used for re-setting the values
@@ -496,17 +504,28 @@ class StreamFunction:
                     the number of free vertices in the conductor or the
                     the number of all vertices in the conductor.
         """
-        if len(vals) == len(self.conductor.mesh.vertices):
-            self.free = self.v2f @ vals
-        elif len(vals) == len(self.conductor.inner_vertices) + len(self.conductor.holes):
-            self.free = vals
-        else:
-            raise ValueError('the length of vals must either correspond to that of free vertices or vertex weights')
 
+        if vals_basis == 'free':
+            self.free = vals
+
+        elif vals_basis == 'suh':
+            try:
+                self.free = self.basis @ vals
+            except:
+                raise ValueError('It seems like the Conductor object this StreamFunction belongs to is not in "suh"-basis')
+
+        elif vals_basis == 'vertex':
+            self.free = self.v2f @ vals
+
+        else:
+            raise ValueError('Unknown basis name for stream function')
+
+#    def __repr__(self):
+#        return self.free @ self.basis
 
     @property
-    def w(self):
-        return self.v2f @ self.free
+    def v(self):
+        return self.f2v @ self.free
 
     @property
     def f(self):
@@ -514,13 +533,13 @@ class StreamFunction:
 
     @property
     def power(self):
-        R = self.matrices['resistance']
-        return self.f.T @ R @ self.f
+        R = self.conductor.matrices['resistance']
+        return 0.5 *  self.free.T @ R @ self.free
 
     @property
     def magnetic_energy(self):
-        M = self.matrices['inductance']
-        return 0.5 * self.f.T @ M @ self.f
+        M = self.conductor.matrices['inductance']
+        return 0.5 * self.free.T @ M @ self.free
 
     def plot(self):
         pass
