@@ -56,19 +56,19 @@ mesh1 = coil_plus.union(coil_minus)
 mesh2 = mesh1.copy()
 mesh2.apply_scale(1.4)
 
-current1 = Conductor(mesh_obj=mesh1)
-current2 = Conductor(mesh_obj=mesh2)
+coil1 = Conductor(mesh_obj=mesh1)
+coil2 = Conductor(mesh_obj=mesh2)
 
-M11 = current1.inductance
-M22 = current2.inductance
+M11 = coil1.inductance
+M22 = coil2.inductance
 # Constrain boundary to zero and consider only inneverts
-M11 = M11[current1.inner_verts][:, current1.inner_verts]
-M22 = M22[current2.inner_verts][:, current2.inner_verts]
+M11 = M11[coil1.inner_vertices][:, coil1.inner_vertices]
+M22 = M22[coil2.inner_vertices][:, coil2.inner_vertices]
 # Add rank-one matrix, so that M22 can be inverted (for zero mean functions)
 #M22 += np.ones_like(M22)/M22.shape[0]
 #M11 += np.ones_like(M11)/M11.shape[0]
 M21 = mutual_inductance_matrix(mesh2, mesh1)
-M21 = M21[current2.inner_verts][:, current1.inner_verts]
+M21 = M21[coil2.inner_vertices][:, coil1.inner_vertices]
 # Mapping from I1 to I2, constraining flux through mesh2 to zero
 P = -np.linalg.solve(M22, M21)
 
@@ -76,7 +76,8 @@ A1, Beta1 = compute_sphcoeffs_mesh(mesh1, 4)
 A2, Beta2 = compute_sphcoeffs_mesh(mesh2, 4)
 
 sb = sphbasis(10)
-F1 = (sb.basis_fields(mesh1.vertices, 3)[1]*mesh1.vertex_normals).sum(axis=-1)
+#F1 = (sb.basis_fields(mesh1.vertices, 3)[1]*mesh1.vertex_normals).sum(axis=-1)
+F1 = np.einsum('ijk,ki->jk',sb.basis_fields(mesh1.vertices, 3)[1], mesh1.vertex_normals)
 #F2 = (sb.basis_fields(mesh2.vertices, 3)[0]*mesh2.vertex_normals).sum(axis=-1)
 
 x = y = np.linspace(-0.8, 0.8, 150)
@@ -97,7 +98,7 @@ beta[7] = 1
 #alpha[15] = 1
 # Minimization of magnetic energy with spherical harmonic constraint
 
-C = Beta1[:, current1.inner_verts] + Beta2[:, current2.inner_verts] @ P
+C = Beta1[:, coil1.inner_vertices] + Beta2[:, coil2.inner_vertices] @ P
 M = M11 + M21.T @ P
 #G = np.linalg.solve(M, C.T)
 #I1inner = G @ np.linalg.solve(C @ G + 1.5e6*np.eye(C.shape[0]), beta)
@@ -109,8 +110,8 @@ I1inner = np.linalg.solve(C.T @ C + M/1e-8, C.T @ beta)
 #f = F1[2]
 #f =  np.ones(M11.shape[0])
 #ind=2
-#f = (Beta1[ind:ind+1][:, current1.inner_verts] +
-#     Beta2[ind:ind+1][:, current2.inner_verts] @ P).T
+#f = (Beta1[ind:ind+1][:, coil1.inner_vertices] +
+#     Beta2[ind:ind+1][:, coil2.inner_vertices] @ P).T
 #f = mesh1.vertex_normals[:,1]
 
 #I1inner = np.linalg.solve(M, f)
@@ -118,8 +119,8 @@ I1inner = np.linalg.solve(C.T @ C + M/1e-8, C.T @ beta)
 #I1 = mesh1.vertices[:,0]
 I2inner = P @ I1inner
 
-I1 = np.zeros(mesh1.vertices.shape[0]); I1[current1.inner_verts] = I1inner.T
-I2 = np.zeros(mesh2.vertices.shape[0]); I2[current2.inner_verts] = I2inner.T
+I1 = np.zeros(mesh1.vertices.shape[0]); I1[coil1.inner_vertices] = I1inner.T
+I2 = np.zeros(mesh2.vertices.shape[0]); I2[coil2.inner_vertices] = I2inner.T
 
 s = mlab.triangular_mesh(*mesh1.vertices.T, mesh1.faces, scalars=I1)
 s.enable_contours=True

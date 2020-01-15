@@ -116,7 +116,7 @@ class Conductor:
         #Populate options dictionary with defaults if not specified
         self.opts = {'outer_boundaries':None, 'mass_lumped':False,
                      'resistance_full_rank': True, 'inductance_nchunks':None,
-                     'streamfunction_basis':'vertex', 'N_suh': 100}
+                     'basis_name':'vertex', 'N_suh': 100}
 
         for key, val in opts.items():
             self.opts[key] = val
