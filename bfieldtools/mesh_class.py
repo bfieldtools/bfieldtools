@@ -480,78 +480,54 @@ class StreamFunction(np.ndarray):
                 Conductor object
     """
 
-
-    def __new__(cls, vals, conductor):
+    def __new__(cls, input_array, conductor=None):
+#        print('In __new__ with class %s' % cls)
         # Input array is an already formed ndarray instance
         # We first cast to be our class type
+        obj = np.asarray(input_array).view(cls)
+        # add the new attribute to the created instance
+        obj.conductor = conductor
 
-        self = np.asarray(vals).view(cls)
-        self.conductor = conductor
+        return obj
 
-        # Finally, we must return the newly created object:
-        return self
-#
-#    def __init__(self, vals, conductor, vals_basis=None):
-#        self.conductor = conductor
-#
-#        if vals_basis is None:
-#            vals_basis = self.conductor.basis
-#
-#        self.basis_name = self.conductor.basis_name
-#        self.basis = self.conductor.basis
-#
-#        self.f2v = self.conductor.f2v
-#        self.v2f = self.conductor.v2f
-#
-#        self.set_stream_func(vals_basis, vals)
-
-
-
-    def __array_finalize__(self, obj):
-        # see InfoArray.__array_finalize__ for comments
-        if obj is None: return
-
-        self.conductor = getattr(obj, 'conductor', None)
-
+    def __init__(self, input_array, conductor=None):
+#        print('In __init__ with class %s' % self.__class__)
 
         self.basis_name = self.conductor.basis_name
         self.basis = self.conductor.basis
 
         self.f2v = self.conductor.f2v
         self.v2f = self.conductor.v2f
+
+
+    def __array_finalize__(self, obj):
 #
-#        self.set_stream_func(vals)
-#
-#
-#    def set_stream_func(self, vals_basis, vals):
-#        """ Set stream function values to the object
-#
-#            Can also be used for re-setting the values
-#
-#            Parameters:
-#                vals:
-#                    array of shape (N,) or (N,M) where N corresponds to
-#                    the number of free vertices in the conductor or the
-#                    the number of all vertices in the conductor.
-#        """
-#
-#        if vals_basis == 'free':
-#            self.free = vals
-#
-#        elif vals_basis == 'suh':
-#            try:
-#                self.free = self.basis @ vals
-#            except:
-#                raise ValueError('It seems like the Conductor object this StreamFunction belongs to is not in "suh"-basis')
-#
-#        elif vals_basis == 'vertex':
-#            self.free = self.v2f @ vals
-#
-#        else:
-#            raise ValueError('Unknown basis name for stream function')
-#
-##    def __repr__(self):
-##        return self.free @ self.basis
+#        print('In array_finalize:')
+#        print('   self type is %s' % type(self))
+#        print('   obj type is %s' % type(obj))
+
+        if obj is None:
+#            obj = obj.view(np.ndarray)
+            return
+
+        self.conductor = getattr(obj, 'conductor', None)
+
+
+    def __array_wrap__(self, out_arr, context=None):
+        '''
+        Return a ndarray for all ufuncs, since the StreamFunction attributes no longer apply
+        when e.g. changing shape etc
+        '''
+        return np.ndarray.__array_wrap__(self, out_arr, context).view(np.ndarray)
+
+
+    def __getitem__(self, k):
+        return np.ndarray.__getitem__(self, k).view(np.ndarray)
+
+
+    def __repr__(self):
+        return '%s, %s,  basis: %s'%(self.__class__.__name__, self.view(np.ndarray).__repr__(), self.basis_name)
+
 
     @property
     def v(self):
