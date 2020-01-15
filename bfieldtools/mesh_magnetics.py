@@ -207,7 +207,7 @@ def scalar_potential_coupling(mesh, r, Nchunks=None):
     return Uv*coeff
 
 
-def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=3):
+def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2):
     """
     Compute vector potential matrices (one for each coordinate)
     from linear stream functions using analytic integral
