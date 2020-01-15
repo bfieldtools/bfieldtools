@@ -531,21 +531,21 @@ class StreamFunction(np.ndarray):
 
     @property
     def v(self):
-        return self.f2v @ self.free
+        return self.f2v @ self.basis.T @ self
 
     @property
     def f(self):
-        return self.free
+        return self.basis.T @ self
 
     @property
     def power(self):
         R = self.conductor.matrices['resistance']
-        return 0.5 *  self.free.T @ R @ self.free
+        return 0.5 *  self.T @ self.basis.T @ R @ self.basis @ self
 
     @property
     def magnetic_energy(self):
         M = self.conductor.matrices['inductance']
-        return 0.5 * self.free.T @ M @ self.free
+        return 0.5 *  self.T @ self.basis.T @ M @ self.basis @ self
 
     def plot(self):
         pass
