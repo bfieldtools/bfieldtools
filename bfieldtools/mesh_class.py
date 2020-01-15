@@ -13,7 +13,7 @@ import numpy as np
 
 from . import utils
 from .mesh_calculus import laplacian_matrix, mass_matrix
-from .mesh_properties import self_inductance_matrix, resistance_matrix
+from .mesh_properties import self_inductance_matrix, resistance_matrix, mutual_inductance_matrix
 from .mesh_magnetics import magnetic_field_coupling, scalar_potential_coupling, vector_potential_coupling
 from .suhtools import SuhBasis
 
@@ -55,7 +55,7 @@ class Conductor:
     def __init__(self, verts=None, tris=None, mesh_file=None,
                  mesh_obj=None, process=False, fix_normals=True,
                  resistivity=1.68*1e-8, thickness=1e-4,
-                 opts = {}):
+                 **kwargs):
         '''
         Initialize Conductor object.
         First priority is to use given Trimesh object (mesh_obj).
@@ -79,8 +79,8 @@ class Conductor:
             Resistivity value in Ohm/meter
         Thickness: float or array (Nfaces)
             Thickness of surface. NB! Must be small in comparison to observation distance
-        opts: dict
-            Options for Conductor object. Default settings are:
+        kwargs:
+            Additional options with default settings are:
                 'outer_boundaries':None,
                 'mass_lumped':False,
                 'resistance_full_rank': True,
@@ -118,7 +118,7 @@ class Conductor:
                      'resistance_full_rank': True, 'inductance_nchunks':None,
                      'basis_name':'vertex', 'N_suh': 100}
 
-        for key, val in opts.items():
+        for key, val in kwargs.items():
             self.opts[key] = val
 
 
@@ -257,6 +257,43 @@ class Conductor:
         return U.T @ inductance @ U
 
 
+    def _resistance(self):
+        '''
+        Back-end of resistance matrix computation
+        '''
+        sheet_resistance = self.resistivity / self.thickness
+        resistance =  resistance_matrix(self.mesh, sheet_resistance).toarray()
+
+        # Compensate for rank n-1 by adding offset, otherwise this
+        # operator map constant vectors to zero
+        if self.opts['resistance_full_rank']:
+            scale = np.mean(sheet_resistance)
+            resistance += np.ones(resistance.shape)/resistance.shape[0]*scale
+
+        U = self.f2v
+        return U.T @ resistance @ U
+
+    def mutual_inductance(self, conductor_other):
+        '''
+        Mutual inductance between this conductor and another
+
+        Parameters:
+            conductor_other: Conductor object
+
+        Returns:
+            M: mutual inductance matrix M(self, other) in
+                in the bases specified in the conductor object
+
+        '''
+        M = mutual_inductance_matrix(self.mesh, conductor_other.mesh,
+                                     quad_degree=1, approx_far=True)
+        # Convert to free basis first
+        M = self.f2v.T @ M @ conductor_other.f2v
+        # Then to the desired basis
+        M = self.basis.T @ M @ conductor_other.basis
+
+        return M
+
     def __setattr__(self, name, value):
         '''
         Modified set-function to take into account post-hoc changes to e.g. resistance
@@ -288,40 +325,6 @@ class Conductor:
             return self.basis.T @ M @ self.basis
 
         return self.__dict__[name]
-
-
-#    @LazyProperty
-#    def resistance(self):
-#        '''
-#        Compute and return resistance/resistivity matrix using Laplace matrix.
-#        Conductivity and thickness are class parameters
-#
-#        Returns
-#        -------
-#        R: array
-#            Resistance matrix
-#
-#        '''
-#
-#        return self._resistance()
-
-
-    def _resistance(self):
-        '''
-        Back-end of resistance matrix computation
-        '''
-        sheet_resistance = self.resistivity / self.thickness
-        resistance =  resistance_matrix(self.mesh, sheet_resistance).toarray()
-
-        # Compensate for rank n-1 by adding offset, otherwise this
-        # operator map constant vectors to zero
-        if self.opts['resistance_full_rank']:
-            scale = np.mean(sheet_resistance)
-            resistance += np.ones(resistance.shape)/resistance.shape[0]*scale
-
-        U = self.f2v
-        return U.T @ resistance @ U
-
 
 
     def plot_mesh(self, representation='wireframe', opacity=0.5, color=(0, 0, 0), cull_front=False, cull_back=False):

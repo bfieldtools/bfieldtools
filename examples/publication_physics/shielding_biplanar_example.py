@@ -56,19 +56,12 @@ mesh1 = coil_plus.union(coil_minus)
 mesh2 = mesh1.copy()
 mesh2.apply_scale(1.4)
 
-coil1 = Conductor(mesh_obj=mesh1)
-coil2 = Conductor(mesh_obj=mesh2)
+coil1 = Conductor(mesh_obj=mesh1, basis_name = 'free')
+coil2 = Conductor(mesh_obj=mesh2, basis_name = 'free')
 
 M11 = coil1.inductance
 M22 = coil2.inductance
-# Constrain boundary to zero and consider only inneverts
-M11 = M11[coil1.inner_vertices][:, coil1.inner_vertices]
-M22 = M22[coil2.inner_vertices][:, coil2.inner_vertices]
-# Add rank-one matrix, so that M22 can be inverted (for zero mean functions)
-#M22 += np.ones_like(M22)/M22.shape[0]
-#M11 += np.ones_like(M11)/M11.shape[0]
-M21 = mutual_inductance_matrix(mesh2, mesh1)
-M21 = M21[coil2.inner_vertices][:, coil1.inner_vertices]
+M21 = coil2.mutual_inductance(coil1)
 # Mapping from I1 to I2, constraining flux through mesh2 to zero
 P = -np.linalg.solve(M22, M21)
 
