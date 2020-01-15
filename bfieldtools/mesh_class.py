@@ -168,6 +168,10 @@ class Conductor:
         self.U_coupling = CouplingMatrix(self, scalar_potential_coupling)
         self.A_coupling = CouplingMatrix(self, vector_potential_coupling)
 
+        # Coupling to spherical harmonic field coefficients
+        self._alpha_coupling = None
+        self._beta_coupling = None
+
         # Matrices in inner-weight basis
         self.matrices = {'laplacian': None, 'mass': None, 'inductance': None,
                         'resistance': None}
@@ -325,17 +329,25 @@ class Conductor:
 
         return M
 
-    def _spf_coeffs(self):
+    @property
+    def sph_couplings(self):
+        return self._sph_couplings()
+
+    def _sph_couplings(self):
         '''
-        Compute mappings from
+        Compute spherical harmonic mappings and store them for further use
         '''
+        if self._alpha_coupling is None:
+            print('Computing coupling matrices')
+            Calpha, Cbeta = compute_sphcoeffs_mesh(self.mesh, self.opts['N_sph'])
+            # Store the results for further use
+            Calpha = self._alpha_coupling = Calpha @ self.inner2all
+            Cbeta = self._beta_coupling = Cbeta @ self.inner2all
+        else:
+            Calpha = self._alpha_coupling
+            Cbeta = self._beta_coupling
 
-        Calpha, Cbeta = compute_sphcoeffs_mesh(self.mesh, self.opts['N_sph'])
-
-        for C in (Calpha, Cbeta):
-            C = C @ self.inner2all
-
-        return Calpha, Cbeta
+        return Calpha @ self.basis, Cbeta @ self.basis
 
 
     def __setattr__(self, name, value):
