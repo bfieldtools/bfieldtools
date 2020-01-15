@@ -101,7 +101,7 @@ class Conductor:
                 'mass_lumped':False,
                 'resistance_full_rank': True,
                 'inductance_nchunks':None,
-                'basis_name':'free' (other: suh, vertex)
+                'basis_name':'inner' (other: suh, vertex)
                 'N_suh': 100
                 'N_sph': 5
 
@@ -150,8 +150,8 @@ class Conductor:
         # Set up stream function basis
         #######################################################################
 
-        self.f2v = utils.free2vert(self.mesh, self.inner_vertices, self.holes)
-        self.v2f = utils.vert2free(self.mesh, self.inner_vertices, self.holes)
+        self.inner2all = utils.inner2vert(self.mesh, self.inner_vertices, self.holes)
+        self.vert2inner = utils.vert2inner(self.mesh, self.inner_vertices, self.holes)
 
         self.basis_name = self.opts['basis_name']
         self.set_basis()
@@ -168,7 +168,7 @@ class Conductor:
         self.U_coupling = CouplingMatrix(self, scalar_potential_coupling)
         self.A_coupling = CouplingMatrix(self, vector_potential_coupling)
 
-        # Matrices in free-weight basis
+        # Matrices in inner-weight basis
         self.matrices = {'laplacian': None, 'mass': None, 'inductance': None,
                         'resistance': None}
 
@@ -179,12 +179,12 @@ class Conductor:
                                   self.mesh.is_watertight,
                                   self.inner_vertices, self.holes)
             self.basis = self.suh_basis.basis
-        elif self.basis_name == 'free':
+        elif self.basis_name == 'inner':
             self.basis = np.eye(len(self.inner_vertices) + len(self.holes))
         elif self.basis_name == 'vertex':
-            self.basis = self.v2f.toarray()
+            self.basis = self.vert2inner.toarray()
         else:
-            raise ValueError('streamfunction_basis must free, vertex or suh')
+            raise ValueError('streamfunction_basis must inner, vertex or suh')
 
     def set_holes(self, outer_boundaries=None):
         """ Set indices of holes to self.holes
@@ -279,7 +279,7 @@ class Conductor:
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)
 
-        U = self.f2v
+        U = self.inner2all
         return U.T @ inductance @ U
 
 
@@ -301,7 +301,7 @@ class Conductor:
             scale = np.mean(sheet_resistance)
             resistance += np.ones(resistance.shape)/resistance.shape[0]*scale
 
-        U = self.f2v
+        U = self.inner2all
         return U.T @ resistance @ U
 
     def mutual_inductance(self, conductor_other):
@@ -318,8 +318,8 @@ class Conductor:
         '''
         M = mutual_inductance_matrix(self.mesh, conductor_other.mesh,
                                      quad_degree=1, approx_far=True)
-        # Convert to free basis first
-        M = self.f2v.T @ M @ conductor_other.f2v
+        # Convert to inner basis first
+        M = self.inner2all.T @ M @ conductor_other.inner2all
         # Then to the desired basis
         M = self.basis.T @ M @ conductor_other.basis
 
@@ -333,11 +333,9 @@ class Conductor:
         Calpha, Cbeta = compute_sphcoeffs_mesh(self.mesh, self.opts['N_sph'])
 
         for C in (Calpha, Cbeta):
-            C = C @ self.f2v
+            C = C @ self.inner2all
 
         return Calpha, Cbeta
-
-
 
 
     def __setattr__(self, name, value):
@@ -463,8 +461,8 @@ class CouplingMatrix:
 
         if len(self.points) == 0:
             self.matrix = self.function(self.parent.mesh, points, *fun_args)
-            # Convert to all-vertices to free vertices
-            self.matrix = self.matrix @ self.parent.f2v.toarray()
+            # Convert to all-vertices to inner vertices
+            self.matrix = self.matrix @ self.parent.inner2all.toarray()
             self.points = points
 
             M = self.matrix
@@ -479,7 +477,7 @@ class CouplingMatrix:
                 missing_points = points[missing_point_idx]
 
                 new_matrix_elems = self.function(self.parent.mesh, missing_points, *fun_args)
-                new_matrix_elems = new_matrix_elems @ self.parent.f2v.toarray()
+                new_matrix_elems = new_matrix_elems @ self.parent.inner2all.toarray()
 
 
                 #Append newly computed point to coupling matrix, update bookkeeping
@@ -497,13 +495,13 @@ class CouplingMatrix:
 class StreamFunction(np.ndarray):
     """ Class for representing stream function(s) on a conductor
 
-        Handles the mapping between the degrees of freedom in the
-        stream function (dof) and the vertex weights (v)
+        Handles the mapping between the inner (free) weights in the
+        stream function and the all vertices
 
         Parameters:
             vals:
                     array of shape (N,) or (N,M) where N corresponds to
-                    the number of free vertices in the conductor or the
+                    the number of inner vertices in the conductor or the
                     the number of all vertices in the conductor.
 
                 Multiple (M) stream functions can be stored in the object
@@ -528,8 +526,8 @@ class StreamFunction(np.ndarray):
         self.basis_name = self.conductor.basis_name
         self.basis = self.conductor.basis
 
-        self.f2v = self.conductor.f2v
-        self.v2f = self.conductor.v2f
+        self.inner2all = self.conductor.inner2all
+        self.vert2inner = self.conductor.vert2inner
 
 
     def __array_finalize__(self, obj):
@@ -562,11 +560,11 @@ class StreamFunction(np.ndarray):
 
 
     @property
-    def v(self):
-        return self.f2v @ self.basis @ self
+    def vert(self):
+        return self.inner2all @ self.basis @ self
 
     @property
-    def f(self):
+    def inner(self):
         return self.basis @ self
 
     @property

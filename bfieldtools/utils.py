@@ -233,8 +233,8 @@ def find_mesh_boundaries(mesh):
 #    return boundary_verts, inner_verts, boundary_tris, inner_tris
 
 
-def free2vert(mesh, inner_vertices, holes):
-    """ Linear mapping of the free weights in the stream function
+def inner2vert(mesh, inner_vertices, holes):
+    """ Linear mapping of the inner (free) weights in the stream function
         discretization to weights in all vertices
 
         Parameters:
@@ -259,9 +259,9 @@ def free2vert(mesh, inner_vertices, holes):
 
     return d2v
 
-def vert2free(mesh, inner_vertices, holes):
-    """ Linear mapping of the all weight in the stream function
-        discretization to free weights
+def vert2inner(mesh, inner_vertices, holes):
+    """ Linear mapping of the all weights in the stream function
+        discretization to inner (free) weights
 
         Parameters:
             mesh: Trimesh object

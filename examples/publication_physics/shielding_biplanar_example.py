@@ -56,8 +56,8 @@ mesh1 = coil_plus.union(coil_minus)
 mesh2 = mesh1.copy()
 mesh2.apply_scale(1.4)
 
-coil1 = Conductor(mesh_obj=mesh1, basis_name = 'free')
-coil2 = Conductor(mesh_obj=mesh2, basis_name = 'free')
+coil1 = Conductor(mesh_obj=mesh1, basis_name = 'inner')
+coil2 = Conductor(mesh_obj=mesh2, basis_name = 'inner')
 
 M11 = coil1.inductance
 M22 = coil2.inductance
