@@ -16,6 +16,7 @@ from .mesh_calculus import laplacian_matrix, mass_matrix
 from .mesh_properties import self_inductance_matrix, resistance_matrix, mutual_inductance_matrix
 from .mesh_magnetics import magnetic_field_coupling, scalar_potential_coupling, vector_potential_coupling
 from .suhtools import SuhBasis
+from .sphtools import compute_sphcoeffs_mesh
 
 
 class LazyProperty():
@@ -39,6 +40,21 @@ class LazyProperty():
         result = obj.__dict__[self.__name__] = self._func(obj)
 
         return result
+
+
+def matrixwrapper(func):
+    """ Wrapper for lazy computation of Conductor matrices with basis change
+    """
+    def wrapper(obj):
+        name = func.__name__
+        M = obj.matrices[name[1:]]
+        if M is None:
+            print('Computing the matrix')
+            M = obj.matrices[name[1:]] = func(obj)
+        return obj.basis.T @ M @ obj.basis
+    return wrapper
+
+
 
 
 class Conductor:
@@ -87,6 +103,7 @@ class Conductor:
                 'inductance_nchunks':None,
                 'basis_name':'free' (other: suh, vertex)
                 'N_suh': 100
+                'N_sph': 5
 
 
         '''
@@ -116,7 +133,7 @@ class Conductor:
         #Populate options dictionary with defaults if not specified
         self.opts = {'outer_boundaries':None, 'mass_lumped':False,
                      'resistance_full_rank': True, 'inductance_nchunks':None,
-                     'basis_name':'vertex', 'N_suh': 100}
+                     'basis_name':'vertex', 'N_suh': 100, 'N_sph': 5}
 
         for key, val in kwargs.items():
             self.opts[key] = val
@@ -208,8 +225,11 @@ class Conductor:
         else:
             self.holes = self.boundaries[hole_inds]
 
+    @property
+    def laplacian(self):
+        return self._laplacian()
 
-#    @LazyProperty
+    @matrixwrapper
     def _laplacian(self):
         '''
         Compute and return surface laplacian matrix.
@@ -222,8 +242,11 @@ class Conductor:
                                          self.holes)
         return laplacian
 
+    @property
+    def mass(self):
+        return self._mass()
 
-#    @LazyProperty
+    @matrixwrapper
     def _mass(self):
         '''
         Compute and return mesh mass matrix.
@@ -237,8 +260,11 @@ class Conductor:
 
         return mass
 
+    @property
+    def inductance(self):
+        return self._inductance()
 
-#    @LazyProperty
+    @matrixwrapper
     def _inductance(self):
         '''
         Compute and return mutual inductance matrix.
@@ -257,6 +283,11 @@ class Conductor:
         return U.T @ inductance @ U
 
 
+    @property
+    def resistance(self):
+        return self._resistance()
+
+    @matrixwrapper
     def _resistance(self):
         '''
         Back-end of resistance matrix computation
@@ -294,6 +325,21 @@ class Conductor:
 
         return M
 
+    def _spf_coeffs(self):
+        '''
+        Compute mappings from
+        '''
+
+        Calpha, Cbeta = compute_sphcoeffs_mesh(self.mesh, self.opts['N_sph'])
+
+        for C in (Calpha, Cbeta):
+            C = C @ self.f2v
+
+        return Calpha, Cbeta
+
+
+
+
     def __setattr__(self, name, value):
         '''
         Modified set-function to take into account post-hoc changes to e.g. resistance
@@ -308,23 +354,6 @@ class Conductor:
         if name == 'basis_name':
             self.set_basis()
 
-
-    def __getattr__(self, name):
-        '''
-        Modified get-function to implement basis mapping
-        '''
-
-        if name in self.matrices.keys():
-            M = self.matrices[name]
-            if M is None:
-                try:
-                    M = self.matrices[name] = getattr(self, '_'+name)()
-                except KeyError:
-                    raise ValueError(name + ' not available')
-
-            return self.basis.T @ M @ self.basis
-
-        return self.__dict__[name]
 
 
     def plot_mesh(self, representation='wireframe', opacity=0.5, color=(0, 0, 0), cull_front=False, cull_back=False):
