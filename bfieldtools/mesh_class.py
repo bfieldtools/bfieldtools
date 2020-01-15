@@ -531,11 +531,11 @@ class StreamFunction(np.ndarray):
 
     @property
     def v(self):
-        return self.f2v @ self.basis.T @ self
+        return self.f2v @ self.basis @ self
 
     @property
     def f(self):
-        return self.basis.T @ self
+        return self.basis @ self
 
     @property
     def power(self):
