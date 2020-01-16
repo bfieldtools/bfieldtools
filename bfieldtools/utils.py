@@ -204,7 +204,7 @@ def find_mesh_boundaries(mesh):
 
     boundaries = []
     for idx, i in enumerate(outline.entities):
-            boundaries.append(i.points)
+            boundaries.append(np.unique(i.points))
 
             inner_vertices = np.setdiff1d(inner_vertices, i.points)
 
