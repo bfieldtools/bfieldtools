@@ -600,7 +600,7 @@ def basis_fields(p, lmax):
             _Psilm[:,1] *= sp[:,0]**(l-1)
             _Psilm[:,2] *= sp[:,0]**(l-1)
             _Psilm = sphvec2cart(sp, _Psilm)
-            B2[idx] = Psilm # r**l functions
+            B2[idx] = _Psilm # r**l functions
 
             _Philm = Philm(l,m, sp[:,1],sp[:,2])
 #                Philm *= np.sqrt((2*l+1)*(l+1))
