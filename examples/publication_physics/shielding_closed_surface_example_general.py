@@ -27,7 +27,8 @@ from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.mesh_inductance import mutual_inductance_matrix
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
-from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis
+from bfieldtools.sphtools import compute_sphcoeffs_mesh
+from bfieldtools import sphtools
 
 from trimesh.creation import box
 from trimesh.smoothing import filter_laplacian
@@ -57,8 +58,7 @@ P = -np.linalg.solve(M22, M21)
 A1, Beta1 = compute_sphcoeffs_mesh(mesh1, 7)
 A2, Beta2 = compute_sphcoeffs_mesh(mesh2, 7)
 
-sb = sphbasis(10)
-F1 = (np.moveaxis(sb.basis_fields(mesh1.vertices, 3)[1],0,2)*mesh1.vertex_normals).sum(axis=-1)
+F1 = (np.moveaxis(sphtools.basis_fields(mesh1.vertices, 3)[1],0,2)*mesh1.vertex_normals).sum(axis=-1)
 #F2 = (sb.basis_fields(mesh2.vertices, 3)[0]*mesh2.vertex_normals).sum(axis=-1)
 
 x = y = np.linspace(-0.8, 0.8, 150)

@@ -27,8 +27,7 @@ from bfieldtools.mesh_properties import mutual_inductance_matrix
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
 
-
-from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis, plotsph, sphfittools
+from bfieldtools.sphtools import compute_sphcoeffs_mesh
 
 from trimesh.creation import icosphere
 

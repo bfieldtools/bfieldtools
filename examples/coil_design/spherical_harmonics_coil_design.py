@@ -21,9 +21,7 @@ from bfieldtools.mesh_class import Conductor
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
-
-
-from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis, sphfittools
+from bfieldtools import sphtools
 
 
 import pkg_resources
@@ -82,13 +80,10 @@ target_points = target_points[np.linalg.norm(target_points, axis=1) < sidelength
 
 
 
+sphfield = sphtools.field(target_points, target_alms, target_blms, coil.opts['N_sph'])
 
-sph = sphbasis(4)
-sphfield = sph.field(target_points, target_alms, target_blms, coil.opts['N_sph'])
 
-target_field = sphfield/np.max(sphfield[:, 0])
-
-target_field[:, 2] = 0
+target_field = sphfield/np.max(np.abs(sphfield))
 
 coil.plot_mesh()
 mlab.quiver3d(*target_points.T, *sphfield.T)
@@ -106,27 +101,12 @@ target_spec = {'coupling':coil.sph_couplings[1], 'rel_error':0, 'abs_error':0.01
 # Run QP solver
 import mosek
 
-coil.j, prob = optimize_streamfunctions(coil,
+coil.s, prob = optimize_streamfunctions(coil,
                                    [target_spec],
                                    objective='minimum_inductive_energy',
                                    solver='MOSEK',
                                    solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
                                    )
-#
-#B_target = coil.B_coupling(target_points) @ coil.j
-#
-#
-#lmax = 4
-#coil.C_alms, coil.C_blms = compute_sphcoeffs_mesh(coil.mesh, lmax=lmax)
-#
-#Alms, Blms = coil.C_alms @ coil.j, coil.C_blms @ coil.j
-#
-#Alms = np.zeros_like(Blms)
-#sphfield_target = sph.field(target_points, Alms, Blms, lmax)
-#
-#
-#coeffs, coeffs2, nrmse = sphfittools.fitSpectra(sph, np.repeat(target_points[:, :, None], 3, -1), B_target, lmax)
-#
 
 
 #############################################################
@@ -134,7 +114,7 @@ coil.j, prob = optimize_streamfunctions(coil,
 
 N_contours = 10
 
-loops, loop_values= scalar_contour(coil.mesh, coil.j.vert, N_contours=N_contours)
+loops, loop_values= scalar_contour(coil.mesh, coil.s.vert, N_contours=N_contours)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
@@ -142,6 +122,6 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f)
 
-B_target = coil.B_coupling(target_points) @ coil.j
+B_target = coil.B_coupling(target_points) @ coil.s
 
 mlab.quiver3d(*target_points.T, *B_target.T)

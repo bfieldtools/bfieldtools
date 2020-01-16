@@ -589,8 +589,25 @@ class StreamFunction(np.ndarray):
         M = self.conductor.matrices['inductance']
         return 0.5 *  self.T @ self.basis.T @ M @ self.basis @ self
 
-    def plot(self):
-        pass
+    def plot(self, contours=True, cmap='seismic', background=True):
+        """ Plot the stream function
+        """
+        mesh = self.conductor.mesh
+
+        scalars = self.vert
+        vmin = - np.max(abs(scalars))
+        vmax =   np.max(abs(scalars))
+        s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
+                                 scalars=scalars, vmin=vmin, vmax=vmax,
+                                 colormap=cmap)
+        if contours:
+            s.enable_contours=True
+            if background==True:
+                mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
+                                      color=(0.5,0.5,0.5), opacity=0.2)
+
+
+        return s
 
 
 

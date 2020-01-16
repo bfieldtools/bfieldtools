@@ -96,12 +96,8 @@ n_stray_points = len(stray_points)
 # and it is scaled to match the C matrix in the optimization function
 
 
-from bfieldtools.sphtools import sphbasis
+from bfieldtools import sphtools
 
-
-sph = sphbasis(50)
-
-#plotsph.plotYlms(sph, 3)
 
 lmax = 4
 alm = np.zeros((lmax*(lmax+2),))
@@ -111,7 +107,7 @@ blm = np.zeros((lmax*(lmax+2),))
 #alm[22]+=1
 blm[22]+=1
 
-sphfield = sph.field(target_points, alm, blm, lmax)
+sphfield = sphtools.field(target_points, alm, blm, lmax)
 
 target_field = sphfield/np.max(sphfield[:, 0])
 
