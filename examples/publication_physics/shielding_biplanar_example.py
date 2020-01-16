@@ -23,11 +23,10 @@ from bfieldtools.mesh_class import Conductor
 from bfieldtools.mesh_magnetics import magnetic_field_coupling as compute_C
 from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic as compute_C_analytic
 from bfieldtools.mesh_magnetics import scalar_potential_coupling as compute_U
-from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.mesh_properties import mutual_inductance_matrix
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
-from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis
+from bfieldtools.sphtools import compute_sphcoeffs_mesh
 
 
 import pkg_resources
@@ -68,7 +67,6 @@ P = -np.linalg.solve(M22, M21)
 A1, Beta1 = coil1.sph_couplings #compute_sphcoeffs_mesh(mesh1, 4)
 A2, Beta2 = coil2.sph_couplings #compute_sphcoeffs_mesh(mesh2, 4)
 
-sb = sphbasis(10)
 
 x = y = np.linspace(-0.8, 0.8, 150)
 X,Y = np.meshgrid(x, y, indexing='ij')

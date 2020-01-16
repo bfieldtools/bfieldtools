@@ -79,12 +79,8 @@ target_points = target_points[np.linalg.norm(target_points, axis=1) < sidelength
 # Thus we avoid issues with having to manually specify the concomitant gradients
 
 
-from bfieldtools.sphtools import sphbasis
+from bfieldtools import sphtools
 
-
-sph = sphbasis(50)
-
-#plotsph.plotYlms(sph, 3)
 
 lmax = 3
 alm = np.zeros((lmax*(lmax+2),))
@@ -94,7 +90,7 @@ blm = np.zeros((lmax*(lmax+2),))
 
 blm[3]+=1
 
-sphfield = sph.field(target_points - offset, alm, blm, lmax)
+sphfield = sphtools.field(target_points - offset, alm, blm, lmax)
 
 target_field = sphfield/np.max(sphfield[:, 0])
 

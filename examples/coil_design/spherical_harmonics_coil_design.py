@@ -24,6 +24,7 @@ from bfieldtools.viz import plot_3d_current_loops
 
 
 from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis, sphfittools
+from bfieldtools import sphtools
 
 
 import pkg_resources
@@ -99,7 +100,7 @@ target_points = target_points[np.linalg.norm(target_points, axis=1) < sidelength
 
 
 sph = sphbasis(4)
-sphfield = sph.field(target_points, target_alms, target_blms, lmax)
+sphfield = sphtools.field(target_points, target_alms, target_blms, lmax)
 
 target_field = sphfield/np.max(sphfield[:, 0])
 
@@ -137,7 +138,7 @@ coil.C_alms, coil.C_blms = compute_sphcoeffs_mesh(coil.mesh, lmax=lmax)
 Alms, Blms = coil.C_alms @ coil.j, coil.C_blms @ coil.j
 
 Alms = np.zeros_like(Blms)
-sphfield_target = sph.field(target_points, Alms, Blms, lmax)
+sphfield_target = sphtools.field(target_points, Alms, Blms, lmax)
 
 
 coeffs, coeffs2, nrmse = sphfittools.fitSpectra(sph, np.repeat(target_points[:, :, None], 3, -1), B_target, lmax)
