@@ -45,6 +45,7 @@ class SuhBasis():
                          if False, calculate for inner vertices (zero-dirichlet condition)
                                     and use zero for the boundary
         """
+        print('Calculating surface harmonics expansion...')
 
         if closed_mesh:
             assert self.mesh.is_watertight
@@ -115,13 +116,19 @@ class SuhBasis():
 
         i = 0
         j = 0
+
+        scalars = np.zeros((len(self.mesh.vertices),))
+
         for n in range(Nfuncs):
             print(i,j)
             points = self.mesh.vertices.copy()
             points[:,0] += i*dx
             points[:,1] += j*dy
+
+
+            scalars[self.inner_vertices] = self.basis[:, n]
             mlab.triangular_mesh(*points.T, self.mesh.faces,
-                                 scalars=self.basis[:, n])
+                                 scalars=scalars)
             if i<N1:
                 i+=1
             else:
