@@ -256,7 +256,7 @@ def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2):
         i0=i1
 
     #Free some memory by deleting old variables
-    del R1, R2, RRchunk, R2chunks, near, far
+    del R1, R2, RRchunk, R2chunks
 
     # Rotated gradients (currents)
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
