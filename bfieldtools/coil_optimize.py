@@ -185,7 +185,6 @@ def optimize_streamfunctions(conductor,
             C = spec['coupling'].transpose((2, 0, 1))
             C = C.reshape((C.shape[0], -1)).T
         else:
-            raise ValueError('Spherical harmonics should be reimplemented!')
             C = spec['coupling']
 
         #Apply relative error to bounds
