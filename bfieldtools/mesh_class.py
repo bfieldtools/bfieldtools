@@ -150,11 +150,11 @@ class Conductor:
         # Set up stream function basis
         #######################################################################
 
-        self.inner2all = utils.inner2vert(self.mesh, self.inner_vertices, self.holes)
+        self.inner2vert = utils.inner2vert(self.mesh, self.inner_vertices, self.holes)
         self.vert2inner = utils.vert2inner(self.mesh, self.inner_vertices, self.holes)
 
+        #Sets basis for first time, calling self.set_basis()
         self.basis_name = self.opts['basis_name']
-        self.set_basis()
 
         #######################################################################
         # Set up physical properties and coupling matrices
@@ -218,7 +218,7 @@ class Conductor:
             b_inds = np.arange(len(self.boundaries))
             for n in range(len(comps)):
                 mask = b_labels == n
-                outer_boundaries.append(b_inds[mask][b_lengths[mask].argmax()])
+                outer_boundaries.append(b_inds[mask][np.argwhere(b_lengths[mask] == b_lengths[mask].max())])
 
         self.opts['outer_boundaries'] = outer_boundaries
         hole_inds = list(np.setdiff1d(np.arange(len(self.boundaries)),
@@ -227,7 +227,7 @@ class Conductor:
             # The non-watertight meshes contain no holes
             self.holes = []
         else:
-            self.holes = self.boundaries[hole_inds]
+            self.holes = [self.boundaries[i] for i in hole_inds]
 
     @property
     def laplacian(self):
@@ -283,7 +283,7 @@ class Conductor:
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)
 
-        U = self.inner2all
+        U = self.inner2vert
         return U.T @ inductance @ U
 
 
@@ -305,10 +305,10 @@ class Conductor:
             scale = np.mean(sheet_resistance)
             resistance += np.ones(resistance.shape)/resistance.shape[0]*scale
 
-        U = self.inner2all
+        U = self.inner2vert
         return U.T @ resistance @ U
 
-    def mutual_inductance(self, conductor_other):
+    def mutual_inductance(self, conductor_other, quad_degree=1, approx_far=True):
         '''
         Mutual inductance between this conductor and another
 
@@ -321,9 +321,9 @@ class Conductor:
 
         '''
         M = mutual_inductance_matrix(self.mesh, conductor_other.mesh,
-                                     quad_degree=1, approx_far=True)
+                                     quad_degree=quad_degree, approx_far=approx_far)
         # Convert to inner basis first
-        M = self.inner2all.T @ M @ conductor_other.inner2all
+        M = self.inner2vert.T @ M @ conductor_other.inner2vert
         # Then to the desired basis
         M = self.basis.T @ M @ conductor_other.basis
 
@@ -341,8 +341,8 @@ class Conductor:
             print('Computing coupling matrices')
             Calpha, Cbeta = compute_sphcoeffs_mesh(self.mesh, self.opts['N_sph'])
             # Store the results for further use
-            Calpha = self._alpha_coupling = Calpha @ self.inner2all
-            Cbeta = self._beta_coupling = Cbeta @ self.inner2all
+            Calpha = self._alpha_coupling = Calpha @ self.inner2vert
+            Cbeta = self._beta_coupling = Cbeta @ self.inner2vert
         else:
             Calpha = self._alpha_coupling
             Cbeta = self._beta_coupling
@@ -474,7 +474,7 @@ class CouplingMatrix:
         if len(self.points) == 0:
             self.matrix = self.function(self.parent.mesh, points, *fun_args)
             # Convert to all-vertices to inner vertices
-            self.matrix = self.matrix @ self.parent.inner2all.toarray()
+            self.matrix = self.matrix @ self.parent.inner2vert.toarray()
             self.points = points
 
             M = self.matrix
@@ -489,7 +489,7 @@ class CouplingMatrix:
                 missing_points = points[missing_point_idx]
 
                 new_matrix_elems = self.function(self.parent.mesh, missing_points, *fun_args)
-                new_matrix_elems = new_matrix_elems @ self.parent.inner2all.toarray()
+                new_matrix_elems = new_matrix_elems @ self.parent.inner2vert.toarray()
 
 
                 #Append newly computed point to coupling matrix, update bookkeeping
@@ -538,7 +538,7 @@ class StreamFunction(np.ndarray):
         self.basis_name = self.conductor.basis_name
         self.basis = self.conductor.basis
 
-        self.inner2all = self.conductor.inner2all
+        self.inner2vert = self.conductor.inner2vert
         self.vert2inner = self.conductor.vert2inner
 
 
@@ -573,7 +573,7 @@ class StreamFunction(np.ndarray):
 
     @property
     def vert(self):
-        return self.inner2all @ self.basis @ self
+        return self.inner2vert @ self.basis @ self
 
     @property
     def inner(self):
