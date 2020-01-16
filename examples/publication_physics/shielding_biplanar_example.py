@@ -69,9 +69,6 @@ A1, Beta1 = coil1.sph_couplings #compute_sphcoeffs_mesh(mesh1, 4)
 A2, Beta2 = coil2.sph_couplings #compute_sphcoeffs_mesh(mesh2, 4)
 
 sb = sphbasis(10)
-#F1 = (sb.basis_fields(mesh1.vertices, 3)[1]*mesh1.vertex_normals).sum(axis=-1)
-#F1 = np.einsum('ijk,ki->jk',sb.basis_fields(mesh1.vertices, 3)[1], mesh1.vertex_normals)
-#F2 = (sb.basis_fields(mesh2.vertices, 3)[0]*mesh2.vertex_normals).sum(axis=-1)
 
 x = y = np.linspace(-0.8, 0.8, 150)
 X,Y = np.meshgrid(x, y, indexing='ij')
@@ -98,16 +95,6 @@ I1inner = np.linalg.solve(C.T @ C + M/1e8, C.T @ beta)
 # Minimum energy
 #I1inner = np.linalg.solve(C.T @ C + M/1e-8, C.T @ beta)
 
-#f = F1[2]
-#f =  np.ones(M11.shape[0])
-#ind=2
-#f = (Beta1[ind:ind+1][:, coil1.inner_vertices] +
-#     Beta2[ind:ind+1][:, coil2.inner_vertices] @ P).T
-#f = mesh1.vertex_normals[:,1]
-
-#I1inner = np.linalg.solve(M, f)
-#I1, res, rr, s = np.linalg.lstsq(C, alpha, rcond=1e-12)
-#I1 = mesh1.vertices[:,0]
 I2inner = P @ I1inner
 
 I1 = np.zeros(mesh1.vertices.shape[0]); I1[coil1.inner_vertices] = I1inner.T
