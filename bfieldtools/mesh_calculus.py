@@ -64,7 +64,7 @@ def laplacian_matrix(mesh, material_param=None, inner_vertices=None, holes=None)
 
     #If inner_vertices are specified, return matrix only for those vertices
     if inner_vertices is not None:
-        L = L[inner_vertices, :][:, inner_vertices]
+
 
         #If holes specified, add matrix entries corresponding to them
         if holes:
@@ -115,7 +115,7 @@ def _laplacian_matrix_w_holes(L, inner_vertices, holes):
     Lb = [None]*len(holes)
 
     #Start constructing the Laplacian matrix including the values at the inner holes
-    L_holes = L.copy()
+    L_holes = L[inner_vertices, :][:, inner_vertices]
 
     #Add columns
     for b_idx, b in enumerate(holes):
@@ -193,7 +193,7 @@ def mass_matrix(mesh, lumped=False, inner_vertices=None, holes=None):
             M = _mass_matrix_w_holes(M, inner_vertices, holes)
         else:
             M = M[inner_vertices, :][:, inner_vertices]
-    if holes:
+    elif holes:
         raise ValueError('You need to specify both inner_vertices and holes')
 
     return M
