@@ -64,12 +64,11 @@ def laplacian_matrix(mesh, material_param=None, inner_vertices=None, holes=None)
 
     #If inner_vertices are specified, return matrix only for those vertices
     if inner_vertices is not None:
-
-
         #If holes specified, add matrix entries corresponding to them
         if holes:
             L = _laplacian_matrix_w_holes(L, inner_vertices, holes)
-
+        else:
+            L = L[inner_vertices][:,inner_vertices]
     #Catch if only holes specified, but not inner_vertices
     elif holes:
         raise ValueError('You need to specify both inner_vertices and holes')

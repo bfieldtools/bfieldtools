@@ -29,17 +29,32 @@ class SuhBasis():
         Parameters
             mesh : Trimesh-object representing the boundary on which
                         current density is specified
-
             Nc : Number of components
+            closed_mesh:
+                inform if the mesh is closed or not (could be automated)
+            inner_vertices
+                If given zero-Dirichlet boundary conditions are used
+                for the calculation, other all vertices are used
+                which corresponds to the (natural) zero-Neumann condition
+            holes:
+                list of lists of indices for vertices that belong to holes
         """
 
         self.mesh = mesh
         self.Nc = Nc
-        self.inner_vertices = inner_vertices
+        if inner_vertices is not None:
+            self.inner_vertices = inner_vertices
+        else:
+            self.inner_vertices = np.arange(len(self.mesh.vertices))
         self.holes = holes
         self.calculate_basis(closed_mesh)
         if self.holes is not None:
             self.inner2vert = inner2vert(self.mesh, self.inner_vertices, self.holes)
+        elif inner_vertices is not None:
+            self.inner2vert = inner2vert(self.mesh, self.inner_vertices, [])
+            self.holes = []
+        else:
+            self.inner2vert = np.eye(len(self.mesh.vertices))
 
     def calculate_basis(self, closed_mesh=True, shiftinvert=True):
         """ Calculate basis functions as eigenfunctions of the laplacian
@@ -65,15 +80,13 @@ class SuhBasis():
 
         v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
         if shiftinvert:
-            u, v = eigsh(-L, N, M, sigma=0, which='LA', v0 = v0)
+            u, v = eigsh(-L, N, M, sigma=0, which='LM', v0 = v0)
         else:
             u, v = eigsh(-L, N, M, which='SA', v0 = v0)
 
         # The first function is constant and does not yield any field
         self.basis = v[:,N0:]
         self.eigenvals = u[N0:]
-
-
 
     def field(self, coeffs, points):
         """ Calculate field at points
@@ -123,16 +136,12 @@ class SuhBasis():
         i = 0
         j = 0
 
-        scalars = np.zeros((len(self.mesh.vertices),))
-
         for n in range(Nfuncs):
             print(i,j)
             points = self.mesh.vertices.copy()
             points[:,0] += i*dx
             points[:,1] += j*dy
-
-
-            scalars[self.inner_vertices] = self.inner2vert @ self.basis
+            scalars = self.inner2vert @ self.basis[:,n]
             mlab.triangular_mesh(*points.T, self.mesh.faces,
                                  scalars=scalars)
             if i<N1:
