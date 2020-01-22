@@ -15,6 +15,7 @@ Surface harmonics == Laplace-Beltrami eigenfunctions
 
 from .mesh_calculus import laplacian_matrix, mass_matrix
 from .mesh_magnetics import magnetic_field_coupling
+from .utils import inner2vert
 from scipy.sparse.linalg import eigsh
 import numpy as np
 from mayavi import mlab
@@ -37,6 +38,8 @@ class SuhBasis():
         self.inner_vertices = inner_vertices
         self.holes = holes
         self.calculate_basis(closed_mesh)
+        if self.holes is not None:
+            self.inner2vert = inner2vert(self.mesh, self.inner_vertices, self.holes)
 
     def calculate_basis(self, closed_mesh=True):
         """ Calculate basis functions as eigenfunctions of the laplacian
@@ -126,7 +129,7 @@ class SuhBasis():
             points[:,1] += j*dy
 
 
-            scalars[self.inner_vertices] = self.basis[:, n]
+            scalars[self.inner_vertices] = self.inner2vert @ self.basis
             mlab.triangular_mesh(*points.T, self.mesh.faces,
                                  scalars=scalars)
             if i<N1:
