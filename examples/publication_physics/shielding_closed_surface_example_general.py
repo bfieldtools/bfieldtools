@@ -50,20 +50,23 @@ elif domain == 'cube':
     mesh1  = filter_laplacian(mesh1)
     mesh2  = filter_laplacian(mesh2, 0.9)
 
-current1 = Conductor(mesh_obj=mesh1)
-current2 = Conductor(mesh_obj=mesh2)
+coil1 = Conductor(mesh_obj=mesh1)
+coil2 = Conductor(mesh_obj=mesh2)
 
-M11 = current1.inductance
-M22 = current2.inductance
+M11 = coil1.inductance
+M22 = coil2.inductance
 # Add rank-one matrix, so that M22 can be inverted
-M22 += np.ones_like(M22)/M22.shape[0]
-M11 += np.ones_like(M11)/M11.shape[0]
+M22 += np.ones_like(M22)/M22.shape[0]*np.mean(np.diag(M22))
+M11 += np.ones_like(M11)/M11.shape[0]*np.mean(np.diag(M11))
 M21 = mutual_inductance_matrix(mesh2, mesh1)
 # Mapping from I1 to I2
 P = -np.linalg.solve(M22, M21)
 
-A1, Beta1 = compute_sphcoeffs_mesh(mesh1, 7)
-A2, Beta2 = compute_sphcoeffs_mesh(mesh2, 7)
+#A1, Beta1 = compute_sphcoeffs_mesh(mesh1, 7)
+#A2, Beta2 = compute_sphcoeffs_mesh(mesh2, 7)
+A1, Beta1 = coil1.sph_couplings #compute_sphcoeffs_mesh(mesh1, 4)
+A2, Beta2 = coil2.sph_couplings #compute_sphcoeffs_mesh(mesh2, 4)
+
 
 #F1 = (np.moveaxis(sphtools.basis_fields(mesh1.vertices, 3)[1],0,2)*mesh1.vertex_normals).sum(axis=-1)
 #F2 = (sb.basis_fields(mesh2.vertices, 3)[0]*mesh2.vertex_normals).sum(axis=-1)
@@ -143,6 +146,7 @@ contours1 = scalar_contour(mesh1, I1, 20)[0]
 contours2 = scalar_contour(mesh2, I2, 20)[0]
 
 plot_3d_current_loops(contours1, tube_radius=0.005)
+plot_3d_current_loops(contours2, tube_radius=0.005)
 
 
 
