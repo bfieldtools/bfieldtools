@@ -49,7 +49,7 @@ def matrixwrapper(func):
         name = func.__name__
         M = obj.matrices[name[1:]]
         if M is None:
-            print('Computing the matrix')
+            print('Computing the %s matrix...'%str(name[1:]))
             M = obj.matrices[name[1:]] = func(obj)
         return obj.basis.T @ M @ obj.basis
     return wrapper
@@ -154,7 +154,7 @@ class Conductor:
         self.vert2inner = utils.vert2inner(self.mesh, self.inner_vertices, self.holes)
 
         #Sets basis for first time, calling self.set_basis()
-        self.basis_name = self.opts['basis_name']
+        self.set_basis(self.opts['basis_name'])
 
         #######################################################################
         # Set up physical properties and coupling matrices
@@ -177,7 +177,9 @@ class Conductor:
                         'resistance': None}
 
 
-    def set_basis(self):
+    def set_basis(self, basis_name):
+        self.basis_name = basis_name
+
         if self.basis_name == 'suh':
             self.suh_basis = SuhBasis(self.mesh, self.opts['N_suh'],
                                   self.mesh.is_watertight,
@@ -361,8 +363,6 @@ class Conductor:
         if (name == "resistivity" or name == "thickness") and self.matrices['resistance'] is not None:
             self.matrices['resistance'] = self._resistance() #Re-compute with new parameters
 
-        if name == 'basis_name':
-            self.set_basis()
 
 
 

@@ -250,12 +250,12 @@ def inner2vert(mesh, inner_vertices, holes):
     N = mesh.vertices.shape[0]
     M = len(inner_vertices) + len(holes)
     ii = list(inner_vertices) # indices of inner vertices
-    jj = list(np.arange(M)) # indices of inner vertices in dof
+    jj = list(np.arange(len(inner_vertices))) # indices of inner vertices in dof
     # Hole values maps to value for each hole vertex
     for n, h in enumerate(holes):
         ii.extend(list(h)) # indices of hole indices
         jj.extend([len(inner_vertices)+n]*len(h)) # len(h) times index of hole in dof
-    d2v = csr_matrix((np.ones(M), (ii, jj)), shape=(N, M), dtype=float)
+    d2v = csr_matrix((np.ones(len(jj)), (ii, jj)), shape=(N, M), dtype=float)
 
     return d2v
 
@@ -276,15 +276,13 @@ def vert2inner(mesh, inner_vertices, holes):
     N = mesh.vertices.shape[0]
     M = len(inner_vertices) + len(holes)
     ii = list(inner_vertices) # indices of inner vertices
-    jj = list(np.arange(M)) # indices of inner vertices in dof
-    vals = np.ones(M)
-    ind = len(inner_vertices)
+    jj = list(np.arange(len(inner_vertices))) # indices of inner vertices in dof
+    vals = list(np.ones(len(inner_vertices)))
     for n, h in enumerate(holes):
         ii.extend(list(h)) # indices of hole indices
         jj.extend([len(inner_vertices)+n]*len(h)) # len(h) times index of hole in free values
         # Values at holes map to their average (ok, when constant boundary condition satisfied)
-        vals[ind:ind+n] /= len(h)
-        ind += len(h)
+        vals.extend(list(np.ones(len(h))/len(h)))
     v2d = csr_matrix((vals, (jj, ii)), shape=(M, N), dtype=float)
 
     return v2d
