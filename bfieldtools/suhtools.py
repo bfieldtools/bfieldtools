@@ -41,7 +41,7 @@ class SuhBasis():
         if self.holes is not None:
             self.inner2vert = inner2vert(self.mesh, self.inner_vertices, self.holes)
 
-    def calculate_basis(self, closed_mesh=True):
+    def calculate_basis(self, closed_mesh=True, shiftinvert=True):
         """ Calculate basis functions as eigenfunctions of the laplacian
 
             closed_mesh: if True, calculate the basis for the whole mesh
@@ -64,7 +64,10 @@ class SuhBasis():
             N = self.Nc
 
         v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
-        u, v = eigsh(-L, N, M, which='SA', v0 = v0)
+        if shiftinvert:
+            u, v = eigsh(-L, N, M, sigma=0, which='LA', v0 = v0)
+        else:
+            u, v = eigsh(-L, N, M, which='SA', v0 = v0)
 
         # The first function is constant and does not yield any field
         self.basis = v[:,N0:]
@@ -161,7 +164,7 @@ if __name__ == '__main__':
     file_obj = pkg_resources.resource_filename('bfieldtools',
                     'example_meshes/closed_cylinder_remeshed.stl')
     mesh = trimesh.load(file_obj, process=True)
-    basis = suhbasis(mesh, 40, True)
+    basis = SuhBasis(mesh, 40, True)
 
 #    s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
 #                             scalars=basis.basis[:,6])
