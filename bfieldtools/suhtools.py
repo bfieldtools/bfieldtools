@@ -126,7 +126,7 @@ class SuhBasis():
             print('Matrix rank not full, result might be inaccurate')
         return  x
 
-    def plot(self, Nfuncs, dist=0.5):
+    def plot(self, Nfuncs, dist=0.5, **kwargs):
         """ Plot basis functions on the mesh
         """
         N1 = np.floor(np.sqrt(Nfuncs))
@@ -143,7 +143,7 @@ class SuhBasis():
             points[:,1] += j*dy
             scalars = self.inner2vert @ self.basis[:,n]
             mlab.triangular_mesh(*points.T, self.mesh.faces,
-                                 scalars=scalars)
+                                 scalars=scalars, **kwargs)
             if i<N1:
                 i+=1
             else:
