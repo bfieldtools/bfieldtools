@@ -188,14 +188,19 @@ def optimize_streamfunctions(conductor,
             C = spec['coupling']
 
         #Apply relative error to bounds
-        if spec['rel_error'] is not None:
+        if 'rel_error' in spec:
             upper_bound = spec['target'] * (1 + np.sign(spec['target']) * spec['rel_error'])
             lower_bound = spec['target'] * (1 - np.sign(spec['target']) * spec['rel_error'])
 
         #Apply absolute error to bounds
-        if spec['abs_error'] is not None:
+        if 'abs_error' in spec:
             upper_bound = spec['target'] + spec['abs_error']
             lower_bound = spec['target'] - spec['abs_error']
+
+        if ('abs_error' not in spec) and ('rel_error' not in spec):
+            raise ValueError('You should pass at least either rel_error or abs_error to give \
+                             some slack to the optimization.\
+                             If this is what you really want, modify the function!')
 
 
         #Flatten to match C matrix
