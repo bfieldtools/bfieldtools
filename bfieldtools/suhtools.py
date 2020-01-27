@@ -129,7 +129,7 @@ class SuhBasis():
     def plot(self, Nfuncs, dist=0.5):
         """ Plot basis functions on the mesh
         """
-        N1 = np.floor(np.sqrt(Nfuncs))
+        N1 = np.floor(np.sqrt(Nfuncs)+1)
         dx = (self.mesh.vertices[:,0].max() - self.mesh.vertices[:,0].min())*(1+dist)
         dy = (self.mesh.vertices[:,1].max() - self.mesh.vertices[:,1].min())*(1+dist)
 
@@ -142,8 +142,11 @@ class SuhBasis():
             points[:,0] += i*dx
             points[:,1] += j*dy
             scalars = self.inner2vert @ self.basis[:,n]
-            mlab.triangular_mesh(*points.T, self.mesh.faces,
+            s = mlab.triangular_mesh(*points.T, self.mesh.faces,
                                  scalars=scalars)
+
+            s.module_manager.scalar_lut_manager.number_of_colors = 15
+            s.actor.mapper.interpolate_scalars_before_mapping = True
             if i<N1:
                 i+=1
             else:
