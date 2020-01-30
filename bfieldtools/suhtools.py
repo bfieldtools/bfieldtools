@@ -15,6 +15,7 @@ Surface harmonics == Laplace-Beltrami eigenfunctions
 
 from .mesh_calculus import laplacian_matrix, mass_matrix
 from .mesh_magnetics import magnetic_field_coupling
+from .utils import inner2vert
 from scipy.sparse.linalg import eigsh
 import numpy as np
 from mayavi import mlab
@@ -28,23 +29,41 @@ class SuhBasis():
         Parameters
             mesh : Trimesh-object representing the boundary on which
                         current density is specified
-
             Nc : Number of components
+            closed_mesh:
+                inform if the mesh is closed or not (could be automated)
+            inner_vertices
+                If given zero-Dirichlet boundary conditions are used
+                for the calculation, other all vertices are used
+                which corresponds to the (natural) zero-Neumann condition
+            holes:
+                list of lists of indices for vertices that belong to holes
         """
 
         self.mesh = mesh
         self.Nc = Nc
-        self.inner_vertices = inner_vertices
+        if inner_vertices is not None:
+            self.inner_vertices = inner_vertices
+        else:
+            self.inner_vertices = np.arange(len(self.mesh.vertices))
         self.holes = holes
         self.calculate_basis(closed_mesh)
+        if self.holes is not None:
+            self.inner2vert = inner2vert(self.mesh, self.inner_vertices, self.holes)
+        elif inner_vertices is not None:
+            self.inner2vert = inner2vert(self.mesh, self.inner_vertices, [])
+            self.holes = []
+        else:
+            self.inner2vert = np.eye(len(self.mesh.vertices))
 
-    def calculate_basis(self, closed_mesh=True):
+    def calculate_basis(self, closed_mesh=True, shiftinvert=True):
         """ Calculate basis functions as eigenfunctions of the laplacian
 
             closed_mesh: if True, calculate the basis for the whole mesh
                          if False, calculate for inner vertices (zero-dirichlet condition)
                                     and use zero for the boundary
         """
+        print('Calculating surface harmonics expansion...')
 
         if closed_mesh:
             assert self.mesh.is_watertight
@@ -60,13 +79,14 @@ class SuhBasis():
             N = self.Nc
 
         v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
-        u, v = eigsh(-L, N, M, which='SA', v0 = v0)
+        if shiftinvert:
+            u, v = eigsh(-L, N, M, sigma=0, which='LM', v0 = v0)
+        else:
+            u, v = eigsh(-L, N, M, which='SA', v0 = v0)
 
         # The first function is constant and does not yield any field
         self.basis = v[:,N0:]
         self.eigenvals = u[N0:]
-
-
 
     def field(self, coeffs, points):
         """ Calculate field at points
@@ -106,22 +126,27 @@ class SuhBasis():
             print('Matrix rank not full, result might be inaccurate')
         return  x
 
-    def plot(self, Nfuncs, dist=0.5):
+    def plot(self, Nfuncs, dist=0.5, **kwargs):
         """ Plot basis functions on the mesh
         """
-        N1 = np.floor(np.sqrt(Nfuncs))
+        N1 = np.floor(np.sqrt(Nfuncs)+1)
         dx = (self.mesh.vertices[:,0].max() - self.mesh.vertices[:,0].min())*(1+dist)
         dy = (self.mesh.vertices[:,1].max() - self.mesh.vertices[:,1].min())*(1+dist)
 
         i = 0
         j = 0
+
         for n in range(Nfuncs):
             print(i,j)
             points = self.mesh.vertices.copy()
             points[:,0] += i*dx
             points[:,1] += j*dy
-            mlab.triangular_mesh(*points.T, self.mesh.faces,
-                                 scalars=self.basis[:, n])
+            scalars = self.inner2vert @ self.basis[:,n]
+            s = mlab.triangular_mesh(*points.T, self.mesh.faces,
+                                 scalars=scalars, **kwargs)
+
+            s.module_manager.scalar_lut_manager.number_of_colors = 15
+            s.actor.mapper.interpolate_scalars_before_mapping = True
             if i<N1:
                 i+=1
             else:
@@ -151,7 +176,7 @@ if __name__ == '__main__':
     file_obj = pkg_resources.resource_filename('bfieldtools',
                     'example_meshes/closed_cylinder_remeshed.stl')
     mesh = trimesh.load(file_obj, process=True)
-    basis = suhbasis(mesh, 40, True)
+    basis = SuhBasis(mesh, 40, True)
 
 #    s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
 #                             scalars=basis.basis[:,6])

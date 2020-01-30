@@ -1,5 +1,6 @@
 
 bfieldtools/__pycache__
+__pycache__/
 eggs/
 .eggs/
 build/

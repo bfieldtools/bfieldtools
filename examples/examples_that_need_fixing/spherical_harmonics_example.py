@@ -7,10 +7,10 @@ from mayavi import mlab
 import matplotlib.pyplot as plt
 
 from bfieldtools.sphtools import sphbasis, plotsph, sphfittools
+from bfieldtools import sphtools
 
 
 sph = sphbasis(20)
-plotsph = plotsph
 
 obj = plotsph.plotYlms(sph,4)
 obj = plotsph.plotYlm(sph,3,3)
@@ -28,13 +28,13 @@ obj = plotsph.plotBPsilm_volume(sph,5,0, 1, 10,offset)
 
 
 
-Psilm1 = sph.Psilm(1,0, sph.sqp[:,1], sph.sqp[:,2])
-Psilm2 = sph.Psilm(7,0, sph.sqp[:,1], sph.sqp[:,2])
+Psilm1 = sphtools.Psilm(1,0, sph.sqp[:,1], sph.sqp[:,2])
+Psilm2 = sphtools.Psilm(7,0, sph.sqp[:,1], sph.sqp[:,2])
 
 print(sph.innerproduct(Psilm1,Psilm2))
 
-Philm1 = sph.Philm(1,0, sph.sqp[:,1], sph.sqp[:,2])
-Philm2 = sph.Philm(7,0, sph.sqp[:,1], sph.sqp[:,2])
+Philm1 = sphtools.Philm(1,0, sph.sqp[:,1], sph.sqp[:,2])
+Philm2 = sphtools.Philm(7,0, sph.sqp[:,1], sph.sqp[:,2])
 
 print(sph.innerproduct(Philm2,Philm2))
 
@@ -45,9 +45,9 @@ B = np.zeros(sph.sqp.shape)
 B[:, 2] = sph.qp.points[:, 0] / np.max(sph.qp.points[:, 0])
 B += 0.1 * np.random.randn(B.shape[0], B.shape[1])
 
-B = sph.cartvec2sph(sph.sqp,B)
+B = sphtools.cartvec2sph(sph.sqp,B)
 
-coeffs = sph.vsphspectra(B, 7)
+coeffs = sph.avsphspectra(B, 7) # OK??
 
 plt.figure()
 plt.semilogy(coeffs**2)
@@ -68,7 +68,7 @@ bcoeffs = np.zeros(lmax*(lmax+2))
 acoeffs[7] = 1
 #    bcoeffs[2] = 1
 
-pot = sph.potential(p, acoeffs,bcoeffs, lmax)
+pot = sphtools.potential(p, acoeffs, bcoeffs, lmax)
 
 pot = np.reshape(pot, x.shape)
 

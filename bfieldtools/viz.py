@@ -226,7 +226,7 @@ def plot_cross_section(X, Y, data, axes=None, cmap=None, colorbar=False, contour
 #
 #    return fig
 
-def plot_data_on_faces(mesh, data, figure=None, figsize=(800, 800), cmap=None, colorbar=False, ncolors=32):
+def plot_data_on_faces(mesh, data, figure=None, figsize=(800, 800), cmap=None, colorbar=False, ncolors=356, **kwargs):
     ''' Plot any data determined on the faces of a mesh
 
         Parameters
@@ -273,7 +273,7 @@ def plot_data_on_faces(mesh, data, figure=None, figsize=(800, 800), cmap=None, c
 
     s.mlab_source.update()
     s2 = mlab.pipeline.set_active_attribute(s,cell_scalars='Cell data')
-    surf = mlab.pipeline.surface(s2)
+    surf = mlab.pipeline.surface(s2, **kwargs)
 
     lutmanager = surf.parent.scalar_lut_manager
     lutmanager.lut_mode = cmap
@@ -289,7 +289,7 @@ def plot_data_on_faces(mesh, data, figure=None, figsize=(800, 800), cmap=None, c
 
 
 def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), cmap=None, colorbar=False, ncolors=32,
-                          interpolate=True, opacity=1.0, cull_front=False, cull_back=False, autoscale=False):
+                          interpolate=True, cull_front=False, cull_back=False, autoscale=False, **kwargs):
     '''
     Plot scalar data defined on the vertices of a mesh.
 
@@ -331,7 +331,7 @@ def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), cmap=None
             cmap='RdBu'
 
 
-    surf = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=data, colormap=cmap, opacity=opacity)
+    surf = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=data, colormap=cmap,**kwargs)
     surf.actor.property.frontface_culling = cull_front
     surf.actor.property.backface_culling = cull_back
     if colorbar:

@@ -8,7 +8,7 @@ Created on Tue Nov 26 16:28:49 2019
 
 import sys
 path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
-if path in sys.path:
+if path not in sys.path:
     sys.path.insert(0, path)
 
 
@@ -22,7 +22,7 @@ from bfieldtools.mesh_magnetics import magnetic_field_coupling
 from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic
 from bfieldtools.mesh_magnetics import scalar_potential_coupling
 from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis
-from bfieldtools.suhtools import suhbasis
+from bfieldtools.suhtools import SuhBasis
 
 
 # https://graphics.stanford.edu/~mdfisher/Data/Meshes/bunny.obj
@@ -41,7 +41,7 @@ bsph = sphbasis(10)
 
 Ca, Cb = bsph.basis_fields(mesh_field.vertices, 4)
 
-bsuh = suhbasis(mesh, 20)
+bsuh = SuhBasis(mesh, 20)
 Csuh = magnetic_field_coupling_analytic(mesh, mesh_field.vertices) @ bsuh.basis
 
 def plot_basis_fields(C, comps):

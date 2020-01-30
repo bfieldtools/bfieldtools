@@ -4,8 +4,12 @@ Contains functions for computing thermal noise in conductive thin objects.
 '''
 
 import numpy as np
+<<<<<<< HEAD
 from scipy.linalg import eigh
 from scipy.sparse.linalg import eigsh
+=======
+from scipy.linalg import eigh#, eigsh
+>>>>>>> 1fc6bafbbc1a8d6563c3f74256e78e607fe8b02e
 from mayavi import mlab
 
 from .mesh_magnetics import magnetic_field_coupling

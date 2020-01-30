@@ -6,6 +6,8 @@ from scipy.linalg import eigh as largest_eigh
 import quadprog
 import cvxpy as cp
 
+from .mesh_class import StreamFunction
+
 def cvxpy_solve_qp(P, G, h, solver=cp.MOSEK, tolerance=None):
 
     P = .5 * (P + P.T)
@@ -119,20 +121,19 @@ def quadprog_solve_qp(P, q, G=None, h=None, A=None, b=None):
     return quadprog.solve_qp(qp_G, qp_a, qp_C, qp_b, meq)[0]
 
 
-def optimize_streamfunctions(meshobj,
+def optimize_streamfunctions(conductor,
                              bfield_specification,
                              objective='minimum_inductive_energy',
                              solver=None,
                              solver_opts={},
-                             problem=None,
-                             boundary_constraints='all_zero'):
+                             problem=None):
     '''
     Quadratic optimization of coil stream function according to a specified objective,
     while keeping specified target field at target points within given constraints.
 
     Parameters
     ----------
-    meshobj: Conductor object
+    conductor: Conductor object
         Contains Trimesh mesh
     bfield_specification: list
         List in which element is a dictionary containing a field specification.
@@ -153,18 +154,11 @@ def optimize_streamfunctions(meshobj,
     problem: CVXPY problem object
         If passed, will use already existing problem (MUST BE SAME DIMENSIONS) to
         skip DCP processing/reformulation time.
-    boundary_constraints: string or dict
-        Specifies how boundaries are handled. If 'all_zero' (default), boundary vertices are not included
-        in the optimization, and are set at zero. If dict, must have entries
-            'zero_eq_indices' (list of ints)
-            'iso_eq_indices'  (list of lists of ints)
-        which contain the vertex indices for which the stream function is set to zero or
-        to be equal across elements.
 
     Returns
     -------
-    I: vector
-        Vector with length len(`meshobj.mesh.vertices`), containing the optimized current density values
+    s: vector
+        Vector with length len(`conductor.mesh.vertices`), containing the optimized current density values
         at each mesh vertex
     prob: CVXPY problem object
         CVXPY problem object containing data, formulation, solution, metric etc
@@ -176,42 +170,37 @@ def optimize_streamfunctions(meshobj,
     elif objective == 'minimum_resistive_energy':
         objective = (0, 1)
 
-    #If boundaries are all zero, don't include them in the optimization
-    if boundary_constraints == 'all_zero':
-        indices = meshobj.inner_verts
-    else:
-        indices = np.arange(0, len(meshobj.mesh.vertices))
 
     #Initialize inequality constraint matrix and constraints
-    constraint_matrix = np.zeros((0, len(indices)))
+    constraint_matrix = np.zeros((0, conductor.basis.shape[1]))
     upper_bounds = np.zeros((0, ))
     lower_bounds = np.zeros((0, ))
 
     #Populate inequality constraints with bfield specifications
     for spec in bfield_specification:
 
-
-
-
         #Reshape so that values on axis 1 are x1, y1, z1, x2, y2, z2, etc.
         #If not 3D matrix, assuming the use of spherical harmonics
         if spec['coupling'].ndim == 3:
-            C = spec['coupling'][:, :, indices]
-
-            C = C.transpose((2, 0, 1))
+            C = spec['coupling'].transpose((2, 0, 1))
             C = C.reshape((C.shape[0], -1)).T
         else:
-            C = spec['coupling'][:, indices]
+            C = spec['coupling']
 
         #Apply relative error to bounds
-        if spec['rel_error'] is not None:
+        if 'rel_error' in spec:
             upper_bound = spec['target'] * (1 + np.sign(spec['target']) * spec['rel_error'])
             lower_bound = spec['target'] * (1 - np.sign(spec['target']) * spec['rel_error'])
 
         #Apply absolute error to bounds
-        if spec['abs_error'] is not None:
+        if 'abs_error' in spec:
             upper_bound = spec['target'] + spec['abs_error']
             lower_bound = spec['target'] - spec['abs_error']
+
+        if ('abs_error' not in spec) and ('rel_error' not in spec):
+            raise ValueError('You should pass at least either rel_error or abs_error to give \
+                             some slack to the optimization.\
+                             If this is what you really want, modify the function!')
 
 
         #Flatten to match C matrix
@@ -229,17 +218,17 @@ def optimize_streamfunctions(meshobj,
     #Construct quadratic objective matrix
     if objective == (1, 0):
 
-        quadratic_matrix = meshobj.inductance[indices][:, indices]
+        quadratic_matrix = conductor.inductance
 
     elif objective == (0, 1):
 
-        quadratic_matrix = meshobj.resistance[indices][:, indices]
+        quadratic_matrix = conductor.resistance
 
     elif type(objective) == tuple:
 
-        L = meshobj.inductance[indices][:, indices]
+        L = conductor.inductance
 
-        R = meshobj.resistance[indices][:, indices]
+        R = conductor.resistance
 
         print('Scaling inductance and resistance matrices before optimization. This requires eigenvalue computation, hold on.')
 
@@ -251,7 +240,7 @@ def optimize_streamfunctions(meshobj,
         quadratic_matrix = (objective[0] * L  + objective[1] * scaled_R)
     else:
         print('Custom objective passed, assuming it is a matrix of correct dimensions')
-        quadratic_matrix = objective[indices][:, indices]
+        quadratic_matrix = objective
 
     #Scale whole quadratic term according to largest eigenvalue
     max_eval_quad = largest_eigh(quadratic_matrix, eigvals=(quadratic_matrix.shape[0]-1, quadratic_matrix.shape[0]-1))[0][0]
@@ -279,17 +268,6 @@ def optimize_streamfunctions(meshobj,
 
         constraints = [G@x >= lb, G@x <= ub]
 
-        if type(boundary_constraints) == dict:
-            if boundary_constraints['zero_eq_indices'] is not None:
-                print('Passing boundary zero equality constraint')
-                constraints += [x[boundary_constraints['zero_eq_indices']] == np.zeros_like(boundary_constraints['zero_eq_indices'])]
-
-            if boundary_constraints['iso_eq_indices'] is not None:
-                print('Passing boundary equality constraints')
-                for i in range(len(boundary_constraints['iso_eq_indices'])):
-                    for j in range(1, len(boundary_constraints['iso_eq_indices'][i])):
-                        constraints += [x[boundary_constraints['iso_eq_indices'][i][j]] == x[boundary_constraints['iso_eq_indices'][i][0]]]
-
         problem = cp.Problem(objective,
                           constraints)
     else:
@@ -315,9 +293,7 @@ def optimize_streamfunctions(meshobj,
     print('Passing problem to solver...')
     problem.solve(solver=solver, verbose=True, **solver_opts)
 
-    #Build final I vector with zeros on boundary elements, scale by same singular value as constraint matrix
+    #extract optimized streamfunction, scale by same singular value as constraint matrix
+    s = StreamFunction(problem.variables()[0].value / s[0], conductor=conductor)
 
-    I = np.zeros((len(meshobj.mesh.vertices),))
-    I[indices] = problem.variables()[0].value / s[0]
-
-    return I, problem
+    return s, problem
