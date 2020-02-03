@@ -79,7 +79,10 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
     duration = time.time() - start
     print('took %.2f seconds.'%duration)
 
-    return coef * np.moveaxis(C, 2, 1)
+    C *= coef
+#    return np.moveaxis(C, 2, 1)
+    return np.swapaxes(C, 2, 1)
+
 
 
 def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
@@ -149,7 +152,9 @@ def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
     duration = time.time() - start
     print('took %.2f seconds.'%duration)
 
-    return coef * np.moveaxis(C, 0, 1)
+    C *= coef
+#    return np.moveaxis(C, 0, 1)
+    return np.swapaxes(C, 0, 1)
 
 
 def scalar_potential_coupling(mesh, r, Nchunks=None):

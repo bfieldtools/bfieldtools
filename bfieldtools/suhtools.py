@@ -56,7 +56,7 @@ class SuhBasis():
         else:
             self.inner2vert = np.eye(len(self.mesh.vertices))
 
-    def calculate_basis(self, closed_mesh=True, shiftinvert=True):
+    def calculate_basis(self, closed_mesh=True, shiftinvert=False):
         """ Calculate basis functions as eigenfunctions of the laplacian
 
             closed_mesh: if True, calculate the basis for the whole mesh
@@ -126,32 +126,59 @@ class SuhBasis():
             print('Matrix rank not full, result might be inaccurate')
         return  x
 
-    def plot(self, Nfuncs, dist=0.5, **kwargs):
+    def plot(self, Nfuncs, dist=0.5, ncol=None, ncolors=15, **kwargs):
         """ Plot basis functions on the mesh
+
+            Nfuncs: int or array-like
+                 if int, the number functions starting from the first
+                 if list/array: the indices of the functions
+
+            dist: float
+                distance between the plotted objects relative to their size
+
+            ncol: int or None
+                the number of columns in the plot
+                If none automatically determined
+
+            ncolors:
+                number of colors in the colormap
+
+            kwargs: keyword arguments passed to mayavi (colormap, etc.)
+
         """
-        N1 = np.floor(np.sqrt(Nfuncs)+1)
+        if type(Nfuncs) == int:
+            N=Nfuncs
+            indices = np.arange(Nfuncs)
+        else:
+            indices = Nfuncs
+            N = len(indices)
+
+        if ncol is None:
+            ncol = np.floor(np.sqrt(N)+1)
         dx = (self.mesh.vertices[:,0].max() - self.mesh.vertices[:,0].min())*(1+dist)
         dy = (self.mesh.vertices[:,1].max() - self.mesh.vertices[:,1].min())*(1+dist)
 
         i = 0
         j = 0
 
-        for n in range(Nfuncs):
+        for n in indices:
             print(i,j)
             points = self.mesh.vertices.copy()
             points[:,0] += i*dx
-            points[:,1] += j*dy
+            points[:,1] -= j*dy
             scalars = self.inner2vert @ self.basis[:,n]
             s = mlab.triangular_mesh(*points.T, self.mesh.faces,
                                  scalars=scalars, **kwargs)
 
-            s.module_manager.scalar_lut_manager.number_of_colors = 15
+            s.module_manager.scalar_lut_manager.number_of_colors = ncolors
             s.actor.mapper.interpolate_scalars_before_mapping = True
-            if i<N1:
+            if i<ncol:
                 i+=1
             else:
                 j+=1
                 i=0
+
+        return s
 
 
 class SuhBasis2(SuhBasis):

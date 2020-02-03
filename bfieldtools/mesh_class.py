@@ -452,7 +452,7 @@ class CouplingMatrix:
         self.function = function
 
 
-    def __call__(self, points, *fun_args):
+    def __call__(self, points, *fun_args, **kwargs):
         '''
         Returns the output of self.function(self.parent, points).
         If some output has already been computed, use pre-computed values instead
@@ -472,7 +472,7 @@ class CouplingMatrix:
         '''
 
         if len(self.points) == 0:
-            self.matrix = self.function(self.parent.mesh, points, *fun_args)
+            self.matrix = self.function(self.parent.mesh, points, *fun_args, **kwargs)
             # Convert to all-vertices to inner vertices
             self.matrix = self.matrix @ self.parent.inner2vert.toarray()
             self.points = points
@@ -488,7 +488,7 @@ class CouplingMatrix:
             if len(missing_point_idx) > 0:
                 missing_points = points[missing_point_idx]
 
-                new_matrix_elems = self.function(self.parent.mesh, missing_points, *fun_args)
+                new_matrix_elems = self.function(self.parent.mesh, missing_points, *fun_args, **kwargs)
                 new_matrix_elems = new_matrix_elems @ self.parent.inner2vert.toarray()
 
 

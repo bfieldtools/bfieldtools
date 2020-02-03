@@ -57,6 +57,15 @@ mesh4 = trimesh.Trimesh(points4, tris2)
 for ii in range(7):
     mesh4 =mesh4.subdivide()
 
+def plot_axes():
+    axes_points = np.zeros((3,3))
+    axes = np.eye(3)*0.3
+    vectors = mlab.quiver3d(*axes_points, *axes, mode='arrow', color=(0,0,0))
+    vectors.glyph.glyph.scale_factor = 1.5
+    vectors.glyph.glyph_source.glyph_source.tip_length = 0.1
+    vectors.glyph.glyph_source.glyph_source.tip_radius = 0.03
+    vectors.glyph.glyph_source.glyph_source.shaft_radius = 0.01
+
 # Difference vectors
 RR2 = mesh2.vertices[:,None,None,:] - p_tris[None,:,:,:]
 RR3 = mesh3.vertices[:,None,None,:] - p_tris[None,:,:,:]
@@ -77,7 +86,7 @@ for ii, func in enumerate((triangle_potential_uniform,
         pot3 = func(RR3, tn)[:,0]
         pot4 = func(RR4, tn)[:,0]
         mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, color=(0.5,0.5,0.5),
-                             opacity=0.5)
+                             opacity=0.7)
     if ii==1:
         pot2 = func(RR2, tn, ta)[:,0,1]
         pot3 = func(RR3, tn, ta)[:,0,1]
@@ -94,7 +103,7 @@ for ii, func in enumerate((triangle_potential_uniform,
         r2[:,0] = mesh.vertices[0]
         r2[:,2] = mesh.vertices[2]
         u[:, 2] = np.linalg.det(r2)/np.linalg.det(mesh.vertices)
-        q = mlab.quiver3d(*r.T, *u.T, colormap='viridis', mode='arrow')
+        q = mlab.quiver3d(*r.T, *u.T, colormap='gray', mode='arrow')
         q.glyph.glyph.scale_factor = 0.25
 
 
@@ -109,13 +118,14 @@ for ii, func in enumerate((triangle_potential_uniform,
         pot3 = func(RR3)[:,0]
         pot4 = func(RR4)[:,0]
         mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, color=(0.5,0.5,0.5),
-                             opacity=0.2)
+                             opacity=0.5)
         u = np.zeros(meshq.vertices.shape)
         u[:, 2] = 1
         r = meshq.vertices
-        q = mlab.quiver3d(*r.T, *u.T, colormap='viridis', mode='arrow')
+        q = mlab.quiver3d(*r.T, *u.T, colormap='gray', mode='arrow')
         q.glyph.glyph.scale_factor = 0.2
 
+    plot_axes()
 
     M = max(max(abs(pot2)),max(abs(pot3)),max(abs(pot4)))
     for m, p in zip((mesh2, mesh3, mesh4), (pot2, pot3, pot4)):
@@ -127,7 +137,11 @@ for ii, func in enumerate((triangle_potential_uniform,
 
     # Move camera a bit
     s.scene.camera.pitch(-2)
+    s.scene.camera.azimuth(-25)
+    s.scene.camera.elevation(-10)
+    s.scene.camera.orthogonalize_view_up()
+    s.scene.camera.pitch(1)
+    s.scene.camera.orthogonalize_view_up()
 
-
-
+    #Zoom one step still
 
