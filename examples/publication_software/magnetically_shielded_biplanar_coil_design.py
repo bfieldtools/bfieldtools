@@ -6,7 +6,7 @@ The effect of the shield is prospectively taken into account while designing the
 The coil is positioned close to the end of the shield to demonstrate the effect
 '''
 
-PLOT = False
+PLOT = True
 SAVE_FIGURES = False
 
 import numpy as np
@@ -15,7 +15,7 @@ import trimesh
 
 
 from bfieldtools.mesh_class import Conductor, CouplingMatrix
-from bfieldtools.magnetic_field_mesh import compute_C, compute_U
+#from bfieldtools.mesh_magnetics import compute_C, compute_U
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
@@ -127,6 +127,7 @@ coil.I, coil.prob = optimize_streamfunctions(coil,
                                    )
 
 
+np.save('biplanar_current.npy', coil.I)
 
 ##############################################################
 # Plot coil windings and target points
@@ -161,10 +162,10 @@ d = np.mean(np.diff(shield.mesh.vertices[shield.mesh.faces[:,0:2]],axis=1), axis
 points = shield.mesh.vertices - d*shield.mesh.vertex_normals
 
 # Calculate primary potential matrix at the shield surface
-P_prim = compute_U(coil.mesh, points)
+P_prim = coil.U_coupling(points)
 
 # Calculate linear collocation BEM matrix
-P_bem = compute_U(shield.mesh, points)
+P_bem = shield.U_coupling(points)
 
 # Recalculate diag elements according to de Munck paper
 #for diag_index in range(P_bem.shape[0]):

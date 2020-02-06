@@ -78,7 +78,7 @@ from scipy.linalg import eigh
 evals, evecs = eigh(E, coil1.inductance, eigvals=(0, 20))
 
 #%%
-s = StreamFunction(evecs[:,5], coil1)
+s = StreamFunction(evecs[:,4], coil1)
 mlab.figure()
 s.plot(True)
 mlab.triangular_mesh(*target.vertices.T, target.faces, scalars = Bn @ s)

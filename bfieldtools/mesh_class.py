@@ -451,6 +451,11 @@ class CouplingMatrix:
         self.parent = parent
         self.function = function
 
+    def reset(self):
+        """ Reset the matrix and points
+        """
+        self.points = np.array([])
+        self.matrix = np.array([])
 
     def __call__(self, points, *fun_args, **kwargs):
         '''
@@ -472,9 +477,18 @@ class CouplingMatrix:
         '''
 
         if len(self.points) == 0:
-            self.matrix = self.function(self.parent.mesh, points, *fun_args, **kwargs)
+            matrix = self.function(self.parent.mesh, points, *fun_args, **kwargs)
             # Convert to all-vertices to inner vertices
-            self.matrix = self.matrix @ self.parent.inner2vert.toarray()
+            if matrix.ndim == 2:
+                self.matrix = matrix @ self.parent.inner2vert
+            elif matrix.ndim == 3:
+                self.matrix = np.zeros((matrix.shape[0], 3,
+                                        self.parent.inner2vert.shape[1]))
+                for n in range(3):
+                    self.matrix[: ,n, :] = matrix[:, n, :] @ self.parent.inner2vert
+            else:
+                raise ValueError('Matrix dimensions not ok')
+
             self.points = points
 
             M = self.matrix
@@ -501,7 +515,16 @@ class CouplingMatrix:
 
             M = self.matrix[m_existing_point_idx]
 
-        return M @ self.parent.basis
+        if self.matrix.ndim == 2:
+            M = M @ self.parent.basis
+        elif self.matrix.ndim == 3:
+            M = np.zeros((self.matrix.shape[0], 3, self.parent.basis.shape[1]))
+            for n in range(3):
+                M[: ,n, :] = self.matrix[:, n, :] @ self.parent.basis
+        else:
+            raise ValueError('Matrix dimensions not ok')
+
+        return M
 
 
 class StreamFunction(np.ndarray):
@@ -589,7 +612,7 @@ class StreamFunction(np.ndarray):
         M = self.conductor.matrices['inductance']
         return 0.5 *  self.T @ self.basis.T @ M @ self.basis @ self
 
-    def plot(self, contours=True, cmap='seismic', background=True):
+    def plot(self, contours=True, ncontours=10, cmap='seismic', background=True):
         """ Plot the stream function
         """
         mesh = self.conductor.mesh
@@ -602,9 +625,13 @@ class StreamFunction(np.ndarray):
                                  colormap=cmap)
         if contours:
             s.enable_contours=True
+            s.contour.number_of_contours = ncontours
             if background==True:
                 mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
                                       color=(0.5,0.5,0.5), opacity=0.2)
+        else:
+            s.actor.mapper.interpolate_scalars_before_mapping = True
+            s.module_manager.scalar_lut_manager.number_of_colors = ncontours
 
 
         return s
