@@ -70,6 +70,7 @@ class SuhBasis():
 
         L = laplacian_matrix(self.mesh, None, self.inner_vertices, self.holes)
         M = mass_matrix(self.mesh, False, self.inner_vertices, self.holes)
+        self.mass = M
 
         if closed_mesh:
             N0 = 1
