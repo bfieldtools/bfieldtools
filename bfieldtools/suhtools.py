@@ -129,7 +129,7 @@ class SuhBasis():
             print('Matrix rank not full, result might be inaccurate')
         return  x
 
-<<<<<<< HEAD
+
     def plot(self, Nfuncs, dist=0.5, Ncols=None, figsize=(800,800), **kwargs):
         """ Plot basis functions on the mesh
 
