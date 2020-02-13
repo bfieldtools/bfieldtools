@@ -177,6 +177,32 @@ def triangle_potential_approx(R, ta, reg=1e-12):
     return result
 
 
+def potential_dipoles(R, face_normals, face_areas):
+    """ Approximate the potential of linearly varying dipole density by
+        by dipoles at each face
+
+    Parameters
+            R : (Neval, Ntri, 3, 3) array
+                Displacement vectors (Neval, Ntri, Ntri_verts, xyz)
+            face_normals: (Ntri, 3) normals of each fame
+            face_areas
+
+    Return
+        Potential approximation for vertex in each face
+        pot: (Neval, Ntri, Ntriverts)
+    """
+    nn = face_normals
+    # Calculate quadrature points corresponding to linear shape functions (Ok?)
+    weights = np.array([[0.5, 0.25, 0.25], [0.25, 0.5, 0.25], [0.25, 0.25, 0.5]])
+#    weights = np.eye(3)
+#    weights = np.ones((3,3))/3
+    # Combine vertices for quadrature points
+    Rquad = np.einsum('...ij,ik->...kj', R, weights)
+    pot = np.einsum('ik, ...ijk->...ij', nn, Rquad)/(norm(Rquad)**3)
+    pot = pot*(face_areas[:, None]/3)
+
+    return pot
+
 def triangle_potential_dipole_linear(R, tn, ta, planar=False):
     """ Potential of dipolar density with magnitude of a
         linear shape function on a triangle, "omega_i" in de Munck's paper

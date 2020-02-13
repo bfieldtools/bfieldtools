@@ -21,7 +21,7 @@ import pkg_resources
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
 from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic
 from bfieldtools.mesh_magnetics import scalar_potential_coupling
-from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis
+from bfieldtools.sphtools import compute_sphcoeffs_mesh, basis_fields
 from bfieldtools.suhtools import SuhBasis
 
 
@@ -37,11 +37,9 @@ mesh_field = mesh.copy()
 mesh_field.vertices += 0.005*mesh_field.vertex_normals
 mesh_field = trimesh.smoothing.filter_laplacian(mesh_field, iterations=1)
 
-bsph = sphbasis(10)
+Ca, Cb = basis_fields(mesh_field.vertices, 4)
 
-Ca, Cb = bsph.basis_fields(mesh_field.vertices, 4)
-
-bsuh = SuhBasis(mesh, 20)
+bsuh = SuhBasis(mesh, 25)
 Csuh = magnetic_field_coupling_analytic(mesh, mesh_field.vertices) @ bsuh.basis
 
 def plot_basis_fields(C, comps):
@@ -103,4 +101,54 @@ scene.scene.camera.view_up = [0.0010428412874734605, 0.998439994080673, 0.055825
 scene.scene.camera.clipping_range = [1.3838753615937698, 1.7677425271918352]
 scene.scene.camera.position = [0.3064269505720481, -0.07122115917327232, 1.5412569063126864]
 scene.scene.parallel_projection = True
+
+#%% test representation
+from bfieldtools.mesh_magnetics import scalar_potential_coupling
+scaling_factor = 0.02
+#Load simple plane mesh that is centered on the origin
+file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane_hires.obj')
+plane = trimesh.load(file_obj=file_obj, process=False)
+plane.apply_scale(scaling_factor)
+# Rotate to x-plane
+t = np.eye(4)
+t[1:3,1:3] = np.array([[0,1],[-1,0]])
+plane.apply_transform(t)
+plane = plane.subdivide()
+
+u = scalar_potential_coupling(mesh, plane.vertices, multiply_coeff=False)
+mask = 1 + np.sum(u, axis=1)/(4*np.pi)
+mask[mask < 1e-6]  = 0
+
+
+Ca, Cb = basis_fields(plane.vertices, 6)
+bsuh = SuhBasis(mesh, 48)
+CB = magnetic_field_coupling_analytic(mesh, plane.vertices)
+Csuh = CB @ bsuh.basis
+
+A,B = compute_sphcoeffs_mesh(mesh, 6)
+b1 = np.einsum('ij,lik->lkj', A , Ca) # Mapping from verts to alpha to field
+b2 = np.einsum('ij,klj->lki', bsuh.mass @ bsuh.basis  , Csuh) # Mapping from verts to suh to field
+
+ind=1932
+scalars = np.zeros(mesh.vertices.shape[0])
+scalars[ind] = 1
+mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars, colormap='Blues')
+surf= mlab.triangular_mesh(*plane.vertices.T, plane.faces, colormap='viridis',
+                     scalars = mask*np.linalg.norm(CB[:,:,ind], axis=1))
+surf.actor.mapper.interpolate_scalars_before_mapping = True
+surf.module_manager.scalar_lut_manager.number_of_colors = 16
+
+mlab.figure()
+mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars, colormap='Blues')
+surf = mlab.triangular_mesh(*plane.vertices.T, plane.faces, colormap='viridis',
+                     scalars = mask*np.linalg.norm(b1[:,:,ind], axis=0))
+surf.actor.mapper.interpolate_scalars_before_mapping = True
+surf.module_manager.scalar_lut_manager.number_of_colors = 16
+
+mlab.figure()
+mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars, colormap='Blues')
+surf = mlab.triangular_mesh(*plane.vertices.T, plane.faces, colormap='viridis',
+                     scalars = mask*np.linalg.norm(b2[:,:,ind], axis=0))
+surf.actor.mapper.interpolate_scalars_before_mapping = True
+surf.module_manager.scalar_lut_manager.number_of_colors = 16
 

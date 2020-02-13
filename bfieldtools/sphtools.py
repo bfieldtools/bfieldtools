@@ -585,7 +585,7 @@ def basis_fields(p, lmax):
         magnetic field at p for each beta_lm
 
     '''
-    L = lmax*(lmax+2)+1
+    L = lmax*(lmax+2) # Fixed
     B1 = np.zeros((L, p.shape[0], p.shape[1]))
     B2 = np.zeros((L, p.shape[0], p.shape[1]))
 

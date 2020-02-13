@@ -448,8 +448,13 @@ class CouplingMatrix:
         self.parent = parent
         self.function = function
 
+    def reset(self):
+        """ Reset the matrix and points
+        """
+        self.points = np.array([])
+        self.matrix = np.array([])
 
-    def __call__(self, points, *fun_args):
+    def __call__(self, points, *fun_args, **kwargs):
         '''
         Returns the output of self.function(self.parent, points).
         If some output has already been computed, use pre-computed values instead
@@ -469,9 +474,18 @@ class CouplingMatrix:
         '''
 
         if len(self.points) == 0:
-            self.matrix = self.function(self.parent.mesh, points, *fun_args)
+            matrix = self.function(self.parent.mesh, points, *fun_args, **kwargs)
             # Convert to all-vertices to inner vertices
-            self.matrix = self.matrix @ self.parent.inner2vert.toarray()
+            if matrix.ndim == 2:
+                self.matrix = matrix @ self.parent.inner2vert
+            elif matrix.ndim == 3:
+                self.matrix = np.zeros((matrix.shape[0], 3,
+                                        self.parent.inner2vert.shape[1]))
+                for n in range(3):
+                    self.matrix[: ,n, :] = matrix[:, n, :] @ self.parent.inner2vert
+            else:
+                raise ValueError('Matrix dimensions not ok')
+
             self.points = points
 
             M = self.matrix
@@ -485,7 +499,7 @@ class CouplingMatrix:
             if len(missing_point_idx) > 0:
                 missing_points = points[missing_point_idx]
 
-                new_matrix_elems = self.function(self.parent.mesh, missing_points, *fun_args)
+                new_matrix_elems = self.function(self.parent.mesh, missing_points, *fun_args, **kwargs)
                 new_matrix_elems = new_matrix_elems @ self.parent.inner2vert.toarray()
 
 
@@ -498,7 +512,16 @@ class CouplingMatrix:
 
             M = self.matrix[m_existing_point_idx]
 
-        return M @ self.parent.basis
+        if self.matrix.ndim == 2:
+            M = M @ self.parent.basis
+        elif self.matrix.ndim == 3:
+            M = np.zeros((self.matrix.shape[0], 3, self.parent.basis.shape[1]))
+            for n in range(3):
+                M[: ,n, :] = self.matrix[:, n, :] @ self.parent.basis
+        else:
+            raise ValueError('Matrix dimensions not ok')
+
+        return M
 
 
 class StreamFunction(np.ndarray):
@@ -591,6 +614,7 @@ class StreamFunction(np.ndarray):
 
 
     def plot(self, background=True, contours=False, **kwargs):
+
         """ Plot the stream function
         """
         mesh = self.conductor.mesh
@@ -603,8 +627,10 @@ class StreamFunction(np.ndarray):
             s.contour.number_of_contours = contours
             if background==True:
                 mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
-                                      color=(0.9,0.9,0.9), opacity=0.2)
-
+                                      color=(0.5,0.5,0.5), opacity=0.2)
+        else:
+            s.actor.mapper.interpolate_scalars_before_mapping = True
+            s.module_manager.scalar_lut_manager.number_of_colors = 256
 
         return s
 

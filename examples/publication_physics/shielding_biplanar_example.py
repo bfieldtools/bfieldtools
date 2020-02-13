@@ -19,14 +19,9 @@ import matplotlib.pyplot as plt
 from mayavi import mlab
 import trimesh
 
-from bfieldtools.mesh_class import Conductor
-from bfieldtools.mesh_magnetics import magnetic_field_coupling as compute_C
-from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic as compute_C_analytic
-from bfieldtools.mesh_magnetics import scalar_potential_coupling as compute_U
-from bfieldtools.mesh_properties import mutual_inductance_matrix
+from bfieldtools.mesh_class import Conductor, StreamFunction
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
-from bfieldtools.sphtools import compute_sphcoeffs_mesh
 
 
 import pkg_resources
@@ -64,8 +59,8 @@ M21 = coil2.mutual_inductance(coil1)
 # Mapping from I1 to I2, constraining flux through mesh2 to zero
 P = -np.linalg.solve(M22, M21)
 
-A1, Beta1 = coil1.sph_couplings #compute_sphcoeffs_mesh(mesh1, 4)
-A2, Beta2 = coil2.sph_couplings #compute_sphcoeffs_mesh(mesh2, 4)
+A1, Beta1 = coil1.sph_couplings
+A2, Beta2 = coil2.sph_couplings
 
 
 x = y = np.linspace(-0.8, 0.8, 150)
@@ -74,40 +69,49 @@ points = np.zeros((X.flatten().shape[0], 3))
 points[:, 0] = X.flatten()
 points[:, 1] = Y.flatten()
 
-CB1 = compute_C_analytic(mesh1, points)
-CB2 = compute_C_analytic(mesh2, points)
 
-CU1 = compute_U(mesh1, points)
-CU2 = compute_U(mesh2, points)
+CB1 = coil1.B_coupling(points)
+CB2 = coil2.B_coupling(points)
+
+CU1 = coil1.U_coupling(points)
+CU2 = coil2.U_coupling(points)
+
+
+#%% Precalculations for the solution
+#alpha[15] = 1
+# Minimization of magnetic energy with spherical harmonic constraint
+C = Beta1 + Beta2 @ P
+M = M11 + M21.T @ P
+
+from scipy.linalg import eigvalsh
+ssmax = eigvalsh(C.T @ C, M, eigvals=[M.shape[1]-1, M.shape[1]-1])
 
 #%% Specify spherical harmonic and calculate corresponding shielded field
 beta = np.zeros(Beta1.shape[0])
 #beta[7] = 1 # Gradient
 beta[2] = 1 # Homogeneous
-#alpha[15] = 1
-# Minimization of magnetic energy with spherical harmonic constraint
-C = Beta1 + Beta2 @ P
-M = M11 + M21.T @ P
+
 # Minimum residual
-I1inner = np.linalg.solve(C.T @ C + M/1e8, C.T @ beta)
+_lambda=1e3
 # Minimum energy
-#I1inner = np.linalg.solve(C.T @ C + M/1e-8, C.T @ beta)
+#_lambda=1e-3
+I1inner = np.linalg.solve(C.T @ C + M*ssmax/_lambda, C.T @ beta)
 
 I2inner = P @ I1inner
 
-I1 = np.zeros(mesh1.vertices.shape[0]); I1[coil1.inner_vertices] = I1inner.T
-I2 = np.zeros(mesh2.vertices.shape[0]); I2[coil2.inner_vertices] = I2inner.T
+s1 = StreamFunction(I1inner, coil1)
+s2 = StreamFunction(I2inner, coil2)
 
-s = mlab.triangular_mesh(*mesh1.vertices.T, mesh1.faces, scalars=I1)
-s.enable_contours=True
-s = mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces, scalars=I2)
-s.enable_contours=True
+#s = mlab.triangular_mesh(*mesh1.vertices.T, mesh1.faces, scalars=I1)
+#s.enable_contours=True
+#s = mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces, scalars=I2)
+#s.enable_contours=True
 
-B1 = CB1 @ I1
-B2 = CB2 @ I2
+B1 = CB1 @ s1
+B2 = CB2 @ s2
 
-U1 = CU1 @ I1
-U2 = CU2 @ I2
+U1 = CU1 @ s1
+U2 = CU2 @ s2
 #%% Plot
 cc1 = scalar_contour(mesh1, mesh1.vertices[:,2], contours= [-0.001])[0]
 cc2 = scalar_contour(mesh2, mesh2.vertices[:,2], contours= [-0.001])[0]
@@ -123,7 +127,7 @@ cy21 = np.vstack(cc2[1:])[:,0]
 
 B = (B1.T + B2.T)[:2].reshape(2, x.shape[0], y.shape[0])
 lw = np.sqrt(B[0]**2 + B[1]**2)
-lw = 2*lw/np.max(lw)
+lw = 2*np.log(lw/np.max(lw)*np.e+1.1)
 
 xx = np.linspace(-1,1, 16)
 #seed_points = 0.56*np.array([xx, -np.sqrt(1-xx**2)])
@@ -142,20 +146,95 @@ plt.contourf(X,Y, U.T, cmap='seismic', levels=40)
 #plt.imshow(U, vmin=-1.0, vmax=1.0, cmap='seismic', interpolation='bicubic',
 #           extent=(x.min(), x.max(), y.min(), y.max()))
 plt.streamplot(x,y, B[1], B[0], density=2, linewidth=lw, color='k',
-               start_points=seed_points.T, integration_direction='both')
+               start_points=seed_points.T, integration_direction='both',
+               arrowsize=0.1)
 
-
+#plt.plot(seed_points[0], seed_points[1], '*')
 
 plt.plot(cx10, cy10, linewidth=3.0, color='gray')
 plt.plot(cx20, cy20, linewidth=3.0, color='gray')
 plt.plot(cx11, cy11, linewidth=3.0, color='gray')
 plt.plot(cx21, cy21, linewidth=3.0, color='gray')
-
+plt.axis('image')
 
 plt.xticks([])
 plt.yticks([])
 
+#%%
+N=20
+mm = max(abs(s1))
+dd = 2*mm/N
+vmin = -dd*N/2 + dd/2
+vmax = dd*N/2 - dd/2
+contour_vals1 = np.arange(vmin, vmax, dd)
+mm = max(abs(s2))
+N2 = (2*mm-dd)//dd
+if N2%2==0:
+    N2 -= 1
+vmin = -dd*N2/2
+vmax = mm
+contour_vals2 = np.arange(vmin, vmax, dd)
+contours1 = scalar_contour(mesh1, s1.vert, contours=contour_vals1)[0]
+contours2 = scalar_contour(mesh2, s2.vert, contours=contour_vals2)[0]
+
+def setscene(scene1, coil):
+    scene1.actor.mapper.interpolate_scalars_before_mapping = True
+    scene1.module_manager.scalar_lut_manager.number_of_colors = 32
+    scene1.scene.y_plus_view()
+    if coil==1:
+        scene1.scene.camera.position = [4.7267030067743576e-08, 2.660205137153174, 8.52196480605194e-08]
+        scene1.scene.camera.focal_point = [4.7267030067743576e-08, 0.4000000059604645, 8.52196480605194e-08]
+        scene1.scene.camera.view_angle = 30.0
+        scene1.scene.camera.view_up = [1.0, 0.0, 0.0]
+        scene1.scene.camera.clipping_range = [1.116284842928313, 2.4468228732691104]
+        scene1.scene.camera.compute_view_plane_normal()
+    else:
+        scene1.scene.camera.position = [4.7267030067743576e-08, 3.7091663385397116, 8.52196480605194e-08]
+        scene1.scene.camera.focal_point = [4.7267030067743576e-08, 0.4000000059604645, 8.52196480605194e-08]
+        scene1.scene.camera.view_angle = 30.0
+        scene1.scene.camera.view_up = [1.0, 0.0, 0.0]
+        scene1.scene.camera.clipping_range = [2.948955346473114, 3.40878670176758]
+        scene1.scene.camera.compute_view_plane_normal()
+    scene1.scene.render()
+    scene1.scene.anti_aliasing_frames = 20
+    scene1.scene.magnification = 2
+
+
+fig = mlab.figure(bgcolor=(1,1,1), size=(400,400))
+fig = plot_3d_current_loops(contours1, tube_radius=0.005, colors=(0.9,0.9,0.9), figure=fig)
+m = abs(s1).max()
+mask = mesh1.triangles_center[:,1] > 0
+faces1 = mesh1.faces[mask]
+surf = mlab.triangular_mesh(*mesh1.vertices.T, faces1, scalars=s1.vert,
+                            vmin=-m, vmax=m, colormap='seismic')
+setscene(surf, 1)
+
+fig = mlab.figure(bgcolor=(1,1,1), size=(400,400))
+fig = plot_3d_current_loops(contours2, tube_radius=0.005, colors=(0.9,0.9,0.9), figure=fig)
+faces2 = mesh2.faces[mesh2.triangles_center[:,1] > 0]
+surf = mlab.triangular_mesh(*mesh2.vertices.T, faces2, scalars=s2.vert,
+                            vmin=-m, vmax=m, colormap='seismic')
+setscene(surf, 2)
 
 
 
 
+#%% Plot the coil surface and the field plane
+fig = mlab.figure(bgcolor=(1,1,1))
+surf = mlab.triangular_mesh(*mesh1.vertices.T, mesh1.faces,
+                            color=(0.8,0.2,0.2))
+surf.actor.property.edge_visibility = True
+surf.actor.property.render_lines_as_tubes = True
+surf.actor.property.line_width = 1.2
+
+
+surf = mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces,
+                            color=(0.2,0.2,0.8))
+surf.actor.property.edge_visibility = True
+surf.actor.property.render_lines_as_tubes = True
+surf.actor.property.line_width = 1.2
+# Plot plane
+plane = mlab.triangular_mesh(np.array([x[0],x[-1],x[-1],x[0]]),
+                 np.array([x[0],x[0],x[-1],x[-1]]),
+                 np.zeros(4), np.array([[0,1,2],[2,3,0]]),
+                 color=(0.7,0.7,0.7), opacity=0.7)

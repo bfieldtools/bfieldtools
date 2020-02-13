@@ -10,7 +10,8 @@ import time
 
 from .utils import get_quad_points
 from .mesh_calculus import gradient_matrix
-from .integrals import triangle_potential_dipole_linear, triangle_potential_uniform, triangle_potential_approx
+from .integrals import triangle_potential_dipole_linear, triangle_potential_uniform
+from .integrals import triangle_potential_approx, potential_dipoles
 
 
 
@@ -79,7 +80,10 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
     duration = time.time() - start
     print('took %.2f seconds.'%duration)
 
-    return coef * np.moveaxis(C, 2, 1)
+    C *= coef
+#    return np.moveaxis(C, 2, 1)
+    return np.swapaxes(C, 2, 1)
+
 
 
 def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
@@ -149,10 +153,18 @@ def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
     duration = time.time() - start
     print('took %.2f seconds.'%duration)
 
-    return coef * np.moveaxis(C, 0, 1)
+    C *= coef
+#    return np.moveaxis(C, 0, 1)
+    return np.swapaxes(C, 0, 1)
 
 
-def scalar_potential_coupling(mesh, r, Nchunks=None):
+
+
+
+
+
+def scalar_potential_coupling(mesh, r, Nchunks=None, multiply_coeff=True,
+                              approx_far=False, margin=3):
     """
     Compute scalar potential matrix from linear stream functions
     using analytic integral
@@ -168,8 +180,6 @@ def scalar_potential_coupling(mesh, r, Nchunks=None):
     U: (Np, 3, Nvertices) array
         Coupling matrix for surface current in the mesh to the evaluation points
     """
-
-    coeff = 1e-7  # mu_0/(4*pi)
 
     print('Computing scalar potential coupling matrix, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
     start = time.time()
@@ -190,9 +200,17 @@ def scalar_potential_coupling(mesh, r, Nchunks=None):
     for R2chunk in R2chunks:
         RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
         i1 = i0+RRchunk.shape[0]
-        Pi = triangle_potential_dipole_linear(RRchunk, mesh.face_normals,
-                                             mesh.area_faces)
-        Uf[i0:i1] = Pi
+        if approx_far:
+            near, far = _split_by_distance(mesh, RRchunk, margin)
+            Uf[i0:i1, near] = triangle_potential_dipole_linear(RRchunk[:, near],
+                                                               mesh.face_normals[near],
+                                                               mesh.area_faces[near])
+            Uf[i0:i1, far] = potential_dipoles(RRchunk[:, far],
+                                               mesh.face_normals[far],
+                                               mesh.area_faces[far])
+        else:
+            Uf[i0:i1] = triangle_potential_dipole_linear(RRchunk, mesh.face_normals,
+                                                 mesh.area_faces)
         i0=i1
 
 #     Accumulate the elements
@@ -204,6 +222,10 @@ def scalar_potential_coupling(mesh, r, Nchunks=None):
     duration = time.time() - start
     print('took %.2f seconds.'%duration)
 
+    if multiply_coeff:
+        coeff = 1e-7  # mu_0/(4*pi)
+    else:
+        coeff = 1
     return Uv*coeff
 
 
