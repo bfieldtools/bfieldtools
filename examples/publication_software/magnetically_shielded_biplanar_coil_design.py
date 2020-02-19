@@ -107,7 +107,8 @@ if PLOT:
 #The absolute target field amplitude is not of importance,
 # and it is scaled to match the C matrix in the optimization function
 target_field = np.zeros(target_points.shape)
-target_field[:, 0] = target_field[:, 0] + 1 # Homogeneous Y-field
+target_field[:, 0] =  1 # Homogeneous X-field
+#target_field[:, 1] =  1 # Homogeneous Y-field
 
 
 
@@ -127,7 +128,7 @@ coil.I, coil.prob = optimize_streamfunctions(coil,
                                    )
 
 
-np.save('biplanar_current.npy', coil.I)
+#np.save('biplanar_current_x.npy', coil.I)
 
 ##############################################################
 # Plot coil windings and target points
