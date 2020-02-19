@@ -612,39 +612,32 @@ class StreamFunction(np.ndarray):
         M = self.conductor.matrices['inductance']
         return 0.5 *  self.T @ self.basis.T @ M @ self.basis @ self
 
-<<<<<<< HEAD
-    def plot(self, contours=True, ncontours=10, cmap='seismic', background=True,
-             **kwargs):
-=======
+#<<<<<<< HEAD
+#    def plot(self, contours=True, ncontours=10, cmap='seismic', background=True,
+#             **kwargs):
+#=======
 
     def plot(self, background=True, contours=False, **kwargs):
-
->>>>>>> d6fe210f523e7d4a5ada5be521cf20135ca3c3b0
         """ Plot the stream function
         """
         mesh = self.conductor.mesh
         scalars = self.vert
-<<<<<<< HEAD
         if 'vmin' not in kwargs.keys():
             kwargs['vmin'] = - np.max(abs(scalars))
         if 'vmax' not in kwargs.keys():
             kwargs['vmax'] =   np.max(abs(scalars))
-        s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
-                                 scalars=scalars, colormap=cmap, **kwargs)
-=======
-
+#        s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
+#                                 scalars=scalars, colormap=cmap, **kwargs)
         s = plot_data_on_vertices(mesh, scalars, **kwargs)
-
->>>>>>> d6fe210f523e7d4a5ada5be521cf20135ca3c3b0
-        if contours:
-            s.enable_contours=True
-            s.contour.number_of_contours = contours
-            if background==True:
-                mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
-                                      color=(0.5,0.5,0.5), opacity=0.2)
-        else:
-            s.actor.mapper.interpolate_scalars_before_mapping = True
-            s.module_manager.scalar_lut_manager.number_of_colors = 256
+#        if contours:
+#            s.enable_contours=True
+#            s.contour.number_of_contours = contours
+#            if background==True:
+#                mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
+#                                      color=(0.5,0.5,0.5), opacity=0.2)
+#        else:
+#            s.actor.mapper.interpolate_scalars_before_mapping = True
+#            s.module_manager.scalar_lut_manager.number_of_colors = 256
 
         return s
 
