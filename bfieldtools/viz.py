@@ -9,6 +9,28 @@ from matplotlib import colors
 
 import numpy as np
 
+
+def plot_mesh(mesh, cull_front=False, cull_back=False, figure=None, figsize=(800, 800), **kwargs):
+    '''
+    Simply plot the mesh surface in mayavi.
+
+    '''
+
+    if figure is None:
+        figure = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                   size=figsize)
+
+
+    mesh = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, **kwargs)
+
+    mesh.actor.mapper.scalar_visibility = False
+
+    mesh.actor.property.frontface_culling = cull_front
+    mesh.actor.property.backface_culling = cull_back
+    return mesh
+
+
+
 def plot_3d_current_loops(current_loops, colors=None, figure=None, figsize=(800, 800), tube_radius=0.05):
     '''
     Plot current loops (e.g. contour_polys given by scalar_contour()) in 3D using mayavi.
@@ -199,33 +221,6 @@ def plot_cross_section(X, Y, data, axes=None, cmap=None, colorbar=False, contour
     return axes
 
 
-#def plot_field_falloff(axis, points, mesh, current_density, figsize):
-#    '''
-#
-#
-#    '''
-#
-#    if axes is None:
-#        fig, axes = plt.subplots(1,1)
-#
-#    #If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
-#    if cmap is None:
-#        if np.all(data > 0) or np.all(data < 0):
-#            cmap='viridis'
-#        else:
-#            cmap='RdBu'
-#
-#    r = np.zeros(())
-#
-#    compute_C
-#
-#    fig = plt.figure(figsize=figsize)
-#
-#    plt.semilogy(label=)
-#
-#
-#    return fig
-
 def plot_data_on_faces(mesh, data, figure=None, figsize=(800, 800), cmap=None, colorbar=False, ncolors=356, **kwargs):
     ''' Plot any data determined on the faces of a mesh
 
@@ -285,10 +280,10 @@ def plot_data_on_faces(mesh, data, figure=None, figsize=(800, 800), cmap=None, c
 
     lutmanager.number_of_colors = ncolors
 
-    return figure
+    return surf
 
 
-def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), cmap=None, colorbar=False, ncolors=32,
+def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), colorbar=False, ncolors=32,
                           interpolate=True, cull_front=False, cull_back=False, autoscale=False, **kwargs):
     '''
     Plot scalar data defined on the vertices of a mesh.
@@ -324,14 +319,14 @@ def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), cmap=None
                    size=figsize)
 
     #If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
-    if cmap is None:
+    if 'colormap' not in kwargs:
         if np.all(data > 0) or np.all(data < 0):
-            cmap='viridis'
+            kwargs['colormap'] = 'viridis'
         else:
-            cmap='RdBu'
+            kwargs['colormap'] = 'RdBu'
 
 
-    surf = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=data, colormap=cmap,**kwargs)
+    surf = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=data, **kwargs)
     surf.actor.property.frontface_culling = cull_front
     surf.actor.property.backface_culling = cull_back
     if colorbar:
@@ -341,11 +336,11 @@ def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), cmap=None
     lutmanager = surf.parent.scalar_lut_manager
     lutmanager.number_of_colors = ncolors
 
-    if cmap == 'RdBu' and autoscale:
+    if (np.all(data > 0) or np.all(data < 0)) and autoscale:
         rangemax = np.max(np.abs(data))
         lutmanager.data_range = np.array([-rangemax*1.01,rangemax*1.01])
         lutmanager.use_default_range = False
 
-    return figure
+    return surf
 
 

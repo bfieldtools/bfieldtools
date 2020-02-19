@@ -17,6 +17,8 @@ from .mesh_properties import self_inductance_matrix, resistance_matrix, mutual_i
 from .mesh_magnetics import magnetic_field_coupling, scalar_potential_coupling, vector_potential_coupling
 from .suhtools import SuhBasis
 from .sphtools import compute_sphcoeffs_mesh
+from .viz import plot_mesh, plot_data_on_vertices
+
 
 
 class LazyProperty():
@@ -366,18 +368,13 @@ class Conductor:
 
 
 
-    def plot_mesh(self, representation='wireframe', opacity=0.5, color=(0, 0, 0), cull_front=False, cull_back=False):
+    def plot_mesh(self, cull_front=False, cull_back=False, **kwargs):
         '''
         Simply plot the mesh surface in mayavi.
 
         '''
 
-        mesh = mlab.triangular_mesh(*self.mesh.vertices.T, self.mesh.faces,
-                                    representation=representation, opacity=opacity, color=color)
-
-        mesh.actor.property.frontface_culling = cull_front
-        mesh.actor.property.backface_culling = cull_back
-        return mesh
+        return plot_mesh(self.mesh, cull_front=False, cull_back=False, **kwargs)
 
 
     def save_pickle(self, target_file):
@@ -598,43 +595,56 @@ class StreamFunction(np.ndarray):
     def vert(self):
         return self.inner2vert @ self.basis @ self
 
+
     @property
     def inner(self):
         return self.basis @ self
+
 
     @property
     def power(self):
         R = self.conductor.matrices['resistance']
         return 0.5 *  self.T @ self.basis.T @ R @ self.basis @ self
 
+
     @property
     def magnetic_energy(self):
         M = self.conductor.matrices['inductance']
         return 0.5 *  self.T @ self.basis.T @ M @ self.basis @ self
 
+<<<<<<< HEAD
     def plot(self, contours=True, ncontours=10, cmap='seismic', background=True,
              **kwargs):
+=======
+
+    def plot(self, background=True, contours=False, **kwargs):
+
+>>>>>>> d6fe210f523e7d4a5ada5be521cf20135ca3c3b0
         """ Plot the stream function
         """
         mesh = self.conductor.mesh
-
         scalars = self.vert
+<<<<<<< HEAD
         if 'vmin' not in kwargs.keys():
             kwargs['vmin'] = - np.max(abs(scalars))
         if 'vmax' not in kwargs.keys():
             kwargs['vmax'] =   np.max(abs(scalars))
         s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
                                  scalars=scalars, colormap=cmap, **kwargs)
+=======
+
+        s = plot_data_on_vertices(mesh, scalars, **kwargs)
+
+>>>>>>> d6fe210f523e7d4a5ada5be521cf20135ca3c3b0
         if contours:
             s.enable_contours=True
-            s.contour.number_of_contours = ncontours
+            s.contour.number_of_contours = contours
             if background==True:
                 mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
                                       color=(0.5,0.5,0.5), opacity=0.2)
         else:
             s.actor.mapper.interpolate_scalars_before_mapping = True
-            s.module_manager.scalar_lut_manager.number_of_colors = ncontours
-
+            s.module_manager.scalar_lut_manager.number_of_colors = 256
 
         return s
 

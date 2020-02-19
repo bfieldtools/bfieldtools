@@ -16,6 +16,8 @@ Surface harmonics == Laplace-Beltrami eigenfunctions
 from .mesh_calculus import laplacian_matrix, mass_matrix
 from .mesh_magnetics import magnetic_field_coupling
 from .utils import inner2vert
+from .viz import plot_data_on_vertices
+
 from scipy.sparse.linalg import eigsh
 import numpy as np
 from mayavi import mlab
@@ -127,7 +129,8 @@ class SuhBasis():
             print('Matrix rank not full, result might be inaccurate')
         return  x
 
-    def plot(self, Nfuncs, dist=0.5, ncol=None, ncolors=15, **kwargs):
+
+    def plot(self, Nfuncs, dist=0.5, Ncols=None, figsize=(800,800), **kwargs):
         """ Plot basis functions on the mesh
 
             Nfuncs: int or array-like
@@ -147,6 +150,10 @@ class SuhBasis():
             kwargs: keyword arguments passed to mayavi (colormap, etc.)
 
         """
+
+        figure = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+                             size=figsize)
+
         if type(Nfuncs) == int:
             N=Nfuncs
             indices = np.arange(Nfuncs)
@@ -154,8 +161,9 @@ class SuhBasis():
             indices = Nfuncs
             N = len(indices)
 
-        if ncol is None:
-            ncol = np.floor(np.sqrt(N)+1)
+        if Ncols is None:
+            Ncols = np.floor(np.sqrt(N)+1)
+
         dx = (self.mesh.vertices[:,0].max() - self.mesh.vertices[:,0].min())*(1+dist)
         dy = (self.mesh.vertices[:,1].max() - self.mesh.vertices[:,1].min())*(1+dist)
 
@@ -164,16 +172,19 @@ class SuhBasis():
 
         for n in indices:
             print(i,j)
-            points = self.mesh.vertices.copy()
-            points[:,0] += i*dx
-            points[:,1] -= j*dy
+
+            tmp_mesh = self.mesh.copy()
+            tmp_mesh.vertices[:,0] += i*dx
+            tmp_mesh.vertices[:,1] += j*dy
+
             scalars = self.inner2vert @ self.basis[:,n]
-            s = mlab.triangular_mesh(*points.T, self.mesh.faces,
-                                 scalars=scalars, **kwargs)
+
+            s = plot_data_on_vertices(tmp_mesh, scalars, figure=figure, **kwargs)
 
             s.module_manager.scalar_lut_manager.number_of_colors = ncolors
             s.actor.mapper.interpolate_scalars_before_mapping = True
-            if i<ncol:
+
+            if i<Ncols:
                 i+=1
             else:
                 j+=1
