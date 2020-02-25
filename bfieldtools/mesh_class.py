@@ -135,7 +135,8 @@ class Conductor:
         #Populate options dictionary with defaults if not specified
         self.opts = {'outer_boundaries':None, 'mass_lumped':False,
                      'resistance_full_rank': True, 'inductance_nchunks':None,
-                     'basis_name':'vertex', 'N_suh': 100, 'N_sph': 5}
+                     'basis_name':'vertex', 'N_suh': 100, 'N_sph': 5,
+                     'inductance_quad_degree': 2}
 
         for key, val in kwargs.items():
             self.opts[key] = val
@@ -282,7 +283,8 @@ class Conductor:
         start = time()
 
         inductance = self_inductance_matrix(self.mesh,
-                                            Nchunks=self.opts['inductance_nchunks'])
+                                            Nchunks=self.opts['inductance_nchunks'],
+                                            quad_degree = self.opts['inductance_quad_degree'])
 
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)

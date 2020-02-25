@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from mayavi import mlab
 #import trimesh
 
-from bfieldtools.mesh_class import Conductor
+from bfieldtools.mesh_class import Conductor, StreamFunction
 from bfieldtools.mesh_magnetics import magnetic_field_coupling as compute_C
 from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic as compute_C_analytic
 from bfieldtools.mesh_magnetics import scalar_potential_coupling as compute_U
@@ -27,8 +27,8 @@ from bfieldtools.mesh_properties import mutual_inductance_matrix
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
 from bfieldtools.sphtools import compute_sphcoeffs_mesh
+from bfieldtools.suhtools import SuhBasis
 from bfieldtools import sphtools
-
 
 #domain = 'sphere'
 #domain = 'cube'
@@ -51,10 +51,21 @@ elif domain == 'cube':
     mesh1  = filter_laplacian(mesh1)
     mesh2  = filter_laplacian(mesh2, 0.9)
 elif domain == 'combined':
-    from trimesh.creation import icosphere
-    mesh1 = icosphere(4, 0.65)
     import trimesh
     import pkg_resources
+    from trimesh.creation import icosphere
+    mesh1 = icosphere(4, 0.65)
+    # https://graphics.stanford.edu/~mdfisher/Data/Meshes/bunny.obj
+#    mesh1 = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools',
+#                                                                 'example_meshes/bunny_repaired.obj'), process=True)
+#    # Bunny not still watertight, this fixes it
+#    trimesh.repair.fill_holes(mesh1)
+#
+#    mesh1.vertices -= mesh1.vertices.mean(axis=0)
+#    mesh1.vertices *= 7
+#    mesh1 = trimesh.smoothing.filter_laplacian(mesh1, iterations=1)
+#    mesh1.vertices[:,:2] = mesh1.vertices[:,:2] @ np.array([[0,-1],[1,0]])
+
     mesh2 = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools',
                                                              'example_meshes/cube_fillet.stl'),
                         process=True)
@@ -62,8 +73,9 @@ elif domain == 'combined':
     mesh2.vertices *= 0.15
 #    mesh2 = mesh2.subdivide()
 
-coil1 = Conductor(mesh_obj=mesh1, N_sph=7, inductance_nchunks=100)
-coil2 = Conductor(mesh_obj=mesh2, N_sph=7, inductance_nchunks=100)
+coil1 = Conductor(mesh_obj=mesh1, N_sph=7, inductance_nchunks=100, fix_normals=False,
+                  inductance_quad_degree=4)
+coil2 = Conductor(mesh_obj=mesh2, N_sph=7, inductance_nchunks=100, fix_normals=False)
 
 M11 = coil1.inductance
 M22 = coil2.inductance
@@ -77,7 +89,7 @@ M = np.block([[M11, M21.T],[M21, M22]])
 #F1 = (np.moveaxis(sphtools.basis_fields(mesh1.vertices, 3)[1],0,2)*mesh1.vertex_normals).sum(axis=-1)
 #F2 = (sb.basis_fields(mesh2.vertices, 3)[0]*mesh2.vertex_normals).sum(axis=-1)
 
-x = y = np.linspace(-0.8, 0.8, 150)
+x = y = np.linspace(-0.8, 0.8, 100)
 X,Y = np.meshgrid(x, y, indexing='ij')
 points = np.zeros((X.flatten().shape[0], 3))
 points[:, 0] = X.flatten()
@@ -89,9 +101,16 @@ CB2 = compute_C_analytic(mesh2, points)
 CU1 = compute_U(mesh1, points)
 CU2 = compute_U(mesh2, points)
 
+#%%
+#suh = SuhBasis(mesh1, 100)
+
 #%% Specify spherical harmonic and calculate corresponding shielded field
-b1 = mesh1.vertices[:,1]
-b2 = mesh1.vertices[:,1]**2 - mesh1.vertices[:,0]**2
+#b1 = mesh1.vertices[:,1]
+#b2 = mesh1.vertices[:,1]**2 - mesh1.vertices[:,0]**2
+#b1 = suh.basis @ (suh.basis.T @ suh.mass @ mesh1.vertex_normals[:,0])
+b1 = mesh1.vertex_normals[:,0]
+b2 = (mesh1.vertex_normals[:,0]*mesh1.vertices[:,0]  -
+     mesh1.vertex_normals[:,1]*mesh1.vertices[:,1])
 
 def plot_plane(opacity=0.8):
     mlab.triangular_mesh(np.array([x[0],x[-1],x[-1],x[0]]),
@@ -137,8 +156,8 @@ for bi in  (b1,b2):
                    start_points=seed_points.T, integration_direction='both')
 
 
-    plt.plot(cc1[:,0], cc1[:,1], linewidth=3.0, color='gray')
-    plt.plot(cc2[:,0], cc2[:,1], linewidth=3.0, color='gray')
+    plt.plot(cc1[:,1], cc1[:,0], linewidth=3.0, color='gray')
+    plt.plot(cc2[:,1], cc2[:,0], linewidth=3.0, color='gray')
 
     plt.xticks([])
     plt.yticks([])
