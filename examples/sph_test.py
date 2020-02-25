@@ -17,12 +17,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mayavi import mlab
 
-from bfieldtools.sphtools import basis_fields
+from bfieldtools.sphtools import basis_fields, ylm, derxlm, sinxlm
 
 from trimesh.creation import icosphere
 mesh = icosphere(1, 1)
 print('Positions of evaluation points')
 print(mesh.vertices)
+
+theta=np.linspace(1e-6, np.pi*0.999)
+sp = sinxlm(1,-1, theta)
+plt.plot(sp)
 
 aa, bb= basis_fields(mesh.vertices, 2)
 
