@@ -780,335 +780,321 @@ class sphbasis:
         return coeffs
 
 
-
-class sphfittools:
+def fitSpectra(coords, Bmeas, lmax):
     '''
-    Class for fitting spherical harmonics basis functions to measured magnetic field data.
-    Can be used to calculate the l,m-spectra of measured data and reconstructing field with
-    the spherical harmonics representation.
+    Fits spherical harmonics representation (r**l) to measured data.
+
+    Parameters
+    ----------
+    coords: Nx3x3 array
+        measurement coordinates, each measured field direction
+        in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-components.
+    Bmeas: Nx3 array
+        the measured field values along different directions (x,y,z)
+    lmax: int
+        maximum degree l for which the fit is done
+
+    Returns
+    -------
+    coeffs: lmax*(lmax+2)x1 array
+        the unnormalized coefficients
+    coeffs2: lmax*(lmax+2)x1 array
+        the 'properly' normalized squared coefficients
+    nrmse: float
+        normalized rms error in percents between the data and fit
+
     '''
 
-    def fitSpectra(sph, coords, Bmeas, lmax):
-        '''
-        Fits spherical harmonics representation (r**l) to measured data.
+    Nmeas = coords.shape[0]
+    A = np.zeros((3*Nmeas, lmax*(lmax+2))) #initialize the fitting matrix
 
-        Parameters
-        ----------
-        sph: spherical harmonics analysis object
-        coords: Nx3x3 array
-            measurement coordinates, each measured field direction
-            in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-components.
-        Bmeas: Nx3 array
-            the measured field values along different directions (x,y,z)
-        lmax: int
-            maximum degree l for which the fit is done
+    #loop over the components
+    for e in range(3):
+        p = coords[:,:,e]
+        sp = cartesian2spherical(p)
 
-        Returns
-        -------
-        coeffs: lmax*(lmax+2)x1 array
-            the unnormalized coefficients
-        coeffs2: lmax*(lmax+2)x1 array
-            the 'properly' normalized squared coefficients
-        nrmse: float
-            normalized rms error in percents between the data and fit
-
-        '''
-
-        Nmeas = coords.shape[0]
-        A = np.zeros((3*Nmeas, lmax*(lmax+2))) #initialize the fitting matrix
-
-        #loop over the components
-        for e in range(3):
-            p = coords[:,:,e]
-            sp = sph.cartesian2spherical(p)
-
-            lind = 0
-            for l in range(1,lmax+1):
-                for m in range(-1*l,l+1):
-                    Psilm = sph.Psilm(l,m, sp[:,1],sp[:,2])
-                    Psilm *= np.sqrt(2*l**2 + l)
-                    Psilm[:,0] *= sp[:,0]**(l-1)
-                    Psilm[:,1] *= sp[:,0]**(l-1)
-                    Psilm[:,2] *= sp[:,0]**(l-1)
-                    Psilm = sph.sphvec2cart(sp, Psilm)
-                    A[e*Nmeas:(e+1)*Nmeas, lind] = Psilm[:,e]
-                    lind += 1
-        print("Condition number = %f" % (np.linalg.cond(A))) #print the condition number of A
-
-        coeffs = np.linalg.pinv(A)@Bmeas.T.flatten() #compute coefficients using pseudoinverse of A
-
-        #the following script calculates the normalized coefficients
-        #the coefficients are normalized so that squared norm of magnetic field integrates to 1 over the measurement volume
-        coeffs2 = np.zeros(coeffs.shape)
         lind = 0
-        Rmax = np.max(sp[:,0])
         for l in range(1,lmax+1):
             for m in range(-1*l,l+1):
-#               coeffs2[lind] = coeffs[lind]*np.sqrt(2*l**2 + l)
-                temp = (2*l**2 + l)*Rmax**(2*l-1)/(2*l-1)
-                coeffs2[lind] = coeffs[lind]**2*temp
+                _Psilm = Psilm(l,m, sp[:,1],sp[:,2])
+                _Psilm *= np.sqrt(2*l**2 + l)
+                _Psilm[:,0] *= sp[:,0]**(l-1)
+                _Psilm[:,1] *= sp[:,0]**(l-1)
+                _Psilm[:,2] *= sp[:,0]**(l-1)
+                _Psilm = sphvec2cart(sp, _Psilm)
+                A[e*Nmeas:(e+1)*Nmeas, lind] = _Psilm[:,e]
                 lind += 1
-        Breco = A@coeffs
+    print("Condition number = %f" % (np.linalg.cond(A))) #print the condition number of A
 
-        nrmse = np.sqrt(np.mean((Bmeas.T.flatten()-Breco)**2))/np.max(np.abs(Bmeas.T.flatten()))*100
-        print("Normalized RMS error = %f%%" % (nrmse)) #print the normalized rms error
+    coeffs = np.linalg.pinv(A)@Bmeas.T.flatten() #compute coefficients using pseudoinverse of A
 
-        return coeffs, coeffs2, nrmse
+    #the following script calculates the normalized coefficients
+    #the coefficients are normalized so that squared norm of magnetic field integrates to 1 over the measurement volume
+    coeffs2 = np.zeros(coeffs.shape)
+    lind = 0
+    Rmax = np.max(sp[:,0])
+    for l in range(1,lmax+1):
+        for m in range(-1*l,l+1):
+#               coeffs2[lind] = coeffs[lind]*np.sqrt(2*l**2 + l)
+            temp = (2*l**2 + l)*Rmax**(2*l-1)/(2*l-1)
+            coeffs2[lind] = coeffs[lind]**2*temp
+            lind += 1
+    Breco = A@coeffs
 
-    def reconstructB(sph, p, coeffs,lmax):
-        '''
-        Reconstructs the magnetic field using the spherical harmonics coefficients.
+    nrmse = np.sqrt(np.mean((Bmeas.T.flatten()-Breco)**2))/np.max(np.abs(Bmeas.T.flatten()))*100
+    print("Normalized RMS error = %f%%" % (nrmse)) #print the normalized rms error
 
-        Parameters
-        ----------
-        sph: spherical harmonics analysis object
-        p: Nx3 array
-            coordinates where B is reconstructed
-        coeffs: lmax*(lmax+2)x1 array
-            the unnormalized l,m-coefficients
-        lmax:int
-            maximum degree l of the fit
+    return coeffs, coeffs2, nrmse
 
-        Returns
-        -------
-        B: Nx3 array
-            reconstructed magnetic field at p
-
-        '''
-
-        B = np.zeros(p.shape)
-        sp = sph.cartesian2spherical(p)
-        idx = 0
-        for l in range(1,lmax+1):
-            for m in range(-1*l,l+1):
-                Psilm = sph.Psilm(l,m, sp[:,1],sp[:,2])
-                Psilm *= np.sqrt(2*l**2 + l)
-                Psilm[:,0] *= sp[:,0]**(l-1)
-                Psilm[:,1] *= sp[:,0]**(l-1)
-                Psilm[:,2] *= sp[:,0]**(l-1)
-                Psilm *= coeffs[idx]
-                Psilm = sph.sphvec2cart(sp, Psilm)
-                B += Psilm
-                idx += 1
-        return B
-
-class plotsph:
+def reconstructB(p, coeffs,lmax):
     '''
-    Class for visualization of spherical harmonics and basis vector functions.
+    Reconstructs the magnetic field using the spherical harmonics coefficients.
+
+    Parameters
+    ----------
+    p: Nx3 array
+        coordinates where B is reconstructed
+    coeffs: lmax*(lmax+2)x1 array
+        the unnormalized l,m-coefficients
+    lmax:int
+        maximum degree l of the fit
+
+    Returns
+    -------
+    B: Nx3 array
+        reconstructed magnetic field at p
+
     '''
 
-    def plotYlms(sph, lmax, polar=False):
-        '''
-        Plots real spherical harmonics up to lmax.
-        Inspired by https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html.
-
-        Parameters
-        ----------
-        sph: spherical harmonics analysis object
-        lmax: int
-            maximum degree l
-        polar: boolean
-            plot polar representation?
-        '''
-
-        theta = np.reshape(sph.sp[:,1], (sph.Np, sph.Np))
-        phi = np.reshape(sph.sp[:,2], (sph.Np, sph.Np))
-        r = 0.4
-        x=r*np.sin(theta)*np.cos(phi)
-        y=r*np.sin(theta)*np.sin(phi)
-        z=r*np.cos(theta)
-
-        if polar:
-            for l in range(1, lmax+1):
-                for m in range(l):
-                    _ylm = ylm(l,m,theta.flatten(),phi.flatten())
-                    _ylm = np.reshape(_ylm, (sph.Np, sph.Np))
-
-                    mlab.mesh(x - m, y - l, z, scalars=_ylm, colormap='bwr')
-                    _ylm /= _ylm.max()
-                    mlab.mesh(_ylm * x - m, _ylm * y - l, _ylm * z + 1.3,
-                              scalars=np.abs(_ylm), colormap='Spectral')
-
-            mlab.view(90, 70, 6.2, (-1.3, -2.9, 0.25))
-        else:
-            for l in range(0, lmax+1):
-                for m in range(-l,l+1):
-                    _ylm = ylm(l,m,theta.flatten(),phi.flatten())
-                    _ylm = np.reshape(_ylm, (sph.Np, sph.Np))
-
-                    mlab.mesh(x - m, y - l, z, scalars=_ylm, colormap='bwr')
-
-            mlab.view(0,180)
+    B = np.zeros(p.shape)
+    sp = cartesian2spherical(p)
+    idx = 0
+    for l in range(1,lmax+1):
+        for m in range(-1*l,l+1):
+            _Psilm = Psilm(l,m, sp[:,1],sp[:,2])
+            _Psilm *= np.sqrt(2*l**2 + l)
+            _Psilm[:,0] *= sp[:,0]**(l-1)
+            _Psilm[:,1] *= sp[:,0]**(l-1)
+            _Psilm[:,2] *= sp[:,0]**(l-1)
+            _Psilm *= coeffs[idx]
+            _Psilm = sphvec2cart(sp, _Psilm)
+            B += _Psilm
+            idx += 1
+    return B
 
 
+def plotYlms(sph, lmax, polar=False):
+    '''
+    Plots real spherical harmonics up to lmax.
+    Inspired by https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html.
+
+    Parameters
+    ----------
+    sph: spherical harmonics analysis object
+    lmax: int
+        maximum degree l
+    polar: boolean
+        plot polar representation?
+    '''
+
+    theta = np.reshape(sph.sp[:,1], (sph.Np, sph.Np))
+    phi = np.reshape(sph.sp[:,2], (sph.Np, sph.Np))
+    r = 0.4
+    x=r*np.sin(theta)*np.cos(phi)
+    y=r*np.sin(theta)*np.sin(phi)
+    z=r*np.cos(theta)
+
+    if polar:
+        for l in range(1, lmax+1):
+            for m in range(l):
+                _ylm = ylm(l,m,theta.flatten(),phi.flatten())
+                _ylm = np.reshape(_ylm, (sph.Np, sph.Np))
+
+                mlab.mesh(x - m, y - l, z, scalars=_ylm, colormap='bwr')
+                _ylm /= _ylm.max()
+                mlab.mesh(_ylm * x - m, _ylm * y - l, _ylm * z + 1.3,
+                          scalars=np.abs(_ylm), colormap='Spectral')
+
+        mlab.view(90, 70, 6.2, (-1.3, -2.9, 0.25))
+    else:
+        for l in range(0, lmax+1):
+            for m in range(-l,l+1):
+                _ylm = ylm(l,m,theta.flatten(),phi.flatten())
+                _ylm = np.reshape(_ylm, (sph.Np, sph.Np))
+
+                mlab.mesh(x - m, y - l, z, scalars=_ylm, colormap='bwr')
+
+        mlab.view(0,180)
 
 
-    def plotYlm(sph, l,m):
-        '''
-        Plots real spherical harmonics of order m and degree l.
-        Inspired by https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html
-
-        Parameters
-        ----------
-        sph: spherical harmonics analysis object
-        l: int
-            degree l
-        m: int
-            order m
-
-        '''
-
-        theta = np.reshape(sph.sp[:,1], (sph.Np, sph.Np))
-        phi = np.reshape(sph.sp[:,2], (sph.Np, sph.Np))
-        r = 0.6
-        x=r*np.sin(theta)*np.cos(phi)
-        y=r*np.sin(theta)*np.sin(phi)
-        z=r*np.cos(theta)
-
-        _ylm = ylm(l,m,theta.flatten(),phi.flatten())
-        _ylm = np.reshape(_ylm, (sph.Np, sph.Np))
-
-        mlab.mesh(x - m, y - l, z, scalars=_ylm, colormap='bwr')
-
-        _ylm /= _ylm.max()
-        mlab.mesh(_ylm * x - m, _ylm * y - l, _ylm * z + 1.3,
-                  scalars=np.abs(_ylm), colormap='Spectral')
 
 
-    def plotPsilm(sph,l, m):
-        '''
-        Plots magnetic field basis function 'Psilm' (r**l) over a sphere.
+def plotYlm(sph, l,m):
+    '''
+    Plots real spherical harmonics of order m and degree l.
+    Inspired by https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html
 
-        Parameters
-        ----------
-        sph: spherical harmonics analysis object
-        l: int
-            degree l
-        m: int
-            order m
+    Parameters
+    ----------
+    sph: spherical harmonics analysis object
+    l: int
+        degree l
+    m: int
+        order m
 
-        Returns
-        -------
+    '''
+
+    theta = np.reshape(sph.sp[:,1], (sph.Np, sph.Np))
+    phi = np.reshape(sph.sp[:,2], (sph.Np, sph.Np))
+    r = 0.6
+    x=r*np.sin(theta)*np.cos(phi)
+    y=r*np.sin(theta)*np.sin(phi)
+    z=r*np.cos(theta)
+
+    _ylm = ylm(l,m,theta.flatten(),phi.flatten())
+    _ylm = np.reshape(_ylm, (sph.Np, sph.Np))
+
+    mlab.mesh(x - m, y - l, z, scalars=_ylm, colormap='bwr')
+
+    _ylm /= _ylm.max()
+    mlab.mesh(_ylm * x - m, _ylm * y - l, _ylm * z + 1.3,
+              scalars=np.abs(_ylm), colormap='Spectral')
+
+
+def plotPsilm(sph,l, m):
+    '''
+    Plots magnetic field basis function 'Psilm' (r**l) over a sphere.
+
+    Parameters
+    ----------
+    sph: spherical harmonics analysis object
+    l: int
+        degree l
+    m: int
+        order m
+
+    Returns
+    -------
+    obj: mayavi object
+
+    '''
+
+    _Psilm = Psilm(l,m, sph.sp[:,1], sph.sp[:,2])
+    _Psilm = sphvec2cart(sph.sp, _Psilm)
+    obj = mlab.quiver3d(sph.p[:,0],sph.p[:,1],sph.p[:,2],
+                        _Psilm[:,0], _Psilm[:,1], _Psilm[:,2])
+    obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
+    return obj
+
+def plotBPsilm_volume(sph,l, m, lim, Np, offset):
+    '''
+    Plots magnetic field basis function 'Psilm' (r**l) over a 3D volume.
+
+    Parameters
+    ----------
+    sph: spherical harmonics analysis object
+    l: int
+        degree l
+    m: int
+        order m
+    lim: float
+        limits for coordinates, e.g., xmin = -lim, xmax = lim
+    Np: int
+        number of points along different coordinates
+    offset: 1x3 array
+        offset of the volume in which Psilm is plotted
+
+    Returns
+    -------
         obj: mayavi object
 
-        '''
+    '''
 
-        _Psilm = Psilm(l,m, sph.sp[:,1], sph.sp[:,2])
-        _Psilm = sphvec2cart(sph.sp, _Psilm)
-        obj = mlab.quiver3d(sph.p[:,0],sph.p[:,1],sph.p[:,2],
-                            _Psilm[:,0], _Psilm[:,1], _Psilm[:,2])
-        obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
-        return obj
+    x, y, z = np.meshgrid(np.linspace(-lim+offset[0],lim+offset[0],Np),np.linspace(-lim+offset[1],lim+offset[1],Np),np.linspace(-lim+offset[2],lim+offset[2],Np))
 
-    def plotBPsilm_volume(sph,l, m, lim, Np, offset):
-        '''
-        Plots magnetic field basis function 'Psilm' (r**l) over a 3D volume.
+    p = np.array((x.flatten(), y.flatten(), z.flatten())).T
+    sp = cartesian2spherical(p)
 
-        Parameters
-        ----------
-        sph: spherical harmonics analysis object
-        l: int
-            degree l
-        m: int
-            order m
-        lim: float
-            limits for coordinates, e.g., xmin = -lim, xmax = lim
-        Np: int
-            number of points along different coordinates
-        offset: 1x3 array
-            offset of the volume in which Psilm is plotted
+    _Psilm = Psilm(l,m, sp[:,1], sp[:,2])
+    _Psilm *= np.sqrt(2*l**2 +l)
+    _Psilm[:,0] *= sp[:,0]**(l-1)
+    _Psilm[:,1] *= sp[:,0]**(l-1)
+    _Psilm[:,2] *= sp[:,0]**(l-1)
 
-        Returns
-        -------
-            obj: mayavi object
-
-        '''
-
-        x, y, z = np.meshgrid(np.linspace(-lim+offset[0],lim+offset[0],Np),np.linspace(-lim+offset[1],lim+offset[1],Np),np.linspace(-lim+offset[2],lim+offset[2],Np))
-
-        p = np.array((x.flatten(), y.flatten(), z.flatten())).T
-        sp = cartesian2spherical(p)
-
-        _Psilm = Psilm(l,m, sp[:,1], sp[:,2])
-        _Psilm *= np.sqrt(2*l**2 +l)
-        _Psilm[:,0] *= sp[:,0]**(l-1)
-        _Psilm[:,1] *= sp[:,0]**(l-1)
-        _Psilm[:,2] *= sp[:,0]**(l-1)
-
-        _Psilm = sphvec2cart(sp, _Psilm)
-        obj = mlab.quiver3d(p[:,0],p[:,1],p[:,2],
-                            _Psilm[:,0], _Psilm[:,1], _Psilm[:,2])
-        obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
-        return obj
+    _Psilm = sphvec2cart(sp, _Psilm)
+    obj = mlab.quiver3d(p[:,0],p[:,1],p[:,2],
+                        _Psilm[:,0], _Psilm[:,1], _Psilm[:,2])
+    obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
+    return obj
 
 
 
-    def plotPhilm(sph,l, m):
-        '''
-        Plots magnetic field basis function 'Philm' (r**(-l)) over a sphere.
+def plotPhilm(sph,l, m):
+    '''
+    Plots magnetic field basis function 'Philm' (r**(-l)) over a sphere.
 
-        Parameters
-        ----------
-        sph: spherical harmonics analysis object
-        l: int
-            degree l
-        m: int
-            order m
+    Parameters
+    ----------
+    sph: spherical harmonics analysis object
+    l: int
+        degree l
+    m: int
+        order m
 
-        Returns
-        -------
-        obj: mayavi object
+    Returns
+    -------
+    obj: mayavi object
 
-        '''
+    '''
 
-        _Philm = Philm(l,m, sph.sp[:,1], sph.sp[:,2])
-        _Philm = sphvec2cart(sph.sp, _Philm)
-        obj = mlab.quiver3d(sph.p[:,0],sph.p[:,1],sph.p[:,2],
-                            _Philm[:,0], _Philm[:,1], _Philm[:,2])
-        obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
-        return obj
+    _Philm = Philm(l,m, sph.sp[:,1], sph.sp[:,2])
+    _Philm = sphvec2cart(sph.sp, _Philm)
+    obj = mlab.quiver3d(sph.p[:,0],sph.p[:,1],sph.p[:,2],
+                        _Philm[:,0], _Philm[:,1], _Philm[:,2])
+    obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
+    return obj
 
-    def plotBPhilm_volume(sph,l, m, lim, Np, offset):
-        '''
-        Plots magnetic field basis function 'Philm' (r**(-l)) over a 3D volume.
+def plotBPhilm_volume(sph,l, m, lim, Np, offset):
+    '''
+    Plots magnetic field basis function 'Philm' (r**(-l)) over a 3D volume.
 
-        Parameters
-        ----------
-        sph: spherical harmonics analysis object
-        l: int
-            degree l
-        m: int
-            order m
-        lim: float
-            limits for coordinates, e.g., xmin = -lim, xmax = lim
-        Np: int
-            number of points along different coordinates
-        offset: 1x3 array
-            offset of the volume in which Philm is plotted
+    Parameters
+    ----------
+    sph: spherical harmonics analysis object
+    l: int
+        degree l
+    m: int
+        order m
+    lim: float
+        limits for coordinates, e.g., xmin = -lim, xmax = lim
+    Np: int
+        number of points along different coordinates
+    offset: 1x3 array
+        offset of the volume in which Philm is plotted
 
-        Returns
-        -------
-        obj: mayavi object
+    Returns
+    -------
+    obj: mayavi object
 
-        '''
+    '''
 
-        x, y, z = np.meshgrid(np.linspace(-lim+offset[0],lim+offset[0],Np),np.linspace(-lim+offset[1],lim+offset[1],Np),np.linspace(-lim+offset[2],lim+offset[2],Np))
+    x, y, z = np.meshgrid(np.linspace(-lim+offset[0],lim+offset[0],Np),np.linspace(-lim+offset[1],lim+offset[1],Np),np.linspace(-lim+offset[2],lim+offset[2],Np))
 
-        p = np.array((x.flatten(), y.flatten(), z.flatten())).T
-        sp = cartesian2spherical(p)
+    p = np.array((x.flatten(), y.flatten(), z.flatten())).T
+    sp = cartesian2spherical(p)
 
-        _Philm = Philm(l,m, sp[:,1], sp[:,2])
-        _Philm *= np.sqrt((l+1)*(2*l+1))
+    _Philm = Philm(l,m, sp[:,1], sp[:,2])
+    _Philm *= np.sqrt((l+1)*(2*l+1))
 
-        _Philm[:,0] *= sp[:,0]**(-1*(l+2))
-        _Philm[:,1] *= sp[:,0]**(-1*(l+2))
-        _Philm[:,2] *= sp[:,0]**(-1*(l+2))
+    _Philm[:,0] *= sp[:,0]**(-1*(l+2))
+    _Philm[:,1] *= sp[:,0]**(-1*(l+2))
+    _Philm[:,2] *= sp[:,0]**(-1*(l+2))
 
-        _Philm = sphvec2cart(sp, _Philm)
-        obj = mlab.quiver3d(p[:,0],p[:,1],p[:,2],
-                            _Philm[:,0], _Philm[:,1], _Philm[:,2])
-        obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
-        return obj
+    _Philm = sphvec2cart(sp, _Philm)
+    obj = mlab.quiver3d(p[:,0],p[:,1],p[:,2],
+                        _Philm[:,0], _Philm[:,1], _Philm[:,2])
+    obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
+    return obj
 
 ##############################
 # Coupling between streamfunction on a mesh and the multipoles
