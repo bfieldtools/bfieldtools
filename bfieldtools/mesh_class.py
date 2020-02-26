@@ -18,6 +18,7 @@ from .mesh_magnetics import magnetic_field_coupling, scalar_potential_coupling, 
 from .suhtools import SuhBasis
 from .sphtools import compute_sphcoeffs_mesh
 from .viz import plot_mesh, plot_data_on_vertices
+from .contour import scalar_contour
 
 
 
@@ -614,34 +615,53 @@ class StreamFunction(np.ndarray):
         M = self.conductor.matrices['inductance']
         return 0.5 *  self.T @ self.basis.T @ M @ self.basis @ self
 
-#<<<<<<< HEAD
-#    def plot(self, contours=True, ncontours=10, cmap='seismic', background=True,
-#             **kwargs):
-#=======
 
     def plot(self, background=True, contours=False, **kwargs):
-        """ Plot the stream function
-        """
+        '''
+        Plot the stream function
+        '''
+
         mesh = self.conductor.mesh
         scalars = self.vert
         if 'vmin' not in kwargs.keys():
             kwargs['vmin'] = - np.max(abs(scalars))
         if 'vmax' not in kwargs.keys():
             kwargs['vmax'] =   np.max(abs(scalars))
-#        s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
-#                                 scalars=scalars, colormap=cmap, **kwargs)
+
         s = plot_data_on_vertices(mesh, scalars, **kwargs)
-#        if contours:
-#            s.enable_contours=True
-#            s.contour.number_of_contours = contours
-#            if background==True:
-#                mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
-#                                      color=(0.5,0.5,0.5), opacity=0.2)
-#        else:
-#            s.actor.mapper.interpolate_scalars_before_mapping = True
-#            s.module_manager.scalar_lut_manager.number_of_colors = 256
+        if contours:
+            s.enable_contours=True
+            s.contour.number_of_contours = contours
+            if background==True:
+                mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
+                                      color=(0.5,0.5,0.5), opacity=0.2)
+        else:
+            s.actor.mapper.interpolate_scalars_before_mapping = True
+            s.module_manager.scalar_lut_manager.number_of_colors = 256
 
         return s
+
+    def discretize(self, N_contours=10, contours=None):
+        '''
+        Wrapper method for scalar_contour
+
+        Parameters
+        ----------
+        N_contours: int
+            Number of contours to generate
+        contours: array-like
+            Optional argument for manual input of contour levels. Overrides `N_contours`
+
+        Returns
+        -------
+        contour_polys: list
+            list with length `N_contours`. Each list element is anumpy array containing the
+            coordinats of each polygon vertex.
+        contour_values: array-like
+            Vector containing the scalar function value for each contour line
+        '''
+        return scalar_contour(self.conductor.mesh, self.vert, N_contours=N_contours, contours=contours)
+
 
 
 
