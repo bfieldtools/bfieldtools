@@ -17,6 +17,7 @@ if path not in sys.path:
     sys.path.insert(0,path)
 
 from bfieldtools.mesh_class import Conductor, StreamFunction
+from bfieldtools.mesh_calculus import gradient
 
 # This doesn't matter, the problem is scale-invariant
 scaling_factor = 1
@@ -74,10 +75,13 @@ s0 = mlab.triangular_mesh(*shieldmesh.vertices.T, shieldmesh.faces,
 s0.actor.property.backface_culling = False
 s0.actor.property.ambient = 0.5
 
-I_prim = np.load('biplanar_current.npy')
+I_prim = np.load('biplanar_current_x.npy')
 sprim = StreamFunction(I_prim, coil)
-s1 = sprim.plot(False, 256)
+m = max(abs(sprim))
+s1 = sprim.plot(False, 16, vmin = -m, vmax=m)
 s2 = sprim.plot(True, 20)
+s2.actor.mapper.scalar_visibility = False
+s2.actor.property.line_width = 1.2
 #s2 = mlab.triangular_mesh(*planemesh.vertices.T, planemesh.faces, scalars=I_prim,
 #                          colormap='RdBu')
 #s2.enable_contours = True
@@ -119,6 +123,7 @@ P_shield = shield.U_coupling(shieldmesh.vertices - d*shieldmesh.vertex_normals)
 I_shield =  np.linalg.solve(-P_shield, P_prim @ I_prim)
 #I_shield = P_prim @ I_prim
 s_shield = StreamFunction(I_shield, shield)
+g = gradient(s_shield, shieldmesh, rotated=True)
 
 #%% Plot the result
 fig = mlab.figure(bgcolor=(1,1,1))
@@ -126,12 +131,14 @@ s0 = mlab.triangular_mesh(*shieldmesh.vertices.T, shieldmesh.faces, color=(0.5,0
                      opacity=0.3)
 s0.actor.property.backface_culling = False
 s1 = s_shield.plot(False, 256)
-s1.actor.property.opacity=0.99
-s1.actor.property.backface_culling=True
-s2 = s_shield.plot(True, 10)
+#s1.actor.property.opacity=0.8
+s1.actor.property.backface_culling=False
+#s2 = s_shield.plot(True, 10)
+mlab.quiver3d(*shieldmesh.triangles_center.T, *g, color=(1,1,1), mode='arrow',
+              scale_factor=0.0000008, scale_mode='vector')
 #s1.contour.filled_contours = True
 #s1.contour.number_of_contours = 30
-s2.actor.property.render_lines_as_tubes = True
+#s2.actor.property.render_lines_as_tubes = True
 #s1.actor.property.ambient = 0.2
 
 scene = s1.module_manager
@@ -170,15 +177,17 @@ u1 = (U2_prim @ I_prim).reshape(N,N)
 u2 = (U2_shield @ I_shield).reshape(N,N)*u0
 u3= (u1 + u2)*u0
 
-levels = np.linspace(-np.max(abs(u3)), np.max(abs(u3)), 64)
-p =plt.contourf(X,Y, u1, levels=levels, cmap='seismic')
+vmax = np.max(abs(u3))*0.2
+levels = np.linspace(-vmax, vmax, 30)
+levels = np.hstack((-np.max(abs(u3)) ,levels, np.max(abs(u3))))
+p =plt.contourf(X,Y, u1, levels=levels, cmap='seismic', vmin=-vmax, vmax=vmax)
 plt.plot(cc1a[:,0],cc1a[:,1], linewidth=3, color='gray')
 plt.plot(cc1b[:,0],cc1b[:,1], linewidth=3, color='gray')
 plt.axis('image')
 plt.axis('off')
 xlims = p.ax.get_xlim()
 plt.figure()
-p = plt.contourf(X,Y, u2, levels=levels, cmap='seismic')
+p = plt.contourf(X,Y, u2, levels=levels, cmap='seismic', vmin=-vmax, vmax=vmax)
 plt.plot(cc1a[:,0],cc1a[:,1], linewidth=3, color='gray')
 plt.plot(cc1b[:,0],cc1b[:,1], linewidth=3, color='gray')
 plt.plot(cc2[:,0],cc2[:,1], linewidth=3, color='gray')
@@ -186,7 +195,7 @@ plt.axis('image')
 plt.axis('off')
 p.ax.set_xlim(xlims)
 plt.figure()
-p =plt.contourf(X,Y, u3, levels=levels, cmap='seismic')
+p =plt.contourf(X,Y, u3, levels=levels, cmap='seismic', vmin=-vmax, vmax=vmax)
 plt.plot(cc1a[:,0],cc1a[:,1], linewidth=3, color='gray')
 plt.plot(cc1b[:,0],cc1b[:,1], linewidth=3, color='gray')
 plt.plot(cc2[:,0],cc2[:,1], linewidth=3, color='gray')

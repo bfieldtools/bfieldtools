@@ -135,7 +135,8 @@ class Conductor:
         #Populate options dictionary with defaults if not specified
         self.opts = {'outer_boundaries':None, 'mass_lumped':False,
                      'resistance_full_rank': True, 'inductance_nchunks':None,
-                     'basis_name':'vertex', 'N_suh': 100, 'N_sph': 5}
+                     'basis_name':'vertex', 'N_suh': 100, 'N_sph': 5,
+                     'inductance_quad_degree': 2}
 
         for key, val in kwargs.items():
             self.opts[key] = val
@@ -282,7 +283,8 @@ class Conductor:
         start = time()
 
         inductance = self_inductance_matrix(self.mesh,
-                                            Nchunks=self.opts['inductance_nchunks'])
+                                            Nchunks=self.opts['inductance_nchunks'],
+                                            quad_degree = self.opts['inductance_quad_degree'])
 
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)
@@ -612,25 +614,32 @@ class StreamFunction(np.ndarray):
         M = self.conductor.matrices['inductance']
         return 0.5 *  self.T @ self.basis.T @ M @ self.basis @ self
 
+#<<<<<<< HEAD
+#    def plot(self, contours=True, ncontours=10, cmap='seismic', background=True,
+#             **kwargs):
+#=======
 
     def plot(self, background=True, contours=False, **kwargs):
-
         """ Plot the stream function
         """
         mesh = self.conductor.mesh
         scalars = self.vert
-
+        if 'vmin' not in kwargs.keys():
+            kwargs['vmin'] = - np.max(abs(scalars))
+        if 'vmax' not in kwargs.keys():
+            kwargs['vmax'] =   np.max(abs(scalars))
+#        s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
+#                                 scalars=scalars, colormap=cmap, **kwargs)
         s = plot_data_on_vertices(mesh, scalars, **kwargs)
-
-        if contours:
-            s.enable_contours=True
-            s.contour.number_of_contours = contours
-            if background==True:
-                mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
-                                      color=(0.5,0.5,0.5), opacity=0.2)
-        else:
-            s.actor.mapper.interpolate_scalars_before_mapping = True
-            s.module_manager.scalar_lut_manager.number_of_colors = 256
+#        if contours:
+#            s.enable_contours=True
+#            s.contour.number_of_contours = contours
+#            if background==True:
+#                mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
+#                                      color=(0.5,0.5,0.5), opacity=0.2)
+#        else:
+#            s.actor.mapper.interpolate_scalars_before_mapping = True
+#            s.module_manager.scalar_lut_manager.number_of_colors = 256
 
         return s
 

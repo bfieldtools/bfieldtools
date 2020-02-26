@@ -10,7 +10,7 @@ from .utils import tri_normals_and_areas
 ############################################3
 # sph helper functions
 
-def cartesian2spherical(p):
+def cartesian2spherical(p,zaxis_approx=True):
     '''
     Maps cartesian coordinates to spherical.
 
@@ -32,6 +32,13 @@ def cartesian2spherical(p):
 
     sp = np.array((r, theta, phi)).T
 
+    if zaxis_approx:
+        eps = 1e-6
+        theta_mask_0 = np.abs(sp[:,1]) < eps
+        theta_mask_pi = np.abs(sp[:,1] - np.pi) < eps
+        sp[theta_mask_0,1] += eps
+        sp[theta_mask_pi,1] -= eps
+        
     return sp
 
 
