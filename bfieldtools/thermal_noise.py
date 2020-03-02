@@ -125,6 +125,23 @@ def noise_covar(mesh, vl, fp):
 
     return Bcov
 
+def noise_var(mesh, vl, fp):
+    B_coupling = magnetic_field_coupling(mesh, fp)
+    b = np.einsum('ihj,jlk->ilhk', B_coupling, vl)
+    Bcov = np.einsum('ijhk,ijhk->ihk', b,b)
+
+    return Bcov
+
+
+def noise_covar_dir(mesh, vl, fp):
+    B_coupling = magnetic_field_coupling(mesh, fp)
+    b = np.einsum('ihj,jlk->ilhk', B_coupling, vl)
+    Bcov = np.einsum('ihjk,ihlk-> ijlk',b,b)
+
+    return Bcov
+
+
+
 def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T, Nchunks = 1):
     '''
     Computes the magnetic noise at DC due to thermal motion of charge carriers (Jonhson-Nyquist noise)
