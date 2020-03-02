@@ -1,11 +1,9 @@
 """
-
 Analytic integral for vectorized field / potential computation
 
 """
 
 import numpy as np
-from .mesh_calculus import gradient_matrix
 
 def determinant(a):
     det = a[...,0,0]*(a[...,1,1]*a[...,2,2] - a[...,2,1]*a[...,1,2])
@@ -41,7 +39,9 @@ def gamma0(R, reg=1e-13, symmetrize=True):
             The analytic integrals for each vertex/edge
 
     """
-    edges = np.roll(R[0], 2, -2) - np.roll(R[0], 1, -2)
+    edges = np.roll(R[0], 1, -2) - np.roll(R[0], 2, -2)
+#    dotprods1 = np.sum(np.roll(R, 1, -2)*edges, axis=-1)
+#    dotprods2 = np.sum(np.roll(R, 2, -2)*edges, axis=-1)
     dotprods1 = np.einsum('...i,...i', np.roll(R, 1, -2), edges)
     dotprods2 = np.einsum('...i,...i', np.roll(R, 2, -2), edges)
     en = norm(edges)
@@ -49,18 +49,18 @@ def gamma0(R, reg=1e-13, symmetrize=True):
     n = norm(R)
     # Regularize s.t. neither the denominator or the numerator can be zero
     # Avoid numerical issues directly at the edge
-    nn1 = np.roll(n, 1, -1)*en
-    nn2 = np.roll(n, 2, -1)*en
-    res = np.log((nn1 + dotprods1 + reg) / (nn2 + dotprods2 + reg))
+    nn1 = np.roll(n, 2, -1)*en
+    nn2 = np.roll(n, 1, -1)*en
+    res = np.log((nn1 + dotprods2 + reg) / (nn2 + dotprods1 + reg))
 
     # Symmetrize the result since on the negative extension of the edge
     # there's division of two small values resulting numerical instabilities
     # (also incompatible with adding the reg value)
     if symmetrize:
-        res2 = -np.log((nn1 - dotprods1 + reg) / (nn2 - dotprods2 + reg))
+        res2 = -np.log((nn1 - dotprods2 + reg) / (nn2 - dotprods1 + reg))
         res = np.where(dotprods1+dotprods2 > 0, res, res2)
     res /= en
-    return -res
+    return -res  # TODO: there should be minus, since we want this to be positive
 
 
 def omega(R):
@@ -98,55 +98,8 @@ def omega(R):
 #        denom += np.sum(R[..., i, :]*R[..., j, :], axis=-1)*d[..., k]
         denom += np.einsum('...i,...i,...', R[..., i, :], R[..., j, :], d[..., k])
     # Solid angles
-    sa = -2*np.arctan2(stp, denom)
+    sa = 2*np.arctan2(stp, denom)
     return sa
-
-
-def x_distance(R, tn, ta=None):
-    """ Signed distances in the triangle planes from the opposite
-        edge towards the node for all evaluation points in R
-
-        Parameters:
-            R: displacement vectors
-            tn: triangle normals
-            ta: triangle areas, if None do not normalize with area
-
-        returns:
-            distance in the triangle plane
-    """
-    edges = np.roll(R[0], 2, -2) - np.roll(R[0], 1, -2)
-    if ta is not None:
-        edges /= 2*ta[:, None, None]
-    edges = - cross(edges, tn[:, None, :])
-    return np.einsum('...k,...k->...', np.roll(R, 1, -2),  edges)
-
-def x_distance2(mesh):
-    """ Signed distances in the triangle planes from the opposite
-        edge towards the node for all evalution points in R
-    """
-    # TODO: with gradient, needs mesh info
-    pass
-
-
-def d_distance(R, tn):
-    """ Signed distance from the triangle plane for each triangle
-
-        Returns:
-
-            ndarray (..., Ntri, N_triverts (3))
-    """
-    return np.einsum('...ki,ki->...k', np.take(R, 0, -2), tn)
-
-
-def c_coeffs(R, ta):
-    """ Cotan-coeffs
-
-        Returns:
-
-            ndarray (..., Ntri, N_triverts (3))
-    """
-    edges = np.roll(R[0], 2, -2) - np.roll(R[0], 1, -2)
-    return np.einsum('...ik,...jk->...ij', edges, edges/(2*ta[:, None, None]))
 
 
 def triangle_potential_uniform(R, tn, planar=False):
@@ -177,12 +130,22 @@ def triangle_potential_uniform(R, tn, planar=False):
             at the field evaluation points (Neval)
 
     """
-    x = x_distance(R, tn, None)
-    result = np.einsum('...i,...i', gamma0(R), x)
+    if len(R.shape) > 3:
+        tn_ax = tn[:, None, :]
+    else:
+        tn_ax = tn
+    summands = np.sum(tn_ax*np.cross(np.roll(R, 1, -2),
+                                     np.roll(R, 2, -2), axis=-1), axis=-1)
+#    summands = -gamma0(R)*np.sum(tn_ax*np.cross(np.roll(R, 1, -2),
+#                                               np.roll(R, 2, -2), axis=-1), axis=-1)
+    result = np.einsum('...i,...i', -gamma0(R), summands)
     if not planar:
-        result += d_distance(R, tn)*omega(R)
+#        csigned = np.sum(np.take(R, 0, -2)*tn, axis=-1)
+        csigned = np.einsum('...i,...i', np.take(R, 0, -2), tn)
+        result -= csigned*omega(R)
     else:
         print('Assuming all the triangles are in the same plane!')
+#        result = np.sum(summands, axis=-1)
     return result
 
 
@@ -272,13 +235,27 @@ def triangle_potential_dipole_linear(R, tn, ta, planar=False):
             corresponding to displacement vectors in R
 
     """
-
-    result = np.einsum('...i,...ij,...->...j', gamma0(R),
-                       c_coeffs(R, ta), d_distance(R, tn), optimize=True)
+    if len(R.shape) > 3:
+        tn_ax = tn[:, None, :]
+    else:
+        tn_ax = tn
+    # Volumes of tetrahedron between field evaluation point and the triangle
+#    det = np.sum(np.cross(np.roll(R, 2, -2),
+#                          np.roll(R, 1, -2), axis=-1)*R, axis=-1)
+    det = determinant(R)
+    # Edges opposite to the nodes
+    edges = np.roll(R[0], 1, -2) - np.roll(R[0], 2, -2)
+    #Latter part of omega_i integral in de Munck
+#    result = np.sum(np.sum(gamma0(R)[..., None]*edges, axis=-2)[...,None,:]*edges, axis=-1)
+    result = np.einsum('...i,...ik,...jk,...->...j', gamma0(R), edges, edges, det/(2*ta),
+                            optimize=True)
+#    result *= (det/(2*ta))[..., None] # TODO: IS DET SIGN OK?
     if not planar:
-        x_dists = x_distance(R, tn, ta)
-        result -= x_dists*omega(R)[..., :, None]
+        # First part of the integral
+        # Note: tn normalized version of n-vector in de Munck
+        lin_coeffs = np.sum(tn_ax*cross(np.roll(R, 2, -2), np.roll(R, 1, -2)), axis=-1)
+        result += lin_coeffs*omega(R)[..., :, None]
     else:
         print('Assuming all the triangles are in the same plane!')
-    return result
+    return result/(2*ta[:,None])
 

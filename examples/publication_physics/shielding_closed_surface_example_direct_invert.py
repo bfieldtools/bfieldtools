@@ -74,8 +74,9 @@ elif domain == 'combined':
 #    mesh2 = mesh2.subdivide()
 
 coil1 = Conductor(mesh_obj=mesh1, N_sph=7, inductance_nchunks=100, fix_normals=False,
-                  inductance_quad_degree=4)
-coil2 = Conductor(mesh_obj=mesh2, N_sph=7, inductance_nchunks=100, fix_normals=False)
+                  inductance_quad_degree=2)
+coil2 = Conductor(mesh_obj=mesh2, N_sph=7, inductance_nchunks=100, fix_normals=False,
+                  inductance_quad_degree=2)
 
 M11 = coil1.inductance
 M22 = coil2.inductance
@@ -89,7 +90,7 @@ M = np.block([[M11, M21.T],[M21, M22]])
 #F1 = (np.moveaxis(sphtools.basis_fields(mesh1.vertices, 3)[1],0,2)*mesh1.vertex_normals).sum(axis=-1)
 #F2 = (sb.basis_fields(mesh2.vertices, 3)[0]*mesh2.vertex_normals).sum(axis=-1)
 
-x = y = np.linspace(-0.8, 0.8, 100)
+x = y = np.linspace(-0.85, 0.85, 100)
 X,Y = np.meshgrid(x, y, indexing='ij')
 points = np.zeros((X.flatten().shape[0], 3))
 points[:, 0] = X.flatten()
