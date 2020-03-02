@@ -86,7 +86,7 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
 
 
 
-def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
+def magnetic_field_coupling_analytic_old(mesh, r, Nchunks=None):
     '''
     Given a mesh, computes the "C matrix" which gives the magnetic field at
     some target points due to currents (stream function) on a surface mesh.
@@ -103,7 +103,7 @@ def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
         Coupling matrix for surface current in the mesh to the evaluation points)
 
     '''
-    from .integrals import omega, gamma0
+    from .integrals_old import omega, gamma0
     coef = 1e-7
 
     print('Computing magnetic field coupling matrix analytically, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
@@ -159,7 +159,73 @@ def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
 
 
 
+def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
+    '''
+    Given a mesh, computes the "C matrix" which gives the magnetic field at
+    some target points due to currents (stream function) on a surface mesh.
 
+    Parameters
+    ----------
+
+    mesh: Trimesh mesh object describing the mesh
+    r: target points (Np, 3)
+
+    Returns
+    -------
+    C: (Np, 3, Nvertices) array
+        Coupling matrix for surface current in the mesh to the evaluation points)
+
+    '''
+    from .integrals import omega, gamma0
+    coef = 1e-7
+
+    print('Computing magnetic field coupling matrix analytically, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
+    start = time.time()
+
+    if Nchunks is None:
+        if r.shape[0] > 1000:
+            Nchunks = r.shape[0]//100
+        else:
+            Nchunks = 1
+
+    ta = mesh.area_faces
+    tn = mesh.face_normals
+
+    # Nfaces, 3, 3
+    rfaces = mesh.vertices[mesh.faces]
+
+    # Calculate potentials and related coefficients
+    gamma_terms = np.zeros((r.shape[0], mesh.faces.shape[0], 3))
+    omega_terms = np.zeros((r.shape[0], mesh.faces.shape[0]))
+    # Edges Nfaces, 3, 3
+    edges = np.roll(rfaces, 1, -2) - np.roll(rfaces, 2, -2)
+    for n in range(Nchunks):
+        RRchunk = r[n::Nchunks, None, None, :] - rfaces[None, :, :, :]
+        # Neval, Nfaces, xyz
+        gamma_terms[n::Nchunks] = -np.einsum('nfe,fei->nfi', gamma0(RRchunk), edges)
+        omega_terms[n::Nchunks] = omega(RRchunk)
+
+    # 3 (Nfaces, Nverts) sparse matrices
+    G = gradient_matrix(mesh, rotated=False)
+    R = gradient_matrix(mesh, rotated=True)
+    C = np.zeros((3, r.shape[0], mesh.vertices.shape[0]))
+
+    # Accumulate elements by sparse matrix products for x,y, and z components
+    for fcomp in range(3):
+        C[fcomp] = omega_terms @ G[fcomp]
+        # Accumulate gamma terms for each vertex in the triangle
+        for gcomp in range(3):
+            # Edge @ Rotated_gradient "==" c_coeff
+            # Multiplying with R-matrices takes care of c_coeff calculation
+            # and accumulation to right vertex
+            C[fcomp] += (tn[:, fcomp]*gamma_terms[:, :, gcomp]) @ R[gcomp]
+
+    duration = time.time() - start
+    print('took %.2f seconds.'%duration)
+
+    C *= coef
+#    return np.moveaxis(C, 0, 1)
+    return np.swapaxes(C, 0, 1)
 
 
 
