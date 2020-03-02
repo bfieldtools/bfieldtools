@@ -118,29 +118,26 @@ def compute_current_modes_ind_res(mesh, sheet_resistance, freqs, T, closed = Tru
     else:
         return vl
 
-def noise_covar(mesh, vl, fp, Nmodes = None):
+def noise_covar(mesh, B_coupling, vl, Nmodes = None):
     if Nmodes == None:
         Nmodes = vl.shape[1]
-    B_coupling = magnetic_field_coupling(mesh, fp)
     b = np.einsum('ihj,jlk->ilhk', B_coupling, vl[:,0:Nmodes])
     Bcov = np.einsum('jihk,lihk->jlhk', b,b)
 
     return Bcov
 
-def noise_var(mesh, vl, fp, Nmodes = None):
+def noise_var(mesh, B_coupling, vl, Nmodes = None):
     if Nmodes == None:
         Nmodes = vl.shape[1]
-    B_coupling = magnetic_field_coupling(mesh, fp)
     b = np.einsum('ihj,jlk->ilhk', B_coupling, vl[:,0:Nmodes])
     Bcov = np.einsum('ijhk,ijhk->ihk', b,b)
 
     return Bcov
 
 
-def noise_covar_dir(mesh, vl, fp, Nmodes = None):
+def noise_covar_dir(mesh, B_coupling, vl, Nmodes = None):
     if Nmodes == None:
         Nmodes = vl.shape[1]
-    B_coupling = magnetic_field_coupling(mesh, fp)
     b = np.einsum('ihj,jlk->ilhk', B_coupling, vl[:,0:Nmodes])
     Bcov = np.einsum('ihjk,ihlk-> ijlk',b,b)
 
