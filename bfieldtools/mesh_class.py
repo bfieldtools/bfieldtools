@@ -377,7 +377,7 @@ class Conductor:
 
         '''
 
-        return plot_mesh(self.mesh, cull_front=False, cull_back=False, **kwargs)
+        return plot_mesh(self.mesh, cull_front=cull_front, cull_back=cull_back, **kwargs)
 
 
     def save_pickle(self, target_file):
@@ -517,10 +517,10 @@ class CouplingMatrix:
 
         if self.matrix.ndim == 2:
             M = M @ self.parent.basis
+
         elif self.matrix.ndim == 3:
-            M = np.zeros((self.matrix.shape[0], 3, self.parent.basis.shape[1]))
-            for n in range(3):
-                M[: ,n, :] = self.matrix[:, n, :] @ self.parent.basis
+            M = np.einsum('ijk,kl->ijl', M, self.parent.basis)
+
         else:
             raise ValueError('Matrix dimensions not ok')
 
