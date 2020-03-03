@@ -536,8 +536,8 @@ triangle mesh to magnetic field as well as scalar and vector potentials.</p>
 <dl class="function">
 <dt id="bfieldtools.mesh_magnetics.magnetic_field_coupling">
 <code class="sig-prename descclassname">bfieldtools.mesh_magnetics.</code><code class="sig-name descname">magnetic_field_coupling</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">r</em>, <em class="sig-param">Nchunks=None</em>, <em class="sig-param">quad_degree=1</em>, <em class="sig-param">analytic=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.magnetic_field_coupling" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a mesh, computes the “C matrix” which gives the magnetic field at
-some target points due to currents (stream function) on a surface mesh.</p>
+<dd><p>Given ‘mesh’, computes the “C matrix” which gives the magnetic field at
+target points ‘r’ due to currents (stream function) on a surface mesh.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -545,11 +545,13 @@ some target points due to currents (stream function) on a surface mesh.</p>
 <dt><strong>r: target points (Np, 3)</strong></dt><dd></dd>
 <dt><strong>quad_degree: int &gt;= 1</strong></dt><dd><p>Quadrature degree (Dunavant scheme) to use.</p>
 </dd>
+<dt><strong>analytic: compute field using analytic formula (True) or quadrature (false)</strong></dt><dd></dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>C: (Np, 3, Nvertices) array</dt><dd><p>Coupling matrix for surface current in the mesh to the evaluation points)</p>
+<dt>C: (Np, 3, Nvertices) array</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
+on the mesh to B-field at the evaluation points</p>
 </dd>
 </dl>
 </dd>
@@ -560,17 +562,20 @@ some target points due to currents (stream function) on a surface mesh.</p>
 <dt id="bfieldtools.mesh_magnetics.magnetic_field_coupling_analytic">
 <code class="sig-prename descclassname">bfieldtools.mesh_magnetics.</code><code class="sig-name descname">magnetic_field_coupling_analytic</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">r</em>, <em class="sig-param">Nchunks=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.magnetic_field_coupling_analytic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a mesh, computes the “C matrix” which gives the magnetic field at
-some target points due to currents (stream function) on a surface mesh.</p>
+some target points due to currents (stream function) on a surface mesh
+using analytic formulas.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>mesh: Trimesh mesh object describing the mesh</strong></dt><dd></dd>
 <dt><strong>r: target points (Np, 3)</strong></dt><dd></dd>
+<dt><strong>Nchunks: int, number of chunks used in the calculation for saving memory</strong></dt><dd></dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>C: (Np, 3, Nvertices) array</dt><dd><p>Coupling matrix for surface current in the mesh to the evaluation points)</p>
+<dt>C: (Np, 3, Nvertices) array</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
+on the mesh to B-field at the evaluation points</p>
 </dd>
 </dl>
 </dd>
@@ -591,8 +596,10 @@ some target points due to currents (stream function) on a surface mesh.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>C: (Np, 3, Nvertices) array</dt><dd><p>Coupling matrix for surface current in the mesh to the evaluation points)</p>
+<dt>C: (Np, 3, Nvertices) array</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
+on the mesh to B-field at the evaluation points</p>
 </dd>
+<dt>DEPRECATED</dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -601,18 +608,25 @@ some target points due to currents (stream function) on a surface mesh.</p>
 <dl class="function">
 <dt id="bfieldtools.mesh_magnetics.scalar_potential_coupling">
 <code class="sig-prename descclassname">bfieldtools.mesh_magnetics.</code><code class="sig-name descname">scalar_potential_coupling</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">r</em>, <em class="sig-param">Nchunks=None</em>, <em class="sig-param">multiply_coeff=True</em>, <em class="sig-param">approx_far=False</em>, <em class="sig-param">margin=3</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.scalar_potential_coupling" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute scalar potential matrix from linear stream functions
-using analytic integral</p>
+<dd><p>Coupling matrix corresponding to a mapping from a stream function
+to scalar potential using analytic integrals</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>mesh: Trimesh mesh object describing mesh</strong></dt><dd></dd>
 <dt><strong>r: target points (Np, 3)</strong></dt><dd></dd>
+<dt><strong>Nchunks: int, number of chunks used in the calculation for saving memory</strong></dt><dd></dd>
+<dt><strong>multiply_coeff: boolean, multiply result by mu_0/(4*pi)</strong></dt><dd></dd>
+<dt><strong>approx_far: boolean, approximate the potential using simple quadrature</strong></dt><dd><p>(see integrals.potential_dipoles) for points far from the source triangles</p>
+</dd>
+<dt><strong>margin: float, cut-off distance for “far” points measured in mean</strong></dt><dd><p>triangle side length.</p>
+</dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>U: (Np, 3, Nvertices) array</dt><dd><p>Coupling matrix for surface current in the mesh to the evaluation points</p>
+<dt>U: (Np, 3, Nvertices) array</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
+on the mesh to scalar potential at the evaluation points</p>
 </dd>
 </dl>
 </dd>
@@ -622,7 +636,7 @@ using analytic integral</p>
 <dl class="function">
 <dt id="bfieldtools.mesh_magnetics.vector_potential_coupling">
 <code class="sig-prename descclassname">bfieldtools.mesh_magnetics.</code><code class="sig-name descname">vector_potential_coupling</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">r</em>, <em class="sig-param">Nchunks=None</em>, <em class="sig-param">approx_far=True</em>, <em class="sig-param">margin=2</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.vector_potential_coupling" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute vector potential matrices (one for each coordinate)
+<dd><p>Compute vector potential coupling matrices
 from linear stream functions using analytic integral
 Parameters
 ———-</p>
@@ -630,12 +644,19 @@ Parameters
 r: target points (Np, 3)
 approx_far: Boolean (True)</p>
 <blockquote>
-<div><p>If True, use approximate calculation for triangles that are not close to r</p>
+<div><p>If True, use approximate calculation for triangles that
+far from the source triangles using a simple quadrature
+(see integrals.triangle_potential_approx)</p>
 </div></blockquote>
+<dl class="simple">
+<dt>margin: float, cut-off distance for “far” points measured in mean</dt><dd><p>triangle side length.</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><dl class="simple">
-<dt>A: (Np, 3, Nvertices) array</dt><dd><p>Coupling matrix for surface current in the mesh to the evaluation points</p>
+<dt>A: (Np, 3, Nvertices) array</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
+on the mesh to vector potential at the evaluation points</p>
 </dd>
 </dl>
 </dd>
