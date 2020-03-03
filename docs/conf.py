@@ -31,13 +31,60 @@ release = '0.1'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+
+
+from pybtex.style.formatting.unsrt import Style as UnsrtStyle
+from pybtex.style.formatting.unsrt import pages, date
+from pybtex.style.formatting import toplevel
+from pybtex.style.template import (
+    field, first_of, href, join, names, optional, optional_field, sentence,
+    tag, together, words, node
+)
+from pybtex.plugin import register_plugin
+from pybtex.richtext import Symbol, Text
+
+# bibtex style
+class MyStyle(UnsrtStyle):
+    def __init__(self):
+        super().__init__()
+        self.abbreviate_names=True
+
+#This could be modified
+    def get_article_template(self, e):
+        volume_and_pages = first_of [
+            # volume and pages, with optional issue number
+            optional [
+                join [
+                    field('volume'),
+                    optional['(', field('number'),')'],
+                    ':', pages
+                ],
+            ],
+            # pages only
+            words ['pages', pages],
+        ]
+        template = toplevel [
+            self.format_names('author'),
+            self.format_title(e, 'title'),
+            sentence [
+                tag('em') [field('journal')],
+                optional[ volume_and_pages ],
+                date],
+            self.format_web_refs(e),
+            sentence [ optional_field('note') ],
+        ]
+        return template
+
+
+register_plugin('pybtex.style.formatting', 'mystyle', MyStyle)
+
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.coverage',
               'numpydoc',
               'sphinx.ext.intersphinx',
               'sphinx_gallery.gen_gallery',
               'sphinx_bootstrap_theme',
-	      'sphinxcontrib.bibtex']
+              'sphinxcontrib.bibtex']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
