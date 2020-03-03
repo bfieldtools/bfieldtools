@@ -333,7 +333,7 @@ def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), colorbar=
         mlab.colorbar(surf)
     surf.actor.mapper.interpolate_scalars_before_mapping = interpolate
 
-    lutmanager = surf.parent.scalar_lut_manager
+    lutmanager = surf.module_manager.scalar_lut_manager
     lutmanager.number_of_colors = ncolors
 
     if (np.all(data > 0) or np.all(data < 0)) and autoscale:

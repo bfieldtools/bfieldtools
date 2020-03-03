@@ -13,6 +13,26 @@ Below are a number of examples meant to familiarize you with the functionality o
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_sph_test_thumb.png
+
+        :ref:`sphx_glr_auto_examples_sph_test.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/sph_test
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Minimal example visualizing the gradient of a scalar function on a mesh">
 
 .. only:: html
@@ -30,6 +50,26 @@ Below are a number of examples meant to familiarize you with the functionality o
    :hidden:
 
    /auto_examples/gradient_example
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_time_eigenvalue_decomp_thumb.png
+
+        :ref:`sphx_glr_auto_examples_time_eigenvalue_decomp.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/time_eigenvalue_decomp
 
 .. raw:: html
 
@@ -53,6 +93,26 @@ Below are a number of examples meant to familiarize you with the functionality o
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_test_scalar_potential_thumb.png
+
+        :ref:`sphx_glr_auto_examples_test_scalar_potential.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/test_scalar_potential
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1">
 
 .. only:: html
@@ -70,6 +130,26 @@ Below are a number of examples meant to familiarize you with the functionality o
    :hidden:
 
    /auto_examples/logo
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_linear_medium_bem_thumb.png
+
+        :ref:`sphx_glr_auto_examples_linear_medium_bem.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/linear_medium_bem
 .. raw:: html
 
     <div style='clear:both'></div>
@@ -84,6 +164,26 @@ Coil design
 Examples related to coil design.
 
 
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing a field profile defined by spherical harmonics.">
+
+.. only:: html
+
+    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_spherical_harmonics_coil_design_thumb.png
+
+        :ref:`sphx_glr_auto_examples_coil_design_spherical_harmonics_coil_design.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/coil_design/spherical_harmonics_coil_design
 
 .. raw:: html
 
@@ -124,26 +224,6 @@ Examples related to coil design.
    :hidden:
 
    /auto_examples/coil_design/mamba_coil_design
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing a field profile defined by spherical harmonics.">
-
-.. only:: html
-
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_spherical_harmonics_coil_design_thumb.png
-
-        :ref:`sphx_glr_auto_examples_coil_design_spherical_harmonics_coil_design.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/coil_design/spherical_harmonics_coil_design
 
 .. raw:: html
 
@@ -373,6 +453,26 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_bfield_disc_thumb.png
+
+        :ref:`sphx_glr_auto_examples_validation_validate_bfield_disc.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/validation/validate_bfield_disc
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="Test and validation of gamma_0">
 
 .. only:: html
@@ -490,6 +590,26 @@ Example scripts validating the core functionality of `bfieldtools`
    :hidden:
 
    /auto_examples/validation/one_element
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_test_integrals_thumb.png
+
+        :ref:`sphx_glr_auto_examples_validation_test_integrals.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/validation/test_integrals
 .. raw:: html
 
     <div style='clear:both'></div>
@@ -504,13 +624,13 @@ Example scripts validating the core functionality of `bfieldtools`
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: auto_examples_python.zip <//l/bfieldtools/docs/auto_examples/auto_examples_python.zip>`
+    :download:`Download all examples in Python source code: auto_examples_python.zip <//m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/docs/auto_examples/auto_examples_python.zip>`
 
 
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//l/bfieldtools/docs/auto_examples/auto_examples_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/docs/auto_examples/auto_examples_jupyter.zip>`
 
 
 .. only:: html

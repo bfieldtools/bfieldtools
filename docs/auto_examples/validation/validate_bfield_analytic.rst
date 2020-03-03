@@ -36,11 +36,11 @@ Validation of analytic mesh operator for magnetic field computation.
 
  .. code-block:: none
 
-    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.17 seconds.
-    Computing magnetic field coupling matrix analytically, 676 vertices by 676 target points... took 0.64 seconds.
-    Relative RMS error 0.00522928695809423
+    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.15 seconds.
+    Computing magnetic field coupling matrix analytically, 676 vertices by 676 target points... took 0.67 seconds.
+    Relative RMS error 0.005229286958094273
     Computing magnetic field coupling matrix, 4701 vertices by 100 target points... took 0.28 seconds.
-    Computing magnetic field coupling matrix analytically, 4701 vertices by 100 target points... took 0.70 seconds.
+    Computing magnetic field coupling matrix analytically, 4701 vertices by 100 target points... took 0.75 seconds.
 
 
 
@@ -59,7 +59,7 @@ Validation of analytic mesh operator for magnetic field computation.
 
     from bfieldtools.mesh_calculus import gradient
     from bfieldtools.mesh_magnetics import magnetic_field_coupling, magnetic_field_coupling_analytic
-    from bfieldtools.mesh_class import MeshWrapper
+    from bfieldtools.mesh_class import Conductor
     import pkg_resources
 
 
@@ -67,9 +67,9 @@ Validation of analytic mesh operator for magnetic field computation.
     file_obj = pkg_resources.resource_filename('bfieldtools',
                         'example_meshes/10x10_plane.obj')
     coilmesh = trimesh.load(file_obj, process=False)
-    coil = MeshWrapper(mesh_obj = coilmesh)
+    coil = Conductor(mesh_obj = coilmesh)
     weights = np.zeros(coilmesh.vertices.shape[0])
-    weights[coil.inner_verts] = 1
+    weights[coil.inner_vertices] = 1
 
     test_points = coilmesh.vertices + np.array([0,1,0])
 
@@ -95,9 +95,9 @@ Validation of analytic mesh operator for magnetic field computation.
     discmesh = trimesh.load(file_obj, process=True)
     for ii in range(3):
         discmesh = discmesh.subdivide()
-    disc = MeshWrapper(mesh_obj = discmesh)
+    disc = Conductor(mesh_obj = discmesh)
     weights = np.zeros(discmesh.vertices.shape[0])
-    weights[disc.inner_verts] = 1
+    weights[disc.inner_vertices] = 1
     mlab.figure()
     s = mlab.triangular_mesh(*discmesh.vertices.T, discmesh.faces,
                              scalars=weights, colormap='viridis')
@@ -126,9 +126,7 @@ Validation of analytic mesh operator for magnetic field computation.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  3.023 seconds)
-
-**Estimated memory usage:**  172 MB
+   **Total running time of the script:** ( 0 minutes  5.732 seconds)
 
 
 .. _sphx_glr_download_auto_examples_validation_validate_bfield_analytic.py:

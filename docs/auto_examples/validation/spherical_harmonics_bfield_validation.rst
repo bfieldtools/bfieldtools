@@ -37,20 +37,8 @@ Spherical harmonics B-field computation validation
     l = 10 computed
     l = 11 computed
     l = 12 computed
-    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.16 seconds.
-    /l/bfieldtools/bfieldtools/sphtools.py:347: RuntimeWarning: invalid value encountered in multiply
-      derxlm *= -1*np.sin(theta) #this comes from dXlm(cos(theta))/dtheta = dXlm(cos(theta))/dcos(theta)*(-sin(theta))
-    /l/bfieldtools/bfieldtools/sphtools.py:371: RuntimeWarning: divide by zero encountered in true_divide
-      sinxlm = m/(np.sin(theta))*self.xlm(l,m, theta)
-    /l/bfieldtools/bfieldtools/sphtools.py:371: RuntimeWarning: invalid value encountered in multiply
-      sinxlm = m/(np.sin(theta))*self.xlm(l,m, theta)
-    /l/bfieldtools/bfieldtools/sphtools.py:204: RuntimeWarning: invalid value encountered in matmul
-      svec[i] = np.transpose(vmat)@vec[i]
-    /l/bfieldtools/bfieldtools/sphtools.py:710: RuntimeWarning: invalid value encountered in multiply
-      Philm *= acoeffs[idx] # Fixed b -> a
-    /l/bfieldtools/bfieldtools/sphtools.py:401: RuntimeWarning: invalid value encountered in multiply
-      dthylm = np.sqrt(2)*self.derxlm(l,m, theta)*np.sin(m*phi)
-    Relative RMS error nan
+    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.17 seconds.
+    Relative RMS error 0.6416322231111602
 
 
 
@@ -67,9 +55,10 @@ Spherical harmonics B-field computation validation
     from mayavi import mlab
 
     from bfieldtools.mesh_magnetics import magnetic_field_coupling
-    from bfieldtools.mesh_class import MeshWrapper
+    from bfieldtools.mesh_class import Conductor
 
-    from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis
+    from bfieldtools.sphtools import compute_sphcoeffs_mesh
+    from bfieldtools import sphtools
 
 
     import pkg_resources
@@ -78,18 +67,17 @@ Spherical harmonics B-field computation validation
     file_obj = pkg_resources.resource_filename('bfieldtools',
                         'example_meshes/10x10_plane.obj')
     coilmesh = trimesh.load(file_obj, process=False)
-    coil = MeshWrapper(mesh_obj = coilmesh)
+    coil = Conductor(mesh_obj = coilmesh)
 
     coil.mesh.vertices += np.array([0,-1,0])
     weights = np.zeros(coilmesh.vertices.shape[0])
-    weights[coil.inner_verts] = 1
+    weights[coil.inner_vertices] = 1
 
     test_points = coilmesh.vertices.copy()
     test_points[:, 1] = 0
 
     lmax = 12
 
-    sph = sphbasis(20)
 
     sph_C = compute_sphcoeffs_mesh(coil.mesh, lmax)
 
@@ -99,9 +87,7 @@ Spherical harmonics B-field computation validation
     alms = np.zeros_like(alms)
 
     B0 = (magnetic_field_coupling(coilmesh, test_points) @ weights).T
-    B1 = sph.field(test_points, alms, blms, lmax).T
-
-
+    B1 = sphtools.field(test_points, alms, blms, lmax).T
 
     s = mlab.triangular_mesh(*coilmesh.vertices.T, coilmesh.faces,
                              scalars=weights, colormap='viridis')
@@ -118,9 +104,7 @@ Spherical harmonics B-field computation validation
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  42.273 seconds)
-
-**Estimated memory usage:**  9 MB
+   **Total running time of the script:** ( 0 minutes  39.992 seconds)
 
 
 .. _sphx_glr_download_auto_examples_validation_spherical_harmonics_bfield_validation.py:

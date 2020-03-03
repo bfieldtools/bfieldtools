@@ -11,7 +11,7 @@ import numpy as np
 from mayavi import mlab
 import trimesh
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import Conductor
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
@@ -43,7 +43,7 @@ coil_minus = trimesh.Trimesh(planemesh.vertices + center_offset - standoff,
 joined_planes = coil_plus.union(coil_minus)
 
 #Create mesh class object
-coil = MeshWrapper(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
+coil = Conductor(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
 
 ##############################################################
 # Set up target and stray field points
@@ -96,12 +96,8 @@ n_stray_points = len(stray_points)
 # and it is scaled to match the C matrix in the optimization function
 
 
-from bfieldtools.sphtools import sphbasis
+from bfieldtools import sphtools
 
-
-sph = sphbasis(50)
-
-#plotsph.plotYlms(sph, 3)
 
 lmax = 4
 alm = np.zeros((lmax*(lmax+2),))
@@ -111,7 +107,7 @@ blm = np.zeros((lmax*(lmax+2),))
 #alm[22]+=1
 blm[22]+=1
 
-sphfield = sph.field(target_points, alm, blm, lmax)
+sphfield = sphtools.field(target_points, alm, blm, lmax)
 
 target_field = sphfield/np.max(sphfield[:, 0])
 

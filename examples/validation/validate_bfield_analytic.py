@@ -21,7 +21,7 @@ file_obj = pkg_resources.resource_filename('bfieldtools',
 coilmesh = trimesh.load(file_obj, process=False)
 coil = Conductor(mesh_obj = coilmesh)
 weights = np.zeros(coilmesh.vertices.shape[0])
-weights[coil.inner_verts] = 1
+weights[coil.inner_vertices] = 1
 
 test_points = coilmesh.vertices + np.array([0,1,0])
 
@@ -49,7 +49,7 @@ for ii in range(3):
     discmesh = discmesh.subdivide()
 disc = Conductor(mesh_obj = discmesh)
 weights = np.zeros(discmesh.vertices.shape[0])
-weights[disc.inner_verts] = 1
+weights[disc.inner_vertices] = 1
 mlab.figure()
 s = mlab.triangular_mesh(*discmesh.vertices.T, discmesh.faces,
                          scalars=weights, colormap='viridis')

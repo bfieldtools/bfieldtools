@@ -1,21 +1,27 @@
 """
+
 Analytic integral for vectorized field / potential computation
 
 """
 
 import numpy as np
+from .mesh_calculus import gradient_matrix
 
 def determinant(a):
+    """ Faster determinant for the two last dimensions of 'a'
+    """
     det = a[...,0,0]*(a[...,1,1]*a[...,2,2] - a[...,2,1]*a[...,1,2])
     det += a[...,0,1]*(a[...,1,2]*a[...,2,0] - a[...,2,2]*a[...,1,0])
     det += a[...,0,2]*(a[...,1,0]*a[...,2,1] - a[...,2,0]*a[...,1,1])
     return det
 
 def norm(vecs):
+    """ Faster vector norm for the last dimension of 'vecs'
+    """
     return np.sqrt(np.einsum('...i,...i',vecs,vecs))
 
 def cross(r1, r2):
-    """ Cross product without overhead
+    """ Cross product without overhead for the last dimensions of 'r1' and 'r2'
     """
     result = np.zeros(r1.shape)
     result[...,0] = r1[...,1] * r2[...,2] - r1[...,2] * r2[...,1]
@@ -24,14 +30,25 @@ def cross(r1, r2):
     return result
 
 def gamma0(R, reg=1e-13, symmetrize=True):
-    """ Integrals over the edges of a triangle called gamma_0 (line charge potentials).
+    """ 1/r integrals over the edges of a triangle called gamma_0
+        (line charge potentials).
 
         **NOTE: MAY NOT BE VERY PRECISE FOR POINTS DIRECTLY AT TRIANGLE
         EDGES.**
 
         Parameters
         ----------
-        R : (N, 3, 3) array of points (Neval, Nverts, xyz)
+        R : ndarray (..., N_triverts, xyz)
+            displacement vectors (r-r') of Ntri triangles
+            and Neval evaluation points for the 3 vertices
+            of the triangles/triangle.
+        reg: float, a small value added to the arguments of the logarithm,
+             regularizes the values very close to the line segments
+        symmetrize: recalculates the result for by mirroring
+                    the evaluation points with respect the line segment
+                    mid point to get rid off the badly behaving points on the
+                    negative extension of the line segment
+
 
         Returns
         -------
@@ -39,9 +56,7 @@ def gamma0(R, reg=1e-13, symmetrize=True):
             The analytic integrals for each vertex/edge
 
     """
-    edges = np.roll(R[0], 1, -2) - np.roll(R[0], 2, -2)
-#    dotprods1 = np.sum(np.roll(R, 1, -2)*edges, axis=-1)
-#    dotprods2 = np.sum(np.roll(R, 2, -2)*edges, axis=-1)
+    edges = np.roll(R[0], 2, -2) - np.roll(R[0], 1, -2)
     dotprods1 = np.einsum('...i,...i', np.roll(R, 1, -2), edges)
     dotprods2 = np.einsum('...i,...i', np.roll(R, 2, -2), edges)
     en = norm(edges)
@@ -49,18 +64,20 @@ def gamma0(R, reg=1e-13, symmetrize=True):
     n = norm(R)
     # Regularize s.t. neither the denominator or the numerator can be zero
     # Avoid numerical issues directly at the edge
-    nn1 = np.roll(n, 2, -1)*en
-    nn2 = np.roll(n, 1, -1)*en
-    res = np.log((nn1 + dotprods2 + reg) / (nn2 + dotprods1 + reg))
+    nn1 = np.roll(n, 1, -1)*en
+    nn2 = np.roll(n, 2, -1)*en
+    res = np.log((nn1 + dotprods1 + reg) / (nn2 + dotprods2 + reg))
 
     # Symmetrize the result since on the negative extension of the edge
     # there's division of two small values resulting numerical instabilities
     # (also incompatible with adding the reg value)
     if symmetrize:
-        res2 = -np.log((nn1 - dotprods2 + reg) / (nn2 - dotprods1 + reg))
-        res = np.where(dotprods1+dotprods2 > 0, res, res2)
+        mask = ((np.abs(dotprods1 + nn1)) < 1e-12)*(dotprods1+dotprods2 < 0)
+        res[mask] = (-np.log((nn1[mask] - dotprods1[mask] + reg)
+                    / (nn2[mask] - dotprods2[mask] + reg)))
+
     res /= en
-    return -res  # TODO: there should be minus, since we want this to be positive
+    return -res
 
 
 def omega(R):
@@ -73,18 +90,19 @@ def omega(R):
 
         Parameters
         ----------
-        R : array of points (Neval, (Ntri), Nverts, xyz)
-            Points correspond to relative coordinates (x,y,z) of
-            N triangles/evaluation points for
-            the 3 corners of the triangles/triangle.
+        R : ndarray (Neval, (Ntri), N_triverts, xyz)
+            displacement vectors (r-r') of Ntri triangles
+            and Neval evaluation points for the 3 vertices
+            of the triangles/triangle.
 
-            Neval can be number of evaluation points for the same triangle
-            or number of triangles for the same evaluation points
+            The shape of R can any with the constraint that
+            the last dimenion corrsponds to coordinates (x, y, z) and the
+            second last dimension to triangle vertices (vert1, vert2, vert3)
 
         Returns
         -------
         sa: (Neval, (Ntri))
-            Solid angles of triangle(s) at evaluation points
+            Solid angles of subtened by triangles at evaluation points
     """
     # Distances
     d = norm(R)
@@ -98,20 +116,91 @@ def omega(R):
 #        denom += np.sum(R[..., i, :]*R[..., j, :], axis=-1)*d[..., k]
         denom += np.einsum('...i,...i,...', R[..., i, :], R[..., j, :], d[..., k])
     # Solid angles
-    sa = 2*np.arctan2(stp, denom)
+    sa = -2*np.arctan2(stp, denom)
     return sa
+
+
+def x_distance(R, tn, ta=None):
+    """ Signed distances in the triangle planes from the opposite
+        edge towards the node for all evaluation points in R
+
+        The distances are normalized to one at the node if areas are given
+        The distances are multiplied by the edge lenght if areass are None
+
+        Parameters:
+
+            R: ndarray (... Ntri, Nverts, xyz)
+                displacement vectors (coordinates)
+            tn: ndarray (Ntri, 3)
+                triangle normals
+            ta: ndarray (Ntri)
+                triangle areas
+                if None, normalizization with double area is not carried out
+
+        returns:
+            ndaarray (..., Ntri, N_triverts (3)), distance in the triangle plane
+    """
+    edges = np.roll(R[0], 2, -2) - np.roll(R[0], 1, -2)
+    if ta is not None:
+        edges /= 2*ta[:, None, None]
+    edges = - cross(edges, tn[:, None, :])
+    return np.einsum('...k,...k->...', np.roll(R, 1, -2),  edges)
+
+def x_distance2(mesh):
+    """ Signed distances in the triangle planes from the opposite
+        edge towards the node for all evalution points in R
+    """
+    # TODO: with gradient, needs mesh info
+    pass
+
+
+def d_distance(R, tn):
+    """ Signed distance from the triangle plane for each triangle
+
+        Parameters:
+
+            R: ndarray (... Ntri, Nverts, xyz)
+                displacement vectors (coordinates)
+            tn: ndarray (Ntri, 3)
+                triangle normals
+
+        Returns:
+
+            ndarray (..., Ntri, N_triverts (3)) of signed distances
+    """
+    return np.einsum('...ki,ki->...k', np.take(R, 0, -2), tn)
+
+
+def c_coeffs(R, ta):
+    """ Cotan-coeffs
+
+        Parameters:
+
+            R: ndarray (... Ntri, Nverts, xyz)
+                displacement vectors (coordinates)
+            ta: ndarray (Ntri)
+                triangle areas
+
+
+        Returns:
+
+            ndarray (..., Ntri, N_triverts (3))
+    """
+    edges = np.roll(R[0], 2, -2) - np.roll(R[0], 1, -2)
+    return np.einsum('...ik,...jk->...ij', edges, edges/(2*ta[:, None, None]))
 
 
 def triangle_potential_uniform(R, tn, planar=False):
     """ 1/r potential of a uniform triangle
 
-        see
+        for original derivation see
         A. S. Ferguson, Xu Zhang and G. Stroink,
         "A complete linear discretization for calculating the magnetic field
         using the boundary element method,"
         in IEEE Transactions on Biomedical Engineering,
         vol. 41, no. 5, pp. 455-460, May 1994.
         doi: 10.1109/10.293220
+
 
         Parameters
         ----------
@@ -121,7 +210,9 @@ def triangle_potential_uniform(R, tn, planar=False):
         tn : ((Ntri), 3) array
             Triangle normals (Ntri, dir)
         planar: boolean
-            If True, use planar geometry assumption for speed
+            If True, assume all the triangles and the evaluation points
+                    are on the same plane (for speed), leaves out the
+                    omega term
 
         Returns
         -------
@@ -130,22 +221,12 @@ def triangle_potential_uniform(R, tn, planar=False):
             at the field evaluation points (Neval)
 
     """
-    if len(R.shape) > 3:
-        tn_ax = tn[:, None, :]
-    else:
-        tn_ax = tn
-    summands = np.sum(tn_ax*np.cross(np.roll(R, 1, -2),
-                                     np.roll(R, 2, -2), axis=-1), axis=-1)
-#    summands = -gamma0(R)*np.sum(tn_ax*np.cross(np.roll(R, 1, -2),
-#                                               np.roll(R, 2, -2), axis=-1), axis=-1)
-    result = np.einsum('...i,...i', -gamma0(R), summands)
+    x = x_distance(R, tn, None)
+    result = np.einsum('...i,...i', gamma0(R), x)
     if not planar:
-#        csigned = np.sum(np.take(R, 0, -2)*tn, axis=-1)
-        csigned = np.einsum('...i,...i', np.take(R, 0, -2), tn)
-        result -= csigned*omega(R)
+        result += d_distance(R, tn)*omega(R)
     else:
         print('Assuming all the triangles are in the same plane!')
-#        result = np.sum(summands, axis=-1)
     return result
 
 
@@ -182,10 +263,12 @@ def potential_dipoles(R, face_normals, face_areas):
         by dipoles at each face
 
     Parameters
-            R : (Neval, Ntri, 3, 3) array
-                Displacement vectors (Neval, Ntri, Ntri_verts, xyz)
-            face_normals: (Ntri, 3) normals of each fame
-            face_areas
+            R : ndarray (Neval, Ntri, Ntri_verts, N_xyz)
+                Displacement vectors
+            face_normals: ndarray (Ntri, 3)
+                normals for each triangle
+            face_areas: ndarray (Ntri,)
+                areas for each triangle
 
     Return
         Potential approximation for vertex in each face
@@ -203,11 +286,11 @@ def potential_dipoles(R, face_normals, face_areas):
 
     return pot
 
-def triangle_potential_dipole_linear(R, tn, ta, planar=False):
+def triangle_potential_dipole_linear(R, tn, ta):
     """ Potential of dipolar density with magnitude of a
         linear shape function on a triangle, "omega_i" in de Munck's paper
 
-        see
+        for the original derivation, see:
         J. C. de Munck, "A linear discretization of the volume conductor
         boundary integral equation using analytically integrated elements
         (electrophysiology application),"
@@ -224,8 +307,6 @@ def triangle_potential_dipole_linear(R, tn, ta, planar=False):
             Triangle normals (Ntri, dir)
         ta : (Ntri), array
             Triangle areas (Ntri, dir)
-        planar: boolean
-            If True, use planar geometry assumption for speed
 
         Returns
         -------
@@ -235,27 +316,11 @@ def triangle_potential_dipole_linear(R, tn, ta, planar=False):
             corresponding to displacement vectors in R
 
     """
-    if len(R.shape) > 3:
-        tn_ax = tn[:, None, :]
-    else:
-        tn_ax = tn
-    # Volumes of tetrahedron between field evaluation point and the triangle
-#    det = np.sum(np.cross(np.roll(R, 2, -2),
-#                          np.roll(R, 1, -2), axis=-1)*R, axis=-1)
-    det = determinant(R)
-    # Edges opposite to the nodes
-    edges = np.roll(R[0], 1, -2) - np.roll(R[0], 2, -2)
-    #Latter part of omega_i integral in de Munck
-#    result = np.sum(np.sum(gamma0(R)[..., None]*edges, axis=-2)[...,None,:]*edges, axis=-1)
-    result = np.einsum('...i,...ik,...jk,...->...j', gamma0(R), edges, edges, det/(2*ta),
-                            optimize=True)
-#    result *= (det/(2*ta))[..., None] # TODO: IS DET SIGN OK?
-    if not planar:
-        # First part of the integral
-        # Note: tn normalized version of n-vector in de Munck
-        lin_coeffs = np.sum(tn_ax*cross(np.roll(R, 2, -2), np.roll(R, 1, -2)), axis=-1)
-        result += lin_coeffs*omega(R)[..., :, None]
-    else:
-        print('Assuming all the triangles are in the same plane!')
-    return result/(2*ta[:,None])
+
+    result = np.einsum('...i,...ij,...->...j', gamma0(R),
+                       c_coeffs(R, ta), d_distance(R, tn), optimize=True)
+    x_dists = x_distance(R, tn, ta)
+    result -= x_dists*omega(R)[..., :, None]
+
+    return result
 

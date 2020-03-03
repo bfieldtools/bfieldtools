@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Linear dipole" href="validate_linear_dipole.html" />
@@ -113,11 +113,11 @@
 </li>
 </ul>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.17 seconds.
-Computing magnetic field coupling matrix analytically, 676 vertices by 676 target points... took 0.64 seconds.
-Relative RMS error 0.00522928695809423
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.15 seconds.
+Computing magnetic field coupling matrix analytically, 676 vertices by 676 target points... took 0.67 seconds.
+Relative RMS error 0.005229286958094273
 Computing magnetic field coupling matrix, 4701 vertices by 100 target points... took 0.28 seconds.
-Computing magnetic field coupling matrix analytically, 4701 vertices by 100 target points... took 0.70 seconds.
+Computing magnetic field coupling matrix analytically, 4701 vertices by 100 target points... took 0.75 seconds.
 </pre></div>
 </div>
 <div class="line-block">
@@ -125,12 +125,12 @@ Computing magnetic field coupling matrix analytically, 4701 vertices by 100 targ
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
-<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_calculus</span> <span class="k">import</span> <span class="n">gradient</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="k">import</span> <span class="n">magnetic_field_coupling</span><span class="p">,</span> <span class="n">magnetic_field_coupling_analytic</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">MeshWrapper</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_calculus</span> <span class="kn">import</span> <span class="n">gradient</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="kn">import</span> <span class="n">magnetic_field_coupling</span><span class="p">,</span> <span class="n">magnetic_field_coupling_analytic</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="kn">import</span> <span class="n">Conductor</span>
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 
 
@@ -138,9 +138,9 @@ Computing magnetic field coupling matrix analytically, 4701 vertices by 100 targ
 <span class="n">file_obj</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;bfieldtools&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;example_meshes/10x10_plane.obj&#39;</span><span class="p">)</span>
 <span class="n">coilmesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">coil</span> <span class="o">=</span> <span class="n">MeshWrapper</span><span class="p">(</span><span class="n">mesh_obj</span> <span class="o">=</span> <span class="n">coilmesh</span><span class="p">)</span>
+<span class="n">coil</span> <span class="o">=</span> <span class="n">Conductor</span><span class="p">(</span><span class="n">mesh_obj</span> <span class="o">=</span> <span class="n">coilmesh</span><span class="p">)</span>
 <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">weights</span><span class="p">[</span><span class="n">coil</span><span class="o">.</span><span class="n">inner_verts</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">weights</span><span class="p">[</span><span class="n">coil</span><span class="o">.</span><span class="n">inner_vertices</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
 <span class="n">test_points</span> <span class="o">=</span> <span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
 
@@ -166,9 +166,9 @@ Computing magnetic field coupling matrix analytically, 4701 vertices by 100 targ
 <span class="n">discmesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
     <span class="n">discmesh</span> <span class="o">=</span> <span class="n">discmesh</span><span class="o">.</span><span class="n">subdivide</span><span class="p">()</span>
-<span class="n">disc</span> <span class="o">=</span> <span class="n">MeshWrapper</span><span class="p">(</span><span class="n">mesh_obj</span> <span class="o">=</span> <span class="n">discmesh</span><span class="p">)</span>
+<span class="n">disc</span> <span class="o">=</span> <span class="n">Conductor</span><span class="p">(</span><span class="n">mesh_obj</span> <span class="o">=</span> <span class="n">discmesh</span><span class="p">)</span>
 <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">discmesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">weights</span><span class="p">[</span><span class="n">disc</span><span class="o">.</span><span class="n">inner_verts</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">weights</span><span class="p">[</span><span class="n">disc</span><span class="o">.</span><span class="n">inner_vertices</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">s</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="o">*</span><span class="n">discmesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">discmesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span>
                          <span class="n">scalars</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">)</span>
@@ -194,14 +194,13 @@ Computing magnetic field coupling matrix analytically, 4701 vertices by 100 targ
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;B [T]&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  3.023 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  172 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.732 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-validation-validate-bfield-analytic-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/641aca383a51453c2ae86afc881fa364/validate_bfield_analytic.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">validate_bfield_analytic.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/d5ef60a49efe4bc4cb459f0bd2d7b3b3/validate_bfield_analytic.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">validate_bfield_analytic.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/4940449b8b99e8dbfebf5cb588fdb2ea/validate_bfield_analytic.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">validate_bfield_analytic.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/e3514d3a3b3727c95b24bc999c7a9a93/validate_bfield_analytic.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">validate_bfield_analytic.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -220,7 +219,7 @@ Computing magnetic field coupling matrix analytically, 4701 vertices by 100 targ
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1.<br/>
     </p>
   </div>
 </footer>

@@ -17,8 +17,8 @@ from .integrals import triangle_potential_approx, potential_dipoles
 
 def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False):
     '''
-    Given a mesh, computes the "C matrix" which gives the magnetic field at
-    some target points due to currents (stream function) on a surface mesh.
+    Given 'mesh', computes the "C matrix" which gives the magnetic field at
+    target points 'r' due to currents (stream function) on a surface mesh.
 
     Parameters
     ----------
@@ -27,11 +27,13 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
     r: target points (Np, 3)
     quad_degree: int >= 1
         Quadrature degree (Dunavant scheme) to use.
+    analytic: compute field using analytic formula (True) or quadrature (false)
 
     Returns
     -------
     C: (Np, 3, Nvertices) array
-        Coupling matrix for surface current in the mesh to the evaluation points)
+        Coupling matrix corresponding to a mapping from a stream function
+        on the mesh to B-field at the evaluation points
 
     '''
 
@@ -86,7 +88,7 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
 
 
 
-def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
+def magnetic_field_coupling_analytic_old(mesh, r, Nchunks=None):
     '''
     Given a mesh, computes the "C matrix" which gives the magnetic field at
     some target points due to currents (stream function) on a surface mesh.
@@ -100,10 +102,12 @@ def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
     Returns
     -------
     C: (Np, 3, Nvertices) array
-        Coupling matrix for surface current in the mesh to the evaluation points)
+        Coupling matrix corresponding to a mapping from a stream function
+        on the mesh to B-field at the evaluation points
 
+    DEPRECATED
     '''
-    from .integrals import omega, gamma0
+    from .integrals_old import omega, gamma0
     coef = 1e-7
 
     print('Computing magnetic field coupling matrix analytically, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
@@ -159,26 +163,104 @@ def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
 
 
 
+def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
+    '''
+    Given a mesh, computes the "C matrix" which gives the magnetic field at
+    some target points due to currents (stream function) on a surface mesh
+    using analytic formulas.
 
+    Parameters
+    ----------
+
+    mesh: Trimesh mesh object describing the mesh
+    r: target points (Np, 3)
+    Nchunks: int, number of chunks used in the calculation for saving memory
+
+    Returns
+    -------
+    C: (Np, 3, Nvertices) array
+        Coupling matrix corresponding to a mapping from a stream function
+        on the mesh to B-field at the evaluation points
+
+    '''
+    from .integrals import omega, gamma0
+    coef = 1e-7
+
+    print('Computing magnetic field coupling matrix analytically, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
+    start = time.time()
+
+    if Nchunks is None:
+        if r.shape[0] > 1000:
+            Nchunks = r.shape[0]//100
+        else:
+            Nchunks = 1
+
+    ta = mesh.area_faces
+    tn = mesh.face_normals
+
+    # Nfaces, 3, 3
+    rfaces = mesh.vertices[mesh.faces]
+
+    # Calculate potentials and related coefficients
+    gamma_terms = np.zeros((r.shape[0], mesh.faces.shape[0], 3))
+    omega_terms = np.zeros((r.shape[0], mesh.faces.shape[0]))
+    # Edges Nfaces, 3, 3
+    edges = np.roll(rfaces, 1, -2) - np.roll(rfaces, 2, -2)
+    for n in range(Nchunks):
+        RRchunk = r[n::Nchunks, None, None, :] - rfaces[None, :, :, :]
+        # Neval, Nfaces, xyz
+        gamma_terms[n::Nchunks] = -np.einsum('nfe,fei->nfi', gamma0(RRchunk), edges)
+        omega_terms[n::Nchunks] = omega(RRchunk)
+
+    # 3 (Nfaces, Nverts) sparse matrices
+    G = gradient_matrix(mesh, rotated=False)
+    R = gradient_matrix(mesh, rotated=True)
+    C = np.zeros((3, r.shape[0], mesh.vertices.shape[0]))
+
+    # Accumulate elements by sparse matrix products for x,y, and z components
+    for fcomp in range(3):
+        C[fcomp] = omega_terms @ G[fcomp]
+        # Accumulate gamma terms for each vertex in the triangle
+        for gcomp in range(3):
+            # Edge @ Rotated_gradient "==" c_coeff
+            # Multiplying with R-matrices takes care of c_coeff calculation
+            # and accumulation to right vertex
+            C[fcomp] += (tn[:, fcomp]*gamma_terms[:, :, gcomp]) @ R[gcomp]
+
+    duration = time.time() - start
+    print('took %.2f seconds.'%duration)
+
+    C *= coef
+#    return np.moveaxis(C, 0, 1)
+    return np.swapaxes(C, 0, 1)
 
 
 
 def scalar_potential_coupling(mesh, r, Nchunks=None, multiply_coeff=True,
                               approx_far=False, margin=3):
     """
-    Compute scalar potential matrix from linear stream functions
-    using analytic integral
+    Coupling matrix corresponding to a mapping from a stream function
+    to scalar potential using analytic integrals
 
     Parameters
     ----------
 
     mesh: Trimesh mesh object describing mesh
     r: target points (Np, 3)
+    Nchunks: int, number of chunks used in the calculation for saving memory
+    multiply_coeff: boolean, multiply result by mu_0/(4*pi)
+    approx_far: boolean, approximate the potential using simple quadrature
+                (see integrals.potential_dipoles) for points far from the source triangles
+    margin: float, cut-off distance for "far" points measured in mean
+            triangle side length.
+
+
 
     Returns
     -------
     U: (Np, 3, Nvertices) array
-        Coupling matrix for surface current in the mesh to the evaluation points
+        Coupling matrix corresponding to a mapping from a stream function
+        on the mesh to scalar potential at the evaluation points
     """
 
     print('Computing scalar potential coupling matrix, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
@@ -231,7 +313,7 @@ def scalar_potential_coupling(mesh, r, Nchunks=None, multiply_coeff=True,
 
 def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2):
     """
-    Compute vector potential matrices (one for each coordinate)
+    Compute vector potential coupling matrices
     from linear stream functions using analytic integral
     Parameters
     ----------
@@ -239,12 +321,17 @@ def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2):
     mesh: Trimesh mesh object describing mesh
     r: target points (Np, 3)
     approx_far: Boolean (True)
-        If True, use approximate calculation for triangles that are not close to r
+        If True, use approximate calculation for triangles that
+        far from the source triangles using a simple quadrature
+        (see integrals.triangle_potential_approx)
+    margin: float, cut-off distance for "far" points measured in mean
+            triangle side length.
 
     Returns
     -------
     A: (Np, 3, Nvertices) array
-        Coupling matrix for surface current in the mesh to the evaluation points
+        Coupling matrix corresponding to a mapping from a stream function
+        on the mesh to vector potential at the evaluation points
     """
 
     coeff = 1e-7  # mu_0/(4*pi)

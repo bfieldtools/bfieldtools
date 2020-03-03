@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Biplanar coil design" href="biplanar_coil_design.html" />
@@ -107,15 +107,15 @@
 <p>Compact example of design of a cylindrical coil surrounded by a RF shield, i.e. a conductive surface.
 The effects of eddy currents due to inductive interaction with the shield is minimized</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
 
 
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">MeshWrapper</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="k">import</span> <span class="n">optimize_streamfunctions</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_properties</span> <span class="k">import</span> <span class="n">mutual_inductance_matrix</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="k">import</span> <span class="n">scalar_contour</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="k">import</span> <span class="n">plot_3d_current_loops</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="kn">import</span> <span class="n">Conductor</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="kn">import</span> <span class="n">optimize_streamfunctions</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_properties</span> <span class="kn">import</span> <span class="n">mutual_inductance_matrix</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="kn">import</span> <span class="n">scalar_contour</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="kn">import</span> <span class="n">plot_3d_current_loops</span>
 
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 
@@ -140,15 +140,10 @@ The effects of eddy currents due to inductive interaction with the shield is min
                             <span class="n">coilmesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <span class="c1">#Create mesh class object</span>
-<span class="n">coil</span> <span class="o">=</span> <span class="n">MeshWrapper</span><span class="p">(</span><span class="n">verts</span><span class="o">=</span><span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">tris</span><span class="o">=</span><span class="n">coilmesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">coil</span> <span class="o">=</span> <span class="n">Conductor</span><span class="p">(</span><span class="n">verts</span><span class="o">=</span><span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">tris</span><span class="o">=</span><span class="n">coilmesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="c1"># Separate object for shield geometry</span>
-<span class="n">shield</span> <span class="o">=</span> <span class="n">MeshWrapper</span><span class="p">(</span><span class="n">mesh_file</span><span class="o">=</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;bfieldtools&#39;</span><span class="p">,</span> <span class="s1">&#39;example_meshes/cylinder.stl&#39;</span><span class="p">),</span> <span class="n">process</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>face_normals didn&#39;t match triangles, ignoring!
-face_normals didn&#39;t match triangles, ignoring!
+<span class="n">shield</span> <span class="o">=</span> <span class="n">Conductor</span><span class="p">(</span><span class="n">mesh_file</span><span class="o">=</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;bfieldtools&#39;</span><span class="p">,</span> <span class="s1">&#39;example_meshes/cylinder.stl&#39;</span><span class="p">),</span> <span class="n">process</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Set up target  points and plot geometry</p>
@@ -183,7 +178,6 @@ face_normals didn&#39;t match triangles, ignoring!
 <span class="n">mlab</span><span class="o">.</span><span class="n">points3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../../_images/sphx_glr_minimal_eddy_current_cylindrical_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_minimal_eddy_current_cylindrical_coil_design_001.png" />
 <p>Compute C matrices that are used to compute the generated magnetic field</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mutual_inductance</span> <span class="o">=</span> <span class="n">mutual_inductance_matrix</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">shield</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
 
@@ -192,18 +186,6 @@ face_normals didn&#39;t match triangles, ignoring!
 
 <span class="n">shield</span><span class="o">.</span><span class="n">coupling</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="o">-</span><span class="n">shield</span><span class="o">.</span><span class="n">inductance</span><span class="p">,</span> <span class="n">mutual_inductance</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 <span class="n">secondary_C</span> <span class="o">=</span> <span class="n">shield</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">shield</span><span class="o">.</span><span class="n">coupling</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Estimating 127861 MiB required for 3536 times 904 vertices...
-Computing inductance matrix in 14 chunks since 9563 MiB memory is available...
-Computing potential matrix
-Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-Estimating 32688 MiB required for 904 times 904 vertices...
-Computing inductance matrix in 4 chunks since 9267 MiB memory is available...
-Computing potential matrix
-Inductance matrix computation took 6.65 seconds.
-Computing magnetic field coupling matrix, 904 vertices by 672 target points... took 0.23 seconds.
 </pre></div>
 </div>
 <p>Create bfield specifications used when optimizing the coil geometry</p>
@@ -225,10 +207,6 @@ Computing magnetic field coupling matrix, 904 vertices by 672 target points... t
 <span class="n">induction_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;coupling&#39;</span><span class="p">:</span><span class="n">secondary_C</span><span class="p">,</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">target_field</span><span class="o">.</span><span class="n">shape</span><span class="p">)}</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 3536 vertices by 672 target points... took 0.88 seconds.
-</pre></div>
-</div>
 <p>Run QP solver</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mosek</span>
 
@@ -240,98 +218,6 @@ Computing magnetic field coupling matrix, 904 vertices by 672 target points... t
                                    <span class="p">)</span>
 
 <span class="n">shield</span><span class="o">.</span><span class="n">induced_j</span> <span class="o">=</span> <span class="n">shield</span><span class="o">.</span><span class="n">coupling</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-Estimating 500131 MiB required for 3536 times 3536 vertices...
-Computing inductance matrix in 54 chunks since 9289 MiB memory is available...
-Computing potential matrix
-Inductance matrix computation took 121.30 seconds.
-Pre-existing problem not passed, creating...
-Passing parameters to problem...
-Passing problem to solver...
-/l/conda-envs/mne/lib/python3.6/site-packages/cvxpy/reductions/solvers/solving_chain.py:170: UserWarning: You are solving a parameterized problem that is not DPP. Because the problem is not DPP, subsequent solves will not be faster than the first one.
-  &quot;You are solving a parameterized problem that is not DPP. &quot;
-
-
-Problem
-  Name                   :
-  Objective sense        : min
-  Type                   : CONIC (conic optimization problem)
-  Constraints            : 11442
-  Cones                  : 1
-  Scalar variables       : 6755
-  Matrix variables       : 0
-  Integer variables      : 0
-
-Optimizer started.
-Problem
-  Name                   :
-  Objective sense        : min
-  Type                   : CONIC (conic optimization problem)
-  Constraints            : 11442
-  Cones                  : 1
-  Scalar variables       : 6755
-  Matrix variables       : 0
-  Integer variables      : 0
-
-Optimizer  - threads                : 8
-Optimizer  - solved problem         : the dual
-Optimizer  - Constraints            : 3377
-Optimizer  - Cones                  : 1
-Optimizer  - Scalar variables       : 11442             conic                  : 3378
-Optimizer  - Semi-definite variables: 0                 scalarized             : 0
-Factor     - setup time             : 3.36              dense det. time        : 0.00
-Factor     - ML order time          : 0.23              GP order time          : 0.00
-Factor     - nonzeros before factor : 5.70e+06          after factor           : 5.70e+06
-Factor     - dense dim.             : 0                 flops                  : 9.73e+10
-ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
-0   1.3e+02  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  472.61
-1   6.1e+01  4.7e-01  1.3e+00  -9.43e-01  1.487988014e+01   1.491559251e+01   4.7e-01  473.69
-2   5.3e+01  4.1e-01  1.2e+00  -8.73e-01  3.514956541e+01   3.542670158e+01   4.1e-01  474.61
-3   1.4e+01  1.1e-01  5.5e-01  -8.55e-01  4.186216296e+02   4.229523709e+02   1.1e-01  475.54
-4   1.0e+01  7.8e-02  4.1e-01  -5.31e-01  9.380575739e+02   9.433819270e+02   7.8e-02  476.48
-5   4.1e+00  3.2e-02  1.7e-01  -3.94e-01  3.451914830e+03   3.458304873e+03   3.2e-02  477.41
-6   8.4e-01  6.6e-03  2.3e-02  8.53e-02   8.645261266e+03   8.647996049e+03   6.6e-03  478.61
-7   5.4e-01  4.2e-03  1.2e-02  1.01e+00   9.127149828e+03   9.128985748e+03   4.2e-03  479.71
-8   4.0e-01  3.1e-03  7.8e-03  8.28e-01   1.001184851e+04   1.001330088e+04   3.1e-03  480.70
-9   1.0e-01  7.9e-04  1.0e-03  8.65e-01   1.204405210e+04   1.204444444e+04   7.9e-04  482.02
-10  6.3e-02  4.9e-04  5.3e-04  9.39e-01   1.238451027e+04   1.238477328e+04   4.9e-04  483.00
-11  2.8e-02  2.2e-04  1.7e-04  8.98e-01   1.275089804e+04   1.275102891e+04   2.2e-04  483.93
-12  2.5e-02  2.0e-04  1.5e-04  8.85e-01   1.278660986e+04   1.278673590e+04   2.0e-04  484.95
-13  5.9e-03  4.6e-05  1.8e-05  8.55e-01   1.308650146e+04   1.308653542e+04   4.6e-05  486.14
-14  1.6e-04  1.3e-06  8.6e-08  9.65e-01   1.319964221e+04   1.319964324e+04   1.3e-06  487.52
-15  1.1e-05  6.9e-07  1.3e-09  9.99e-01   1.320311783e+04   1.320311790e+04   8.2e-08  488.84
-16  8.3e-06  5.5e-07  5.0e-10  1.00e+00   1.320316759e+04   1.320316764e+04   6.5e-08  490.76
-17  6.2e-06  4.0e-07  1.9e-10  1.00e+00   1.320321711e+04   1.320321715e+04   4.8e-08  492.47
-18  2.4e-06  1.6e-07  1.3e-10  1.00e+00   1.320330238e+04   1.320330239e+04   1.9e-08  494.26
-19  2.0e-06  1.3e-07  1.1e-10  1.00e+00   1.320331154e+04   1.320331156e+04   1.6e-08  496.18
-20  1.3e-06  8.6e-08  1.1e-10  1.00e+00   1.320332768e+04   1.320332769e+04   1.0e-08  498.04
-21  2.0e-06  3.3e-08  8.7e-12  1.00e+00   1.320334668e+04   1.320334668e+04   3.9e-09  500.07
-22  1.6e-06  2.5e-08  3.5e-11  1.00e+00   1.320334947e+04   1.320334947e+04   3.0e-09  501.91
-23  5.0e-06  1.5e-08  5.4e-11  1.00e+00   1.320335302e+04   1.320335303e+04   1.9e-09  503.84
-24  4.5e-06  8.4e-09  2.1e-11  1.00e+00   1.320335551e+04   1.320335551e+04   1.0e-09  505.70
-25  8.7e-07  6.1e-09  3.7e-12  1.00e+00   1.320335625e+04   1.320335626e+04   7.7e-10  507.56
-26  1.1e-06  5.4e-09  3.3e-11  1.00e+00   1.320335654e+04   1.320335654e+04   6.8e-10  509.45
-27  1.0e-06  5.3e-09  1.5e-11  1.00e+00   1.320335654e+04   1.320335654e+04   6.8e-10  511.39
-28  1.4e-06  4.9e-09  2.8e-11  1.00e+00   1.320335667e+04   1.320335667e+04   6.3e-10  513.33
-29  1.4e-06  4.5e-09  3.1e-11  1.00e+00   1.320335678e+04   1.320335678e+04   5.9e-10  515.15
-30  1.4e-06  4.5e-09  3.1e-11  1.00e+00   1.320335678e+04   1.320335678e+04   5.9e-10  517.19
-31  1.1e-06  2.3e-09  7.9e-12  1.00e+00   1.320335767e+04   1.320335767e+04   3.0e-10  519.04
-32  1.1e-06  2.3e-09  1.5e-13  1.00e+00   1.320335767e+04   1.320335767e+04   3.0e-10  521.29
-33  5.8e-07  2.1e-09  2.0e-11  1.00e+00   1.320335772e+04   1.320335773e+04   2.8e-10  523.24
-34  1.1e-06  2.1e-09  1.7e-12  1.00e+00   1.320335775e+04   1.320335775e+04   2.7e-10  525.09
-35  1.1e-06  2.1e-09  1.7e-12  1.00e+00   1.320335775e+04   1.320335775e+04   2.7e-10  527.37
-36  1.1e-06  2.1e-09  1.7e-12  1.00e+00   1.320335775e+04   1.320335775e+04   2.7e-10  529.32
-Optimizer terminated. Time: 532.28
-
-
-Interior-point solution summary
-  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
-  Solution status : OPTIMAL
-  Primal.  obj: 1.3203357750e+04    nrm: 3e+04    Viol.  con: 8e-09    var: 0e+00    cones: 0e+00
-  Dual.    obj: 1.3203357750e+04    nrm: 5e+05    Viol.  con: 2e-06    var: 2e-08    cones: 0e+00
 </pre></div>
 </div>
 <p>Plot coil windings and target points</p>
@@ -351,7 +237,6 @@ Interior-point solution summary
 <span class="n">mlab</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Coils which minimize the transient effects of conductive shield&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../../_images/sphx_glr_minimal_eddy_current_cylindrical_coil_design_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_minimal_eddy_current_cylindrical_coil_design_002.png" />
 <p>For comparison, let’s see how the coils look when we ignore the conducting shield</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">coil</span><span class="o">.</span><span class="n">unshielded_j</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">unshielded_prob</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
                                    <span class="p">[</span><span class="n">target_spec</span><span class="p">],</span>
@@ -377,74 +262,13 @@ Interior-point solution summary
 <span class="n">mlab</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Coils which ignore the conductive shield&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../../_images/sphx_glr_minimal_eddy_current_cylindrical_coil_design_003.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_minimal_eddy_current_cylindrical_coil_design_003.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Pre-existing problem not passed, creating...
-Passing parameters to problem...
-Passing problem to solver...
-
-
-Problem
-  Name                   :
-  Objective sense        : min
-  Type                   : CONIC (conic optimization problem)
-  Constraints            : 7410
-  Cones                  : 1
-  Scalar variables       : 6755
-  Matrix variables       : 0
-  Integer variables      : 0
-
-Optimizer started.
-Problem
-  Name                   :
-  Objective sense        : min
-  Type                   : CONIC (conic optimization problem)
-  Constraints            : 7410
-  Cones                  : 1
-  Scalar variables       : 6755
-  Matrix variables       : 0
-  Integer variables      : 0
-
-Optimizer  - threads                : 8
-Optimizer  - solved problem         : the dual
-Optimizer  - Constraints            : 3377
-Optimizer  - Cones                  : 1
-Optimizer  - Scalar variables       : 7410              conic                  : 3378
-Optimizer  - Semi-definite variables: 0                 scalarized             : 0
-Factor     - setup time             : 2.36              dense det. time        : 0.00
-Factor     - ML order time          : 0.41              GP order time          : 0.00
-Factor     - nonzeros before factor : 5.70e+06          after factor           : 5.70e+06
-Factor     - dense dim.             : 0                 flops                  : 7.43e+10
-ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
-0   6.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  138.79
-1   4.0e+01  6.3e-01  2.7e-01  1.58e+00   3.946036018e+01   3.877926361e+01   6.3e-01  139.57
-2   6.5e+00  1.0e-01  1.2e-02  1.13e+00   4.160912452e+01   4.151512039e+01   1.0e-01  140.30
-3   7.9e-01  1.2e-02  9.6e-04  1.41e+00   4.233472661e+01   4.232668490e+01   1.2e-02  141.26
-4   1.3e-01  2.0e-03  6.6e-05  1.06e+00   4.245364929e+01   4.245240209e+01   2.0e-03  142.24
-5   1.9e-02  2.9e-04  3.8e-06  1.01e+00   4.248963943e+01   4.248945954e+01   2.9e-04  143.11
-6   1.6e-03  2.5e-05  9.5e-08  1.00e+00   4.249583959e+01   4.249582414e+01   2.5e-05  144.00
-7   1.2e-03  1.8e-05  5.9e-08  1.00e+00   4.249601118e+01   4.249599990e+01   1.8e-05  144.76
-8   6.5e-04  1.0e-05  2.4e-08  1.00e+00   4.249626489e+01   4.249625868e+01   1.0e-05  145.48
-9   1.7e-05  2.6e-07  1.0e-10  1.00e+00   4.249655242e+01   4.249655225e+01   2.6e-07  146.46
-10  2.9e-07  4.2e-09  2.7e-12  1.00e+00   4.249655983e+01   4.249655988e+01   4.2e-09  147.43
-Optimizer terminated. Time: 148.02
-
-
-Interior-point solution summary
-  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
-  Solution status : OPTIMAL
-  Primal.  obj: 4.2496559835e+01    nrm: 9e+01    Viol.  con: 2e-09    var: 0e+00    cones: 0e+00
-  Dual.    obj: 4.2496559877e+01    nrm: 2e+02    Viol.  con: 3e-07    var: 1e-10    cones: 0e+00
-</pre></div>
-</div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 16 minutes  4.760 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  7805 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-minimal-eddy-current-cylindrical-coil-design-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/8913a90cc371dfbb8b99c7590db21185/minimal_eddy_current_cylindrical_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">minimal_eddy_current_cylindrical_coil_design.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/ba4f34b1c58d123f35059d236e964e72/minimal_eddy_current_cylindrical_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">minimal_eddy_current_cylindrical_coil_design.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/cefa7c8b46744268ba2b66f4e23d9c20/minimal_eddy_current_cylindrical_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">minimal_eddy_current_cylindrical_coil_design.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/a1331d6fb1b8c89c75d3ab9ac4f9d4a4/minimal_eddy_current_cylindrical_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">minimal_eddy_current_cylindrical_coil_design.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -463,7 +287,7 @@ Interior-point solution summary
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1.<br/>
     </p>
   </div>
 </footer>
