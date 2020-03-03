@@ -26,14 +26,12 @@ class SuhBasis():
     """ Class for representing magnetic field using surface harmonics
     """
 
-    def __init__(self, mesh, Nc, closed_mesh=True, inner_vertices=None, holes=None):
+    def __init__(self, mesh, Nc, inner_vertices=None, holes=None):
         """
         Parameters
             mesh : Trimesh-object representing the boundary on which
                         current density is specified
             Nc : Number of components
-            closed_mesh:
-                inform if the mesh is closed or not (could be automated)
             inner_vertices
                 If given zero-Dirichlet boundary conditions are used
                 for the calculation, other all vertices are used
@@ -49,7 +47,7 @@ class SuhBasis():
         else:
             self.inner_vertices = np.arange(len(self.mesh.vertices))
         self.holes = holes
-        self.calculate_basis(closed_mesh)
+        self.calculate_basis()
         if self.holes is not None:
             self.inner2vert = inner2vert(self.mesh, self.inner_vertices, self.holes)
         elif inner_vertices is not None:
@@ -58,7 +56,7 @@ class SuhBasis():
         else:
             self.inner2vert = np.eye(len(self.mesh.vertices))
 
-    def calculate_basis(self, closed_mesh=True, shiftinvert=False):
+    def calculate_basis(self, closed_mesh=None, shiftinvert=False):
         """ Calculate basis functions as eigenfunctions of the laplacian
 
             closed_mesh: if True, calculate the basis for the whole mesh
@@ -67,14 +65,15 @@ class SuhBasis():
         """
         print('Calculating surface harmonics expansion...')
 
-        if closed_mesh:
-            assert self.mesh.is_watertight
+        if closed_mesh is None:
+            closed_mesh = self.mesh.is_watertight
 
         L = laplacian_matrix(self.mesh, None, self.inner_vertices, self.holes)
         M = mass_matrix(self.mesh, False, self.inner_vertices, self.holes)
         self.mass = M
 
         if closed_mesh:
+            print('Closed mesh, leaving out the constant component')
             N0 = 1
             N = self.Nc + 1
         else:
@@ -130,7 +129,8 @@ class SuhBasis():
         return  x
 
 
-    def plot(self, Nfuncs, dist=0.5, Ncols=None, figsize=(800,800), **kwargs):
+    def plot(self, Nfuncs, dist=0.5, Ncols=None, fig=None,
+             figsize=(800,800), **kwargs):
         """ Plot basis functions on the mesh
 
             Nfuncs: int or array-like
@@ -140,9 +140,13 @@ class SuhBasis():
             dist: float
                 distance between the plotted objects relative to their size
 
-            ncol: int or None
+            Ncols: int or None
                 the number of columns in the plot
                 If none automatically determined
+
+            fig: handle for mlab figure
+
+            figsize: size of a new figure if 'fig' not given
 
             ncolors:
                 number of colors in the colormap
@@ -151,8 +155,11 @@ class SuhBasis():
 
         """
 
-        figure = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+        if fig is None:
+            figure = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                              size=figsize)
+        else:
+            figure=fig
 
         if type(Nfuncs) == int:
             N=Nfuncs
@@ -175,14 +182,11 @@ class SuhBasis():
 
             tmp_mesh = self.mesh.copy()
             tmp_mesh.vertices[:,0] += i*dx
-            tmp_mesh.vertices[:,1] += j*dy
+            tmp_mesh.vertices[:,1] -= j*dy
 
             scalars = self.inner2vert @ self.basis[:,n]
 
             s = plot_data_on_vertices(tmp_mesh, scalars, figure=figure, **kwargs)
-
-            s.module_manager.scalar_lut_manager.number_of_colors = ncolors
-            s.actor.mapper.interpolate_scalars_before_mapping = True
 
             if i<Ncols:
                 i+=1
@@ -193,12 +197,6 @@ class SuhBasis():
         return s
 
 
-class SuhBasis2(SuhBasis):
-    '''
-    Implement more general version here
-    '''
-    def __init__(self):
-        pass
 
 if __name__ == '__main__':
     """ Simple testing script

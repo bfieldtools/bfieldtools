@@ -364,7 +364,7 @@ def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2):
     R2chunks = np.array_split(R2, Nchunks, axis=0)
     i0=0
     Af = np.zeros((R2.shape[0], mesh.faces.shape[0]))
-    print('Computing potential matrix')
+    print('Computing 1/r-potential matrix')
 
     for chunk_idx, R2chunk in enumerate(R2chunks):
 #        print('Computing chunk %d/%d'%(chunk_idx+1, Nchunks))
