@@ -410,30 +410,83 @@ with only a small angle difference.</p>
 </div>
 <div class="section" id="module-bfieldtools.mesh_calculus">
 <span id="bfieldtools-mesh-calculus-module"></span><h2>bfieldtools.mesh_calculus module<a class="headerlink" href="#module-bfieldtools.mesh_calculus" title="Permalink to this headline">¶</a></h2>
-<p>Contains functions for computing geometric/vector calculus quantities of triangle surface meshes,
-such as the gradient, divergence, curl, Laplacian and  mass matrices.</p>
+<p>Contains functions for computing vector calculus quantities on triangle surface meshes.
+These include the gradient, rotated gradient, divergence, curl, Laplacian and mass matrices.</p>
 <dl class="function">
 <dt id="bfieldtools.mesh_calculus.curl">
 <code class="sig-prename descclassname">bfieldtools.mesh_calculus.</code><code class="sig-name descname">curl</code><span class="sig-paren">(</span><em class="sig-param">vecs</em>, <em class="sig-param">mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.curl" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adjoint curl applied to tangential vector field</p>
+<dd><p>Curl applied to tangential vector field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mesh: Trimesh object</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>ndarray (Nverts,)</dt><dd><p>Curl applied on the vector field</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_calculus.curl_matrix">
 <code class="sig-prename descclassname">bfieldtools.mesh_calculus.</code><code class="sig-name descname">curl_matrix</code><span class="sig-paren">(</span><em class="sig-param">mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.curl_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adjoint curl of tangential vector field</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mesh: Trimesh object</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>3 sparse csc_matrices</dt><dd><p>Cx ,Cy, Cz (Nverts, Ntri) matrices</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_calculus.divergence">
 <code class="sig-prename descclassname">bfieldtools.mesh_calculus.</code><code class="sig-name descname">divergence</code><span class="sig-paren">(</span><em class="sig-param">vecs</em>, <em class="sig-param">mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.divergence" title="Permalink to this definition">¶</a></dt>
-<dd><p>Divergence mapping applied to tangential vector field</p>
+<dd><p>Divergence mapping applied to tangential vector field ‘vecs’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>vecs: ndarray (3, Nfaces)</strong></dt><dd><p>vector field at mesh faces</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>ndarray (Nverts,)</dt><dd><p>Divergence applied on the vector field</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_calculus.divergence_matrix">
 <code class="sig-prename descclassname">bfieldtools.mesh_calculus.</code><code class="sig-name descname">divergence_matrix</code><span class="sig-paren">(</span><em class="sig-param">mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.divergence_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Divergence of tangential vector field as linear mappings</p>
+<dd><p>Divergence of tangential vector field on mesh faces as a linear mapping</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mesh: Trimesh object</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>3 sparse csc_matrices</dt><dd><p>Dx ,Dy, Dz (Nverts, Ntri) matrices</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -446,13 +499,14 @@ defined in the vertex locations of the mesh</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>vals: Nv x 1 array of scalar data to compute the gradient of</strong></dt><dd></dd>
 <dt><strong>mesh: Trimesh object describing the triangular mesh</strong></dt><dd></dd>
-<dt><strong>rotated: boolean</strong></dt><dd><p>If True, rotate gradient 90 degrees</p>
+<dt><strong>rotated: boolean</strong></dt><dd><p>If True, rotate gradient 90 degrees clockwise</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>gradient (3, Ntris)</dt><dd></dd>
+<dt>ndarray (3, Ntris)</dt><dd><p>surface gradient of vals on each triangle</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -467,12 +521,13 @@ defined in the vertex locations of the mesh</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>mesh: Trimesh mesh object</strong></dt><dd></dd>
-<dt><strong>rotated: boolean</strong></dt><dd><p>If True, rotate gradient 90 degrees</p>
+<dt><strong>rotated: boolean</strong></dt><dd><p>If True, rotate gradient 90 degrees clockwise</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
+<dt>3 sparse csr_matrices</dt><dd></dd>
 <dt>Gx ,Gy, Gx (Ntris, Nverts) matrices</dt><dd><p>for calculating the components of gradient at triangles</p>
 </dd>
 </dl>
@@ -483,9 +538,17 @@ defined in the vertex locations of the mesh</p>
 <dl class="function">
 <dt id="bfieldtools.mesh_calculus.laplacian_matrix">
 <code class="sig-prename descclassname">bfieldtools.mesh_calculus.</code><code class="sig-name descname">laplacian_matrix</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">material_param=None</em>, <em class="sig-param">inner_vertices=None</em>, <em class="sig-param">holes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.laplacian_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sparse Laplace(-Beltrami) operator</p>
-<p>If holes are present, mesh vertices not present in inner_vertices or holes
-are assumed to be on the outer boundary of the mesh, which is set to zero.</p>
+<dd><p>Sparse Laplace-Beltrami operator</p>
+<p>If inner vertices are not given Laplacian for all the mesh vertices is returned.
+This corresponds to zero-Neumann (natural) boundary condition on the possible
+outer boundary.
+shape==(len(mesh.vertices), len(mesh.vertices))</p>
+<p>If inner_vertices but no holes are given, the outer boundary is assumed grounded
+and Laplacian only for the inner vertices is returned
+shape==(len(inner_vertices), len(inner_vertices))</p>
+<p>If both inner_vertices and holes are given, the outer boundary is assumed grounded
+and constant floating boundary condition for each hole is assumed
+shape==(len(inner_vertices)+len(holes), len(inner_vertices)+len(holes))</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -497,9 +560,12 @@ are assumed to be on the outer boundary of the mesh, which is set to zero.</p>
 <dt><strong>holes: list with length N_holes (default None)</strong></dt><dd><p>each list element contains array-like of mesh vertex indices corresponding to each
 mesh hole</p>
 </dd>
-<dt><strong>Returns</strong></dt><dd></dd>
-<dt><strong>——-</strong></dt><dd></dd>
-<dt><strong>Cotangent weights: w_ij = - 0.5* (cot(alpha) + cot(beta))</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>sparse csr_matrix of variable shape (see description)</dt><dd><p>cotangent-laplacian: w_ij = - 0.5* (cot(alpha) + cot(beta))</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -513,16 +579,20 @@ mesh hole</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>mesh: Trimesh Mesh object</strong></dt><dd></dd>
-<dt><strong>da: Pre-computed dual areas</strong></dt><dd><p>Optionally, provide pre-computed dual areas</p>
-</dd>
 <dt><strong>lumped: Boolean</strong></dt><dd><p>If True, use lumped approximation of mass matrix. If False (default),
-compute exact matrix. See Reuters et al 2009, page 3 (DOI: 10.1016/j.cag.2009.03.005)</p>
+compute exact matrix. See Reuter et al 2009, page 3 (DOI: 10.1016/j.cag.2009.03.005)</p>
+</dd>
+<dt><strong>inner_vertices: list (default None)</strong></dt><dd><p>contains mesh vertex indices corresponding to inner holes</p>
+</dd>
+<dt><strong>holes: list with length N_holes (default None)</strong></dt><dd><p>each list element contains array-like of mesh vertex indices corresponding to each
+mesh hole</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>Mesh mass matrix (Nvertices, Nvertices)</dt><dd></dd>
+<dt>sparse csr_matrix of variable shape (see the description of laplacian_matrix)</dt><dd><p>Mass matrix</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -541,16 +611,19 @@ target points ‘r’ due to currents (stream function) on a surface mesh.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>mesh: Trimesh mesh object describing mesh</strong></dt><dd></dd>
-<dt><strong>r: target points (Np, 3)</strong></dt><dd></dd>
+<dt><strong>mesh: Trimesh mesh object</strong></dt><dd><p>mesh describing the geometry of the field source</p>
+</dd>
+<dt><strong>r: ndarray (Np, 3)</strong></dt><dd><p>evalution points</p>
+</dd>
 <dt><strong>quad_degree: int &gt;= 1</strong></dt><dd><p>Quadrature degree (Dunavant scheme) to use.</p>
 </dd>
-<dt><strong>analytic: compute field using analytic formula (True) or quadrature (false)</strong></dt><dd></dd>
+<dt><strong>analytic: boolean</strong></dt><dd><p>compute field using analytic formula (True) or quadrature (False)</p>
+</dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>C: (Np, 3, Nvertices) array</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
+<dt>C: ndarray (Np, 3, Nvertices)</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
 on the mesh to B-field at the evaluation points</p>
 </dd>
 </dl>
@@ -567,14 +640,17 @@ using analytic formulas.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>mesh: Trimesh mesh object describing the mesh</strong></dt><dd></dd>
-<dt><strong>r: target points (Np, 3)</strong></dt><dd></dd>
-<dt><strong>Nchunks: int, number of chunks used in the calculation for saving memory</strong></dt><dd></dd>
+<dt><strong>mesh: Trimesh mesh object</strong></dt><dd><p>mesh describing the geometry of the field source</p>
+</dd>
+<dt><strong>r: ndarray (Np, 3)</strong></dt><dd><p>evaluation points</p>
+</dd>
+<dt><strong>Nchunks: int</strong></dt><dd><p>number of chunks used in the calculation for saving memory</p>
+</dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>C: (Np, 3, Nvertices) array</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
+<dt>C: ndarray (Np, 3, Nvertices)</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
 on the mesh to B-field at the evaluation points</p>
 </dd>
 </dl>
@@ -585,18 +661,21 @@ on the mesh to B-field at the evaluation points</p>
 <dl class="function">
 <dt id="bfieldtools.mesh_magnetics.magnetic_field_coupling_analytic_old">
 <code class="sig-prename descclassname">bfieldtools.mesh_magnetics.</code><code class="sig-name descname">magnetic_field_coupling_analytic_old</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">r</em>, <em class="sig-param">Nchunks=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.magnetic_field_coupling_analytic_old" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a mesh, computes the “C matrix” which gives the magnetic field at
+<dd><p>DEPRECATED
+Given a mesh, computes the “C matrix” which gives the magnetic field at
 some target points due to currents (stream function) on a surface mesh.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>mesh: Trimesh mesh object describing the mesh</strong></dt><dd></dd>
-<dt><strong>r: target points (Np, 3)</strong></dt><dd></dd>
+<dt><strong>mesh: Trimesh mesh object</strong></dt><dd><p>mesh describing the geometry of the field source</p>
+</dd>
+<dt><strong>r: ndarray (Np, 3)</strong></dt><dd><p>evaluation points</p>
+</dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>C: (Np, 3, Nvertices) array</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
+<dt>C: ndarray (Np, 3, Nvertices)</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
 on the mesh to B-field at the evaluation points</p>
 </dd>
 <dt>DEPRECATED</dt><dd></dd>
@@ -613,19 +692,24 @@ to scalar potential using analytic integrals</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>mesh: Trimesh mesh object describing mesh</strong></dt><dd></dd>
-<dt><strong>r: target points (Np, 3)</strong></dt><dd></dd>
-<dt><strong>Nchunks: int, number of chunks used in the calculation for saving memory</strong></dt><dd></dd>
-<dt><strong>multiply_coeff: boolean, multiply result by mu_0/(4*pi)</strong></dt><dd></dd>
-<dt><strong>approx_far: boolean, approximate the potential using simple quadrature</strong></dt><dd><p>(see integrals.potential_dipoles) for points far from the source triangles</p>
+<dt><strong>mesh: Trimesh mesh object</strong></dt><dd><p>mesh describing the geometry of the field source</p>
 </dd>
-<dt><strong>margin: float, cut-off distance for “far” points measured in mean</strong></dt><dd><p>triangle side length.</p>
+<dt><strong>r: ndarray (Np, 3)</strong></dt><dd><p>evaluation points</p>
+</dd>
+<dt><strong>Nchunks: int</strong></dt><dd><p>number of chunks used in the calculation for saving memory</p>
+</dd>
+<dt><strong>multiply_coeff: boolean</strong></dt><dd><p>If True, multiply result by mu_0/(4*pi)</p>
+</dd>
+<dt><strong>approx_far: boolean,</strong></dt><dd><p>approximate the potential using simple quadrature
+(see integrals.potential_dipoles) for points far from the source triangles</p>
+</dd>
+<dt><strong>margin: float</strong></dt><dd><p>cut-off distance for “far” points measured in mean triangle side length.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>U: (Np, 3, Nvertices) array</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
+<dt>U: ndarray (Np, Nvertices)</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
 on the mesh to scalar potential at the evaluation points</p>
 </dd>
 </dl>
@@ -637,25 +721,25 @@ on the mesh to scalar potential at the evaluation points</p>
 <dt id="bfieldtools.mesh_magnetics.vector_potential_coupling">
 <code class="sig-prename descclassname">bfieldtools.mesh_magnetics.</code><code class="sig-name descname">vector_potential_coupling</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">r</em>, <em class="sig-param">Nchunks=None</em>, <em class="sig-param">approx_far=True</em>, <em class="sig-param">margin=2</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.vector_potential_coupling" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute vector potential coupling matrices
-from linear stream functions using analytic integral
-Parameters
-———-</p>
-<p>mesh: Trimesh mesh object describing mesh
-r: target points (Np, 3)
-approx_far: Boolean (True)</p>
-<blockquote>
-<div><p>If True, use approximate calculation for triangles that
+from linear stream functions using analytic integral</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mesh: Trimesh mesh object</strong></dt><dd><p>mesh describing the geometry of the field source</p>
+</dd>
+<dt><strong>r: ndarray (Np, 3)</strong></dt><dd><p>evaluation points</p>
+</dd>
+<dt><strong>approx_far: Boolean (True)</strong></dt><dd><p>If True, use approximate calculation for triangles that
 far from the source triangles using a simple quadrature
 (see integrals.triangle_potential_approx)</p>
-</div></blockquote>
-<dl class="simple">
-<dt>margin: float, cut-off distance for “far” points measured in mean</dt><dd><p>triangle side length.</p>
+</dd>
+<dt><strong>margin: float,</strong></dt><dd><p>cut-off distance for “far” points measured in mean triangle side length.</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><dl class="simple">
-<dt>A: (Np, 3, Nvertices) array</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>A: ndarray (Np, 3, Nvertices)</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
 on the mesh to vector potential at the evaluation points</p>
 </dd>
 </dl>

@@ -23,15 +23,18 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
     Parameters
     ----------
 
-    mesh: Trimesh mesh object describing mesh
-    r: target points (Np, 3)
+    mesh: Trimesh mesh object
+        mesh describing the geometry of the field source
+    r: ndarray (Np, 3)
+        evalution points
     quad_degree: int >= 1
         Quadrature degree (Dunavant scheme) to use.
-    analytic: compute field using analytic formula (True) or quadrature (false)
+    analytic: boolean
+        compute field using analytic formula (True) or quadrature (False)
 
     Returns
     -------
-    C: (Np, 3, Nvertices) array
+    C: ndarray (Np, 3, Nvertices)
         Coupling matrix corresponding to a mapping from a stream function
         on the mesh to B-field at the evaluation points
 
@@ -90,18 +93,21 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
 
 def magnetic_field_coupling_analytic_old(mesh, r, Nchunks=None):
     '''
+    DEPRECATED
     Given a mesh, computes the "C matrix" which gives the magnetic field at
     some target points due to currents (stream function) on a surface mesh.
 
     Parameters
     ----------
 
-    mesh: Trimesh mesh object describing the mesh
-    r: target points (Np, 3)
+    mesh: Trimesh mesh object
+            mesh describing the geometry of the field source
+    r: ndarray (Np, 3)
+        evaluation points
 
     Returns
     -------
-    C: (Np, 3, Nvertices) array
+    C: ndarray (Np, 3, Nvertices)
         Coupling matrix corresponding to a mapping from a stream function
         on the mesh to B-field at the evaluation points
 
@@ -172,13 +178,16 @@ def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
     Parameters
     ----------
 
-    mesh: Trimesh mesh object describing the mesh
-    r: target points (Np, 3)
-    Nchunks: int, number of chunks used in the calculation for saving memory
+    mesh: Trimesh mesh object
+        mesh describing the geometry of the field source
+    r: ndarray (Np, 3)
+        evaluation points
+    Nchunks: int
+        number of chunks used in the calculation for saving memory
 
     Returns
     -------
-    C: (Np, 3, Nvertices) array
+    C: ndarray (Np, 3, Nvertices)
         Coupling matrix corresponding to a mapping from a stream function
         on the mesh to B-field at the evaluation points
 
@@ -245,20 +254,23 @@ def scalar_potential_coupling(mesh, r, Nchunks=None, multiply_coeff=True,
     Parameters
     ----------
 
-    mesh: Trimesh mesh object describing mesh
-    r: target points (Np, 3)
-    Nchunks: int, number of chunks used in the calculation for saving memory
-    multiply_coeff: boolean, multiply result by mu_0/(4*pi)
-    approx_far: boolean, approximate the potential using simple quadrature
-                (see integrals.potential_dipoles) for points far from the source triangles
-    margin: float, cut-off distance for "far" points measured in mean
-            triangle side length.
-
-
+    mesh: Trimesh mesh object
+        mesh describing the geometry of the field source
+    r: ndarray (Np, 3)
+        evaluation points
+    Nchunks: int
+        number of chunks used in the calculation for saving memory
+    multiply_coeff: boolean
+        If True, multiply result by mu_0/(4*pi)
+    approx_far: boolean,
+        approximate the potential using simple quadrature
+        (see integrals.potential_dipoles) for points far from the source triangles
+    margin: float
+        cut-off distance for "far" points measured in mean triangle side length.
 
     Returns
     -------
-    U: (Np, 3, Nvertices) array
+    U: ndarray (Np, Nvertices)
         Coupling matrix corresponding to a mapping from a stream function
         on the mesh to scalar potential at the evaluation points
     """
@@ -315,21 +327,24 @@ def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2):
     """
     Compute vector potential coupling matrices
     from linear stream functions using analytic integral
+
     Parameters
     ----------
 
-    mesh: Trimesh mesh object describing mesh
-    r: target points (Np, 3)
+    mesh: Trimesh mesh object
+        mesh describing the geometry of the field source
+    r: ndarray (Np, 3)
+        evaluation points
     approx_far: Boolean (True)
         If True, use approximate calculation for triangles that
         far from the source triangles using a simple quadrature
         (see integrals.triangle_potential_approx)
-    margin: float, cut-off distance for "far" points measured in mean
-            triangle side length.
+    margin: float,
+        cut-off distance for "far" points measured in mean triangle side length.
 
     Returns
     -------
-    A: (Np, 3, Nvertices) array
+    A: ndarray (Np, 3, Nvertices)
         Coupling matrix corresponding to a mapping from a stream function
         on the mesh to vector potential at the evaluation points
     """

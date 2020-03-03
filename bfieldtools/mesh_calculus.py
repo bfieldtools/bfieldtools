@@ -1,6 +1,6 @@
 '''
-Contains functions for computing geometric/vector calculus quantities of triangle surface meshes,
-such as the gradient, divergence, curl, Laplacian and  mass matrices.
+Contains functions for computing vector calculus quantities on triangle surface meshes.
+These include the gradient, rotated gradient, divergence, curl, Laplacian and mass matrices.
 '''
 
 import numpy as np
@@ -9,10 +9,20 @@ from scipy.sparse import csr_matrix, coo_matrix, spdiags, hstack, vstack
 
 def laplacian_matrix(mesh, material_param=None, inner_vertices=None, holes=None):
     """
-    Sparse Laplace(-Beltrami) operator
+    Sparse Laplace-Beltrami operator
 
-    If holes are present, mesh vertices not present in inner_vertices or holes
-    are assumed to be on the outer boundary of the mesh, which is set to zero.
+    If inner vertices are not given Laplacian for all the mesh vertices is returned.
+    This corresponds to zero-Neumann (natural) boundary condition on the possible
+    outer boundary.
+    shape==(len(mesh.vertices), len(mesh.vertices))
+
+    If inner_vertices but no holes are given, the outer boundary is assumed grounded
+    and Laplacian only for the inner vertices is returned
+    shape==(len(inner_vertices), len(inner_vertices))
+
+    If both inner_vertices and holes are given, the outer boundary is assumed grounded
+    and constant floating boundary condition for each hole is assumed
+    shape==(len(inner_vertices)+len(holes), len(inner_vertices)+len(holes))
 
     Parameters
     ----------
@@ -24,9 +34,11 @@ def laplacian_matrix(mesh, material_param=None, inner_vertices=None, holes=None)
     holes: list with length N_holes (default None)
         each list element contains array-like of mesh vertex indices corresponding to each
         mesh hole
+
     Returns
     -------
-    Cotangent weights: w_ij = - 0.5* (cot(alpha) + cot(beta))
+    sparse csr_matrix of variable shape (see description)
+        cotangent-laplacian: w_ij = - 0.5* (cot(alpha) + cot(beta))
 
     """
     if material_param is None:
@@ -105,8 +117,9 @@ def _laplacian_matrix_w_holes(L, inner_vertices, holes):
 
     Returns
     -------
-    L_holes: Cotangent weights
-        First N_inner_vertices elements correspond to inner mesh vertices,
+    sparse csr_matrix
+        Laplacian modified for holes
+        first N_inner_vertices elements correspond to inner mesh vertices,
         last N_holes elements correspond to the values at the holes
 
     '''
@@ -143,17 +156,19 @@ def mass_matrix(mesh, lumped=False, inner_vertices=None, holes=None):
     Parameters
     ----------
     mesh: Trimesh Mesh object
-
-    da: Pre-computed dual areas
-        Optionally, provide pre-computed dual areas
-
     lumped: Boolean
         If True, use lumped approximation of mass matrix. If False (default),
-        compute exact matrix. See Reuters et al 2009, page 3 (DOI: 10.1016/j.cag.2009.03.005)
+        compute exact matrix. See Reuter et al 2009, page 3 (DOI: 10.1016/j.cag.2009.03.005)
+    inner_vertices: list (default None)
+        contains mesh vertex indices corresponding to inner holes
+    holes: list with length N_holes (default None)
+        each list element contains array-like of mesh vertex indices corresponding to each
+        mesh hole
 
     Returns
     -------
-    Mesh mass matrix (Nvertices, Nvertices)
+    sparse csr_matrix of variable shape (see the description of laplacian_matrix)
+        Mass matrix
 
     '''
 
@@ -224,10 +239,11 @@ def gradient_matrix(mesh, rotated=False):
     ----------
     mesh: Trimesh mesh object
     rotated: boolean
-        If True, rotate gradient 90 degrees
+        If True, rotate gradient 90 degrees clockwise
 
     Returns
     -------
+    3 sparse csr_matrices
     Gx ,Gy, Gx (Ntris, Nverts) matrices
         for calculating the components of gradient at triangles
     """
@@ -263,17 +279,29 @@ def gradient(vals, mesh, rotated=False):
     vals: Nv x 1 array of scalar data to compute the gradient of
     mesh: Trimesh object describing the triangular mesh
     rotated: boolean
-        If True, rotate gradient 90 degrees
+        If True, rotate gradient 90 degrees clockwise
 
     Returns
     -------
-        gradient (3, Ntris)
+    ndarray (3, Ntris)
+        surface gradient of vals on each triangle
+
     """
     Gx, Gy, Gz = gradient_matrix(mesh, rotated)
     return np.array([Gx @ vals, Gy @ vals, Gz @ vals])
 
 def divergence_matrix(mesh):
-    """ Divergence of tangential vector field as linear mappings
+    """ Divergence of tangential vector field on mesh faces as a linear mapping
+
+    Parameters
+    ----------
+    mesh: Trimesh object
+
+    Returns
+    -------
+    3 sparse csc_matrices
+        Dx ,Dy, Dz (Nverts, Ntri) matrices
+
     """
     from .utils import tri_normals_and_areas
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=False)
@@ -283,6 +311,16 @@ def divergence_matrix(mesh):
 
 def curl_matrix(mesh):
     """ Adjoint curl of tangential vector field
+
+        Parameters
+    ----------
+    mesh: Trimesh object
+
+    Returns
+    -------
+    3 sparse csc_matrices
+        Cx ,Cy, Cz (Nverts, Ntri) matrices
+
     """
     from .utils import tri_normals_and_areas
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
@@ -292,13 +330,36 @@ def curl_matrix(mesh):
 
 
 def divergence(vecs, mesh):
-    """ Divergence mapping applied to tangential vector field
+    """ Divergence mapping applied to tangential vector field 'vecs'
+
+    Parameters
+    ----------
+
+    vecs: ndarray (3, Nfaces)
+            vector field at mesh faces
+
+    Returns
+    -------
+    ndarray (Nverts,)
+        Divergence applied on the vector field
+
     """
     Dx, Dy, Dz = divergence_matrix(mesh)
     return Dx @ vecs[:, 0] + Dx @ vecs[:, 1] + Dx @ vecs[:, 2]
 
 def curl(vecs, mesh):
-    """ Adjoint curl applied to tangential vector field
+    """ Curl applied to tangential vector field
+
+    Parameters
+    ----------
+        mesh: Trimesh object
+
+    Returns
+    -------
+    ndarray (Nverts,)
+        Curl applied on the vector field
+
+
     """
     Cx, Cy, Cz = curl_matrix(mesh)
     return Cx @ vecs[:, 0] + Cx @ vecs[:, 1] + Cx @ vecs[:, 2]
