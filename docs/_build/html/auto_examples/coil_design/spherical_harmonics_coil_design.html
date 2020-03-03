@@ -7,15 +7,15 @@
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="High-order spherical harmonic biplanar coil design" href="spherical_harmonics_biplanar_coil_design.html" />
-    <link rel="prev" title="MAMBA coil" href="mamba_coil_design.html" />
+    <link rel="next" title="Head gradient coil" href="head_gradient_coil_design.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="../linear_medium_bem.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -113,16 +113,14 @@ spherical harmonics.</p>
 
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">MeshWrapper</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="k">import</span> <span class="n">optimize_streamfunctions</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="k">import</span> <span class="n">scalar_contour</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="k">import</span> <span class="n">plot_3d_current_loops</span>
-
-
-<span class="kn">from</span> <span class="nn">bfieldtools.sphtools</span> <span class="k">import</span> <span class="n">compute_sphcoeffs_mesh</span><span class="p">,</span> <span class="n">sphbasis</span><span class="p">,</span> <span class="n">sphfittools</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="kn">import</span> <span class="n">Conductor</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="kn">import</span> <span class="n">optimize_streamfunctions</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="kn">import</span> <span class="n">scalar_contour</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="kn">import</span> <span class="n">plot_3d_current_loops</span>
+<span class="kn">from</span> <span class="nn">bfieldtools</span> <span class="kn">import</span> <span class="n">sphtools</span>
 
 
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
@@ -152,28 +150,13 @@ spherical harmonics.</p>
 <span class="n">joined_planes</span> <span class="o">=</span> <span class="n">coil_plus</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">coil_minus</span><span class="p">)</span>
 
 <span class="c1">#Create mesh class object</span>
-<span class="n">coil</span> <span class="o">=</span> <span class="n">MeshWrapper</span><span class="p">(</span><span class="n">verts</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">tris</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">lmax</span> <span class="o">=</span> <span class="mi">4</span>
-<span class="n">coil</span><span class="o">.</span><span class="n">C_alms</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">C_blms</span> <span class="o">=</span> <span class="n">compute_sphcoeffs_mesh</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">lmax</span><span class="o">=</span><span class="n">lmax</span><span class="p">)</span>
+<span class="n">coil</span> <span class="o">=</span> <span class="n">Conductor</span><span class="p">(</span><span class="n">verts</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">tris</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">N_sph</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">basis_name</span><span class="o">=</span><span class="s1">&#39;suh&#39;</span><span class="p">,</span> <span class="n">N_suh</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
 
+<span class="n">target_alms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">coil</span><span class="o">.</span><span class="n">opts</span><span class="p">[</span><span class="s1">&#39;N_sph&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">opts</span><span class="p">[</span><span class="s1">&#39;N_sph&#39;</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="p">),))</span>
+<span class="n">target_blms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">coil</span><span class="o">.</span><span class="n">opts</span><span class="p">[</span><span class="s1">&#39;N_sph&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">opts</span><span class="p">[</span><span class="s1">&#39;N_sph&#39;</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="p">),))</span>
 
-<span class="c1">#Radius of sphere of interest</span>
-<span class="n">Rmax</span> <span class="o">=</span> <span class="mf">1.0</span>
-
-<span class="n">lind</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">coil</span><span class="o">.</span><span class="n">C_alms_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">C_alms</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">lmax</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">l</span><span class="p">,</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
-        <span class="n">temp</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">l</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">l</span><span class="p">)</span><span class="o">*</span><span class="n">Rmax</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">l</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-        <span class="c1">#coeffs2[lind] = coeffs[lind]**2*temp</span>
-        <span class="n">coil</span><span class="o">.</span><span class="n">C_alms_norm</span><span class="p">[</span><span class="n">lind</span><span class="p">]</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">C_alms</span><span class="p">[</span><span class="n">lind</span><span class="p">]</span><span class="o">/</span><span class="n">temp</span><span class="o">**</span><span class="mf">0.5</span>
-        <span class="n">lind</span> <span class="o">+=</span> <span class="mi">1</span>
-
-<span class="n">target_alms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">lmax</span> <span class="o">*</span> <span class="p">(</span><span class="n">lmax</span><span class="o">+</span><span class="mi">2</span><span class="p">),))</span>
-<span class="n">target_blms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">lmax</span> <span class="o">*</span> <span class="p">(</span><span class="n">lmax</span><span class="o">+</span><span class="mi">2</span><span class="p">),))</span>
-
-<span class="n">target_blms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="n">target_blms</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
 
 
 <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">scaling_factor</span>
@@ -196,13 +179,10 @@ spherical harmonics.</p>
 
 
 
+<span class="n">sphfield</span> <span class="o">=</span> <span class="n">sphtools</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">target_points</span><span class="p">,</span> <span class="n">target_alms</span><span class="p">,</span> <span class="n">target_blms</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">opts</span><span class="p">[</span><span class="s1">&#39;N_sph&#39;</span><span class="p">])</span>
 
-<span class="n">sph</span> <span class="o">=</span> <span class="n">sphbasis</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">sphfield</span> <span class="o">=</span> <span class="n">sph</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">target_points</span><span class="p">,</span> <span class="n">target_alms</span><span class="p">,</span> <span class="n">target_blms</span><span class="p">,</span> <span class="n">lmax</span><span class="p">)</span>
 
-<span class="n">target_field</span> <span class="o">=</span> <span class="n">sphfield</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">sphfield</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
-
-<span class="n">target_field</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">target_field</span> <span class="o">=</span> <span class="n">sphfield</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">sphfield</span><span class="p">))</span>
 
 <span class="n">coil</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">()</span>
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">sphfield</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
@@ -210,61 +190,51 @@ spherical harmonics.</p>
 </div>
 <img alt="../../_images/sphx_glr_spherical_harmonics_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_spherical_harmonics_coil_design_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>l = 1 computed
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Calculating surface harmonics expansion...
+</pre></div>
+</div>
+<p>Create bfield specifications used when optimizing the coil geometry</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">target_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;coupling&#39;</span><span class="p">:</span><span class="n">coil</span><span class="o">.</span><span class="n">sph_couplings</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="n">target_blms</span><span class="p">}</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing coupling matrices
+l = 1 computed
 l = 2 computed
 l = 3 computed
 l = 4 computed
 </pre></div>
 </div>
-<p>Create bfield specifications used when optimizing the coil geometry</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">target_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;coupling&#39;</span><span class="p">:</span><span class="n">coil</span><span class="o">.</span><span class="n">C_blms</span><span class="p">,</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="n">target_blms</span><span class="p">}</span>
-</pre></div>
-</div>
 <p>Run QP solver</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mosek</span>
 
-<span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
+<span class="n">coil</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
                                    <span class="p">[</span><span class="n">target_spec</span><span class="p">],</span>
                                    <span class="n">objective</span><span class="o">=</span><span class="s1">&#39;minimum_inductive_energy&#39;</span><span class="p">,</span>
                                    <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;MOSEK&#39;</span><span class="p">,</span>
                                    <span class="n">solver_opts</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mosek_params&#39;</span><span class="p">:{</span><span class="n">mosek</span><span class="o">.</span><span class="n">iparam</span><span class="o">.</span><span class="n">num_threads</span><span class="p">:</span> <span class="mi">8</span><span class="p">}}</span>
                                    <span class="p">)</span>
-
-<span class="n">B_target</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span>
-
-
-<span class="n">lmax</span> <span class="o">=</span> <span class="mi">4</span>
-<span class="n">coil</span><span class="o">.</span><span class="n">C_alms</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">C_blms</span> <span class="o">=</span> <span class="n">compute_sphcoeffs_mesh</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">lmax</span><span class="o">=</span><span class="n">lmax</span><span class="p">)</span>
-
-<span class="n">Alms</span><span class="p">,</span> <span class="n">Blms</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">C_alms</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">C_blms</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span>
-
-<span class="n">Alms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">Blms</span><span class="p">)</span>
-<span class="n">sphfield_target</span> <span class="o">=</span> <span class="n">sph</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">target_points</span><span class="p">,</span> <span class="n">Alms</span><span class="p">,</span> <span class="n">Blms</span><span class="p">,</span> <span class="n">lmax</span><span class="p">)</span>
-
-
-<span class="n">coeffs</span><span class="p">,</span> <span class="n">coeffs2</span><span class="p">,</span> <span class="n">nrmse</span> <span class="o">=</span> <span class="n">sphfittools</span><span class="o">.</span><span class="n">fitSpectra</span><span class="p">(</span><span class="n">sph</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">target_points</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">B_target</span><span class="p">,</span> <span class="n">lmax</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-Estimating 405514 MiB required for 3184 times 3184 vertices...
-Computing inductance matrix in 42 chunks since 9739 MiB memory is available...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing the inductance matrix...
+Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
+Estimating 34964 MiB required for 3184 by 3184 vertices...
+Computing inductance matrix in 100 chunks (7503 MiB memory free), when approx_far=True using more chunks is faster...
 Computing potential matrix
-Inductance matrix computation took 83.77 seconds.
+Inductance matrix computation took 52.38 seconds.
 Pre-existing problem not passed, creating...
 Passing parameters to problem...
 Passing problem to solver...
-/l/conda-envs/mne/lib/python3.6/site-packages/cvxpy/reductions/solvers/solving_chain.py:170: UserWarning: You are solving a parameterized problem that is not DPP. Because the problem is not DPP, subsequent solves will not be faster than the first one.
-  &quot;You are solving a parameterized problem that is not DPP. &quot;
 
 
 Problem
   Name                   :
   Objective sense        : min
   Type                   : CONIC (conic optimization problem)
-  Constraints            : 2946
+  Constraints            : 130
   Cones                  : 1
-  Scalar variables       : 5795
+  Scalar variables       : 163
   Matrix variables       : 0
   Integer variables      : 0
 
@@ -273,51 +243,46 @@ Problem
   Name                   :
   Objective sense        : min
   Type                   : CONIC (conic optimization problem)
-  Constraints            : 2946
+  Constraints            : 130
   Cones                  : 1
-  Scalar variables       : 5795
+  Scalar variables       : 163
   Matrix variables       : 0
   Integer variables      : 0
 
 Optimizer  - threads                : 8
 Optimizer  - solved problem         : the dual
-Optimizer  - Constraints            : 2897
+Optimizer  - Constraints            : 81
 Optimizer  - Cones                  : 1
-Optimizer  - Scalar variables       : 2946              conic                  : 2898
+Optimizer  - Scalar variables       : 130               conic                  : 82
 Optimizer  - Semi-definite variables: 0                 scalarized             : 0
-Factor     - setup time             : 0.89              dense det. time        : 0.00
-Factor     - ML order time          : 0.30              GP order time          : 0.00
-Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06
-Factor     - dense dim.             : 0                 flops                  : 3.26e+10
+Factor     - setup time             : 0.00              dense det. time        : 0.00
+Factor     - ML order time          : 0.00              GP order time          : 0.00
+Factor     - nonzeros before factor : 3321              after factor           : 3321
+Factor     - dense dim.             : 0                 flops                  : 8.61e+05
 ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
-0   5.1e+00  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  47.75
-1   6.5e-01  1.3e-01  1.5e-01  -2.05e-01  3.739101039e-01   3.031242313e-01   1.3e-01  48.22
-2   1.4e-01  2.8e-02  1.1e-02  1.27e+00   3.792209690e-01   3.449893155e-01   2.8e-02  48.66
-3   2.0e-02  4.0e-03  5.9e-04  1.23e+00   3.472781773e-01   3.434850664e-01   4.0e-03  49.03
-4   6.1e-04  1.2e-04  3.0e-06  1.05e+00   3.329119146e-01   3.327902648e-01   1.2e-04  49.51
-5   1.9e-07  3.8e-08  1.5e-11  1.00e+00   3.328469398e-01   3.328468910e-01   3.8e-08  50.10
-6   1.2e-10  3.5e-11  6.3e-18  1.00e+00   3.328467742e-01   3.328467742e-01   7.2e-14  50.65
-Optimizer terminated. Time: 50.87
+0   1.0e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  0.03
+1   3.6e+00  3.5e-01  7.8e-01  -6.16e-01  6.843060430e-01   5.766876460e-01   3.5e-01  0.07
+2   1.7e+00  1.7e-01  3.8e-01  -2.47e-01  4.307239132e+00   4.600847171e+00   1.7e-01  0.07
+3   7.7e-01  7.5e-02  1.4e-01  6.35e-02   1.122605585e+01   1.148745057e+01   7.5e-02  0.07
+4   1.0e-01  1.0e-02  4.8e-03  9.38e-01   1.770154008e+01   1.768332845e+01   1.0e-02  0.07
+5   1.5e-02  1.5e-03  2.2e-04  1.22e+00   1.883522060e+01   1.883138500e+01   1.5e-03  0.07
+6   4.1e-04  4.0e-05  1.4e-06  1.12e+00   1.904763480e+01   1.904768955e+01   4.0e-05  0.07
+7   6.9e-07  6.7e-08  9.3e-11  1.01e+00   1.905276377e+01   1.905276386e+01   6.7e-08  0.07
+8   9.5e-10  9.5e-11  5.4e-15  1.00e+00   1.905277126e+01   1.905277127e+01   4.5e-12  0.08
+Optimizer terminated. Time: 0.08
 
 
 Interior-point solution summary
   Problem status  : PRIMAL_AND_DUAL_FEASIBLE
   Solution status : OPTIMAL
-  Primal.  obj: 3.3284677423e-01    nrm: 2e+00    Viol.  con: 8e-14    var: 0e+00    cones: 0e+00
-  Dual.    obj: 3.3284677420e-01    nrm: 1e+01    Viol.  con: 4e-11    var: 1e-12    cones: 0e+00
-Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.24 seconds.
-l = 1 computed
-l = 2 computed
-l = 3 computed
-l = 4 computed
-Condition number = 1.890216
-Normalized RMS error = 0.157204%
+  Primal.  obj: 1.9052771265e+01    nrm: 4e+01    Viol.  con: 1e-11    var: 0e+00    cones: 0e+00
+  Dual.    obj: 1.9052771268e+01    nrm: 6e+02    Viol.  con: 1e-08    var: 2e-10    cones: 0e+00
 </pre></div>
 </div>
 <p>Plot coil windings and target points</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">N_contours</span> <span class="o">=</span> <span class="mi">10</span>
 
-<span class="n">loops</span><span class="p">,</span> <span class="n">loop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="n">N_contours</span><span class="p">)</span>
+<span class="n">loops</span><span class="p">,</span> <span class="n">loop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">vert</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="n">N_contours</span><span class="p">)</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
            <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
@@ -325,20 +290,23 @@ Normalized RMS error = 0.157204%
 
 <span class="n">plot_3d_current_loops</span><span class="p">(</span><span class="n">loops</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
 
-<span class="n">B_target</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span>
+<span class="n">B_target</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">s</span>
 
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B_target</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_spherical_harmonics_coil_design_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_spherical_harmonics_coil_design_002.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 3 minutes  23.266 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  3681 MB</p>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.26 seconds.
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  12.342 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-spherical-harmonics-coil-design-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/6b1d83973c057ef157ef81f35111086a/spherical_harmonics_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">spherical_harmonics_coil_design.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/09db9c7284019aee6aee1da47dee7455/spherical_harmonics_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">spherical_harmonics_coil_design.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/f5148620e91d54e574af185d35212cdb/spherical_harmonics_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">spherical_harmonics_coil_design.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/c6a88ecd9ab6cebe0f670133a6624dfa/spherical_harmonics_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">spherical_harmonics_coil_design.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -357,7 +325,7 @@ Normalized RMS error = 0.157204%
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1.<br/>
     </p>
   </div>
 </footer>

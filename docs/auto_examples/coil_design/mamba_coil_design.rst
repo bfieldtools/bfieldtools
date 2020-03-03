@@ -24,7 +24,7 @@ regions arranged in a grid.
     import trimesh
 
 
-    from bfieldtools.mesh_class import MeshWrapper
+    from bfieldtools.mesh_class import Conductor
     from bfieldtools.coil_optimize import optimize_streamfunctions
     from bfieldtools.contour import scalar_contour
     from bfieldtools.viz import plot_3d_current_loops
@@ -59,7 +59,7 @@ regions arranged in a grid.
     joined_planes = coil_plus.union(coil_minus)
 
     #Create mesh class object
-    coil = MeshWrapper(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
+    coil = Conductor(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
 
 
 
@@ -138,8 +138,18 @@ Plot target points and mesh
 
 
 
-.. image:: /auto_examples/coil_design/images/sphx_glr_mamba_coil_design_001.png
-    :class: sphx-glr-single-img
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /auto_examples/coil_design/images/sphx_glr_mamba_coil_design_001.png
+            :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /auto_examples/coil_design/images/sphx_glr_mamba_coil_design_002.png
+            :class: sphx-glr-multi-img
 
 
 
@@ -163,7 +173,7 @@ Compute coupling matrix that is used to compute the generated magnetic field, cr
 
  .. code-block:: none
 
-    Computing magnetic field coupling matrix, 3184 vertices by 512 target points... took 0.68 seconds.
+    Computing magnetic field coupling matrix, 3184 vertices by 512 target points... took 0.77 seconds.
 
 
 
@@ -193,16 +203,15 @@ Run QP solver
 
  .. code-block:: none
 
-    Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-    Estimating 405514 MiB required for 3184 times 3184 vertices...
-    Computing inductance matrix in 42 chunks since 9800 MiB memory is available...
+    Computing the inductance matrix...
+    Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
+    Estimating 34964 MiB required for 3184 by 3184 vertices...
+    Computing inductance matrix in 100 chunks (7721 MiB memory free), when approx_far=True using more chunks is faster...
     Computing potential matrix
-    Inductance matrix computation took 86.23 seconds.
+    Inductance matrix computation took 51.41 seconds.
     Pre-existing problem not passed, creating...
     Passing parameters to problem...
     Passing problem to solver...
-    /l/conda-envs/mne/lib/python3.6/site-packages/cvxpy/reductions/solvers/solving_chain.py:170: UserWarning: You are solving a parameterized problem that is not DPP. Because the problem is not DPP, subsequent solves will not be faster than the first one.
-      "You are solving a parameterized problem that is not DPP. "
 
 
     Problem
@@ -211,7 +220,7 @@ Run QP solver
       Type                   : CONIC (conic optimization problem)
       Constraints            : 5970            
       Cones                  : 1               
-      Scalar variables       : 5795            
+      Scalar variables       : 6083            
       Matrix variables       : 0               
       Integer variables      : 0               
 
@@ -222,7 +231,7 @@ Run QP solver
       Type                   : CONIC (conic optimization problem)
       Constraints            : 5970            
       Cones                  : 1               
-      Scalar variables       : 5795            
+      Scalar variables       : 6083            
       Matrix variables       : 0               
       Integer variables      : 0               
 
@@ -232,32 +241,32 @@ Run QP solver
     Optimizer  - Cones                  : 1
     Optimizer  - Scalar variables       : 5970              conic                  : 2898            
     Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
-    Factor     - setup time             : 1.62              dense det. time        : 0.00            
-    Factor     - ML order time          : 0.30              GP order time          : 0.00            
+    Factor     - setup time             : 1.56              dense det. time        : 0.00            
+    Factor     - ML order time          : 0.29              GP order time          : 0.00            
     Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06        
     Factor     - dense dim.             : 0                 flops                  : 4.53e+10        
     ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
-    0   2.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  92.49 
-    1   1.1e+01  4.6e-01  4.8e-01  2.12e-01   6.597411176e+01   6.533623471e+01   4.6e-01  93.07 
-    2   6.0e+00  2.5e-01  2.3e-01  2.10e-01   1.540986144e+02   1.537101559e+02   2.5e-01  93.67 
-    3   5.0e+00  2.1e-01  1.9e-01  6.31e-01   1.799383624e+02   1.796052015e+02   2.1e-01  94.17 
-    4   9.7e-01  4.0e-02  1.7e-02  7.68e-01   3.380757286e+02   3.380076296e+02   4.0e-02  94.86 
-    5   5.0e-01  2.1e-02  7.3e-03  8.87e-01   3.735298693e+02   3.734982875e+02   2.1e-02  95.40 
-    6   2.9e-01  1.2e-02  3.5e-03  9.19e-01   3.945710275e+02   3.945537579e+02   1.2e-02  95.91 
-    7   1.4e-01  5.7e-03  1.2e-03  9.36e-01   4.128020623e+02   4.127949103e+02   5.7e-03  96.48 
-    8   2.1e-02  8.8e-04  8.3e-05  9.65e-01   4.284418731e+02   4.284412976e+02   8.8e-04  97.07 
-    9   2.7e-03  1.1e-04  3.8e-06  9.95e-01   4.319789642e+02   4.319788943e+02   1.1e-04  97.60 
-    10  2.6e-05  1.1e-06  3.7e-09  9.97e-01   4.325195035e+02   4.325195028e+02   1.1e-06  98.17 
-    11  3.4e-06  1.4e-07  2.0e-10  1.00e+00   4.325241783e+02   4.325241781e+02   1.4e-07  98.73 
-    12  2.7e-07  6.6e-09  4.5e-12  1.00e+00   4.325248512e+02   4.325248513e+02   6.6e-09  99.85 
-    Optimizer terminated. Time: 100.27  
+    0   2.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  83.60 
+    1   9.3e+00  3.9e-01  3.8e-01  2.47e-01   8.986716880e+01   8.930318288e+01   3.9e-01  84.10 
+    2   5.8e+00  2.4e-01  2.4e-01  2.56e-01   1.459868334e+02   1.455890101e+02   2.4e-01  84.56 
+    3   3.1e+00  1.3e-01  1.2e-01  4.77e-01   2.464479906e+02   2.462403695e+02   1.3e-01  85.02 
+    4   5.2e-01  2.2e-02  8.7e-03  1.12e+00   3.761420355e+02   3.761145905e+02   2.2e-02  85.66 
+    5   9.5e-02  3.9e-03  7.0e-04  9.85e-01   4.218574067e+02   4.218530667e+02   3.9e-03  86.33 
+    6   1.5e-02  6.4e-04  5.1e-05  1.00e+00   4.302001154e+02   4.301996807e+02   6.4e-04  86.81 
+    7   3.3e-04  1.4e-05  1.6e-07  1.00e+00   4.325179742e+02   4.325179645e+02   1.4e-05  87.33 
+    8   6.5e-05  2.7e-06  1.4e-08  1.00e+00   4.325601843e+02   4.325601825e+02   2.7e-06  87.86 
+    9   2.4e-06  1.0e-07  2.2e-10  1.00e+00   4.325701464e+02   4.325701459e+02   1.0e-07  88.41 
+    10  1.2e-06  5.0e-08  4.3e-11  1.00e+00   4.325703387e+02   4.325703387e+02   5.0e-08  89.45 
+    11  1.1e-06  4.7e-08  5.1e-11  1.00e+00   4.325703508e+02   4.325703511e+02   4.7e-08  90.33 
+    12  3.6e-06  3.2e-09  6.4e-13  1.00e+00   4.325705314e+02   4.325705313e+02   4.2e-11  90.82 
+    Optimizer terminated. Time: 91.24   
 
 
     Interior-point solution summary
       Problem status  : PRIMAL_AND_DUAL_FEASIBLE
       Solution status : OPTIMAL
-      Primal.  obj: 4.3252485119e+02    nrm: 9e+02    Viol.  con: 3e-08    var: 0e+00    cones: 0e+00  
-      Dual.    obj: 4.3252485126e+02    nrm: 5e+02    Viol.  con: 0e+00    var: 2e-09    cones: 0e+00  
+      Primal.  obj: 4.3257053142e+02    nrm: 9e+02    Viol.  con: 2e-10    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 4.3257053132e+02    nrm: 5e+02    Viol.  con: 0e+00    var: 1e-09    cones: 0e+00  
 
 
 
@@ -283,7 +292,7 @@ Plot coil windings and target points
 
 
 
-.. image:: /auto_examples/coil_design/images/sphx_glr_mamba_coil_design_002.png
+.. image:: /auto_examples/coil_design/images/sphx_glr_mamba_coil_design_003.png
     :class: sphx-glr-single-img
 
 
@@ -292,9 +301,7 @@ Plot coil windings and target points
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 4 minutes  13.713 seconds)
-
-**Estimated memory usage:**  3678 MB
+   **Total running time of the script:** ( 3 minutes  48.926 seconds)
 
 
 .. _sphx_glr_download_auto_examples_coil_design_mamba_coil_design.py:

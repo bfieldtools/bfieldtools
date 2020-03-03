@@ -11,7 +11,7 @@ from mayavi import mlab
 import trimesh
 
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import Conductor
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
@@ -45,7 +45,7 @@ helmetmesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools'
 #joined_planes = coil_plus.union(coil_minus)
 
 #Create mesh class object
-coil = MeshWrapper(verts=helmetmesh.vertices, tris=helmetmesh.faces, fix_normals=True)
+coil = Conductor(verts=helmetmesh.vertices, tris=helmetmesh.faces, fix_normals=True)
 
 ###############################################################
 #Set up target and stray field points.
@@ -79,12 +79,8 @@ target_points = target_points[np.linalg.norm(target_points, axis=1) < sidelength
 # Thus we avoid issues with having to manually specify the concomitant gradients
 
 
-from bfieldtools.sphtools import sphbasis
+from bfieldtools import sphtools
 
-
-sph = sphbasis(50)
-
-#plotsph.plotYlms(sph, 3)
 
 lmax = 3
 alm = np.zeros((lmax*(lmax+2),))
@@ -94,7 +90,7 @@ blm = np.zeros((lmax*(lmax+2),))
 
 blm[3]+=1
 
-sphfield = sph.field(target_points - offset, alm, blm, lmax)
+sphfield = sphtools.field(target_points - offset, alm, blm, lmax)
 
 target_field = sphfield/np.max(sphfield[:, 0])
 

@@ -85,7 +85,6 @@ mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
 
 #%% Plot x_i
 
-# TODO: sign in cross prod??
 from bfieldtools.integrals import x_distance
 RR =  mesh2.vertices[:, None, None, :] - mesh.vertices[None, mesh.faces]
 xdist = x_distance(RR, mesh.face_normals)

@@ -29,7 +29,7 @@ and the geometry.
     from mayavi import mlab
     import trimesh
 
-    from bfieldtools.mesh_class import MeshWrapper
+    from bfieldtools.mesh_class import Conductor
     from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic, scalar_potential_coupling
     from bfieldtools.mesh_properties import mutual_inductance_matrix
     from bfieldtools.coil_optimize import optimize_streamfunctions
@@ -63,30 +63,18 @@ and the geometry.
     joined_planes = coil_plus.union(coil_minus)
 
     #Create mesh class object
-    coil = MeshWrapper(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
+    coil = Conductor(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
 
     shieldmesh = joined_planes.copy()
     shieldmesh.vertices *= np.array([1.5, 1.5, 1.5])
 
-    shieldcoil = MeshWrapper(verts=shieldmesh.vertices, tris=shieldmesh.faces, fix_normals=True)
+    shieldcoil = Conductor(verts=shieldmesh.vertices, tris=shieldmesh.faces, fix_normals=True)
 
 
 
 
 
 
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    SVG path loading unavailable!
-    Traceback (most recent call last):
-      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/path/exchange/svg_io.py", line 18, in <module>
-        from svg.path import parse_path
-    ModuleNotFoundError: No module named 'svg'
 
 
 
@@ -119,26 +107,17 @@ Compute inductances and coupling
 
 
 
+.. code-block:: pytb
 
-.. rst-class:: sphx-glr-script-out
+    Traceback (most recent call last):
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 480, in _memory_usage
+        out = func()
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 465, in __call__
+        exec(self.code, self.globals)
+      File "/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/examples/coil_design/self-shielded_biplanar_coil_design.py", line 72, in <module>
+        M22 = M22[shieldcoil.inner_verts][:, shieldcoil.inner_verts]
+    AttributeError: 'Conductor' object has no attribute 'inner_verts'
 
- Out:
-
- .. code-block:: none
-
-    Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-    Estimating 73116 MiB required for 1352 times 1352 vertices...
-    Computing inductance matrix in 8 chunks since 9993 MiB memory is available...
-    Computing potential matrix
-    Inductance matrix computation took 14.42 seconds.
-    Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-    Estimating 73116 MiB required for 1352 times 1352 vertices...
-    Computing inductance matrix in 8 chunks since 9944 MiB memory is available...
-    Computing potential matrix
-    Inductance matrix computation took 14.21 seconds.
-    Estimating 73116 MiB required for 1352 times 1352 vertices...
-    Computing inductance matrix in 8 chunks since 9915 MiB memory is available...
-    Computing potential matrix
 
 
 
@@ -170,11 +149,6 @@ Set up target and stray field points
 
 
 
-
-
-
-
-
 Create bfield specifications used when optimizing the coil geometry
 
 
@@ -198,20 +172,6 @@ Create bfield specifications used when optimizing the coil geometry
     #[:, :, coil.inner_verts]
 
     objective_matrix = M11 - M21.T @ np.linalg.pinv(M22) @ M21
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Computing magnetic field coupling matrix, 1352 vertices by 160 target points... took 0.12 seconds.
-    Computing magnetic field coupling matrix, 1352 vertices by 160 target points... took 0.11 seconds.
-
 
 
 Run QP solver
@@ -242,83 +202,6 @@ Run QP solver
     plot_data_on_vertices(shieldcoil.mesh, shieldcoil.j, figure=f)
 
 
-
-
-.. image:: /auto_examples/coil_design/images/sphx_glr_self-shielded_biplanar_coil_design_001.png
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    /l/bfieldtools/bfieldtools/coil_optimize.py:175: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
-      if objective == 'minimum_inductive_energy':
-    /l/bfieldtools/bfieldtools/coil_optimize.py:177: FutureWarning: elementwise comparison failed; returning scalar instead, but in the future will perform elementwise comparison
-      elif objective == 'minimum_resistive_energy':
-    Custom objective passed, assuming it is a matrix of correct dimensions
-    Pre-existing problem not passed, creating...
-    Passing parameters to problem...
-    Passing problem to solver...
-    /l/conda-envs/mne/lib/python3.6/site-packages/cvxpy/reductions/solvers/solving_chain.py:170: UserWarning: You are solving a parameterized problem that is not DPP. Because the problem is not DPP, subsequent solves will not be faster than the first one.
-      "You are solving a parameterized problem that is not DPP. "
-
-
-    Problem
-      Name                   :                 
-      Objective sense        : min             
-      Type                   : CONIC (conic optimization problem)
-      Constraints            : 2130            
-      Cones                  : 1               
-      Scalar variables       : 2339            
-      Matrix variables       : 0               
-      Integer variables      : 0               
-
-    Optimizer started.
-    Problem
-      Name                   :                 
-      Objective sense        : min             
-      Type                   : CONIC (conic optimization problem)
-      Constraints            : 2130            
-      Cones                  : 1               
-      Scalar variables       : 2339            
-      Matrix variables       : 0               
-      Integer variables      : 0               
-
-    Optimizer  - threads                : 8               
-    Optimizer  - solved problem         : the dual        
-    Optimizer  - Constraints            : 1169
-    Optimizer  - Cones                  : 1
-    Optimizer  - Scalar variables       : 2130              conic                  : 1170            
-    Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
-    Factor     - setup time             : 0.13              dense det. time        : 0.00            
-    Factor     - ML order time          : 0.02              GP order time          : 0.00            
-    Factor     - nonzeros before factor : 6.84e+05          after factor           : 6.84e+05        
-    Factor     - dense dim.             : 0                 flops                  : 2.78e+09        
-    ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
-    0   1.6e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  7.89  
-    1   1.2e+01  7.3e-01  1.0e+00  1.87e-01   3.204310871e+00   2.373758489e+00   7.3e-01  7.95  
-    2   8.6e+00  5.4e-01  1.3e-01  4.10e-01   1.173977597e+01   1.117392378e+01   5.4e-01  8.01  
-    3   6.8e+00  4.2e-01  1.1e-01  3.65e+00   1.683957085e+01   1.653068413e+01   4.2e-01  8.06  
-    4   2.8e+00  1.7e-01  3.9e-02  2.86e+00   1.804535013e+01   1.797918789e+01   1.7e-01  8.11  
-    5   1.6e+00  9.7e-02  1.5e-02  1.53e+00   1.849297968e+01   1.846055406e+01   9.7e-02  8.16  
-    6   8.8e-02  5.4e-03  1.7e-04  1.32e+00   1.885791271e+01   1.885630498e+01   5.4e-03  8.24  
-    7   5.6e-03  3.5e-04  2.2e-06  1.03e+00   1.889865051e+01   1.889854392e+01   3.5e-04  8.30  
-    8   3.1e-06  1.9e-07  2.9e-11  1.00e+00   1.890146314e+01   1.890146308e+01   1.9e-07  8.38  
-    9   9.8e-08  1.5e-09  1.9e-13  1.00e+00   1.890146467e+01   1.890146466e+01   6.6e-10  8.50  
-    Optimizer terminated. Time: 8.55    
-
-
-    Interior-point solution summary
-      Problem status  : PRIMAL_AND_DUAL_FEASIBLE
-      Solution status : OPTIMAL
-      Primal.  obj: 1.8901464672e+01    nrm: 4e+01    Viol.  con: 1e-10    var: 0e+00    cones: 0e+00  
-      Dual.    obj: 1.8901464665e+01    nrm: 5e+01    Viol.  con: 2e-09    var: 6e-11    cones: 0e+00  
-
-
-
 Plot coil windings and target points
 
 
@@ -345,14 +228,6 @@ Plot coil windings and target points
 
 
     extent = 30
-
-
-
-
-.. image:: /auto_examples/coil_design/images/sphx_glr_self-shielded_biplanar_coil_design_002.png
-    :class: sphx-glr-single-img
-
-
 
 
 Compute field along major axes
@@ -410,29 +285,6 @@ Compute field along major axes
     plt.show()
 
 
-
-
-.. image:: /auto_examples/coil_design/images/sphx_glr_self-shielded_biplanar_coil_design_003.png
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Computing magnetic field coupling matrix, 1352 vertices by 101 target points... took 0.09 seconds.
-    Computing magnetic field coupling matrix, 1352 vertices by 101 target points... took 0.08 seconds.
-    Computing magnetic field coupling matrix, 1352 vertices by 100 target points... took 0.08 seconds.
-    Computing magnetic field coupling matrix, 1352 vertices by 100 target points... took 0.08 seconds.
-    Computing magnetic field coupling matrix, 1352 vertices by 100 target points... took 0.08 seconds.
-    Computing magnetic field coupling matrix, 1352 vertices by 100 target points... took 0.08 seconds.
-    /l/bfieldtools/examples/coil_design/self-shielded_biplanar_coil_design.py:229: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
-      plt.show()
-
-
-
 Compute the field and scalar potential on a larger plane
 
 
@@ -456,22 +308,6 @@ Compute the field and scalar potential on a larger plane
 
     U1 = CU1 @ coil.j
     U2 = CU2 @ shieldcoil.j
-
-
-
-
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Computing magnetic field coupling matrix analytically, 1352 vertices by 2500 target points... took 4.73 seconds.
-    Computing magnetic field coupling matrix analytically, 1352 vertices by 2500 target points... took 4.76 seconds.
-    Computing scalar potential coupling matrix, 1352 vertices by 2500 target points... took 6.32 seconds.
-    Computing scalar potential coupling matrix, 1352 vertices by 2500 target points... took 6.26 seconds.
 
 
 
@@ -510,19 +346,9 @@ Plot field and potential planar cross-section
 
 
 
-
-.. image:: /auto_examples/coil_design/images/sphx_glr_self-shielded_biplanar_coil_design_004.png
-    :class: sphx-glr-single-img
-
-
-
-
-
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  16.750 seconds)
-
-**Estimated memory usage:**  1113 MB
+   **Total running time of the script:** ( 0 minutes  19.191 seconds)
 
 
 .. _sphx_glr_download_auto_examples_coil_design_self-shielded_biplanar_coil_design.py:

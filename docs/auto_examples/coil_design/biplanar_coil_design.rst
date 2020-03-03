@@ -23,7 +23,7 @@ region between the two coil planes.
     from mayavi import mlab
     import trimesh
 
-    from bfieldtools.mesh_class import MeshWrapper
+    from bfieldtools.mesh_class import Conductor
     from bfieldtools.coil_optimize import optimize_streamfunctions
     from bfieldtools.contour import scalar_contour
     from bfieldtools.viz import plot_3d_current_loops
@@ -55,7 +55,7 @@ region between the two coil planes.
     joined_planes = coil_plus.union(coil_minus)
 
     #Create mesh class object
-    coil = MeshWrapper(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
+    coil = Conductor(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
 
 
 
@@ -147,8 +147,8 @@ Create bfield specifications used when optimizing the coil geometry
 
  .. code-block:: none
 
-    Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.30 seconds.
-    Computing magnetic field coupling matrix, 3184 vertices by 642 target points... took 0.72 seconds.
+    Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.28 seconds.
+    Computing magnetic field coupling matrix, 3184 vertices by 642 target points... took 0.92 seconds.
 
 
 
@@ -169,87 +169,45 @@ Run QP solver
 
 
 
+.. code-block:: pytb
 
-.. rst-class:: sphx-glr-script-out
+    Traceback (most recent call last):
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 480, in _memory_usage
+        out = func()
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 465, in __call__
+        exec(self.code, self.globals)
+      File "/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/examples/coil_design/biplanar_coil_design.py", line 119, in <module>
+        solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
+      File "/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/bfieldtools/coil_optimize.py", line 269, in optimize_streamfunctions
+        constraints = [G@x >= lb, G@x <= ub]
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 46, in cast_op
+        return binary_op(self, other)
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 592, in __ge__
+        return other.__le__(self)
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 46, in cast_op
+        return binary_op(self, other)
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 581, in __le__
+        return Inequality(self, other)
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/constraints/nonpos.py", line 96, in __init__
+        self._expr = lhs - rhs
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 46, in cast_op
+        return binary_op(self, other)
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 464, in __sub__
+        return self + -other
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 46, in cast_op
+        return binary_op(self, other)
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 452, in __add__
+        return cvxtypes.add_expr()([self, other])
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/atoms/affine/add_expr.py", line 33, in __init__
+        super(AddExpression, self).__init__(*arg_groups)
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/atoms/atom.py", line 45, in __init__
+        self._shape = self.shape_from_args()
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/atoms/affine/add_expr.py", line 41, in shape_from_args
+        return u.shape.sum_shapes([arg.shape for arg in self.args])
+      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/utilities/shape.py", line 49, in sum_shapes
+        len(shapes)*" %s" % tuple(shapes))
+    ValueError: Cannot broadcast dimensions  (2406,) (2886,)
 
- Out:
-
- .. code-block:: none
-
-    Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-    Estimating 405514 MiB required for 3184 times 3184 vertices...
-    Computing inductance matrix in 42 chunks since 9694 MiB memory is available...
-    Computing potential matrix
-    Inductance matrix computation took 83.09 seconds.
-    Pre-existing problem not passed, creating...
-    Passing parameters to problem...
-    Passing problem to solver...
-    /l/conda-envs/mne/lib/python3.6/site-packages/cvxpy/reductions/solvers/solving_chain.py:170: UserWarning: You are solving a parameterized problem that is not DPP. Because the problem is not DPP, subsequent solves will not be faster than the first one.
-      "You are solving a parameterized problem that is not DPP. "
-
-
-    Problem
-      Name                   :                 
-      Objective sense        : min             
-      Type                   : CONIC (conic optimization problem)
-      Constraints            : 7710            
-      Cones                  : 1               
-      Scalar variables       : 5795            
-      Matrix variables       : 0               
-      Integer variables      : 0               
-
-    Optimizer started.
-    Problem
-      Name                   :                 
-      Objective sense        : min             
-      Type                   : CONIC (conic optimization problem)
-      Constraints            : 7710            
-      Cones                  : 1               
-      Scalar variables       : 5795            
-      Matrix variables       : 0               
-      Integer variables      : 0               
-
-    Optimizer  - threads                : 8               
-    Optimizer  - solved problem         : the dual        
-    Optimizer  - Constraints            : 2897
-    Optimizer  - Cones                  : 1
-    Optimizer  - Scalar variables       : 7710              conic                  : 2898            
-    Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
-    Factor     - setup time             : 1.84              dense det. time        : 0.00            
-    Factor     - ML order time          : 0.15              GP order time          : 0.00            
-    Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06        
-    Factor     - dense dim.             : 0                 flops                  : 5.26e+10        
-    ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
-    0   4.1e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  93.50 
-    1   2.5e+01  6.2e-01  1.4e+00  -7.89e-01  2.213390980e+00   1.706833683e+00   6.2e-01  94.09 
-    2   1.4e+01  3.5e-01  9.0e-01  -6.22e-01  1.906120449e+01   1.915662410e+01   3.5e-01  94.66 
-    3   9.3e+00  2.3e-01  5.9e-01  -3.63e-01  9.015555708e+01   9.053356335e+01   2.3e-01  95.21 
-    4   5.2e+00  1.3e-01  3.2e-01  -1.44e-01  1.375282726e+02   1.381228711e+02   1.3e-01  95.75 
-    5   2.4e+00  5.8e-02  1.2e-01  1.85e-01   3.300859071e+02   3.305769736e+02   5.8e-02  96.30 
-    6   1.7e+00  4.2e-02  7.7e-02  5.49e-01   3.938765068e+02   3.942839359e+02   4.2e-02  96.85 
-    7   5.0e-01  1.2e-02  1.3e-02  6.79e-01   4.904313668e+02   4.905719210e+02   1.2e-02  97.57 
-    8   3.7e-01  9.1e-03  1.0e-02  6.18e-01   4.944850631e+02   4.946792913e+02   9.1e-03  98.12 
-    9   2.5e-01  6.1e-03  7.2e-03  2.96e-01   6.129255413e+02   6.131604659e+02   6.1e-03  98.68 
-    10  1.6e-01  3.8e-03  4.5e-03  2.50e-01   8.308572820e+02   8.311056790e+02   3.8e-03  99.22 
-    11  9.8e-02  2.4e-03  2.3e-03  6.55e-01   1.139192306e+03   1.139369915e+03   2.4e-03  99.77 
-    12  7.2e-02  1.8e-03  1.7e-03  4.11e-01   1.303282105e+03   1.303457673e+03   1.8e-03  100.32
-    13  2.2e-02  5.3e-04  3.8e-04  4.83e-01   1.844543644e+03   1.844648722e+03   5.3e-04  100.89
-    14  6.5e-03  1.6e-04  6.6e-05  8.74e-01   2.147120530e+03   2.147157160e+03   1.6e-04  101.51
-    15  6.7e-04  1.6e-05  2.6e-06  8.99e-01   2.291660423e+03   2.291666225e+03   1.6e-05  102.29
-    16  1.3e-04  3.2e-06  2.3e-07  9.94e-01   2.309537827e+03   2.309539007e+03   3.2e-06  102.87
-    17  4.6e-05  1.1e-06  4.8e-08  9.88e-01   2.312484238e+03   2.312484647e+03   1.1e-06  103.54
-    18  1.8e-05  4.3e-07  1.2e-08  9.98e-01   2.313457331e+03   2.313457490e+03   4.3e-07  104.74
-    19  9.5e-07  2.3e-08  6.8e-11  9.99e-01   2.314036746e+03   2.314036756e+03   2.3e-08  105.74
-    20  9.5e-07  2.3e-08  6.8e-11  1.00e+00   2.314036746e+03   2.314036756e+03   2.3e-08  106.96
-    21  9.5e-07  2.3e-08  6.8e-11  1.00e+00   2.314036746e+03   2.314036756e+03   2.3e-08  108.25
-    Optimizer terminated. Time: 110.19  
-
-
-    Interior-point solution summary
-      Problem status  : PRIMAL_AND_DUAL_FEASIBLE
-      Solution status : OPTIMAL
-      Primal.  obj: 2.3140367463e+03    nrm: 5e+03    Viol.  con: 5e-07    var: 0e+00    cones: 0e+00  
-      Dual.    obj: 2.3140367563e+03    nrm: 1e+05    Viol.  con: 1e-03    var: 3e-08    cones: 0e+00  
 
 
 
@@ -274,14 +232,6 @@ Plot coil windings and target points
     mlab.quiver3d(*target_points.T, *B_target.T)
 
 
-
-
-
-
-
-
-.. image:: /auto_examples/coil_design/images/sphx_glr_biplanar_coil_design_001.png
-    :class: sphx-glr-single-img
 
 
 
@@ -330,19 +280,9 @@ Plot cross-section of magnetic field and magnetic potential of the discretized l
     plt.tight_layout()
 
 
-
-.. image:: /auto_examples/coil_design/images/sphx_glr_biplanar_coil_design_002.png
-    :class: sphx-glr-single-img
-
-
-
-
-
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 5 minutes  43.006 seconds)
-
-**Estimated memory usage:**  4591 MB
+   **Total running time of the script:** ( 1 minutes  1.840 seconds)
 
 
 .. _sphx_glr_download_auto_examples_coil_design_biplanar_coil_design.py:

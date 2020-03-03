@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Magnetically shielded coil" href="magnetically_shielded_biplanar_coil_design.html" />
@@ -107,13 +107,13 @@
 <p>Example showing a basic biplanar coil producing homogeneous field in a target
 region between the two coil planes. The coil planes have holes in them,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">MeshWrapper</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="k">import</span> <span class="n">optimize_streamfunctions</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="k">import</span> <span class="n">scalar_contour</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="k">import</span> <span class="n">plot_3d_current_loops</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="kn">import</span> <span class="n">Conductor</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="kn">import</span> <span class="n">optimize_streamfunctions</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="kn">import</span> <span class="n">scalar_contour</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="kn">import</span> <span class="n">plot_3d_current_loops</span>
 
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 
@@ -150,7 +150,7 @@ region between the two coil planes. The coil planes have holes in them,</p>
 <span class="n">joined_planes</span> <span class="o">=</span> <span class="n">coil_plus</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">coil_minus</span><span class="p">)</span>
 
 <span class="c1">#Create mesh class object</span>
-<span class="n">coil</span> <span class="o">=</span> <span class="n">MeshWrapper</span><span class="p">(</span><span class="n">verts</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">tris</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">coil</span> <span class="o">=</span> <span class="n">Conductor</span><span class="p">(</span><span class="n">verts</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">tris</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Set up target and stray field points</p>
@@ -213,6 +213,16 @@ region between the two coil planes. The coil planes have holes in them,</p>
 <span class="n">boundary_constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;zero_eq_indices&#39;</span><span class="p">:</span><span class="n">zero_eq_indices</span> <span class="p">,</span> <span class="s1">&#39;iso_eq_indices&#39;</span><span class="p">:</span> <span class="n">iso_eq_indices</span><span class="p">}</span>
 </pre></div>
 </div>
+<div class="highlight-pytb notranslate"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;</span>, line <span class="m">480</span>, in <span class="n">_memory_usage</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
+  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;</span>, line <span class="m">465</span>, in <span class="n">__call__</span>
+    <span class="n">exec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">globals</span><span class="p">)</span>
+  File <span class="nb">&quot;/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/examples/coil_design/coil_with_holes.py&quot;</span>, line <span class="m">85</span>, in <span class="n">&lt;module&gt;</span>
+    <span class="n">inner_bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">&lt;</span> <span class="mf">0.015</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gr">AttributeError</span>: <span class="n">&#39;Conductor&#39; object has no attribute &#39;boundary_verts&#39;</span>
+</pre></div>
+</div>
 <p>Create bfield specifications used when optimizing the coil geometry</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#The absolute target field amplitude is not of importance,</span>
 <span class="c1"># and it is scaled to match the C matrix in the optimization function</span>
@@ -232,10 +242,6 @@ region between the two coil planes. The coil planes have holes in them,</p>
 <span class="n">bfield_specification</span> <span class="o">=</span> <span class="p">[</span><span class="n">target_spec</span><span class="p">]</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 2772 vertices by 160 target points... took 0.25 seconds.
-</pre></div>
-</div>
 <p>Run QP solver</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mosek</span>
 
@@ -246,80 +252,6 @@ region between the two coil planes. The coil planes have holes in them,</p>
                                    <span class="n">solver_opts</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mosek_params&#39;</span><span class="p">:{</span><span class="n">mosek</span><span class="o">.</span><span class="n">iparam</span><span class="o">.</span><span class="n">num_threads</span><span class="p">:</span> <span class="mi">8</span><span class="p">}},</span>
                                    <span class="n">boundary_constraints</span><span class="o">=</span><span class="n">boundary_constraints</span>
                                    <span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-Estimating 307359 MiB required for 2772 times 2772 vertices...
-Computing inductance matrix in 32 chunks since 9832 MiB memory is available...
-Computing potential matrix
-Inductance matrix computation took 60.82 seconds.
-Pre-existing problem not passed, creating...
-Passing boundary zero equality constraint
-Passing boundary equality constraints
-Passing parameters to problem...
-Passing problem to solver...
-/l/conda-envs/mne/lib/python3.6/site-packages/cvxpy/reductions/solvers/solving_chain.py:170: UserWarning: You are solving a parameterized problem that is not DPP. Because the problem is not DPP, subsequent solves will not be faster than the first one.
-  &quot;You are solving a parameterized problem that is not DPP. &quot;
-
-
-Problem
-  Name                   :
-  Objective sense        : min
-  Type                   : CONIC (conic optimization problem)
-  Constraints            : 4108
-  Cones                  : 1
-  Scalar variables       : 5545
-  Matrix variables       : 0
-  Integer variables      : 0
-
-Optimizer started.
-Problem
-  Name                   :
-  Objective sense        : min
-  Type                   : CONIC (conic optimization problem)
-  Constraints            : 4108
-  Cones                  : 1
-  Scalar variables       : 5545
-  Matrix variables       : 0
-  Integer variables      : 0
-
-Optimizer  - threads                : 8
-Optimizer  - solved problem         : the dual
-Optimizer  - Constraints            : 2397
-Optimizer  - Cones                  : 1
-Optimizer  - Scalar variables       : 3732              conic                  : 2772
-Optimizer  - Semi-definite variables: 0                 scalarized             : 0
-Factor     - setup time             : 0.70              dense det. time        : 0.00
-Factor     - ML order time          : 0.10              GP order time          : 0.00
-Factor     - nonzeros before factor : 2.87e+06          after factor           : 2.87e+06
-Factor     - dense dim.             : 0                 flops                  : 2.33e+10
-ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
-0   1.3e+02  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  52.54
-1   6.0e+01  4.7e-01  1.3e+00  -8.27e-01  1.384962869e+01   1.386946830e+01   4.7e-01  52.84
-2   5.1e+01  4.0e-01  8.6e-01  -2.18e-01  7.010307566e+01   6.976387568e+01   4.0e-01  53.10
-3   2.1e+01  1.7e-01  5.5e-01  -6.24e-01  1.292869617e+02   1.304411776e+02   1.7e-01  53.45
-4   1.3e+01  1.0e-01  1.6e-01  6.79e-01   4.226105729e+02   4.224895934e+02   1.0e-01  53.72
-5   4.3e+00  3.4e-02  8.4e-02  2.63e-03   6.636826144e+02   6.645554835e+02   3.4e-02  54.00
-6   8.0e-01  6.2e-03  6.4e-03  1.63e-01   1.668116368e+03   1.668209765e+03   6.2e-03  54.37
-7   3.7e-01  2.8e-03  2.9e-03  6.84e-01   1.984140844e+03   1.984310583e+03   2.8e-03  54.64
-8   4.8e-02  3.7e-04  2.2e-04  9.02e-01   2.299257269e+03   2.299333600e+03   3.7e-04  54.98
-9   4.3e-03  3.3e-05  6.0e-06  1.03e+00   2.356815098e+03   2.356822154e+03   3.3e-05  55.33
-10  1.3e-03  1.0e-05  1.1e-06  1.00e+00   2.361140207e+03   2.361142487e+03   1.0e-05  55.61
-11  1.3e-04  1.0e-06  3.2e-08  9.97e-01   2.362979138e+03   2.362979364e+03   1.0e-06  55.91
-12  1.5e-07  1.1e-07  8.8e-12  1.00e+00   2.363174627e+03   2.363174628e+03   1.6e-09  56.27
-13  2.0e-06  5.7e-08  1.3e-11  1.00e+00   2.363174737e+03   2.363174738e+03   8.0e-10  56.72
-14  2.2e-06  4.3e-08  1.4e-11  1.00e+00   2.363174765e+03   2.363174765e+03   6.0e-10  57.20
-15  2.2e-06  4.3e-08  1.4e-11  1.00e+00   2.363174765e+03   2.363174765e+03   6.0e-10  57.75
-16  2.2e-06  4.3e-08  1.4e-11  1.00e+00   2.363174765e+03   2.363174765e+03   6.0e-10  58.33
-Optimizer terminated. Time: 59.13
-
-
-Interior-point solution summary
-  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
-  Solution status : OPTIMAL
-  Primal.  obj: 2.3631747647e+03    nrm: 5e+03    Viol.  con: 7e-09    var: 0e+00    cones: 0e+00
-  Dual.    obj: 2.3631747655e+03    nrm: 6e+04    Viol.  con: 0e+00    var: 2e-07    cones: 0e+00
 </pre></div>
 </div>
 <p>Plot coil windings and target points</p>
@@ -338,15 +270,13 @@ Interior-point solution summary
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B_target</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../../_images/sphx_glr_coil_with_holes_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_coil_with_holes_001.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  39.009 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  2746 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.898 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-coil-with-holes-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/108f11c462f1a5f7355be8241f892d21/coil_with_holes.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">coil_with_holes.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/27a0f3d37810cf070642553936fb1450/coil_with_holes.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">coil_with_holes.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/beebbebd6e9300d0b6fc519a8b138dcf/coil_with_holes.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">coil_with_holes.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/3dda25827d05e44d56332c9e5d033734/coil_with_holes.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">coil_with_holes.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -365,7 +295,7 @@ Interior-point solution summary
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1.<br/>
     </p>
   </div>
 </footer>

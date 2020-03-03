@@ -635,9 +635,6 @@ class StreamFunction(np.ndarray):
             if background==True:
                 mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
                                       color=(0.5,0.5,0.5), opacity=0.2)
-        else:
-            s.actor.mapper.interpolate_scalars_before_mapping = True
-            s.module_manager.scalar_lut_manager.number_of_colors = 256
 
         return s
 
