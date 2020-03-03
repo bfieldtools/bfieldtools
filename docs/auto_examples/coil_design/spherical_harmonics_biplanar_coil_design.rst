@@ -57,11 +57,6 @@ in a target region between the two coil planes.
     coil = Conductor(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
 
 
-
-
-
-
-
 Set up target and stray field points
 
 
@@ -110,11 +105,6 @@ Set up target and stray field points
 
 
 
-
-
-
-
-
 Create bfield specifications used when optimizing the coil geometry
 
 
@@ -154,23 +144,6 @@ Create bfield specifications used when optimizing the coil geometry
     bfield_specification = [target_spec, stray_spec]
 
 
-
-
-.. image:: /auto_examples/coil_design/images/sphx_glr_spherical_harmonics_biplanar_coil_design_001.png
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.26 seconds.
-    Computing magnetic field coupling matrix, 3184 vertices by 642 target points... took 0.89 seconds.
-
-
-
 Run QP solver
 
 
@@ -184,50 +157,6 @@ Run QP solver
                                        solver='MOSEK',
                                        solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
                                        )
-
-
-
-
-.. code-block:: pytb
-
-    Traceback (most recent call last):
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 480, in _memory_usage
-        out = func()
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 465, in __call__
-        exec(self.code, self.globals)
-      File "/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/examples/coil_design/spherical_harmonics_biplanar_coil_design.py", line 135, in <module>
-        solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
-      File "/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/bfieldtools/coil_optimize.py", line 269, in optimize_streamfunctions
-        constraints = [G@x >= lb, G@x <= ub]
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 46, in cast_op
-        return binary_op(self, other)
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 592, in __ge__
-        return other.__le__(self)
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 46, in cast_op
-        return binary_op(self, other)
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 581, in __le__
-        return Inequality(self, other)
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/constraints/nonpos.py", line 96, in __init__
-        self._expr = lhs - rhs
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 46, in cast_op
-        return binary_op(self, other)
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 464, in __sub__
-        return self + -other
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 46, in cast_op
-        return binary_op(self, other)
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py", line 452, in __add__
-        return cvxtypes.add_expr()([self, other])
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/atoms/affine/add_expr.py", line 33, in __init__
-        super(AddExpression, self).__init__(*arg_groups)
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/atoms/atom.py", line 45, in __init__
-        self._shape = self.shape_from_args()
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/atoms/affine/add_expr.py", line 41, in shape_from_args
-        return u.shape.sum_shapes([arg.shape for arg in self.args])
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/utilities/shape.py", line 49, in sum_shapes
-        len(shapes)*" %s" % tuple(shapes))
-    ValueError: Cannot broadcast dimensions  (2406,) (2886,)
-
-
 
 
 Plot coil windings and target points
@@ -252,7 +181,7 @@ Plot coil windings and target points
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  8.318 seconds)
+   **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
 
 .. _sphx_glr_download_auto_examples_coil_design_spherical_harmonics_biplanar_coil_design.py:

@@ -213,16 +213,6 @@ region between the two coil planes. The coil planes have holes in them,</p>
 <span class="n">boundary_constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;zero_eq_indices&#39;</span><span class="p">:</span><span class="n">zero_eq_indices</span> <span class="p">,</span> <span class="s1">&#39;iso_eq_indices&#39;</span><span class="p">:</span> <span class="n">iso_eq_indices</span><span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-pytb notranslate"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;</span>, line <span class="m">480</span>, in <span class="n">_memory_usage</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;</span>, line <span class="m">465</span>, in <span class="n">__call__</span>
-    <span class="n">exec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">globals</span><span class="p">)</span>
-  File <span class="nb">&quot;/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/examples/coil_design/coil_with_holes.py&quot;</span>, line <span class="m">85</span>, in <span class="n">&lt;module&gt;</span>
-    <span class="n">inner_bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">&lt;</span> <span class="mf">0.015</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-<span class="gr">AttributeError</span>: <span class="n">&#39;Conductor&#39; object has no attribute &#39;boundary_verts&#39;</span>
-</pre></div>
-</div>
 <p>Create bfield specifications used when optimizing the coil geometry</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#The absolute target field amplitude is not of importance,</span>
 <span class="c1"># and it is scaled to match the C matrix in the optimization function</span>
@@ -270,7 +260,7 @@ region between the two coil planes. The coil planes have holes in them,</p>
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B_target</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.898 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-coil-with-holes-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/27a0f3d37810cf070642553936fb1450/coil_with_holes.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">coil_with_holes.py</span></code></a></p>

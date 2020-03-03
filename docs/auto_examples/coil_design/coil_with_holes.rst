@@ -65,11 +65,6 @@ region between the two coil planes. The coil planes have holes in them,
     coil = Conductor(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
 
 
-
-
-
-
-
 Set up target and stray field points
 
 
@@ -95,11 +90,6 @@ Set up target and stray field points
 
     #Turn cube into sphere by rejecting points "in the corners"
     target_points = target_points[np.linalg.norm(target_points, axis=1) < sidelength/2]  + center
-
-
-
-
-
 
 
 
@@ -146,22 +136,6 @@ Let's find and separate the inner and outer boundaries of the coil mesh
     iso_eq_indices = [left_hole1, centre_hole1, right_hole1, left_hole2, centre_hole2, right_hole2]
 
     boundary_constraints = {'zero_eq_indices':zero_eq_indices , 'iso_eq_indices': iso_eq_indices}
-
-
-
-
-.. code-block:: pytb
-
-    Traceback (most recent call last):
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 480, in _memory_usage
-        out = func()
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 465, in __call__
-        exec(self.code, self.globals)
-      File "/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/examples/coil_design/coil_with_holes.py", line 85, in <module>
-        inner_bounds = np.intersect1d(coil.boundary_verts, np.where(np.linalg.norm(coil.mesh.vertices[:,0::2], axis=1)< 0.015)[0])
-    AttributeError: 'Conductor' object has no attribute 'boundary_verts'
-
-
 
 
 Create bfield specifications used when optimizing the coil geometry
@@ -226,7 +200,7 @@ Plot coil windings and target points
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.898 seconds)
+   **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
 
 .. _sphx_glr_download_auto_examples_coil_design_coil_with_holes.py:

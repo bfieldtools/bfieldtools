@@ -218,12 +218,6 @@ in a target region between the two coil planes.</p>
 <span class="n">bfield_specification</span> <span class="o">=</span> <span class="p">[</span><span class="n">target_spec</span><span class="p">,</span> <span class="n">stray_spec</span><span class="p">]</span>
 </pre></div>
 </div>
-<img alt="../../_images/sphx_glr_spherical_harmonics_biplanar_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_spherical_harmonics_biplanar_coil_design_001.png" />
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.26 seconds.
-Computing magnetic field coupling matrix, 3184 vertices by 642 target points... took 0.89 seconds.
-</pre></div>
-</div>
 <p>Run QP solver</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mosek</span>
 
@@ -233,44 +227,6 @@ Computing magnetic field coupling matrix, 3184 vertices by 642 target points... 
                                    <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;MOSEK&#39;</span><span class="p">,</span>
                                    <span class="n">solver_opts</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mosek_params&#39;</span><span class="p">:{</span><span class="n">mosek</span><span class="o">.</span><span class="n">iparam</span><span class="o">.</span><span class="n">num_threads</span><span class="p">:</span> <span class="mi">8</span><span class="p">}}</span>
                                    <span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-pytb notranslate"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;</span>, line <span class="m">480</span>, in <span class="n">_memory_usage</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;</span>, line <span class="m">465</span>, in <span class="n">__call__</span>
-    <span class="n">exec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">globals</span><span class="p">)</span>
-  File <span class="nb">&quot;/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/examples/coil_design/spherical_harmonics_biplanar_coil_design.py&quot;</span>, line <span class="m">135</span>, in <span class="n">&lt;module&gt;</span>
-    <span class="n">solver_opts</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mosek_params&#39;</span><span class="p">:{</span><span class="n">mosek</span><span class="o">.</span><span class="n">iparam</span><span class="o">.</span><span class="n">num_threads</span><span class="p">:</span> <span class="mi">8</span><span class="p">}}</span>
-  File <span class="nb">&quot;/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/bfieldtools/coil_optimize.py&quot;</span>, line <span class="m">269</span>, in <span class="n">optimize_streamfunctions</span>
-    <span class="n">constraints</span> <span class="o">=</span> <span class="p">[</span><span class="n">G</span><span class="nd">@x</span> <span class="o">&gt;=</span> <span class="n">lb</span><span class="p">,</span> <span class="n">G</span><span class="nd">@x</span> <span class="o">&lt;=</span> <span class="n">ub</span><span class="p">]</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py&quot;</span>, line <span class="m">46</span>, in <span class="n">cast_op</span>
-    <span class="k">return</span> <span class="n">binary_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py&quot;</span>, line <span class="m">592</span>, in <span class="n">__ge__</span>
-    <span class="k">return</span> <span class="n">other</span><span class="o">.</span><span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py&quot;</span>, line <span class="m">46</span>, in <span class="n">cast_op</span>
-    <span class="k">return</span> <span class="n">binary_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py&quot;</span>, line <span class="m">581</span>, in <span class="n">__le__</span>
-    <span class="k">return</span> <span class="n">Inequality</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/constraints/nonpos.py&quot;</span>, line <span class="m">96</span>, in <span class="n">__init__</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_expr</span> <span class="o">=</span> <span class="n">lhs</span> <span class="o">-</span> <span class="n">rhs</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py&quot;</span>, line <span class="m">46</span>, in <span class="n">cast_op</span>
-    <span class="k">return</span> <span class="n">binary_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py&quot;</span>, line <span class="m">464</span>, in <span class="n">__sub__</span>
-    <span class="k">return</span> <span class="bp">self</span> <span class="o">+</span> <span class="o">-</span><span class="n">other</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py&quot;</span>, line <span class="m">46</span>, in <span class="n">cast_op</span>
-    <span class="k">return</span> <span class="n">binary_op</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/expressions/expression.py&quot;</span>, line <span class="m">452</span>, in <span class="n">__add__</span>
-    <span class="k">return</span> <span class="n">cvxtypes</span><span class="o">.</span><span class="n">add_expr</span><span class="p">()([</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">])</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/atoms/affine/add_expr.py&quot;</span>, line <span class="m">33</span>, in <span class="n">__init__</span>
-    <span class="nb">super</span><span class="p">(</span><span class="n">AddExpression</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">arg_groups</span><span class="p">)</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/atoms/atom.py&quot;</span>, line <span class="m">45</span>, in <span class="n">__init__</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape_from_args</span><span class="p">()</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/atoms/affine/add_expr.py&quot;</span>, line <span class="m">41</span>, in <span class="n">shape_from_args</span>
-    <span class="k">return</span> <span class="n">u</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">sum_shapes</span><span class="p">([</span><span class="n">arg</span><span class="o">.</span><span class="n">shape</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">args</span><span class="p">])</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/cvxpy/utilities/shape.py&quot;</span>, line <span class="m">49</span>, in <span class="n">sum_shapes</span>
-    <span class="nb">len</span><span class="p">(</span><span class="n">shapes</span><span class="p">)</span><span class="o">*</span><span class="s2">&quot; </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shapes</span><span class="p">))</span>
-<span class="gr">ValueError</span>: <span class="n">Cannot broadcast dimensions  (2406,) (2886,)</span>
 </pre></div>
 </div>
 <p>Plot coil windings and target points</p>
@@ -289,7 +245,7 @@ Computing magnetic field coupling matrix, 3184 vertices by 642 target points... 
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B_target</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  8.318 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-spherical-harmonics-biplanar-coil-design-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/a8c74d880a8a609c8d0096b7bff6202c/spherical_harmonics_biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">spherical_harmonics_biplanar_coil_design.py</span></code></a></p>

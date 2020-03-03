@@ -178,16 +178,6 @@ and the geometry.</p>
 <span class="n">P</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">M22</span><span class="p">,</span> <span class="n">M21</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-pytb notranslate"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;</span>, line <span class="m">480</span>, in <span class="n">_memory_usage</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
-  File <span class="nb">&quot;/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py&quot;</span>, line <span class="m">465</span>, in <span class="n">__call__</span>
-    <span class="n">exec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">globals</span><span class="p">)</span>
-  File <span class="nb">&quot;/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/examples/coil_design/self-shielded_biplanar_coil_design.py&quot;</span>, line <span class="m">72</span>, in <span class="n">&lt;module&gt;</span>
-    <span class="n">M22</span> <span class="o">=</span> <span class="n">M22</span><span class="p">[</span><span class="n">shieldcoil</span><span class="o">.</span><span class="n">inner_verts</span><span class="p">][:,</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">inner_verts</span><span class="p">]</span>
-<span class="gr">AttributeError</span>: <span class="n">&#39;Conductor&#39; object has no attribute &#39;inner_verts&#39;</span>
-</pre></div>
-</div>
 <p>Set up target and stray field points</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#Here, the target points are on a volumetric grid within a sphere</span>
 
@@ -374,7 +364,7 @@ and the geometry.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([])</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  19.191 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-self-shielded-biplanar-coil-design-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/f8b5daafc92a81c4ffa49bdf1485c481/self-shielded_biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">self-shielded_biplanar_coil_design.py</span></code></a></p>

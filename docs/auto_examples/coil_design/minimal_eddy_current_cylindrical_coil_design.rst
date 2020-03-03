@@ -57,11 +57,6 @@ The effects of eddy currents due to inductive interaction with the shield is min
     shield = Conductor(mesh_file=pkg_resources.resource_filename('bfieldtools', 'example_meshes/cylinder.stl'), process=True, fix_normals=True)
 
 
-
-
-
-
-
 Set up target  points and plot geometry
 
 
@@ -102,29 +97,6 @@ Set up target  points and plot geometry
 
 
 
-
-
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image:: /auto_examples/coil_design/images/sphx_glr_minimal_eddy_current_cylindrical_coil_design_001.png
-            :class: sphx-glr-multi-img
-
-    *
-
-      .. image:: /auto_examples/coil_design/images/sphx_glr_minimal_eddy_current_cylindrical_coil_design_002.png
-            :class: sphx-glr-multi-img
-
-    *
-
-      .. image:: /auto_examples/coil_design/images/sphx_glr_minimal_eddy_current_cylindrical_coil_design_003.png
-            :class: sphx-glr-multi-img
-
-
-
-
 Compute C matrices that are used to compute the generated magnetic field
 
 
@@ -139,26 +111,6 @@ Compute C matrices that are used to compute the generated magnetic field
 
     shield.coupling = np.linalg.solve(-shield.inductance, mutual_inductance.T)
     secondary_C = shield.B_coupling(target_points) @ shield.coupling
-
-
-
-
-.. code-block:: pytb
-
-    Traceback (most recent call last):
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 480, in _memory_usage
-        out = func()
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 465, in __call__
-        exec(self.code, self.globals)
-      File "/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/examples/coil_design/minimal_eddy_current_cylindrical_coil_design.py", line 93, in <module>
-        shield.coupling = np.linalg.solve(-shield.inductance, mutual_inductance.T)
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/numpy/linalg/linalg.py", line 403, in solve
-        r = gufunc(a, b, signature=signature, extobj=extobj)
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/numpy/linalg/linalg.py", line 97, in _raise_linalgerror_singular
-        raise LinAlgError("Singular matrix")
-    numpy.linalg.LinAlgError: Singular matrix
-
-
 
 
 Create bfield specifications used when optimizing the coil geometry
@@ -262,7 +214,7 @@ For comparison, let's see how the coils look when we ignore the conducting shiel
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  13.238 seconds)
+   **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
 
 .. _sphx_glr_download_auto_examples_coil_design_minimal_eddy_current_cylindrical_coil_design.py:

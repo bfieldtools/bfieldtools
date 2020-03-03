@@ -287,7 +287,7 @@ A * x = b</p>
 
 <dl class="function">
 <dt id="bfieldtools.coil_optimize.cvxpy_solve_qp">
-<code class="sig-prename descclassname">bfieldtools.coil_optimize.</code><code class="sig-name descname">cvxpy_solve_qp</code><span class="sig-paren">(</span><em class="sig-param">P</em>, <em class="sig-param">G</em>, <em class="sig-param">h</em>, <em class="sig-param">solver='MOSEK'</em>, <em class="sig-param">tolerance=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.cvxpy_solve_qp" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bfieldtools.coil_optimize.</code><code class="sig-name descname">cvxpy_solve_qp</code><span class="sig-paren">(</span><em class="sig-param">P</em>, <em class="sig-param">G</em>, <em class="sig-param">h</em>, <em class="sig-param">solver=cvxpy.MOSEK</em>, <em class="sig-param">tolerance=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.cvxpy_solve_qp" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -1932,17 +1932,17 @@ in a relatively thin conductor.</p>
 
 <dl class="function">
 <dt id="bfieldtools.thermal_noise.noise_covar">
-<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">noise_covar</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">vl</em>, <em class="sig-param">fp</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.noise_covar" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">noise_covar</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">B_coupling</em>, <em class="sig-param">vl</em>, <em class="sig-param">Nmodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.noise_covar" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="bfieldtools.thermal_noise.noise_covar_dir">
-<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">noise_covar_dir</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">vl</em>, <em class="sig-param">fp</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.noise_covar_dir" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">noise_covar_dir</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">B_coupling</em>, <em class="sig-param">vl</em>, <em class="sig-param">Nmodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.noise_covar_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="bfieldtools.thermal_noise.noise_var">
-<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">noise_var</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">vl</em>, <em class="sig-param">fp</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.noise_var" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">noise_var</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">B_coupling</em>, <em class="sig-param">vl</em>, <em class="sig-param">Nmodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.noise_var" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -1973,7 +1973,7 @@ in a relatively thin conductor.</p>
 <div class="section" id="module-bfieldtools.utils">
 <span id="bfieldtools-utils-module"></span><h2>bfieldtools.utils module<a class="headerlink" href="#module-bfieldtools.utils" title="Permalink to this headline">¶</a></h2>
 <p>This module contains miscellaneous utility functions used across bfieldtools.</p>
-<dl class="attribute">
+<dl class="function">
 <dt id="bfieldtools.utils.assemble_matrix">
 <code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix</code><span class="sig-paren">(</span><em class="sig-param">tris</em>, <em class="sig-param">Nverts</em>, <em class="sig-param">triangle_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimized  assembly of finite element matrix for
@@ -1982,7 +1982,7 @@ precomputed triangle data</p>
 for the nodes neighbouring the triangle</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="function">
 <dt id="bfieldtools.utils.assemble_matrix2">
 <code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix2</code><span class="sig-paren">(</span><em class="sig-param">tris1</em>, <em class="sig-param">tris2</em>, <em class="sig-param">Nverts1</em>, <em class="sig-param">Nverts2</em>, <em class="sig-param">triangle_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimized  assembly of finite element matrix for
@@ -1991,7 +1991,7 @@ precomputed triangle data for separate meshes 1 and 2</p>
 for the nodes neighbouring the triangle</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="function">
 <dt id="bfieldtools.utils.assemble_matrix_chunk">
 <code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix_chunk</code><span class="sig-paren">(</span><em class="sig-param">tris</em>, <em class="sig-param">Nverts</em>, <em class="sig-param">triangle_data</em>, <em class="sig-param">n</em>, <em class="sig-param">Nchunks</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix_chunk" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimized  assembly of finite element matrix for
@@ -2007,7 +2007,7 @@ for the nodes neighbouring the triangle</p>
 <dd><p>Generate and return a set of points on a cylindrical surface.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="function">
 <dt id="bfieldtools.utils.dual_areas">
 <code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">dual_areas</code><span class="sig-paren">(</span><em class="sig-param">tris</em>, <em class="sig-param">ta</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.dual_areas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate (dual) areas for each node in inds</p>

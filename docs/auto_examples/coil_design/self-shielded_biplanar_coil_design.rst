@@ -73,11 +73,6 @@ and the geometry.
 
 
 
-
-
-
-
-
 Compute inductances and coupling
 
 
@@ -101,22 +96,6 @@ Compute inductances and coupling
 
     # Mapping from I1 to I2, constraining flux through shieldcoil to zero
     P = -np.linalg.solve(M22, M21)
-
-
-
-
-
-
-.. code-block:: pytb
-
-    Traceback (most recent call last):
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 480, in _memory_usage
-        out = func()
-      File "/u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 465, in __call__
-        exec(self.code, self.globals)
-      File "/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/examples/coil_design/self-shielded_biplanar_coil_design.py", line 72, in <module>
-        M22 = M22[shieldcoil.inner_verts][:, shieldcoil.inner_verts]
-    AttributeError: 'Conductor' object has no attribute 'inner_verts'
 
 
 
@@ -348,7 +327,7 @@ Plot field and potential planar cross-section
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  19.191 seconds)
+   **Total running time of the script:** ( 0 minutes  0.000 seconds)
 
 
 .. _sphx_glr_download_auto_examples_coil_design_self-shielded_biplanar_coil_design.py:
