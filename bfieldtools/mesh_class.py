@@ -186,8 +186,7 @@ class Conductor:
 
         if self.basis_name == 'suh':
             self.suh_basis = SuhBasis(self.mesh, self.opts['N_suh'],
-                                  self.mesh.is_watertight,
-                                  self.inner_vertices, self.holes)
+                                      self.inner_vertices, self.holes)
             self.basis = self.suh_basis.basis
         elif self.basis_name == 'inner':
             self.basis = np.eye(len(self.inner_vertices) + len(self.holes))

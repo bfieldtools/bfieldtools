@@ -129,7 +129,7 @@ class SuhBasis():
         return  x
 
 
-    def plot(self, Nfuncs, dist=0.5, Ncols=None, fig=None,
+    def plot(self, Nfuncs, dist=0.5, Ncols=None, figure=None,
              figsize=(800,800), **kwargs):
         """ Plot basis functions on the mesh
 
@@ -155,11 +155,9 @@ class SuhBasis():
 
         """
 
-        if fig is None:
+        if figure is None:
             figure = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                              size=figsize)
-        else:
-            figure=fig
 
         if type(Nfuncs) == int:
             N=Nfuncs
