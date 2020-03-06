@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="846.66669mm"
+   height="1020.8381mm"
+   viewBox="0 0 3000.0001 3617.143"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="suh.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.175"
+     inkscape:cx="651.03014"
+     inkscape:cy="1872.6316"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1920"
+     inkscape:window-height="1200"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     showguides="false" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(777.14288,2124.7808)">
+    <image
+       sodipodi:absref="/l/bfieldtools/examples/publication_software/Surface harmonics/surface_harmonics.png"
+       xlink:href="surface_harmonics.png"
+       width="3000"
+       height="2200"
+       preserveAspectRatio="none"
+       style="image-rendering:optimizeQuality"
+       id="image4459"
+       x="-777.14288"
+       y="-707.63782" />
+    <image
+       sodipodi:absref="/l/bfieldtools/examples/publication_software/Surface harmonics/suhmesh.png"
+       xlink:href="suhmesh.png"
+       width="2148.5715"
+       height="1575.619"
+       preserveAspectRatio="none"
+       style="image-rendering:optimizeQuality"
+       id="image4470"
+       x="-397.14285"
+       y="-2124.7808" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4135"
+       style="font-style:normal;font-weight:normal;font-size:180px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       transform="translate(-777.14288,-2124.7808)"><flowRegion
+         id="flowRegion4137"><rect
+           id="rect4139"
+           width="251.42857"
+           height="377.14285"
+           x="51.42857"
+           y="102.85706" /></flowRegion><flowPara
+         id="flowPara4141"
+         style="font-weight:bold">A</flowPara></flowRoot>    <flowRoot
+       transform="translate(-777.14288,-793.35215)"
+       style="font-style:normal;font-weight:normal;font-size:180px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="flowRoot4143"
+       xml:space="preserve"><flowRegion
+         id="flowRegion4145"><rect
+           y="102.85706"
+           x="51.42857"
+           height="377.14285"
+           width="251.42857"
+           id="rect4147" /></flowRegion><flowPara
+         style="font-weight:bold"
+         id="flowPara4149">B</flowPara></flowRoot>  </g>
+</svg>

@@ -94,7 +94,8 @@ mlab.quiver3d(*p.T, *n.T, mode='arrow')
 #%% Fit the surface current for the auditory evoked response
 c = Conductor(mesh_obj=mesh, basis_name='suh', N_suh=150)
 M = c.mass
-B_sensors = np.sum(c.B_coupling(p) * n[:,:,None], axis=1)
+#B_sensors = np.sum(c.B_coupling(p) * n[:,:,None], axis=1)
+B_sensors = np.einsum('ijk,ij->ik',c.B_coupling(p), n)
 #a = np.linalg.pinv(B_sensors, rcond=1e-15) @ field
 ss = np.linalg.svd(B_sensors @ B_sensors.T, False, False)
 
