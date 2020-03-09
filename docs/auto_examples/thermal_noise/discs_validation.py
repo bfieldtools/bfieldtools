@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Tue Dec 10 10:33:17 2019
+Disc validation
+=========================
 
-@author: Rasmus Zetter
+This example validates the thermal noise computations against the analytical solution for a thin disc.
 """
 
 import numpy as np

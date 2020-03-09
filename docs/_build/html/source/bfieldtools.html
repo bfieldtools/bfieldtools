@@ -7,11 +7,12 @@
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="API Reference" href="modules.html" />
@@ -35,7 +36,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="../index.html">
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/logo_simple.png"></span>
           bfieldtools</a>
         <span class="navbar-text navbar-version pull-left"><b></b></span>
       </div>
@@ -43,7 +44,8 @@
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="../readme.html">Readme</a></li>
+                <li><a href="../overview.html">Overview</a></li>
+                <li><a href="../installation.html">Installation</a></li>
                 <li><a href="../literature.html">Literature</a></li>
                 <li><a href="../auto_examples/index.html">Example gallery</a></li>
                 <li><a href="modules.html">API Reference</a></li>
@@ -59,10 +61,12 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../literature.html">Literature</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">Example gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html#coil-design">Coil design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html#software-publication-examples">Software publication examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html#thermal-noise-computation">Thermal noise computation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html#validation">Validation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">API Reference</a></li>
@@ -106,13 +110,13 @@
 <span id="bfieldtools-line-magnetics-module"></span><h2>bfieldtools.line_magnetics module<a class="headerlink" href="#module-bfieldtools.line_magnetics" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="bfieldtools.line_magnetics.cross">
-<code class="sig-prename descclassname">bfieldtools.line_magnetics.</code><code class="sig-name descname">cross</code><span class="sig-paren">(</span><em class="sig-param">r1</em>, <em class="sig-param">r2</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.cross" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.line_magnetics.</code><code class="descname">cross</code><span class="sig-paren">(</span><em>r1</em>, <em>r2</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.cross" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cross product without overhead</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="bfieldtools.line_magnetics.flux">
-<code class="sig-prename descclassname">bfieldtools.line_magnetics.</code><code class="sig-name descname">flux</code><span class="sig-paren">(</span><em class="sig-param">vertices</em>, <em class="sig-param">loops</em>, <em class="sig-param">vertices_other</em>, <em class="sig-param">Nquad=2</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.flux" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.line_magnetics.</code><code class="descname">flux</code><span class="sig-paren">(</span><em>vertices</em>, <em>loops</em>, <em>vertices_other</em>, <em>Nquad=2</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.flux" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute magnetic flux created by a segmented line current loops
 (vertices, loops) on a another closed loop of segmented current
 (vertices_other). The other loop is numerically integrated.</p>
@@ -135,7 +139,7 @@ defined as loops = np.array([[0,1,2,3]])</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>flux in the other loop generated by loops (Nloops,)</dt><dd></dd>
+<dt><strong>flux in the other loop generated by loops (Nloops,)</strong></dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -143,7 +147,7 @@ defined as loops = np.array([[0,1,2,3]])</p>
 
 <dl class="function">
 <dt id="bfieldtools.line_magnetics.magnetic_field">
-<code class="sig-prename descclassname">bfieldtools.line_magnetics.</code><code class="sig-name descname">magnetic_field</code><span class="sig-paren">(</span><em class="sig-param">vertices</em>, <em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.magnetic_field" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.line_magnetics.</code><code class="descname">magnetic_field</code><span class="sig-paren">(</span><em>vertices</em>, <em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.magnetic_field" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute b field of a segmented line current.
 This calculation is based on integration by Griffiths
 on page 217 (3rd edition)</p>
@@ -158,7 +162,7 @@ on page 217 (3rd edition)</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>bfield: (N_points, 3) array</dt><dd><p>Magnetic field at evaluation points</p>
+<dt><strong>bfield: (N_points, 3) array</strong></dt><dd><p>Magnetic field at evaluation points</p>
 </dd>
 </dl>
 </dd>
@@ -167,7 +171,7 @@ on page 217 (3rd edition)</p>
 
 <dl class="function">
 <dt id="bfieldtools.line_magnetics.magnetic_field2">
-<code class="sig-prename descclassname">bfieldtools.line_magnetics.</code><code class="sig-name descname">magnetic_field2</code><span class="sig-paren">(</span><em class="sig-param">vertices</em>, <em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.magnetic_field2" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.line_magnetics.</code><code class="descname">magnetic_field2</code><span class="sig-paren">(</span><em>vertices</em>, <em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.magnetic_field2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute b field of a segmented line current.
 See:
 Compact expressions for the Biot–Savart fields of a filamentary segments
@@ -183,7 +187,7 @@ by Hanson &amp; Hirshman</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>bfield: (N_points, 3) array</dt><dd><p>Magnetic field at evaluation points</p>
+<dt><strong>bfield: (N_points, 3) array</strong></dt><dd><p>Magnetic field at evaluation points</p>
 </dd>
 </dl>
 </dd>
@@ -192,7 +196,7 @@ by Hanson &amp; Hirshman</p>
 
 <dl class="function">
 <dt id="bfieldtools.line_magnetics.magnetic_field_current_loops">
-<code class="sig-prename descclassname">bfieldtools.line_magnetics.</code><code class="sig-name descname">magnetic_field_current_loops</code><span class="sig-paren">(</span><em class="sig-param">vertices</em>, <em class="sig-param">points</em>, <em class="sig-param">loops</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.magnetic_field_current_loops" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.line_magnetics.</code><code class="descname">magnetic_field_current_loops</code><span class="sig-paren">(</span><em>vertices</em>, <em>points</em>, <em>loops</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.magnetic_field_current_loops" title="Permalink to this definition">¶</a></dt>
 <dd><p>B field for segmented current loops</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -213,7 +217,7 @@ defined as loops = np.array([[0,1,2,3,0]])</p>
 
 <dl class="function">
 <dt id="bfieldtools.line_magnetics.scalar_potential">
-<code class="sig-prename descclassname">bfieldtools.line_magnetics.</code><code class="sig-name descname">scalar_potential</code><span class="sig-paren">(</span><em class="sig-param">vertices</em>, <em class="sig-param">points</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.scalar_potential" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.line_magnetics.</code><code class="descname">scalar_potential</code><span class="sig-paren">(</span><em>vertices</em>, <em>points</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.scalar_potential" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the scalar magnetic potential of a segmented current loop at given points.
 This is equal to the solid angle spanned by the loop (polygon), times a constant.
 The first and last vertices are connected to close the loop.
@@ -230,7 +234,7 @@ vertices: (N_line, 3) array</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><dl class="simple">
-<dt>Scalar magnetic potential (Npoints, )</dt><dd></dd>
+<dt><strong>Scalar magnetic potential (Npoints, )</strong></dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -238,7 +242,7 @@ vertices: (N_line, 3) array</p>
 
 <dl class="function">
 <dt id="bfieldtools.line_magnetics.vector_potential">
-<code class="sig-prename descclassname">bfieldtools.line_magnetics.</code><code class="sig-name descname">vector_potential</code><span class="sig-paren">(</span><em class="sig-param">vertices</em>, <em class="sig-param">points</em>, <em class="sig-param">loops=None</em>, <em class="sig-param">reg=1e-12</em>, <em class="sig-param">symmetrize=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.vector_potential" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.line_magnetics.</code><code class="descname">vector_potential</code><span class="sig-paren">(</span><em>vertices</em>, <em>points</em>, <em>loops=None</em>, <em>reg=1e-12</em>, <em>symmetrize=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.vector_potential" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute vector potential of a segmented line currents.
 Based on straightforward integration of 1/r potential over a line
 i.e. the gamma0 integral</p>
@@ -265,7 +269,7 @@ defined as loops = np.array([[0,1,2,3]])</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>Vector potential (Nloops, Npoints, 3)</dt><dd></dd>
+<dt><strong>Vector potential (Nloops, Npoints, 3)</strong></dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -276,7 +280,7 @@ defined as loops = np.array([[0,1,2,3]])</p>
 <span id="bfieldtools-coil-optimize-module"></span><h2>bfieldtools.coil_optimize module<a class="headerlink" href="#module-bfieldtools.coil_optimize" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="bfieldtools.coil_optimize.cvxopt_solve_qp">
-<code class="sig-prename descclassname">bfieldtools.coil_optimize.</code><code class="sig-name descname">cvxopt_solve_qp</code><span class="sig-paren">(</span><em class="sig-param">P</em>, <em class="sig-param">q</em>, <em class="sig-param">G=None</em>, <em class="sig-param">h=None</em>, <em class="sig-param">A=None</em>, <em class="sig-param">b=None</em>, <em class="sig-param">sw=None</em>, <em class="sig-param">reg=None</em>, <em class="sig-param">tolerance=1e-07</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.cvxopt_solve_qp" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.coil_optimize.</code><code class="descname">cvxopt_solve_qp</code><span class="sig-paren">(</span><em>P</em>, <em>q</em>, <em>G=None</em>, <em>h=None</em>, <em>A=None</em>, <em>b=None</em>, <em>sw=None</em>, <em>reg=None</em>, <em>tolerance=1e-07</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.cvxopt_solve_qp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use cvxopt to minimize
 (1/2) * x’ * P * x + q’ * x</p>
 <p>subject to
@@ -287,12 +291,12 @@ A * x = b</p>
 
 <dl class="function">
 <dt id="bfieldtools.coil_optimize.cvxpy_solve_qp">
-<code class="sig-prename descclassname">bfieldtools.coil_optimize.</code><code class="sig-name descname">cvxpy_solve_qp</code><span class="sig-paren">(</span><em class="sig-param">P</em>, <em class="sig-param">G</em>, <em class="sig-param">h</em>, <em class="sig-param">solver=cvxpy.MOSEK</em>, <em class="sig-param">tolerance=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.cvxpy_solve_qp" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.coil_optimize.</code><code class="descname">cvxpy_solve_qp</code><span class="sig-paren">(</span><em>P</em>, <em>G</em>, <em>h</em>, <em>solver='MOSEK'</em>, <em>tolerance=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.cvxpy_solve_qp" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="bfieldtools.coil_optimize.optimize_streamfunctions">
-<code class="sig-prename descclassname">bfieldtools.coil_optimize.</code><code class="sig-name descname">optimize_streamfunctions</code><span class="sig-paren">(</span><em class="sig-param">conductor</em>, <em class="sig-param">bfield_specification</em>, <em class="sig-param">objective='minimum_inductive_energy'</em>, <em class="sig-param">solver=None</em>, <em class="sig-param">solver_opts={}</em>, <em class="sig-param">problem=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.optimize_streamfunctions" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.coil_optimize.</code><code class="descname">optimize_streamfunctions</code><span class="sig-paren">(</span><em>conductor</em>, <em>bfield_specification</em>, <em>objective='minimum_inductive_energy'</em>, <em>solver=None</em>, <em>solver_opts={}</em>, <em>problem=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.optimize_streamfunctions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Quadratic optimization of coil stream function according to a specified objective,
 while keeping specified target field at target points within given constraints.</p>
 <dl class="field-list simple">
@@ -323,10 +327,10 @@ skip DCP processing/reformulation time.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>s: vector</dt><dd><p>Vector with length len(<cite>conductor.mesh.vertices</cite>), containing the optimized current density values
+<dt><strong>s: vector</strong></dt><dd><p>Vector with length len(<cite>conductor.mesh.vertices</cite>), containing the optimized current density values
 at each mesh vertex</p>
 </dd>
-<dt>prob: CVXPY problem object</dt><dd><p>CVXPY problem object containing data, formulation, solution, metric etc</p>
+<dt><strong>prob: CVXPY problem object</strong></dt><dd><p>CVXPY problem object containing data, formulation, solution, metric etc</p>
 </dd>
 </dl>
 </dd>
@@ -335,7 +339,7 @@ at each mesh vertex</p>
 
 <dl class="function">
 <dt id="bfieldtools.coil_optimize.quadprog_solve_qp">
-<code class="sig-prename descclassname">bfieldtools.coil_optimize.</code><code class="sig-name descname">quadprog_solve_qp</code><span class="sig-paren">(</span><em class="sig-param">P</em>, <em class="sig-param">q</em>, <em class="sig-param">G=None</em>, <em class="sig-param">h=None</em>, <em class="sig-param">A=None</em>, <em class="sig-param">b=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.quadprog_solve_qp" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.coil_optimize.</code><code class="descname">quadprog_solve_qp</code><span class="sig-paren">(</span><em>P</em>, <em>q</em>, <em>G=None</em>, <em>h=None</em>, <em>A=None</em>, <em>b=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.quadprog_solve_qp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use quadprog to minimize
 (1/2) * x’ * P * x + q’ * x</p>
 <p>subject to
@@ -351,7 +355,7 @@ A * x = b</p>
 defined on a triangle mesh surface. Also contains functions for modifying the generated contours.</p>
 <dl class="function">
 <dt id="bfieldtools.contour.scalar_contour">
-<code class="sig-prename descclassname">bfieldtools.contour.</code><code class="sig-name descname">scalar_contour</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">scalars</em>, <em class="sig-param">N_contours=10</em>, <em class="sig-param">contours=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.contour.scalar_contour" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.contour.</code><code class="descname">scalar_contour</code><span class="sig-paren">(</span><em>mesh</em>, <em>scalars</em>, <em>N_contours=10</em>, <em>contours=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.contour.scalar_contour" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes contour loops (isolines) for a scalar function defined on a mesh.
 The winding direction of the loops is defined according to the rotated gradient of the scalar</p>
 <dl class="field-list simple">
@@ -369,10 +373,10 @@ The winding direction of the loops is defined according to the rotated gradient 
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>contour_polys: list</dt><dd><p>list with length <cite>N_contours</cite>. Each list element is anumpy array containing the
+<dt><strong>contour_polys: list</strong></dt><dd><p>list with length <cite>N_contours</cite>. Each list element is anumpy array containing the
 coordinats of each polygon vertex.</p>
 </dd>
-<dt>contour_values: array-like</dt><dd><p>Vector containing the scalar function value for each contour line</p>
+<dt><strong>contour_values: array-like</strong></dt><dd><p>Vector containing the scalar function value for each contour line</p>
 </dd>
 </dl>
 </dd>
@@ -381,7 +385,7 @@ coordinats of each polygon vertex.</p>
 
 <dl class="function">
 <dt id="bfieldtools.contour.simplify_contour">
-<code class="sig-prename descclassname">bfieldtools.contour.</code><code class="sig-name descname">simplify_contour</code><span class="sig-paren">(</span><em class="sig-param">c</em>, <em class="sig-param">min_edge=0.001</em>, <em class="sig-param">angle_threshold=0.02</em>, <em class="sig-param">smooth=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.contour.simplify_contour" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.contour.</code><code class="descname">simplify_contour</code><span class="sig-paren">(</span><em>c</em>, <em>min_edge=0.001</em>, <em>angle_threshold=0.02</em>, <em>smooth=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.contour.simplify_contour" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simplifies contours by merging small (short) segments and
 with only a small angle difference.</p>
 <p>Optionally applies smoothing to contour shape.</p>
@@ -400,7 +404,7 @@ with only a small angle difference.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>c: list</dt><dd><p>Modified list of polygons</p>
+<dt><strong>c: list</strong></dt><dd><p>Modified list of polygons</p>
 </dd>
 </dl>
 </dd>
@@ -414,7 +418,7 @@ with only a small angle difference.</p>
 These include the gradient, rotated gradient, divergence, curl, Laplacian and mass matrices.</p>
 <dl class="function">
 <dt id="bfieldtools.mesh_calculus.curl">
-<code class="sig-prename descclassname">bfieldtools.mesh_calculus.</code><code class="sig-name descname">curl</code><span class="sig-paren">(</span><em class="sig-param">vecs</em>, <em class="sig-param">mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.curl" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_calculus.</code><code class="descname">curl</code><span class="sig-paren">(</span><em>vecs</em>, <em>mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.curl" title="Permalink to this definition">¶</a></dt>
 <dd><p>Curl applied to tangential vector field</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -424,7 +428,7 @@ These include the gradient, rotated gradient, divergence, curl, Laplacian and ma
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>ndarray (Nverts,)</dt><dd><p>Curl applied on the vector field</p>
+<dt><strong>ndarray (Nverts,)</strong></dt><dd><p>Curl applied on the vector field</p>
 </dd>
 </dl>
 </dd>
@@ -433,7 +437,7 @@ These include the gradient, rotated gradient, divergence, curl, Laplacian and ma
 
 <dl class="function">
 <dt id="bfieldtools.mesh_calculus.curl_matrix">
-<code class="sig-prename descclassname">bfieldtools.mesh_calculus.</code><code class="sig-name descname">curl_matrix</code><span class="sig-paren">(</span><em class="sig-param">mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.curl_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_calculus.</code><code class="descname">curl_matrix</code><span class="sig-paren">(</span><em>mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.curl_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adjoint curl of tangential vector field</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -443,7 +447,7 @@ These include the gradient, rotated gradient, divergence, curl, Laplacian and ma
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>3 sparse csc_matrices</dt><dd><p>Cx ,Cy, Cz (Nverts, Ntri) matrices</p>
+<dt><strong>3 sparse csc_matrices</strong></dt><dd><p>Cx ,Cy, Cz (Nverts, Ntri) matrices</p>
 </dd>
 </dl>
 </dd>
@@ -452,7 +456,7 @@ These include the gradient, rotated gradient, divergence, curl, Laplacian and ma
 
 <dl class="function">
 <dt id="bfieldtools.mesh_calculus.divergence">
-<code class="sig-prename descclassname">bfieldtools.mesh_calculus.</code><code class="sig-name descname">divergence</code><span class="sig-paren">(</span><em class="sig-param">vecs</em>, <em class="sig-param">mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.divergence" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_calculus.</code><code class="descname">divergence</code><span class="sig-paren">(</span><em>vecs</em>, <em>mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.divergence" title="Permalink to this definition">¶</a></dt>
 <dd><p>Divergence mapping applied to tangential vector field ‘vecs’</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -463,7 +467,7 @@ These include the gradient, rotated gradient, divergence, curl, Laplacian and ma
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>ndarray (Nverts,)</dt><dd><p>Divergence applied on the vector field</p>
+<dt><strong>ndarray (Nverts,)</strong></dt><dd><p>Divergence applied on the vector field</p>
 </dd>
 </dl>
 </dd>
@@ -472,7 +476,7 @@ These include the gradient, rotated gradient, divergence, curl, Laplacian and ma
 
 <dl class="function">
 <dt id="bfieldtools.mesh_calculus.divergence_matrix">
-<code class="sig-prename descclassname">bfieldtools.mesh_calculus.</code><code class="sig-name descname">divergence_matrix</code><span class="sig-paren">(</span><em class="sig-param">mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.divergence_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_calculus.</code><code class="descname">divergence_matrix</code><span class="sig-paren">(</span><em>mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.divergence_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Divergence of tangential vector field on mesh faces as a linear mapping</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -482,7 +486,7 @@ These include the gradient, rotated gradient, divergence, curl, Laplacian and ma
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>3 sparse csc_matrices</dt><dd><p>Dx ,Dy, Dz (Nverts, Ntri) matrices</p>
+<dt><strong>3 sparse csc_matrices</strong></dt><dd><p>Dx ,Dy, Dz (Nverts, Ntri) matrices</p>
 </dd>
 </dl>
 </dd>
@@ -491,7 +495,7 @@ These include the gradient, rotated gradient, divergence, curl, Laplacian and ma
 
 <dl class="function">
 <dt id="bfieldtools.mesh_calculus.gradient">
-<code class="sig-prename descclassname">bfieldtools.mesh_calculus.</code><code class="sig-name descname">gradient</code><span class="sig-paren">(</span><em class="sig-param">vals</em>, <em class="sig-param">mesh</em>, <em class="sig-param">rotated=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.gradient" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_calculus.</code><code class="descname">gradient</code><span class="sig-paren">(</span><em>vals</em>, <em>mesh</em>, <em>rotated=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.gradient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Applies mesh (rotated) gradient matrix operator on vector that is
 defined in the vertex locations of the mesh</p>
 <dl class="field-list simple">
@@ -505,7 +509,7 @@ defined in the vertex locations of the mesh</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>ndarray (3, Ntris)</dt><dd><p>surface gradient of vals on each triangle</p>
+<dt><strong>ndarray (3, Ntris)</strong></dt><dd><p>surface gradient of vals on each triangle</p>
 </dd>
 </dl>
 </dd>
@@ -514,7 +518,7 @@ defined in the vertex locations of the mesh</p>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_calculus.gradient_matrix">
-<code class="sig-prename descclassname">bfieldtools.mesh_calculus.</code><code class="sig-name descname">gradient_matrix</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">rotated=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.gradient_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_calculus.</code><code class="descname">gradient_matrix</code><span class="sig-paren">(</span><em>mesh</em>, <em>rotated=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.gradient_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate a (rotated) gradient matrix for hat basis functions
 (stream functions) in the triangular mesh described by</p>
 <dl class="field-list simple">
@@ -527,8 +531,8 @@ defined in the vertex locations of the mesh</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>3 sparse csr_matrices</dt><dd></dd>
-<dt>Gx ,Gy, Gx (Ntris, Nverts) matrices</dt><dd><p>for calculating the components of gradient at triangles</p>
+<dt><strong>3 sparse csr_matrices</strong></dt><dd></dd>
+<dt><strong>Gx ,Gy, Gx (Ntris, Nverts) matrices</strong></dt><dd><p>for calculating the components of gradient at triangles</p>
 </dd>
 </dl>
 </dd>
@@ -537,7 +541,7 @@ defined in the vertex locations of the mesh</p>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_calculus.laplacian_matrix">
-<code class="sig-prename descclassname">bfieldtools.mesh_calculus.</code><code class="sig-name descname">laplacian_matrix</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">material_param=None</em>, <em class="sig-param">inner_vertices=None</em>, <em class="sig-param">holes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.laplacian_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_calculus.</code><code class="descname">laplacian_matrix</code><span class="sig-paren">(</span><em>mesh</em>, <em>material_param=None</em>, <em>inner_vertices=None</em>, <em>holes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.laplacian_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sparse Laplace-Beltrami operator</p>
 <p>If inner vertices are not given Laplacian for all the mesh vertices is returned.
 This corresponds to zero-Neumann (natural) boundary condition on the possible
@@ -564,7 +568,7 @@ mesh hole</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>sparse csr_matrix of variable shape (see description)</dt><dd><p>cotangent-laplacian: w_ij = - 0.5* (cot(alpha) + cot(beta))</p>
+<dt><strong>sparse csr_matrix of variable shape (see description)</strong></dt><dd><p>cotangent-laplacian: w_ij = - 0.5* (cot(alpha) + cot(beta))</p>
 </dd>
 </dl>
 </dd>
@@ -573,7 +577,7 @@ mesh hole</p>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_calculus.mass_matrix">
-<code class="sig-prename descclassname">bfieldtools.mesh_calculus.</code><code class="sig-name descname">mass_matrix</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">lumped=False</em>, <em class="sig-param">inner_vertices=None</em>, <em class="sig-param">holes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.mass_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_calculus.</code><code class="descname">mass_matrix</code><span class="sig-paren">(</span><em>mesh</em>, <em>lumped=False</em>, <em>inner_vertices=None</em>, <em>holes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_calculus.mass_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes mass matrix of mesh.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -591,7 +595,7 @@ mesh hole</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>sparse csr_matrix of variable shape (see the description of laplacian_matrix)</dt><dd><p>Mass matrix</p>
+<dt><strong>sparse csr_matrix of variable shape (see the description of laplacian_matrix)</strong></dt><dd><p>Mass matrix</p>
 </dd>
 </dl>
 </dd>
@@ -605,7 +609,7 @@ mesh hole</p>
 triangle mesh to magnetic field as well as scalar and vector potentials.</p>
 <dl class="function">
 <dt id="bfieldtools.mesh_magnetics.magnetic_field_coupling">
-<code class="sig-prename descclassname">bfieldtools.mesh_magnetics.</code><code class="sig-name descname">magnetic_field_coupling</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">r</em>, <em class="sig-param">Nchunks=None</em>, <em class="sig-param">quad_degree=1</em>, <em class="sig-param">analytic=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.magnetic_field_coupling" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_magnetics.</code><code class="descname">magnetic_field_coupling</code><span class="sig-paren">(</span><em>mesh</em>, <em>r</em>, <em>Nchunks=None</em>, <em>quad_degree=1</em>, <em>analytic=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.magnetic_field_coupling" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given ‘mesh’, computes the “C matrix” which gives the magnetic field at
 target points ‘r’ due to currents (stream function) on a surface mesh.</p>
 <dl class="field-list simple">
@@ -623,7 +627,7 @@ target points ‘r’ due to currents (stream function) on a surface mesh.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>C: ndarray (Np, 3, Nvertices)</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
+<dt><strong>C: ndarray (Np, 3, Nvertices)</strong></dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
 on the mesh to B-field at the evaluation points</p>
 </dd>
 </dl>
@@ -633,7 +637,7 @@ on the mesh to B-field at the evaluation points</p>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_magnetics.magnetic_field_coupling_analytic">
-<code class="sig-prename descclassname">bfieldtools.mesh_magnetics.</code><code class="sig-name descname">magnetic_field_coupling_analytic</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">r</em>, <em class="sig-param">Nchunks=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.magnetic_field_coupling_analytic" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_magnetics.</code><code class="descname">magnetic_field_coupling_analytic</code><span class="sig-paren">(</span><em>mesh</em>, <em>r</em>, <em>Nchunks=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.magnetic_field_coupling_analytic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a mesh, computes the “C matrix” which gives the magnetic field at
 some target points due to currents (stream function) on a surface mesh
 using analytic formulas.</p>
@@ -650,7 +654,7 @@ using analytic formulas.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>C: ndarray (Np, 3, Nvertices)</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
+<dt><strong>C: ndarray (Np, 3, Nvertices)</strong></dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
 on the mesh to B-field at the evaluation points</p>
 </dd>
 </dl>
@@ -660,7 +664,7 @@ on the mesh to B-field at the evaluation points</p>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_magnetics.magnetic_field_coupling_analytic_old">
-<code class="sig-prename descclassname">bfieldtools.mesh_magnetics.</code><code class="sig-name descname">magnetic_field_coupling_analytic_old</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">r</em>, <em class="sig-param">Nchunks=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.magnetic_field_coupling_analytic_old" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_magnetics.</code><code class="descname">magnetic_field_coupling_analytic_old</code><span class="sig-paren">(</span><em>mesh</em>, <em>r</em>, <em>Nchunks=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.magnetic_field_coupling_analytic_old" title="Permalink to this definition">¶</a></dt>
 <dd><p>DEPRECATED
 Given a mesh, computes the “C matrix” which gives the magnetic field at
 some target points due to currents (stream function) on a surface mesh.</p>
@@ -675,10 +679,10 @@ some target points due to currents (stream function) on a surface mesh.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>C: ndarray (Np, 3, Nvertices)</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
+<dt><strong>C: ndarray (Np, 3, Nvertices)</strong></dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
 on the mesh to B-field at the evaluation points</p>
 </dd>
-<dt>DEPRECATED</dt><dd></dd>
+<dt><strong>DEPRECATED</strong></dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -686,7 +690,7 @@ on the mesh to B-field at the evaluation points</p>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_magnetics.scalar_potential_coupling">
-<code class="sig-prename descclassname">bfieldtools.mesh_magnetics.</code><code class="sig-name descname">scalar_potential_coupling</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">r</em>, <em class="sig-param">Nchunks=None</em>, <em class="sig-param">multiply_coeff=True</em>, <em class="sig-param">approx_far=False</em>, <em class="sig-param">margin=3</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.scalar_potential_coupling" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_magnetics.</code><code class="descname">scalar_potential_coupling</code><span class="sig-paren">(</span><em>mesh</em>, <em>r</em>, <em>Nchunks=None</em>, <em>multiply_coeff=True</em>, <em>approx_far=False</em>, <em>margin=3</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.scalar_potential_coupling" title="Permalink to this definition">¶</a></dt>
 <dd><p>Coupling matrix corresponding to a mapping from a stream function
 to scalar potential using analytic integrals</p>
 <dl class="field-list simple">
@@ -709,7 +713,7 @@ to scalar potential using analytic integrals</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>U: ndarray (Np, Nvertices)</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
+<dt><strong>U: ndarray (Np, Nvertices)</strong></dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
 on the mesh to scalar potential at the evaluation points</p>
 </dd>
 </dl>
@@ -719,7 +723,7 @@ on the mesh to scalar potential at the evaluation points</p>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_magnetics.vector_potential_coupling">
-<code class="sig-prename descclassname">bfieldtools.mesh_magnetics.</code><code class="sig-name descname">vector_potential_coupling</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">r</em>, <em class="sig-param">Nchunks=None</em>, <em class="sig-param">approx_far=True</em>, <em class="sig-param">margin=2</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.vector_potential_coupling" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_magnetics.</code><code class="descname">vector_potential_coupling</code><span class="sig-paren">(</span><em>mesh</em>, <em>r</em>, <em>Nchunks=None</em>, <em>approx_far=True</em>, <em>margin=2</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_magnetics.vector_potential_coupling" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute vector potential coupling matrices
 from linear stream functions using analytic integral</p>
 <dl class="field-list simple">
@@ -739,7 +743,7 @@ far from the source triangles using a simple quadrature
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>A: ndarray (Np, 3, Nvertices)</dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
+<dt><strong>A: ndarray (Np, 3, Nvertices)</strong></dt><dd><p>Coupling matrix corresponding to a mapping from a stream function
 on the mesh to vector potential at the evaluation points</p>
 </dd>
 </dl>
@@ -754,31 +758,31 @@ on the mesh to vector potential at the evaluation points</p>
 some convenient functions and properties.</p>
 <dl class="class">
 <dt id="bfieldtools.mesh_class.Conductor">
-<em class="property">class </em><code class="sig-prename descclassname">bfieldtools.mesh_class.</code><code class="sig-name descname">Conductor</code><span class="sig-paren">(</span><em class="sig-param">verts=None</em>, <em class="sig-param">tris=None</em>, <em class="sig-param">mesh_file=None</em>, <em class="sig-param">mesh_obj=None</em>, <em class="sig-param">process=False</em>, <em class="sig-param">fix_normals=True</em>, <em class="sig-param">resistivity=1.6799999999999998e-08</em>, <em class="sig-param">thickness=0.0001</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.Conductor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bfieldtools.mesh_class.</code><code class="descname">Conductor</code><span class="sig-paren">(</span><em>verts=None</em>, <em>tris=None</em>, <em>mesh_file=None</em>, <em>mesh_obj=None</em>, <em>process=False</em>, <em>fix_normals=True</em>, <em>resistivity=1.6799999999999998e-08</em>, <em>thickness=0.0001</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.Conductor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Class that is used for surface mesh field calculations, e.g. coil design.
 Computation functions are typically external functions that are called
 using lazy properties.</p>
 <p>The mesh surface can consist of a single contiguous surface or several separate
 surfaces within a single mesh object.</p>
-<dl class="method">
+<dl class="attribute">
 <dt id="bfieldtools.mesh_class.Conductor.inductance">
-<em class="property">property </em><code class="sig-name descname">inductance</code><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.inductance" title="Permalink to this definition">¶</a></dt>
+<code class="descname">inductance</code><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.inductance" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="attribute">
 <dt id="bfieldtools.mesh_class.Conductor.laplacian">
-<em class="property">property </em><code class="sig-name descname">laplacian</code><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.laplacian" title="Permalink to this definition">¶</a></dt>
+<code class="descname">laplacian</code><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.laplacian" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="attribute">
 <dt id="bfieldtools.mesh_class.Conductor.mass">
-<em class="property">property </em><code class="sig-name descname">mass</code><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.mass" title="Permalink to this definition">¶</a></dt>
+<code class="descname">mass</code><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.mass" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.mesh_class.Conductor.mutual_inductance">
-<code class="sig-name descname">mutual_inductance</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">conductor_other</em>, <em class="sig-param">quad_degree=1</em>, <em class="sig-param">approx_far=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.mutual_inductance" title="Permalink to this definition">¶</a></dt>
+<code class="descname">mutual_inductance</code><span class="sig-paren">(</span><em>conductor_other</em>, <em>quad_degree=1</em>, <em>approx_far=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.mutual_inductance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mutual inductance between this conductor and another</p>
 <dl class="simple">
 <dt>Parameters:</dt><dd><p>conductor_other: Conductor object</p>
@@ -793,18 +797,18 @@ surfaces within a single mesh object.</p>
 
 <dl class="method">
 <dt id="bfieldtools.mesh_class.Conductor.plot_mesh">
-<code class="sig-name descname">plot_mesh</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cull_front=False</em>, <em class="sig-param">cull_back=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.plot_mesh" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot_mesh</code><span class="sig-paren">(</span><em>cull_front=False</em>, <em>cull_back=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.plot_mesh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simply plot the mesh surface in mayavi.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="attribute">
 <dt id="bfieldtools.mesh_class.Conductor.resistance">
-<em class="property">property </em><code class="sig-name descname">resistance</code><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.resistance" title="Permalink to this definition">¶</a></dt>
+<code class="descname">resistance</code><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.resistance" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.mesh_class.Conductor.save_pickle">
-<code class="sig-name descname">save_pickle</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">target_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.save_pickle" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_pickle</code><span class="sig-paren">(</span><em>target_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.save_pickle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the Conductor object using a pickled Python file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -818,12 +822,12 @@ surfaces within a single mesh object.</p>
 
 <dl class="method">
 <dt id="bfieldtools.mesh_class.Conductor.set_basis">
-<code class="sig-name descname">set_basis</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">basis_name</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.set_basis" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_basis</code><span class="sig-paren">(</span><em>basis_name</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.set_basis" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.mesh_class.Conductor.set_holes">
-<code class="sig-name descname">set_holes</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">outer_boundaries=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.set_holes" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_holes</code><span class="sig-paren">(</span><em>outer_boundaries=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.set_holes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set indices of holes to self.holes</p>
 <dl class="simple">
 <dt>outer_boundaries: int or array_like, indices of outer boundaries in</dt><dd><p>self.boundaries. One boundary index per mesh component.
@@ -833,16 +837,16 @@ boundary in each mesh component</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="attribute">
 <dt id="bfieldtools.mesh_class.Conductor.sph_couplings">
-<em class="property">property </em><code class="sig-name descname">sph_couplings</code><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.sph_couplings" title="Permalink to this definition">¶</a></dt>
+<code class="descname">sph_couplings</code><a class="headerlink" href="#bfieldtools.mesh_class.Conductor.sph_couplings" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="bfieldtools.mesh_class.CouplingMatrix">
-<em class="property">class </em><code class="sig-prename descclassname">bfieldtools.mesh_class.</code><code class="sig-name descname">CouplingMatrix</code><span class="sig-paren">(</span><em class="sig-param">parent</em>, <em class="sig-param">function</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.CouplingMatrix" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bfieldtools.mesh_class.</code><code class="descname">CouplingMatrix</code><span class="sig-paren">(</span><em>parent</em>, <em>function</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.CouplingMatrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>General-use class that contains a data array (a coupling matrix)
 and a bookkeeping list of computed points.</p>
@@ -851,7 +855,7 @@ If some output has already been computed, use pre-computed values instead
 and only compute missing parts.</p>
 <dl class="method">
 <dt id="bfieldtools.mesh_class.CouplingMatrix.reset">
-<code class="sig-name descname">reset</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.CouplingMatrix.reset" title="Permalink to this definition">¶</a></dt>
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.CouplingMatrix.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reset the matrix and points</p>
 </dd></dl>
 
@@ -859,7 +863,7 @@ and only compute missing parts.</p>
 
 <dl class="class">
 <dt id="bfieldtools.mesh_class.LazyProperty">
-<em class="property">class </em><code class="sig-prename descclassname">bfieldtools.mesh_class.</code><code class="sig-name descname">LazyProperty</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.LazyProperty" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bfieldtools.mesh_class.</code><code class="descname">LazyProperty</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.LazyProperty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Implementation of lazily loading properties, see
 <a class="reference external" href="http://blog.pythonisito.com/2008/08/lazy-descriptors.html">http://blog.pythonisito.com/2008/08/lazy-descriptors.html</a>
@@ -869,7 +873,7 @@ the property (acts as a method). Afterwards, it acts like a normal property.</p>
 
 <dl class="class">
 <dt id="bfieldtools.mesh_class.StreamFunction">
-<em class="property">class </em><code class="sig-prename descclassname">bfieldtools.mesh_class.</code><code class="sig-name descname">StreamFunction</code><span class="sig-paren">(</span><em class="sig-param">input_array</em>, <em class="sig-param">conductor=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.StreamFunction" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bfieldtools.mesh_class.</code><code class="descname">StreamFunction</code><span class="sig-paren">(</span><em>input_array</em>, <em>conductor=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.StreamFunction" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
 <p>Class for representing stream function(s) on a conductor</p>
 <p>Handles the mapping between the inner (free) weights in the
@@ -891,7 +895,7 @@ by specifying vals with shape (N,M)</p>
 </dl>
 <dl class="method">
 <dt id="bfieldtools.mesh_class.StreamFunction.discretize">
-<code class="sig-name descname">discretize</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">N_contours=10</em>, <em class="sig-param">contours=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.StreamFunction.discretize" title="Permalink to this definition">¶</a></dt>
+<code class="descname">discretize</code><span class="sig-paren">(</span><em>N_contours=10</em>, <em>contours=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.StreamFunction.discretize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper method for scalar_contour</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -904,47 +908,47 @@ by specifying vals with shape (N,M)</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>contour_polys: list</dt><dd><p>list with length <cite>N_contours</cite>. Each list element is anumpy array containing the
+<dt><strong>contour_polys: list</strong></dt><dd><p>list with length <cite>N_contours</cite>. Each list element is anumpy array containing the
 coordinats of each polygon vertex.</p>
 </dd>
-<dt>contour_values: array-like</dt><dd><p>Vector containing the scalar function value for each contour line</p>
+<dt><strong>contour_values: array-like</strong></dt><dd><p>Vector containing the scalar function value for each contour line</p>
 </dd>
 </dl>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="attribute">
 <dt id="bfieldtools.mesh_class.StreamFunction.inner">
-<em class="property">property </em><code class="sig-name descname">inner</code><a class="headerlink" href="#bfieldtools.mesh_class.StreamFunction.inner" title="Permalink to this definition">¶</a></dt>
+<code class="descname">inner</code><a class="headerlink" href="#bfieldtools.mesh_class.StreamFunction.inner" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="attribute">
 <dt id="bfieldtools.mesh_class.StreamFunction.magnetic_energy">
-<em class="property">property </em><code class="sig-name descname">magnetic_energy</code><a class="headerlink" href="#bfieldtools.mesh_class.StreamFunction.magnetic_energy" title="Permalink to this definition">¶</a></dt>
+<code class="descname">magnetic_energy</code><a class="headerlink" href="#bfieldtools.mesh_class.StreamFunction.magnetic_energy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.mesh_class.StreamFunction.plot">
-<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">background=True</em>, <em class="sig-param">contours=False</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.StreamFunction.plot" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot</code><span class="sig-paren">(</span><em>background=True</em>, <em>contours=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.StreamFunction.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the stream function</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="attribute">
 <dt id="bfieldtools.mesh_class.StreamFunction.power">
-<em class="property">property </em><code class="sig-name descname">power</code><a class="headerlink" href="#bfieldtools.mesh_class.StreamFunction.power" title="Permalink to this definition">¶</a></dt>
+<code class="descname">power</code><a class="headerlink" href="#bfieldtools.mesh_class.StreamFunction.power" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="attribute">
 <dt id="bfieldtools.mesh_class.StreamFunction.vert">
-<em class="property">property </em><code class="sig-name descname">vert</code><a class="headerlink" href="#bfieldtools.mesh_class.StreamFunction.vert" title="Permalink to this definition">¶</a></dt>
+<code class="descname">vert</code><a class="headerlink" href="#bfieldtools.mesh_class.StreamFunction.vert" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_class.load_pickle">
-<code class="sig-prename descclassname">bfieldtools.mesh_class.</code><code class="sig-name descname">load_pickle</code><span class="sig-paren">(</span><em class="sig-param">target_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.load_pickle" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_class.</code><code class="descname">load_pickle</code><span class="sig-paren">(</span><em>target_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.load_pickle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load pickled Conductor object from file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -961,13 +965,13 @@ coordinats of each polygon vertex.</p>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_class.matrixwrapper">
-<code class="sig-prename descclassname">bfieldtools.mesh_class.</code><code class="sig-name descname">matrixwrapper</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.matrixwrapper" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_class.</code><code class="descname">matrixwrapper</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.matrixwrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper for lazy computation of Conductor matrices with basis change</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_class.save_pickle">
-<code class="sig-prename descclassname">bfieldtools.mesh_class.</code><code class="sig-name descname">save_pickle</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">target_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.save_pickle" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_class.</code><code class="descname">save_pickle</code><span class="sig-paren">(</span><em>obj</em>, <em>target_file</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_class.save_pickle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the Conductor object using a pickled Python file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -987,7 +991,7 @@ coordinats of each polygon vertex.</p>
 including both self- and mutual-inductance.</p>
 <dl class="function">
 <dt id="bfieldtools.mesh_properties.mesh2line_mutual_inductance">
-<code class="sig-prename descclassname">bfieldtools.mesh_properties.</code><code class="sig-name descname">mesh2line_mutual_inductance</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">line_vertices</em>, <em class="sig-param">quad_degree=3</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_properties.mesh2line_mutual_inductance" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_properties.</code><code class="descname">mesh2line_mutual_inductance</code><span class="sig-paren">(</span><em>mesh</em>, <em>line_vertices</em>, <em>quad_degree=3</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_properties.mesh2line_mutual_inductance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mutual inductance of a closed line segment loop (last segment connecting to first)
 and a triangle mesh</p>
 <dl class="field-list simple">
@@ -999,7 +1003,7 @@ and a triangle mesh</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>M: mutual inductance vector with shape (N_vertices,)</dt><dd></dd>
+<dt><strong>M: mutual inductance vector with shape (N_vertices,)</strong></dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -1007,7 +1011,7 @@ and a triangle mesh</p>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_properties.mutual_inductance_matrix">
-<code class="sig-prename descclassname">bfieldtools.mesh_properties.</code><code class="sig-name descname">mutual_inductance_matrix</code><span class="sig-paren">(</span><em class="sig-param">mesh1</em>, <em class="sig-param">mesh2</em>, <em class="sig-param">Nchunks=None</em>, <em class="sig-param">quad_degree=1</em>, <em class="sig-param">approx_far=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_properties.mutual_inductance_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_properties.</code><code class="descname">mutual_inductance_matrix</code><span class="sig-paren">(</span><em>mesh1</em>, <em>mesh2</em>, <em>Nchunks=None</em>, <em>quad_degree=1</em>, <em>approx_far=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_properties.mutual_inductance_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate a mutual inductance matrix for hat basis functions
 (stream functions) between two surface meshes</p>
 <dl class="field-list simple">
@@ -1023,7 +1027,7 @@ and a triangle mesh</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>M: (Nvertices1 x Nvertices2) array</dt><dd><p>Mutual inductance matrix between mesh1 and mesh2</p>
+<dt><strong>M: (Nvertices1 x Nvertices2) array</strong></dt><dd><p>Mutual inductance matrix between mesh1 and mesh2</p>
 </dd>
 </dl>
 </dd>
@@ -1032,7 +1036,7 @@ and a triangle mesh</p>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_properties.resistance_matrix">
-<code class="sig-prename descclassname">bfieldtools.mesh_properties.</code><code class="sig-name descname">resistance_matrix</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">sheet_resistance</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_properties.resistance_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_properties.</code><code class="descname">resistance_matrix</code><span class="sig-paren">(</span><em>mesh</em>, <em>sheet_resistance</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_properties.resistance_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resistance matrix</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1051,7 +1055,7 @@ and a triangle mesh</p>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_properties.self_inductance_matrix">
-<code class="sig-prename descclassname">bfieldtools.mesh_properties.</code><code class="sig-name descname">self_inductance_matrix</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">Nchunks=None</em>, <em class="sig-param">quad_degree=2</em>, <em class="sig-param">approx_far=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_properties.self_inductance_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_properties.</code><code class="descname">self_inductance_matrix</code><span class="sig-paren">(</span><em>mesh</em>, <em>Nchunks=None</em>, <em>quad_degree=2</em>, <em>approx_far=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_properties.self_inductance_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate a self inductance matrix for hat basis functions
 (stream functions) in the triangular mesh described by</p>
 <dl class="field-list simple">
@@ -1073,7 +1077,7 @@ and a triangle mesh</p>
 
 <dl class="function">
 <dt id="bfieldtools.mesh_properties.triangle_self_coupling">
-<code class="sig-prename descclassname">bfieldtools.mesh_properties.</code><code class="sig-name descname">triangle_self_coupling</code><span class="sig-paren">(</span><em class="sig-param">mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_properties.triangle_self_coupling" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.mesh_properties.</code><code class="descname">triangle_self_coupling</code><span class="sig-paren">(</span><em>mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_properties.triangle_self_coupling" title="Permalink to this definition">¶</a></dt>
 <dd><p>TODO: Self coupling can be integrated analytically
 <a class="reference external" href="https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&amp;arnumber=475946">https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&amp;arnumber=475946</a></p>
 </dd></dl>
@@ -1083,7 +1087,7 @@ and a triangle mesh</p>
 <span id="bfieldtools-sphtools-module"></span><h2>bfieldtools.sphtools module<a class="headerlink" href="#module-bfieldtools.sphtools" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="bfieldtools.sphtools.Blm">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">Blm</code><span class="sig-paren">(</span><em class="sig-param">l</em>, <em class="sig-param">m</em>, <em class="sig-param">theta</em>, <em class="sig-param">phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.Blm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">Blm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.Blm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Blm vector function (see Eq. 19 Plattner and Simons (2014)).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1107,7 +1111,7 @@ and a triangle mesh</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.Philm">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">Philm</code><span class="sig-paren">(</span><em class="sig-param">l</em>, <em class="sig-param">m</em>, <em class="sig-param">theta</em>, <em class="sig-param">phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.Philm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">Philm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.Philm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Vector basis function (Philm) for r**(-l) component of the magnetic field.
 Normalization &lt;Philm,Phikn&gt; = delta_lk,mn.</p>
 <dl class="field-list simple">
@@ -1125,7 +1129,7 @@ Normalization &lt;Philm,Phikn&gt; = delta_lk,mn.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>Philm: Nx3 array</dt><dd><p>Philm at (theta, phi).</p>
+<dt><strong>Philm: Nx3 array</strong></dt><dd><p>Philm at (theta, phi).</p>
 </dd>
 </dl>
 </dd>
@@ -1134,7 +1138,7 @@ Normalization &lt;Philm,Phikn&gt; = delta_lk,mn.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.Plm">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">Plm</code><span class="sig-paren">(</span><em class="sig-param">l</em>, <em class="sig-param">m</em>, <em class="sig-param">theta</em>, <em class="sig-param">phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.Plm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">Plm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.Plm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plm vector function (see Eq. 18 Plattner and Simons (2014)).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1158,7 +1162,7 @@ Normalization &lt;Philm,Phikn&gt; = delta_lk,mn.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.Psilm">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">Psilm</code><span class="sig-paren">(</span><em class="sig-param">l</em>, <em class="sig-param">m</em>, <em class="sig-param">theta</em>, <em class="sig-param">phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.Psilm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">Psilm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.Psilm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Vector basis function (Psilm) for r**l component of the magnetic field.
 Normalization &lt;Psilm,Psikn&gt; = delta_lk,mn.</p>
 <dl class="field-list simple">
@@ -1183,7 +1187,7 @@ Normalization &lt;Psilm,Psikn&gt; = delta_lk,mn.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.Rotmatrix">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">Rotmatrix</code><span class="sig-paren">(</span><em class="sig-param">sp</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.Rotmatrix" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">Rotmatrix</code><span class="sig-paren">(</span><em>sp</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.Rotmatrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructs rotation matrix from cartesian coordinates to spherical.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1194,7 +1198,7 @@ Normalization &lt;Psilm,Psikn&gt; = delta_lk,mn.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>vmat: 3x3 array</dt><dd><p>rotation matrix from cartesian to spherical.</p>
+<dt><strong>vmat: 3x3 array</strong></dt><dd><p>rotation matrix from cartesian to spherical.</p>
 </dd>
 </dl>
 </dd>
@@ -1203,7 +1207,7 @@ Normalization &lt;Psilm,Psikn&gt; = delta_lk,mn.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.basis_fields">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">basis_fields</code><span class="sig-paren">(</span><em class="sig-param">p</em>, <em class="sig-param">lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.basis_fields" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">basis_fields</code><span class="sig-paren">(</span><em>p</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.basis_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes magnetic fields for each sph coefficient.
 Ignores the ‘DC’ component l=0. The fields are normalized
 over the unit sphere.</p>
@@ -1218,9 +1222,9 @@ over the unit sphere.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>B1: N_lmax x N x 3 array</dt><dd><p>magnetic field at p for each alpha_lm</p>
+<dt><strong>B1: N_lmax x N x 3 array</strong></dt><dd><p>magnetic field at p for each alpha_lm</p>
 </dd>
-<dt>B2: N_lmax x N x 3 array</dt><dd><p>magnetic field at p for each beta_lm</p>
+<dt><strong>B2: N_lmax x N x 3 array</strong></dt><dd><p>magnetic field at p for each beta_lm</p>
 </dd>
 </dl>
 </dd>
@@ -1229,7 +1233,7 @@ over the unit sphere.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.cartesian2spherical">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">cartesian2spherical</code><span class="sig-paren">(</span><em class="sig-param">p</em>, <em class="sig-param">zaxis_approx=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.cartesian2spherical" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">cartesian2spherical</code><span class="sig-paren">(</span><em>p</em>, <em>zaxis_approx=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.cartesian2spherical" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maps cartesian coordinates to spherical.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1240,7 +1244,7 @@ over the unit sphere.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>sp: Nx3 array</dt><dd><p>spherical coordinates [r, theta, phi]</p>
+<dt><strong>sp: Nx3 array</strong></dt><dd><p>spherical coordinates [r, theta, phi]</p>
 </dd>
 </dl>
 </dd>
@@ -1249,7 +1253,7 @@ over the unit sphere.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.cartvec2sph">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">cartvec2sph</code><span class="sig-paren">(</span><em class="sig-param">sp</em>, <em class="sig-param">vec</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.cartvec2sph" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">cartvec2sph</code><span class="sig-paren">(</span><em>sp</em>, <em>vec</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.cartvec2sph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transforms cartesian vector to spherical coordinates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1262,7 +1266,7 @@ over the unit sphere.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>svec: Nx3 array</dt><dd><p>vector in spherical coordinates [e_r, e_theta, e_phi]</p>
+<dt><strong>svec: Nx3 array</strong></dt><dd><p>vector in spherical coordinates [e_r, e_theta, e_phi]</p>
 </dd>
 </dl>
 </dd>
@@ -1271,7 +1275,7 @@ over the unit sphere.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.compute_sphcoeffs_mesh">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">compute_sphcoeffs_mesh</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.compute_sphcoeffs_mesh" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">compute_sphcoeffs_mesh</code><span class="sig-paren">(</span><em>mesh</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.compute_sphcoeffs_mesh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes multipole moment (spherical harmonics coefficient) transformation
 from the mesh.</p>
 <dl class="field-list simple">
@@ -1284,9 +1288,9 @@ from the mesh.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>alm: (lmax*(lmax+2)xNvertices array</dt><dd><p>transformation from the mesh to alm coefficients (r**l-terms)</p>
+<dt><strong>alm: (lmax*(lmax+2)xNvertices array</strong></dt><dd><p>transformation from the mesh to alm coefficients (r**l-terms)</p>
 </dd>
-<dt>blm: (lmax*(lmax+2)xNvertices array</dt><dd><p>transformation from the mesh to blm coefficients (r**(-l)-terms)</p>
+<dt><strong>blm: (lmax*(lmax+2)xNvertices array</strong></dt><dd><p>transformation from the mesh to blm coefficients (r**(-l)-terms)</p>
 </dd>
 </dl>
 </dd>
@@ -1295,7 +1299,7 @@ from the mesh.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.derlpmn_em">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">derlpmn_em</code><span class="sig-paren">(</span><em class="sig-param">l</em>, <em class="sig-param">m</em>, <em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.derlpmn_em" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">derlpmn_em</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.derlpmn_em" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes derivative of associated Legendre function (Plm) of the first kind of order m and degree l
 with respect to the argument x.</p>
 <dl class="field-list simple">
@@ -1311,7 +1315,7 @@ with respect to the argument x.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>derlp: Nx1 array</dt><dd><p>dPlm/dx at <cite>x</cite></p>
+<dt><strong>derlp: Nx1 array</strong></dt><dd><p>dPlm/dx at <cite>x</cite></p>
 </dd>
 </dl>
 </dd>
@@ -1320,7 +1324,7 @@ with respect to the argument x.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.derxlm">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">derxlm</code><span class="sig-paren">(</span><em class="sig-param">l</em>, <em class="sig-param">m</em>, <em class="sig-param">theta</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.derxlm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">derxlm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.derxlm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Derivative of Xlm with respect to theta.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1335,7 +1339,7 @@ with respect to the argument x.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>derxlm: Nx1 array</dt><dd><p>dXlm/dtheta at theta</p>
+<dt><strong>derxlm: Nx1 array</strong></dt><dd><p>dXlm/dtheta at theta</p>
 </dd>
 </dl>
 </dd>
@@ -1344,7 +1348,7 @@ with respect to the argument x.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.dphiylm">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">dphiylm</code><span class="sig-paren">(</span><em class="sig-param">l</em>, <em class="sig-param">m</em>, <em class="sig-param">theta</em>, <em class="sig-param">phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.dphiylm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">dphiylm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.dphiylm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Derivative of Ylm with respect to phi dYlm/dphi.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1361,7 +1365,7 @@ with respect to the argument x.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>dphiylm: Nx1 array</dt><dd><p>dYlm/dphi at (theta, phi).</p>
+<dt><strong>dphiylm: Nx1 array</strong></dt><dd><p>dYlm/dphi at (theta, phi).</p>
 </dd>
 </dl>
 </dd>
@@ -1370,7 +1374,7 @@ with respect to the argument x.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.dthylm">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">dthylm</code><span class="sig-paren">(</span><em class="sig-param">l</em>, <em class="sig-param">m</em>, <em class="sig-param">theta</em>, <em class="sig-param">phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.dthylm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">dthylm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.dthylm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Derivative of Ylm with respect to theta dYlm/dtheta.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1387,7 +1391,7 @@ with respect to the argument x.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>dthylm: Nx1 array</dt><dd><p>dYlm/dtheta at (theta, phi).</p>
+<dt><strong>dthylm: Nx1 array</strong></dt><dd><p>dYlm/dtheta at (theta, phi).</p>
 </dd>
 </dl>
 </dd>
@@ -1396,7 +1400,7 @@ with respect to the argument x.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.field">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">field</code><span class="sig-paren">(</span><em class="sig-param">p</em>, <em class="sig-param">acoeffs</em>, <em class="sig-param">bcoeffs</em>, <em class="sig-param">lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.field" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">field</code><span class="sig-paren">(</span><em>p</em>, <em>acoeffs</em>, <em>bcoeffs</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.field" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes magnetic field from the sph coefficients.
 Ignores the ‘DC’ component l=0.</p>
 <dl class="field-list simple">
@@ -1414,7 +1418,7 @@ Ignores the ‘DC’ component l=0.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>field: Nx3 array</dt><dd><p>magnetic field at p</p>
+<dt><strong>field: Nx3 array</strong></dt><dd><p>magnetic field at p</p>
 </dd>
 </dl>
 </dd>
@@ -1423,7 +1427,7 @@ Ignores the ‘DC’ component l=0.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.fitSpectra">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">fitSpectra</code><span class="sig-paren">(</span><em class="sig-param">coords</em>, <em class="sig-param">Bmeas</em>, <em class="sig-param">lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.fitSpectra" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">fitSpectra</code><span class="sig-paren">(</span><em>coords</em>, <em>Bmeas</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.fitSpectra" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fits spherical harmonics representation (r**l) to measured data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1439,11 +1443,11 @@ in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-c
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>coeffs: lmax*(lmax+2)x1 array</dt><dd><p>the unnormalized coefficients</p>
+<dt><strong>coeffs: lmax*(lmax+2)x1 array</strong></dt><dd><p>the unnormalized coefficients</p>
 </dd>
-<dt>coeffs2: lmax*(lmax+2)x1 array</dt><dd><p>the ‘properly’ normalized squared coefficients</p>
+<dt><strong>coeffs2: lmax*(lmax+2)x1 array</strong></dt><dd><p>the ‘properly’ normalized squared coefficients</p>
 </dd>
-<dt>nrmse: float</dt><dd><p>normalized rms error in percents between the data and fit</p>
+<dt><strong>nrmse: float</strong></dt><dd><p>normalized rms error in percents between the data and fit</p>
 </dd>
 </dl>
 </dd>
@@ -1452,7 +1456,7 @@ in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-c
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.lpmn_em">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">lpmn_em</code><span class="sig-paren">(</span><em class="sig-param">l</em>, <em class="sig-param">m</em>, <em class="sig-param">x</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.lpmn_em" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">lpmn_em</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.lpmn_em" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes associated Legendre function (Plm) of the first kind of order m and degree l.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1467,7 +1471,7 @@ in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-c
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>lp: Nx1 array</dt><dd><p>Plm at <cite>x</cite></p>
+<dt><strong>lp: Nx1 array</strong></dt><dd><p>Plm at <cite>x</cite></p>
 </dd>
 </dl>
 </dd>
@@ -1476,7 +1480,7 @@ in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-c
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.plotBPhilm_volume">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">plotBPhilm_volume</code><span class="sig-paren">(</span><em class="sig-param">sph</em>, <em class="sig-param">l</em>, <em class="sig-param">m</em>, <em class="sig-param">lim</em>, <em class="sig-param">Np</em>, <em class="sig-param">offset</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotBPhilm_volume" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">plotBPhilm_volume</code><span class="sig-paren">(</span><em>sph</em>, <em>l</em>, <em>m</em>, <em>lim</em>, <em>Np</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotBPhilm_volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots magnetic field basis function ‘Philm’ (r**(-l)) over a 3D volume.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1496,7 +1500,7 @@ in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-c
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>obj: mayavi object</dt><dd></dd>
+<dt><strong>obj: mayavi object</strong></dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -1504,7 +1508,7 @@ in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-c
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.plotBPsilm_volume">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">plotBPsilm_volume</code><span class="sig-paren">(</span><em class="sig-param">sph</em>, <em class="sig-param">l</em>, <em class="sig-param">m</em>, <em class="sig-param">lim</em>, <em class="sig-param">Np</em>, <em class="sig-param">offset</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotBPsilm_volume" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">plotBPsilm_volume</code><span class="sig-paren">(</span><em>sph</em>, <em>l</em>, <em>m</em>, <em>lim</em>, <em>Np</em>, <em>offset</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotBPsilm_volume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots magnetic field basis function ‘Psilm’ (r**l) over a 3D volume.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1524,7 +1528,7 @@ in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-c
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>obj: mayavi object</dt><dd></dd>
+<dt><strong>obj: mayavi object</strong></dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -1532,7 +1536,7 @@ in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-c
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.plotPhilm">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">plotPhilm</code><span class="sig-paren">(</span><em class="sig-param">sph</em>, <em class="sig-param">l</em>, <em class="sig-param">m</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotPhilm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">plotPhilm</code><span class="sig-paren">(</span><em>sph</em>, <em>l</em>, <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotPhilm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots magnetic field basis function ‘Philm’ (r**(-l)) over a sphere.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1546,7 +1550,7 @@ in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-c
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>obj: mayavi object</dt><dd></dd>
+<dt><strong>obj: mayavi object</strong></dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -1554,7 +1558,7 @@ in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-c
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.plotPsilm">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">plotPsilm</code><span class="sig-paren">(</span><em class="sig-param">sph</em>, <em class="sig-param">l</em>, <em class="sig-param">m</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotPsilm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">plotPsilm</code><span class="sig-paren">(</span><em>sph</em>, <em>l</em>, <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotPsilm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots magnetic field basis function ‘Psilm’ (r**l) over a sphere.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1568,7 +1572,7 @@ in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-c
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>obj: mayavi object</dt><dd></dd>
+<dt><strong>obj: mayavi object</strong></dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -1576,7 +1580,7 @@ in the third dimension: e.g. coords[:,:,2] gives the coordinates of measured z-c
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.plotYlm">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">plotYlm</code><span class="sig-paren">(</span><em class="sig-param">sph</em>, <em class="sig-param">l</em>, <em class="sig-param">m</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotYlm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">plotYlm</code><span class="sig-paren">(</span><em>sph</em>, <em>l</em>, <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotYlm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots real spherical harmonics of order m and degree l.
 Inspired by <a class="reference external" href="https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html">https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html</a></p>
 <dl class="field-list simple">
@@ -1594,7 +1598,7 @@ Inspired by <a class="reference external" href="https://docs.enthought.com/mayav
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.plotYlms">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">plotYlms</code><span class="sig-paren">(</span><em class="sig-param">sph</em>, <em class="sig-param">lmax</em>, <em class="sig-param">polar=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotYlms" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">plotYlms</code><span class="sig-paren">(</span><em>sph</em>, <em>lmax</em>, <em>polar=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.plotYlms" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots real spherical harmonics up to lmax.
 Inspired by <a class="reference external" href="https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html">https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html</a>.</p>
 <dl class="field-list simple">
@@ -1612,7 +1616,7 @@ Inspired by <a class="reference external" href="https://docs.enthought.com/mayav
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.potential">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">potential</code><span class="sig-paren">(</span><em class="sig-param">p</em>, <em class="sig-param">acoeffs</em>, <em class="sig-param">bcoeffs</em>, <em class="sig-param">lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.potential" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">potential</code><span class="sig-paren">(</span><em>p</em>, <em>acoeffs</em>, <em>bcoeffs</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.potential" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes magnetic scalar potential from the sph coefficients.
 Ignores the ‘DC’ component l=0.</p>
 <dl class="field-list simple">
@@ -1630,7 +1634,7 @@ Ignores the ‘DC’ component l=0.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>pot: Nx1 array</dt><dd><p>magnetic scalar potential at p</p>
+<dt><strong>pot: Nx1 array</strong></dt><dd><p>magnetic scalar potential at p</p>
 </dd>
 </dl>
 </dd>
@@ -1639,7 +1643,7 @@ Ignores the ‘DC’ component l=0.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.reconstructB">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">reconstructB</code><span class="sig-paren">(</span><em class="sig-param">p</em>, <em class="sig-param">coeffs</em>, <em class="sig-param">lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.reconstructB" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">reconstructB</code><span class="sig-paren">(</span><em>p</em>, <em>coeffs</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.reconstructB" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reconstructs the magnetic field using the spherical harmonics coefficients.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1654,7 +1658,7 @@ Ignores the ‘DC’ component l=0.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>B: Nx3 array</dt><dd><p>reconstructed magnetic field at p</p>
+<dt><strong>B: Nx3 array</strong></dt><dd><p>reconstructed magnetic field at p</p>
 </dd>
 </dl>
 </dd>
@@ -1663,7 +1667,7 @@ Ignores the ‘DC’ component l=0.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.sinxlm">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">sinxlm</code><span class="sig-paren">(</span><em class="sig-param">l</em>, <em class="sig-param">m</em>, <em class="sig-param">theta</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sinxlm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">sinxlm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sinxlm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes m/(sin(theta))*Xlm.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1678,7 +1682,7 @@ Ignores the ‘DC’ component l=0.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>sinxlm: Nx1 array</dt><dd><p>m/(sin(theta))*Xlm at theta</p>
+<dt><strong>sinxlm: Nx1 array</strong></dt><dd><p>m/(sin(theta))*Xlm at theta</p>
 </dd>
 </dl>
 </dd>
@@ -1687,7 +1691,7 @@ Ignores the ‘DC’ component l=0.</p>
 
 <dl class="class">
 <dt id="bfieldtools.sphtools.sphbasis">
-<em class="property">class </em><code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">sphbasis</code><span class="sig-paren">(</span><em class="sig-param">Np</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">bfieldtools.sphtools.</code><code class="descname">sphbasis</code><span class="sig-paren">(</span><em>Np</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Class for constructing spherical harmonics (Ylms), their gradients
 and related magnetic field ‘basis vectorfunctions’
@@ -1700,7 +1704,7 @@ used as the inner product &lt;C,D&gt; = int C dot D dOmega.</p>
 <p>TODO: mu0 might be missing!!!</p>
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.avsphspectra">
-<code class="sig-name descname">avsphspectra</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">fun</em>, <em class="sig-param">lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.avsphspectra" title="Permalink to this definition">¶</a></dt>
+<code class="descname">avsphspectra</code><span class="sig-paren">(</span><em>fun</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.avsphspectra" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the l,m-spectra (over r**l-terms) of vector function defined in quadrature points
 using the inner product.</p>
 <dl class="field-list simple">
@@ -1714,7 +1718,7 @@ using the inner product.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>coeffs: lmax*(lmax+2)x1 arrays</dt><dd><p>spectral coefficients</p>
+<dt><strong>coeffs: lmax*(lmax+2)x1 arrays</strong></dt><dd><p>spectral coefficients</p>
 </dd>
 </dl>
 </dd>
@@ -1723,7 +1727,7 @@ using the inner product.</p>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.bvsphspectra">
-<code class="sig-name descname">bvsphspectra</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">fun</em>, <em class="sig-param">lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.bvsphspectra" title="Permalink to this definition">¶</a></dt>
+<code class="descname">bvsphspectra</code><span class="sig-paren">(</span><em>fun</em>, <em>lmax</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.bvsphspectra" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the l,m-spectra (over r**(-l)-terms) of vector function defined in quadrature points
 using the inner product.</p>
 <dl class="field-list simple">
@@ -1737,7 +1741,7 @@ using the inner product.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>coeffs: lmax*(lmax+2)x1 arrays</dt><dd><p>spectral coefficients</p>
+<dt><strong>coeffs: lmax*(lmax+2)x1 arrays</strong></dt><dd><p>spectral coefficients</p>
 </dd>
 </dl>
 </dd>
@@ -1746,14 +1750,14 @@ using the inner product.</p>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.initqp">
-<code class="sig-name descname">initqp</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.initqp" title="Permalink to this definition">¶</a></dt>
+<code class="descname">initqp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.initqp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialises quadrature points on the sphere.</p>
 <p>Default points are McLaren(10) so that we avoid singularities.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="bfieldtools.sphtools.sphbasis.innerproduct">
-<code class="sig-name descname">innerproduct</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">fun1</em>, <em class="sig-param">fun2</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.innerproduct" title="Permalink to this definition">¶</a></dt>
+<code class="descname">innerproduct</code><span class="sig-paren">(</span><em>fun1</em>, <em>fun2</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphbasis.innerproduct" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inner product of vector functions fun1 and fun2.
 Defined as integration over a surface of unit sphere &lt;C,D&gt; = int C dot D dOmega.
 Quadrature rule defined in qp is used.</p>
@@ -1768,7 +1772,7 @@ Quadrature rule defined in qp is used.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>dotp: int</dt><dd><p>inner product of fun1 and fun2</p>
+<dt><strong>dotp: int</strong></dt><dd><p>inner product of fun1 and fun2</p>
 </dd>
 </dl>
 </dd>
@@ -1779,7 +1783,7 @@ Quadrature rule defined in qp is used.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.spherical2cartesian">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">spherical2cartesian</code><span class="sig-paren">(</span><em class="sig-param">sp</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.spherical2cartesian" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">spherical2cartesian</code><span class="sig-paren">(</span><em>sp</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.spherical2cartesian" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maps spherical coordinates to cartesian.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1790,7 +1794,7 @@ Quadrature rule defined in qp is used.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>p: Nx3 array</dt><dd><p>cartesian croodinates</p>
+<dt><strong>p: Nx3 array</strong></dt><dd><p>cartesian croodinates</p>
 </dd>
 </dl>
 </dd>
@@ -1799,7 +1803,7 @@ Quadrature rule defined in qp is used.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.sphvec2cart">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">sphvec2cart</code><span class="sig-paren">(</span><em class="sig-param">sp</em>, <em class="sig-param">vec</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphvec2cart" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">sphvec2cart</code><span class="sig-paren">(</span><em>sp</em>, <em>vec</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.sphvec2cart" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transforms cartesian vector to spherical coordinates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1812,7 +1816,7 @@ Quadrature rule defined in qp is used.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>svec: Nx3 array</dt><dd><p>vector in cartesian coordinates [e_x, e_y, e_z]</p>
+<dt><strong>svec: Nx3 array</strong></dt><dd><p>vector in cartesian coordinates [e_x, e_y, e_z]</p>
 </dd>
 </dl>
 </dd>
@@ -1821,7 +1825,7 @@ Quadrature rule defined in qp is used.</p>
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.xlm">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">xlm</code><span class="sig-paren">(</span><em class="sig-param">l</em>, <em class="sig-param">m</em>, <em class="sig-param">theta</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.xlm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">xlm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.xlm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Xlm-function used in the definition of spherical harmonics (Ylm).
 Follows notation of Plattner and Simons (2014);
 see Eqs. 1–3 in <a class="reference external" href="https://arxiv.org/pdf/1306.3201.pdf">https://arxiv.org/pdf/1306.3201.pdf</a>.</p>
@@ -1838,7 +1842,7 @@ see Eqs. 1–3 in <a class="reference external" href="https://arxiv.org/pdf/1306
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>Xlm: Nx1 array</dt><dd><p>Xlm at theta</p>
+<dt><strong>Xlm: Nx1 array</strong></dt><dd><p>Xlm at theta</p>
 </dd>
 </dl>
 </dd>
@@ -1847,7 +1851,7 @@ see Eqs. 1–3 in <a class="reference external" href="https://arxiv.org/pdf/1306
 
 <dl class="function">
 <dt id="bfieldtools.sphtools.ylm">
-<code class="sig-prename descclassname">bfieldtools.sphtools.</code><code class="sig-name descname">ylm</code><span class="sig-paren">(</span><em class="sig-param">l</em>, <em class="sig-param">m</em>, <em class="sig-param">theta</em>, <em class="sig-param">phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.ylm" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.sphtools.</code><code class="descname">ylm</code><span class="sig-paren">(</span><em>l</em>, <em>m</em>, <em>theta</em>, <em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.sphtools.ylm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Real spherical harmonics as defined by Plattner and Simons (2014);
 see Eqs. 1–3 in <a class="reference external" href="https://arxiv.org/pdf/1306.3201.pdf">https://arxiv.org/pdf/1306.3201.pdf</a>.</p>
 <dl class="field-list simple">
@@ -1865,7 +1869,7 @@ see Eqs. 1–3 in <a class="reference external" href="https://arxiv.org/pdf/1306
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>Ylm: Nx1 array</dt><dd><p>Ylm at (theta,phi)</p>
+<dt><strong>Ylm: Nx1 array</strong></dt><dd><p>Ylm at (theta,phi)</p>
 </dd>
 </dl>
 </dd>
@@ -1878,7 +1882,7 @@ see Eqs. 1–3 in <a class="reference external" href="https://arxiv.org/pdf/1306
 <p>Contains functions for computing thermal noise in conductive thin objects.</p>
 <dl class="function">
 <dt id="bfieldtools.thermal_noise.compute_ac_Bnoise">
-<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">compute_ac_Bnoise</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">vl</em>, <em class="sig-param">fp</em>, <em class="sig-param">freqs</em>, <em class="sig-param">sigma</em>, <em class="sig-param">d</em>, <em class="sig-param">T</em>, <em class="sig-param">Nchunks=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.compute_ac_Bnoise" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.thermal_noise.</code><code class="descname">compute_ac_Bnoise</code><span class="sig-paren">(</span><em>mesh</em>, <em>vl</em>, <em>fp</em>, <em>freqs</em>, <em>sigma</em>, <em>d</em>, <em>T</em>, <em>Nchunks=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.compute_ac_Bnoise" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the AC magnetic noise due to thermal motion of charge carriers (Jonhson-Nyquist noise)
 in a relatively thin conductor.</p>
 <dl class="field-list simple">
@@ -1899,7 +1903,7 @@ in a relatively thin conductor.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>B: Nfrequencies x Nfieldpoints x 3components array</dt><dd><p>magnetic RMS noise across frequencies</p>
+<dt><strong>B: Nfrequencies x Nfieldpoints x 3components array</strong></dt><dd><p>magnetic RMS noise across frequencies</p>
 </dd>
 </dl>
 </dd>
@@ -1908,7 +1912,7 @@ in a relatively thin conductor.</p>
 
 <dl class="function">
 <dt id="bfieldtools.thermal_noise.compute_current_modes">
-<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">compute_current_modes</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">boundaries=None</em>, <em class="sig-param">return_eigenvals=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.compute_current_modes" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.thermal_noise.</code><code class="descname">compute_current_modes</code><span class="sig-paren">(</span><em>mesh</em>, <em>boundaries=None</em>, <em>return_eigenvals=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.compute_current_modes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes eddy-current modes for a mesh using surface laplacian.
 Uses Dirichlet boundary condition, i.e., stream function is zero at boundary:
 no current flow outside the surface.
@@ -1926,7 +1930,7 @@ See Zevenhoven et al. (2014).</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>vl: Nvertices x Nvertices array</dt><dd><p>The normalized eddy-current modes vl[:,i]</p>
+<dt><strong>vl: Nvertices x Nvertices array</strong></dt><dd><p>The normalized eddy-current modes vl[:,i]</p>
 </dd>
 </dl>
 </dd>
@@ -1935,7 +1939,7 @@ See Zevenhoven et al. (2014).</p>
 
 <dl class="function">
 <dt id="bfieldtools.thermal_noise.compute_current_modes_ind_res">
-<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">compute_current_modes_ind_res</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">sheet_resistance</em>, <em class="sig-param">freqs</em>, <em class="sig-param">T</em>, <em class="sig-param">closed=True</em>, <em class="sig-param">Nmodes=100</em>, <em class="sig-param">Nchunks=4</em>, <em class="sig-param">quad_degree=2</em>, <em class="sig-param">boundaries=None</em>, <em class="sig-param">return_eigenvals=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.compute_current_modes_ind_res" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.thermal_noise.</code><code class="descname">compute_current_modes_ind_res</code><span class="sig-paren">(</span><em>mesh</em>, <em>sheet_resistance</em>, <em>freqs</em>, <em>T</em>, <em>closed=True</em>, <em>Nmodes=100</em>, <em>Nchunks=4</em>, <em>quad_degree=2</em>, <em>boundaries=None</em>, <em>return_eigenvals=False</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.compute_current_modes_ind_res" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -1946,7 +1950,7 @@ See Zevenhoven et al. (2014).</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>vl: Nvertices x Nvertices array</dt><dd><p>The normalized eddy-current modes vl[:,i]</p>
+<dt><strong>vl: Nvertices x Nvertices array</strong></dt><dd><p>The normalized eddy-current modes vl[:,i]</p>
 </dd>
 </dl>
 </dd>
@@ -1955,7 +1959,7 @@ See Zevenhoven et al. (2014).</p>
 
 <dl class="function">
 <dt id="bfieldtools.thermal_noise.compute_dc_Bnoise">
-<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">compute_dc_Bnoise</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">vl</em>, <em class="sig-param">fp</em>, <em class="sig-param">sigma</em>, <em class="sig-param">d</em>, <em class="sig-param">T</em>, <em class="sig-param">Nchunks=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.compute_dc_Bnoise" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.thermal_noise.</code><code class="descname">compute_dc_Bnoise</code><span class="sig-paren">(</span><em>mesh</em>, <em>vl</em>, <em>fp</em>, <em>sigma</em>, <em>d</em>, <em>T</em>, <em>Nchunks=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.compute_dc_Bnoise" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the magnetic noise at DC due to thermal motion of charge carriers (Jonhson-Nyquist noise)
 in a relatively thin conductor.</p>
 <dl class="field-list simple">
@@ -1976,7 +1980,7 @@ in a relatively thin conductor.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>B: Nfieldpoints x 3components array</dt><dd><p>magnetic RMS noise at DC</p>
+<dt><strong>B: Nfieldpoints x 3components array</strong></dt><dd><p>magnetic RMS noise at DC</p>
 </dd>
 </dl>
 </dd>
@@ -1985,7 +1989,7 @@ in a relatively thin conductor.</p>
 
 <dl class="function">
 <dt id="bfieldtools.thermal_noise.compute_dc_Bnoise_covar">
-<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">compute_dc_Bnoise_covar</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">vl</em>, <em class="sig-param">fp</em>, <em class="sig-param">sigma</em>, <em class="sig-param">d</em>, <em class="sig-param">T</em>, <em class="sig-param">Nchunks=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.compute_dc_Bnoise_covar" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.thermal_noise.</code><code class="descname">compute_dc_Bnoise_covar</code><span class="sig-paren">(</span><em>mesh</em>, <em>vl</em>, <em>fp</em>, <em>sigma</em>, <em>d</em>, <em>T</em>, <em>Nchunks=1</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.compute_dc_Bnoise_covar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the magnetic noise covariance at DC due to thermal motion of charge carriers (Jonhson-Nyquist noise)
 in a relatively thin conductor.</p>
 <dl class="field-list simple">
@@ -2006,7 +2010,7 @@ in a relatively thin conductor.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>B: Nfieldpoints x Nfieldpoints x 3components array</dt><dd><p>magnetic noise covariance at DC</p>
+<dt><strong>B: Nfieldpoints x Nfieldpoints x 3components array</strong></dt><dd><p>magnetic noise covariance at DC</p>
 </dd>
 </dl>
 </dd>
@@ -2015,7 +2019,7 @@ in a relatively thin conductor.</p>
 
 <dl class="function">
 <dt id="bfieldtools.thermal_noise.integrate_Bnoise_covar">
-<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">integrate_Bnoise_covar</code><span class="sig-paren">(</span><em class="sig-param">B_covar</em>, <em class="sig-param">weighting=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.integrate_Bnoise_covar" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.thermal_noise.</code><code class="descname">integrate_Bnoise_covar</code><span class="sig-paren">(</span><em>B_covar</em>, <em>weighting=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.integrate_Bnoise_covar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the (quadrature) integrated noise over a volume spanned by the points in fp.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -2028,7 +2032,7 @@ in a relatively thin conductor.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>Bnoise_integrated: float</dt><dd><p>Integrated noise amplitude over the volume</p>
+<dt><strong>Bnoise_integrated: float</strong></dt><dd><p>Integrated noise amplitude over the volume</p>
 </dd>
 </dl>
 </dd>
@@ -2037,22 +2041,22 @@ in a relatively thin conductor.</p>
 
 <dl class="function">
 <dt id="bfieldtools.thermal_noise.noise_covar">
-<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">noise_covar</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">B_coupling</em>, <em class="sig-param">vl</em>, <em class="sig-param">Nmodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.noise_covar" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.thermal_noise.</code><code class="descname">noise_covar</code><span class="sig-paren">(</span><em>mesh</em>, <em>B_coupling</em>, <em>vl</em>, <em>Nmodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.noise_covar" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="bfieldtools.thermal_noise.noise_covar_dir">
-<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">noise_covar_dir</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">B_coupling</em>, <em class="sig-param">vl</em>, <em class="sig-param">Nmodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.noise_covar_dir" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.thermal_noise.</code><code class="descname">noise_covar_dir</code><span class="sig-paren">(</span><em>mesh</em>, <em>B_coupling</em>, <em>vl</em>, <em>Nmodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.noise_covar_dir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="bfieldtools.thermal_noise.noise_var">
-<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">noise_var</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">B_coupling</em>, <em class="sig-param">vl</em>, <em class="sig-param">Nmodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.noise_var" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.thermal_noise.</code><code class="descname">noise_var</code><span class="sig-paren">(</span><em>mesh</em>, <em>B_coupling</em>, <em>vl</em>, <em>Nmodes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.noise_var" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="bfieldtools.thermal_noise.visualize_current_modes">
-<code class="sig-prename descclassname">bfieldtools.thermal_noise.</code><code class="sig-name descname">visualize_current_modes</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">vl</em>, <em class="sig-param">Nmodes</em>, <em class="sig-param">scale</em>, <em class="sig-param">contours=True</em>, <em class="sig-param">colormap='bwr'</em>, <em class="sig-param">dist=0.5</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.visualize_current_modes" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.thermal_noise.</code><code class="descname">visualize_current_modes</code><span class="sig-paren">(</span><em>mesh</em>, <em>vl</em>, <em>Nmodes</em>, <em>scale</em>, <em>contours=True</em>, <em>colormap='bwr'</em>, <em>dist=0.5</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.thermal_noise.visualize_current_modes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Visualizes current modes up to Nmodes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -2078,27 +2082,27 @@ in a relatively thin conductor.</p>
 <div class="section" id="module-bfieldtools.utils">
 <span id="bfieldtools-utils-module"></span><h2>bfieldtools.utils module<a class="headerlink" href="#module-bfieldtools.utils" title="Permalink to this headline">¶</a></h2>
 <p>This module contains miscellaneous utility functions used across bfieldtools.</p>
-<dl class="function">
+<dl class="attribute">
 <dt id="bfieldtools.utils.assemble_matrix">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix</code><span class="sig-paren">(</span><em class="sig-param">tris</em>, <em class="sig-param">Nverts</em>, <em class="sig-param">triangle_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">assemble_matrix</code><a class="headerlink" href="#bfieldtools.utils.assemble_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimized  assembly of finite element matrix for
 precomputed triangle data</p>
 <p>Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
 for the nodes neighbouring the triangle</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="attribute">
 <dt id="bfieldtools.utils.assemble_matrix2">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix2</code><span class="sig-paren">(</span><em class="sig-param">tris1</em>, <em class="sig-param">tris2</em>, <em class="sig-param">Nverts1</em>, <em class="sig-param">Nverts2</em>, <em class="sig-param">triangle_data</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix2" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">assemble_matrix2</code><a class="headerlink" href="#bfieldtools.utils.assemble_matrix2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimized  assembly of finite element matrix for
 precomputed triangle data for separate meshes 1 and 2</p>
 <p>Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
 for the nodes neighbouring the triangle</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="attribute">
 <dt id="bfieldtools.utils.assemble_matrix_chunk">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix_chunk</code><span class="sig-paren">(</span><em class="sig-param">tris</em>, <em class="sig-param">Nverts</em>, <em class="sig-param">triangle_data</em>, <em class="sig-param">n</em>, <em class="sig-param">Nchunks</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix_chunk" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">assemble_matrix_chunk</code><a class="headerlink" href="#bfieldtools.utils.assemble_matrix_chunk" title="Permalink to this definition">¶</a></dt>
 <dd><p>Optimized  assembly of finite element matrix for
 precomputed triangle data. Version for computation in which eval points
 are chunked smaller, less memory-intensive parts</p>
@@ -2108,27 +2112,27 @@ for the nodes neighbouring the triangle</p>
 
 <dl class="function">
 <dt id="bfieldtools.utils.cylinder_points">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">cylinder_points</code><span class="sig-paren">(</span><em class="sig-param">radius=1</em>, <em class="sig-param">length=1</em>, <em class="sig-param">nlength=10</em>, <em class="sig-param">alpha=360</em>, <em class="sig-param">nalpha=10</em>, <em class="sig-param">center=array([0</em>, <em class="sig-param">0</em>, <em class="sig-param">0])</em>, <em class="sig-param">orientation=array([1</em>, <em class="sig-param">0</em>, <em class="sig-param">0])</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.cylinder_points" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">cylinder_points</code><span class="sig-paren">(</span><em>radius=1</em>, <em>length=1</em>, <em>nlength=10</em>, <em>alpha=360</em>, <em>nalpha=10</em>, <em>center=array([0</em>, <em>0</em>, <em>0])</em>, <em>orientation=array([1</em>, <em>0</em>, <em>0])</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.cylinder_points" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate and return a set of points on a cylindrical surface.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="attribute">
 <dt id="bfieldtools.utils.dual_areas">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">dual_areas</code><span class="sig-paren">(</span><em class="sig-param">tris</em>, <em class="sig-param">ta</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.dual_areas" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">dual_areas</code><a class="headerlink" href="#bfieldtools.utils.dual_areas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate (dual) areas for each node in inds</p>
 <p>Dual area == area summed over the neighbouring triangles divided by 3</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="bfieldtools.utils.fibonacci_sphere">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">fibonacci_sphere</code><span class="sig-paren">(</span><em class="sig-param">samples=10</em>, <em class="sig-param">center=array([0</em>, <em class="sig-param">0</em>, <em class="sig-param">0])</em>, <em class="sig-param">radius=1</em>, <em class="sig-param">randomize=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.fibonacci_sphere" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">fibonacci_sphere</code><span class="sig-paren">(</span><em>samples=10</em>, <em>center=array([0</em>, <em>0</em>, <em>0])</em>, <em>radius=1</em>, <em>randomize=True</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.fibonacci_sphere" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates a set of points approximately evenly distributed on a sphere,
 with adjustable center and radius. Uses spherical Fibonacci Lattice.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="bfieldtools.utils.find_mesh_boundaries">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">find_mesh_boundaries</code><span class="sig-paren">(</span><em class="sig-param">mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.find_mesh_boundaries" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">find_mesh_boundaries</code><span class="sig-paren">(</span><em>mesh</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.find_mesh_boundaries" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the open boundaries of a mesh by finding the edges that only
 belong to a single triangle. Returns an index array of inner vertices
 and triangles that do not touch the outer boundary.
@@ -2141,7 +2145,7 @@ Takes edge parameter for convenience.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>boundaries: list of array-like</dt><dd></dd>
+<dt><strong>boundaries: list of array-like</strong></dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -2149,7 +2153,7 @@ Takes edge parameter for convenience.</p>
 
 <dl class="function">
 <dt id="bfieldtools.utils.fix_normals">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">fix_normals</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">origin=array([0</em>, <em class="sig-param">0</em>, <em class="sig-param">0])</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.fix_normals" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">fix_normals</code><span class="sig-paren">(</span><em>mesh</em>, <em>origin=array([0</em>, <em>0</em>, <em>0])</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.fix_normals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attempts to fix face windings and normals such that normals are always “pointing out”
 from the origin.</p>
 <dl class="field-list simple">
@@ -2162,7 +2166,7 @@ from the origin.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>mesh: modified Trimesh object</dt><dd></dd>
+<dt><strong>mesh: modified Trimesh object</strong></dt><dd></dd>
 </dl>
 </dd>
 </dl>
@@ -2170,7 +2174,7 @@ from the origin.</p>
 
 <dl class="function">
 <dt id="bfieldtools.utils.get_line_quad_points">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">get_line_quad_points</code><span class="sig-paren">(</span><em class="sig-param">line_vertices</em>, <em class="sig-param">method='midpoint'</em>, <em class="sig-param">index=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.get_line_quad_points" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">get_line_quad_points</code><span class="sig-paren">(</span><em>line_vertices</em>, <em>method='midpoint'</em>, <em>index=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.get_line_quad_points" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get quad points and weights from quadrature rules implemented in
 quadpy</p>
 <dl class="field-list simple">
@@ -2182,9 +2186,9 @@ quadpy</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>w: array-like  (Nquad, )</dt><dd><p>quadrature weights</p>
+<dt><strong>w: array-like  (Nquad, )</strong></dt><dd><p>quadrature weights</p>
 </dd>
-<dt>qp: array-like (Nverts, Nquad)</dt><dd><p>quadrature points for each edge connecting the vertices</p>
+<dt><strong>qp: array-like (Nverts, Nquad)</strong></dt><dd><p>quadrature points for each edge connecting the vertices</p>
 </dd>
 </dl>
 </dd>
@@ -2193,7 +2197,7 @@ quadpy</p>
 
 <dl class="function">
 <dt id="bfieldtools.utils.get_quad_points">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">get_quad_points</code><span class="sig-paren">(</span><em class="sig-param">verts</em>, <em class="sig-param">tris</em>, <em class="sig-param">method='sevenpoint'</em>, <em class="sig-param">index=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.get_quad_points" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">get_quad_points</code><span class="sig-paren">(</span><em>verts</em>, <em>tris</em>, <em>method='sevenpoint'</em>, <em>index=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.get_quad_points" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get quad points and weights from quadrature rules implemented in
 quadpy</p>
 <dl class="field-list simple">
@@ -2205,9 +2209,9 @@ quadpy</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>w: array-like  (Nquad, )</dt><dd><p>quadrature weights</p>
+<dt><strong>w: array-like  (Nquad, )</strong></dt><dd><p>quadrature weights</p>
 </dd>
-<dt>qp: array-like (Ntris, Nquad)</dt><dd><p>quadrature points in each triangle</p>
+<dt><strong>qp: array-like (Ntris, Nquad)</strong></dt><dd><p>quadrature points in each triangle</p>
 </dd>
 </dl>
 </dd>
@@ -2216,7 +2220,7 @@ quadpy</p>
 
 <dl class="function">
 <dt id="bfieldtools.utils.inner2vert">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">inner2vert</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">inner_vertices</em>, <em class="sig-param">holes</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.inner2vert" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">inner2vert</code><span class="sig-paren">(</span><em>mesh</em>, <em>inner_vertices</em>, <em>holes</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.inner2vert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Linear mapping of the inner (free) weights in the stream function
 discretization to weights in all vertices</p>
 <dl class="simple">
@@ -2232,14 +2236,14 @@ and M == len(inner_vertices) + len(holes)</p>
 
 <dl class="function">
 <dt id="bfieldtools.utils.tri_normals_and_areas">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">tri_normals_and_areas</code><span class="sig-paren">(</span><em class="sig-param">r</em>, <em class="sig-param">tri</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.tri_normals_and_areas" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">tri_normals_and_areas</code><span class="sig-paren">(</span><em>r</em>, <em>tri</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.tri_normals_and_areas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get triangle normals and areas from vertices (r) and
 triangle indices (tri)</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="bfieldtools.utils.vert2inner">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">vert2inner</code><span class="sig-paren">(</span><em class="sig-param">mesh</em>, <em class="sig-param">inner_vertices</em>, <em class="sig-param">holes</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.vert2inner" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">bfieldtools.utils.</code><code class="descname">vert2inner</code><span class="sig-paren">(</span><em>mesh</em>, <em>inner_vertices</em>, <em>holes</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.vert2inner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Linear mapping of the all weights in the stream function
 discretization to inner (free) weights</p>
 <dl class="simple">
@@ -2269,7 +2273,7 @@ and M == len(inner_vertices) + len(holes)</p>
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>
 </footer>

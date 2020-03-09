@@ -3,7 +3,7 @@ High-order spherical harmonic biplanar coil design
 ==================================================
 
 Example showing a basic biplanar coil producing a high-order spherical harmonic field
-in a target region between the two coil planes.
+in a specific target region between the two coil planes.
 
 '''
 
@@ -11,7 +11,7 @@ import numpy as np
 from mayavi import mlab
 import trimesh
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import Conductor
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
@@ -43,7 +43,7 @@ coil_minus = trimesh.Trimesh(planemesh.vertices + center_offset - standoff,
 joined_planes = coil_plus.union(coil_minus)
 
 #Create mesh class object
-coil = MeshWrapper(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
+coil = Conductor(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
 
 ##############################################################
 # Set up target and stray field points
@@ -53,7 +53,7 @@ coil = MeshWrapper(verts=joined_planes.vertices, tris=joined_planes.faces, fix_n
 center = np.array([0, 0, 0]) * scaling_factor
 
 sidelength = 2 * scaling_factor
-n = 8
+n = 12
 xx = np.linspace(-sidelength/2, sidelength/2, n)
 yy = np.linspace(-sidelength/2, sidelength/2, n)
 zz = np.linspace(-sidelength/2, sidelength/2, n)
@@ -96,35 +96,28 @@ n_stray_points = len(stray_points)
 # and it is scaled to match the C matrix in the optimization function
 
 
-from bfieldtools.sphtools import sphbasis
+from bfieldtools import sphtools
 
-
-sph = sphbasis(50)
-
-#plotsph.plotYlms(sph, 3)
 
 lmax = 4
 alm = np.zeros((lmax*(lmax+2),))
 blm = np.zeros((lmax*(lmax+2),))
 
-#
-#alm[22]+=1
 blm[22]+=1
 
-sphfield = sph.field(target_points, alm, blm, lmax)
+sphfield = sphtools.field(target_points, alm, blm, lmax)
 
 target_field = sphfield/np.max(sphfield[:, 0])
 
-#target_field[:, 2] = 0
 
 
-coil.plot_mesh()
+coil.plot_mesh(opacity=0.2)
 mlab.quiver3d(*target_points.T, *sphfield.T)
 
 
 
-target_spec = {'coupling':coil.B_coupling(target_points), 'rel_error':0, 'abs_error':0.1, 'target':target_field}
-stray_spec = {'coupling':coil.B_coupling(stray_points), 'abs_error':0.01, 'rel_error':0, 'target':np.zeros((n_stray_points, 3))}
+target_spec = {'coupling':coil.B_coupling(target_points), 'abs_error':0.1, 'target':target_field}
+stray_spec = {'coupling':coil.B_coupling(stray_points), 'abs_error':0.01, 'target':np.zeros((n_stray_points, 3))}
 
 bfield_specification = [target_spec, stray_spec]
 
@@ -132,7 +125,7 @@ bfield_specification = [target_spec, stray_spec]
 # Run QP solver
 import mosek
 
-coil.j, prob = optimize_streamfunctions(coil,
+coil.s, prob = optimize_streamfunctions(coil,
                                    [target_spec, stray_spec],
                                    objective='minimum_inductive_energy',
                                    solver='MOSEK',
@@ -144,7 +137,7 @@ coil.j, prob = optimize_streamfunctions(coil,
 
 N_contours = 10
 
-loops, loop_values= scalar_contour(coil.mesh, coil.j, N_contours=N_contours)
+loops, loop_values= scalar_contour(coil.mesh, coil.s, N_contours=N_contours)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
@@ -152,6 +145,6 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f)
 
-B_target = coil.B_coupling(target_points) @ coil.j
+B_target = coil.B_coupling(target_points) @ coil.s
 
 mlab.quiver3d(*target_points.T, *B_target.T)

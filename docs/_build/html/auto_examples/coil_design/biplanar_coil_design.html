@@ -7,15 +7,16 @@
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Coil with interior holes" href="coil_with_holes.html" />
-    <link rel="prev" title="Coil with minimal eddy currents" href="minimal_eddy_current_cylindrical_coil_design.html" />
+    <link rel="next" title="Magnetically shielded coil" href="magnetically_shielded_biplanar_coil_design.html" />
+    <link rel="prev" title="Analytical self-shielded biplanar coil design" href="self-shielded_biplanar_coil_design.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -36,7 +37,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="../../index.html">
+        <a class="navbar-brand" href="../../index.html"><span><img src="../../_static/logo_simple.png"></span>
           bfieldtools</a>
         <span class="navbar-text navbar-version pull-left"><b></b></span>
       </div>
@@ -44,7 +45,8 @@
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="../../readme.html">Readme</a></li>
+                <li><a href="../../overview.html">Overview</a></li>
+                <li><a href="../../installation.html">Installation</a></li>
                 <li><a href="../../literature.html">Literature</a></li>
                 <li><a href="../index.html">Example gallery</a></li>
                 <li><a href="../../source/modules.html">API Reference</a></li>
@@ -60,10 +62,12 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../literature.html">Literature</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Example gallery</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html#coil-design">Coil design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html#software-publication-examples">Software publication examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html#thermal-noise-computation">Thermal noise computation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html#validation">Validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/modules.html">API Reference</a></li>
@@ -108,13 +112,13 @@
 region between the two coil planes.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="kn">import</span> <span class="n">Conductor</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="kn">import</span> <span class="n">optimize_streamfunctions</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="kn">import</span> <span class="n">scalar_contour</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="kn">import</span> <span class="n">plot_3d_current_loops</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">Conductor</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="k">import</span> <span class="n">optimize_streamfunctions</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="k">import</span> <span class="n">scalar_contour</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="k">import</span> <span class="n">plot_3d_current_loops</span>
 
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 
@@ -205,6 +209,11 @@ region between the two coil planes.</p>
 <span class="n">bfield_specification</span> <span class="o">=</span> <span class="p">[</span><span class="n">target_spec</span><span class="p">,</span> <span class="n">stray_spec</span><span class="p">]</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.28 seconds.
+Computing magnetic field coupling matrix, 3184 vertices by 642 target points... took 0.70 seconds.
+</pre></div>
+</div>
 <p>Run QP solver</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mosek</span>
 
@@ -214,6 +223,86 @@ region between the two coil planes.</p>
                                    <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;MOSEK&#39;</span><span class="p">,</span>
                                    <span class="n">solver_opts</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mosek_params&#39;</span><span class="p">:{</span><span class="n">mosek</span><span class="o">.</span><span class="n">iparam</span><span class="o">.</span><span class="n">num_threads</span><span class="p">:</span> <span class="mi">8</span><span class="p">}}</span>
                                    <span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing the inductance matrix...
+Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
+Estimating 34964 MiB required for 3184 by 3184 vertices...
+Computing inductance matrix in 60 chunks (11699 MiB memory free), when approx_far=True using more chunks is faster...
+Computing 1/r-potential matrix
+Inductance matrix computation took 43.59 seconds.
+Pre-existing problem not passed, creating...
+Passing parameters to problem...
+Passing problem to solver...
+/l/conda-envs/mne/lib/python3.6/site-packages/cvxpy/reductions/solvers/solving_chain.py:170: UserWarning: You are solving a parameterized problem that is not DPP. Because the problem is not DPP, subsequent solves will not be faster than the first one.
+  &quot;You are solving a parameterized problem that is not DPP. &quot;
+
+
+Problem
+  Name                   :
+  Objective sense        : min
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 7710
+  Cones                  : 1
+  Scalar variables       : 6083
+  Matrix variables       : 0
+  Integer variables      : 0
+
+Optimizer started.
+Problem
+  Name                   :
+  Objective sense        : min
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 7710
+  Cones                  : 1
+  Scalar variables       : 6083
+  Matrix variables       : 0
+  Integer variables      : 0
+
+Optimizer  - threads                : 8
+Optimizer  - solved problem         : the dual
+Optimizer  - Constraints            : 2897
+Optimizer  - Cones                  : 1
+Optimizer  - Scalar variables       : 7710              conic                  : 2898
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0
+Factor     - setup time             : 1.88              dense det. time        : 0.00
+Factor     - ML order time          : 0.17              GP order time          : 0.00
+Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06
+Factor     - dense dim.             : 0                 flops                  : 5.26e+10
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
+0   6.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  90.59
+1   2.8e+01  4.4e-01  1.2e+00  -8.72e-01  7.505693341e+00   7.568296918e+00   4.4e-01  91.24
+2   1.9e+01  2.9e-01  8.9e-01  -6.59e-01  3.189700433e+01   3.251077617e+01   2.9e-01  91.79
+3   1.1e+01  1.7e-01  5.4e-01  -5.00e-01  1.413946429e+02   1.426196877e+02   1.7e-01  92.34
+4   7.2e+00  1.1e-01  3.6e-01  -2.45e-01  1.782403672e+02   1.796636046e+02   1.1e-01  92.89
+5   2.7e+00  4.2e-02  1.2e-01  -1.72e-02  4.129910060e+02   4.142915941e+02   4.2e-02  93.44
+6   9.1e-01  1.4e-02  2.6e-02  4.89e-01   5.064346055e+02   5.070514328e+02   1.4e-02  94.11
+7   7.5e-01  1.2e-02  2.2e-02  5.44e-01   5.373466093e+02   5.380158842e+02   1.2e-02  94.66
+8   5.6e-01  8.8e-03  1.6e-02  4.81e-01   6.793322975e+02   6.799762595e+02   8.8e-03  95.22
+9   3.5e-01  5.4e-03  8.1e-03  6.99e-01   1.057425454e+03   1.057850456e+03   5.4e-03  95.82
+10  2.3e-01  3.7e-03  5.4e-03  4.88e-01   1.177304957e+03   1.177741132e+03   3.7e-03  96.39
+11  5.8e-02  9.0e-04  7.7e-04  8.60e-01   1.853290108e+03   1.853444126e+03   9.0e-04  97.13
+12  1.3e-02  2.1e-04  9.3e-05  8.99e-01   2.192215741e+03   2.192260123e+03   2.1e-04  97.78
+13  3.7e-04  5.7e-06  4.6e-07  9.58e-01   2.310530307e+03   2.310531694e+03   5.7e-06  98.56
+14  2.1e-06  3.3e-08  8.2e-11  9.99e-01   2.314263581e+03   2.314263590e+03   3.3e-08  99.32
+15  2.0e-06  3.1e-08  8.2e-11  1.00e+00   2.314264727e+03   2.314264736e+03   3.1e-08  100.46
+16  2.0e-06  3.1e-08  9.1e-11  9.99e-01   2.314264738e+03   2.314264747e+03   3.1e-08  101.60
+17  9.4e-07  1.5e-08  1.5e-11  1.00e+00   2.314275954e+03   2.314275958e+03   1.5e-08  102.66
+18  7.0e-07  1.1e-08  5.7e-11  1.00e+00   2.314278463e+03   2.314278466e+03   1.1e-08  103.73
+19  4.0e-07  6.2e-09  1.4e-11  1.00e+00   2.314281761e+03   2.314281763e+03   6.2e-09  104.80
+20  2.1e-07  3.2e-09  2.9e-12  1.00e+00   2.314283819e+03   2.314283820e+03   3.2e-09  105.87
+21  1.0e-07  1.6e-09  1.5e-12  1.00e+00   2.314284931e+03   2.314284931e+03   1.6e-09  106.95
+22  2.1e-07  8.2e-10  5.0e-12  1.00e+00   2.314285499e+03   2.314285499e+03   8.2e-10  108.03
+23  3.3e-08  4.1e-10  1.5e-12  1.00e+00   2.314285783e+03   2.314285783e+03   4.1e-10  109.10
+Optimizer terminated. Time: 109.63
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 2.3142857834e+03    nrm: 5e+03    Viol.  con: 7e-09    var: 0e+00    cones: 0e+00
+  Dual.    obj: 2.3142857835e+03    nrm: 1e+05    Viol.  con: 2e-05    var: 2e-09    cones: 0e+00
 </pre></div>
 </div>
 <p>Plot coil windings and target points</p>
@@ -232,8 +321,9 @@ region between the two coil planes.</p>
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B_target</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
+<img alt="../../_images/sphx_glr_biplanar_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_biplanar_coil_design_001.png" />
 <p>Plot cross-section of magnetic field and magnetic potential of the discretized loops</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bfieldtools.line_magnetics</span> <span class="kn">import</span> <span class="n">magnetic_field</span><span class="p">,</span> <span class="n">scalar_potential</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bfieldtools.line_magnetics</span> <span class="k">import</span> <span class="n">magnetic_field</span><span class="p">,</span> <span class="n">scalar_potential</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>
 <span class="n">X</span><span class="p">,</span><span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;ij&#39;</span><span class="p">)</span>
@@ -271,13 +361,15 @@ region between the two coil planes.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<img alt="../../_images/sphx_glr_biplanar_coil_design_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_biplanar_coil_design_002.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 5 minutes  39.392 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  4685 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-biplanar-coil-design-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/669e79d53608721471a68425d4e497aa/biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">biplanar_coil_design.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/bfe43e86311a239427cae232e794e54a/biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">biplanar_coil_design.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/83837977a6b01cf1b0680e586899f355/biplanar_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">biplanar_coil_design.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/12c5e149b4802fc36b46d86de58378c1/biplanar_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">biplanar_coil_design.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -296,7 +388,7 @@ region between the two coil planes.</p>
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>
 </footer>

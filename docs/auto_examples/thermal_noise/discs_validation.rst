@@ -7,9 +7,10 @@
 .. _sphx_glr_auto_examples_thermal_noise_discs_validation.py:
 
 
-Created on Tue Dec 10 10:33:17 2019
+Disc validation
+=========================
 
-@author: Rasmus Zetter
+This example validates the thermal noise computations against the analytical solution for a thin disc.
 
 
 
@@ -51,7 +52,7 @@ Created on Tue Dec 10 10:33:17 2019
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.433 seconds)
+   **Total running time of the script:** ( 0 minutes  0.612 seconds)
 
 **Estimated memory usage:**  9 MB
 

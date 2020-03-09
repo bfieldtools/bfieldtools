@@ -1,35 +1,33 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Fri Dec 13 09:24:11 2019
+Logo generation
+=========================
 
-@author: makinea1
-
-logo
+This script generates the bfieldtools logo
 """
 
-
-import numpy as np
-import matplotlib.pyplot as plt
-import sys
-path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
-if path not in sys.path:
-    sys.path.insert(0,path)
-
-from bfieldtools.integrals import triangle_potential_dipole_linear
-from bfieldtools.integrals import omega
-from bfieldtools.utils import tri_normals_and_areas
-from bfieldtools.mesh_calculus import gradient
-from bfieldtools.mesh_magnetics import scalar_potential_coupling as compute_U
-from bfieldtools.mesh_magnetics import vector_potential_coupling as compute_A
-from bfieldtools.mesh_magnetics import magnetic_field_coupling as compute_C
+#
+#import numpy as np
+#import matplotlib.pyplot as plt
+#import sys
+#path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
+#if path not in sys.path:
+#    sys.path.insert(0,path)
+#
+#from bfieldtools.integrals import triangle_potential_dipole_linear
+#from bfieldtools.integrals import omega
+#from bfieldtools.utils import tri_normals_and_areas
+#from bfieldtools.mesh_calculus import gradient
+#from bfieldtools.mesh_magnetics import scalar_potential_coupling as compute_U
+#from bfieldtools.mesh_magnetics import vector_potential_coupling as compute_A
+#from bfieldtools.mesh_magnetics import magnetic_field_coupling as compute_C
 from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic as compute_C_analytic
 
 import trimesh
 from mayavi import mlab
+import numpy as np
 
 #########################################################
-#%% Test potential shape slightly above the surface
+# Test potential shape slightly above the surface
 
 scalars = np.zeros(7)
 scalars[0] = 1

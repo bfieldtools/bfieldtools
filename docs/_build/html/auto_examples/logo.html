@@ -3,19 +3,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>&lt;no title&gt; &#8212; bfieldtools 0.1 documentation</title>
+    <title>Logo generation &#8212; bfieldtools 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="linear_medium_bem.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="test_scalar_potential.html" />
+    <link rel="next" title="Spherical harmonics-generating coil design" href="coil_design/spherical_harmonics_coil_design.html" />
+    <link rel="prev" title="Interpolate stream function" href="interpolate_example.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -36,7 +37,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="../index.html">
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/logo_simple.png"></span>
           bfieldtools</a>
         <span class="navbar-text navbar-version pull-left"><b></b></span>
       </div>
@@ -44,7 +45,8 @@
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="../readme.html">Readme</a></li>
+                <li><a href="../overview.html">Overview</a></li>
+                <li><a href="../installation.html">Installation</a></li>
                 <li><a href="../literature.html">Literature</a></li>
                 <li><a href="index.html">Example gallery</a></li>
                 <li><a href="../source/modules.html">API Reference</a></li>
@@ -59,11 +61,13 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../readme.html">Readme</a></li>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../literature.html">Literature</a></li>
-<li class="toctree-l1"><a class="reference internal" href="index.html">Example gallery</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Example gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="index.html#coil-design">Coil design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#software-publication-examples">Software publication examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="index.html#thermal-noise-computation">Thermal noise computation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="index.html#validation">Validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../source/modules.html">API Reference</a></li>
@@ -102,30 +106,32 @@
 <p class="admonition-title">Note</p>
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-logo-py"><span class="std std-ref">here</span></a> to download the full example code</p>
 </div>
-<p class="sphx-glr-example-title" id="sphx-glr-auto-examples-logo-py">Created on Fri Dec 13 09:24:11 2019</p>
-<p>&#64;author: makinea1</p>
-<p>logo</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools&#39;</span>
-<span class="k">if</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">path</span><span class="p">)</span>
-
-<span class="kn">from</span> <span class="nn">bfieldtools.integrals</span> <span class="kn">import</span> <span class="n">triangle_potential_dipole_linear</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.integrals</span> <span class="kn">import</span> <span class="n">omega</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.utils</span> <span class="kn">import</span> <span class="n">tri_normals_and_areas</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_calculus</span> <span class="kn">import</span> <span class="n">gradient</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="kn">import</span> <span class="n">scalar_potential_coupling</span> <span class="k">as</span> <span class="n">compute_U</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="kn">import</span> <span class="n">vector_potential_coupling</span> <span class="k">as</span> <span class="n">compute_A</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="kn">import</span> <span class="n">magnetic_field_coupling</span> <span class="k">as</span> <span class="n">compute_C</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="kn">import</span> <span class="n">magnetic_field_coupling_analytic</span> <span class="k">as</span> <span class="n">compute_C_analytic</span>
+<div class="sphx-glr-example-title section" id="logo-generation">
+<span id="sphx-glr-auto-examples-logo-py"></span><h1>Logo generation<a class="headerlink" href="#logo-generation" title="Permalink to this headline">¶</a></h1>
+<p>This script generates the bfieldtools logo</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="c1">#import numpy as np</span>
+<span class="c1">#import matplotlib.pyplot as plt</span>
+<span class="c1">#import sys</span>
+<span class="c1">#path = &#39;/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools&#39;</span>
+<span class="c1">#if path not in sys.path:</span>
+<span class="c1">#    sys.path.insert(0,path)</span>
+<span class="c1">#</span>
+<span class="c1">#from bfieldtools.integrals import triangle_potential_dipole_linear</span>
+<span class="c1">#from bfieldtools.integrals import omega</span>
+<span class="c1">#from bfieldtools.utils import tri_normals_and_areas</span>
+<span class="c1">#from bfieldtools.mesh_calculus import gradient</span>
+<span class="c1">#from bfieldtools.mesh_magnetics import scalar_potential_coupling as compute_U</span>
+<span class="c1">#from bfieldtools.mesh_magnetics import vector_potential_coupling as compute_A</span>
+<span class="c1">#from bfieldtools.mesh_magnetics import magnetic_field_coupling as compute_C</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="k">import</span> <span class="n">magnetic_field_coupling_analytic</span> <span class="k">as</span> <span class="n">compute_C_analytic</span>
 
 <span class="kn">import</span> <span class="nn">trimesh</span>
-<span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 </pre></div>
 </div>
-<p>%% Test potential shape slightly above the surface</p>
+<p>Test potential shape slightly above the surface</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scalars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
 <span class="n">scalars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
@@ -257,21 +263,22 @@
 </div>
 <img alt="../_images/sphx_glr_logo_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_logo_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix analytically, 7 vertices by 125000 target points... took 0.85 seconds.
-Computing magnetic field coupling matrix analytically, 7 vertices by 125000 target points... took 0.84 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix analytically, 7 vertices by 125000 target points... took 0.76 seconds.
+Computing magnetic field coupling matrix analytically, 7 vertices by 125000 target points... took 0.76 seconds.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.414 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  85 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.202 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  79 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-logo-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/e20adcf50d56d303b29f4e5d93d4de7c/logo.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">logo.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/dc2d374a137b1ba5e24ff26441fe2960/logo.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">logo.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/fcd1fba50e4f094d18c2582f6cb2a1db/logo.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">logo.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/e1fcf4d714b16cd70c3953edf08555c7/logo.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">logo.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
 
 
     </div>
@@ -286,7 +293,7 @@ Computing magnetic field coupling matrix analytically, 7 vertices by 125000 targ
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>
 </footer>

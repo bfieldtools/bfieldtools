@@ -36,11 +36,11 @@ Validation of analytic mesh operator for magnetic field computation.
 
  .. code-block:: none
 
-    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.15 seconds.
-    Computing magnetic field coupling matrix analytically, 676 vertices by 676 target points... took 0.67 seconds.
-    Relative RMS error 0.005229286958094273
-    Computing magnetic field coupling matrix, 4701 vertices by 100 target points... took 0.28 seconds.
-    Computing magnetic field coupling matrix analytically, 4701 vertices by 100 target points... took 0.75 seconds.
+    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.17 seconds.
+    Computing magnetic field coupling matrix analytically, 676 vertices by 676 target points... took 0.56 seconds.
+    Relative RMS error 0.005229286958362662
+    Computing magnetic field coupling matrix, 4701 vertices by 100 target points... took 0.29 seconds.
+    Computing magnetic field coupling matrix analytically, 4701 vertices by 100 target points... took 0.62 seconds.
 
 
 
@@ -76,6 +76,10 @@ Validation of analytic mesh operator for magnetic field computation.
     B0 = magnetic_field_coupling(coilmesh, test_points) @ weights
     B1 = magnetic_field_coupling_analytic(coilmesh, test_points) @ weights
 
+
+
+    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+               size=(800, 800))
 
     s = mlab.triangular_mesh(*coilmesh.vertices.T, coilmesh.faces,
                              scalars=weights, colormap='viridis')
@@ -126,7 +130,9 @@ Validation of analytic mesh operator for magnetic field computation.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  5.732 seconds)
+   **Total running time of the script:** ( 0 minutes  2.621 seconds)
+
+**Estimated memory usage:**  189 MB
 
 
 .. _sphx_glr_download_auto_examples_validation_validate_bfield_analytic.py:

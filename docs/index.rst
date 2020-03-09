@@ -10,7 +10,9 @@ Documentation
    :maxdepth: 4
    :caption: Contents:
 
-   readme
+   overview
+
+   installation
    
    literature
    

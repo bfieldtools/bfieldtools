@@ -18,29 +18,24 @@ import matplotlib.pyplot as plt
 from mayavi import mlab
 import trimesh
 
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import Conductor, StreamFunction
 from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic, scalar_potential_coupling
-from bfieldtools.mesh_properties import mutual_inductance_matrix
-from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
 
 import pkg_resources
-
-
 #Set unit, e.g. meter or millimeter.
 # This doesn't matter, the problem is scale-invariant
-scaling_factor = 1
-
+scaling_factor = 0.1
 
 #Load simple plane mesh that is centered on the origin
-planemesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane.obj'), process=False)
+planemesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane_hires.obj'), process=False)
 
-planemesh.apply_scale(scaling_factor*1.6)
+planemesh.apply_scale(scaling_factor)
 
 #Specify coil plane geometry
 center_offset = np.array([0, 0, 0]) * scaling_factor
-standoff = np.array([0, 5, 0]) * scaling_factor
+standoff = np.array([0, 4, 0]) * scaling_factor
 
 #Create coil plane pairs
 coil_plus = trimesh.Trimesh(planemesh.vertices + center_offset + standoff,
@@ -49,17 +44,19 @@ coil_plus = trimesh.Trimesh(planemesh.vertices + center_offset + standoff,
 coil_minus = trimesh.Trimesh(planemesh.vertices + center_offset - standoff,
                      planemesh.faces, process=False)
 
-joined_planes = coil_plus.union(coil_minus)
+mesh1 = coil_plus.union(coil_minus)
+mesh2 = mesh1.copy()
+mesh2.apply_scale(1.4)
 
-#Create mesh class object
-coil = MeshWrapper(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
+coil = Conductor(mesh_obj=mesh1, basis_name = 'inner', N_sph = 4)
+shieldcoil = Conductor(mesh_obj=mesh2, basis_name = 'inner', N_sph = 4)
 
-shieldmesh = joined_planes.copy()
-shieldmesh.vertices *= np.array([1.5, 1.5, 1.5])
-
-shieldcoil = MeshWrapper(verts=shieldmesh.vertices, tris=shieldmesh.faces, fix_normals=True)
-
-
+##############################################################
+# Plot geometry
+f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+           size=(800, 800))
+coil.plot_mesh(opacity=0.2, figure=f)
+shieldcoil.plot_mesh(opacity=0.2, figure=f)
 
 ##############################################################
 # Compute inductances and coupling
@@ -67,216 +64,128 @@ shieldcoil = MeshWrapper(verts=shieldmesh.vertices, tris=shieldmesh.faces, fix_n
 
 M11 = coil.inductance
 M22 = shieldcoil.inductance
-# Constrain boundary to zero and consider only inneverts
-M11 = M11#[coil.inner_verts][:, coil.inner_verts]
-M22 = M22[shieldcoil.inner_verts][:, shieldcoil.inner_verts]
-# Add rank-one matrix, so that M22 can be inverted (for zero mean functions)
-#M22 += np.ones_like(M22)/M22.shape[0]
-#M11 += np.ones_like(M11)/M11.shape[0]
+M21 = shieldcoil.mutual_inductance(coil)
 
-
-
-M21 = mutual_inductance_matrix(shieldcoil.mesh, coil.mesh)
-M21 = M21[shieldcoil.inner_verts]
 
 # Mapping from I1 to I2, constraining flux through shieldcoil to zero
 P = -np.linalg.solve(M22, M21)
 
+A1, Beta1 = coil.sph_couplings
+A2, Beta2 = shieldcoil.sph_couplings
+
+############################################################
+# Precalculations for the solution
+
+# Minimization of magnetic energy with spherical harmonic constraint
+C = Beta1 + Beta2 @ P
+M = M11 + M21.T @ P
+
+#Regularization
+from scipy.linalg import eigvalsh
+ssmax = eigvalsh(C.T @ C, M, eigvals=[M.shape[1]-1, M.shape[1]-1])
+
+############################################################
+# Specify spherical harmonic and calculate corresponding shielded field
+beta = np.zeros(Beta1.shape[0])
+#beta[7] = 1 # Gradient
+beta[2] = 1 # Homogeneous
+
+# Minimum residual
+_lambda=1e3
+# Minimum energy
+#_lambda=1e-3
+I1inner = np.linalg.solve(C.T @ C + M*ssmax/_lambda, C.T @ beta)
+
+I2inner = P @ I1inner
+
+coil.s = StreamFunction(I1inner, coil)
+shieldcoil.s = StreamFunction(I2inner, shieldcoil)
+
+#s = mlab.triangular_mesh(*mesh1.vertices.T, mesh1.faces, scalars=I1)
+#s.enable_contours=True
+#s = mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces, scalars=I2)
+#s.enable_contours=True
 
 
-##############################################################
-# Set up target and stray field points
+############################################################
+#
 
-#Here, the target points are on a volumetric grid within a sphere
-
-center = np.array([0, 0, 0]) * scaling_factor
-
-sidelength = 2 * scaling_factor
-n = 8
-xx = np.linspace(-sidelength/2, sidelength/2, n)
-yy = np.linspace(-sidelength/2, sidelength/2, n)
-zz = np.linspace(-sidelength/2, sidelength/2, n)
-X, Y, Z = np.meshgrid(xx, yy, zz, indexing='ij')
-
-x = X.ravel()
-y = Y.ravel()
-z = Z.ravel()
-
-target_points = np.array([x, y, z]).T
-
-#Turn cube into sphere by rejecting points "in the corners"
-target_points = target_points[np.linalg.norm(target_points, axis=1) < sidelength/2]  + center
-
-
-##############################################################
-# Create bfield specifications used when optimizing the coil geometry
-
-#The absolute target field amplitude is not of importance,
-# and it is scaled to match the C matrix in the optimization function
-
-target_field = np.zeros(target_points.shape)
-target_field[:, 1] = target_field[:, 1] + 1
-
-target_rel_error = np.zeros_like(target_field)
-target_rel_error[:, 0] += 0.01
-
-target_abs_error = np.zeros_like(target_field)
-target_abs_error[:, 0] += 0.001
-target_abs_error[:, 1:3] += 0.005
-
-target_spec = {'coupling':coil.B_coupling(target_points) + shieldcoil.B_coupling(target_points)[:, :, shieldcoil.inner_verts]@P, 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target':target_field}
-#[:, :, coil.inner_verts]
-
-objective_matrix = M11 - M21.T @ np.linalg.pinv(M22) @ M21
-
-##############################################################
-# Run QP solver
-import mosek
-
-coil.j, prob = optimize_streamfunctions(coil,
-                                   [target_spec],
-                                   objective=objective_matrix,
-                                   solver='MOSEK',
-                                   solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}},
-                                   boundary_constraints='all_zero'
-                                   )
-
-shieldcoil.j = np.zeros((len(shieldcoil.mesh.vertices, )))
-
-shieldcoil.j[shieldcoil.inner_verts] = P @ coil.j
-
-
-
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-           size=(800, 800))
-
-plot_data_on_vertices(coil.mesh, coil.j, figure=f)
-plot_data_on_vertices(shieldcoil.mesh, shieldcoil.j, figure=f)
-
-#############################################################
-# Plot coil windings and target points
-
-N_contours = 10
-
-loops, loop_values= scalar_contour(coil.mesh, coil.j, N_contours=N_contours)
-sloops, sloop_values= scalar_contour(shieldcoil.mesh, shieldcoil.j, N_contours=N_contours)
-
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-           size=(800, 800))
-mlab.clf()
-
-plot_3d_current_loops(loops, colors='auto', figure=f)
-plot_3d_current_loops(sloops, colors='auto', figure=f)
-
-B_target = coil.B_coupling(target_points) @ coil.j + shieldcoil.B_coupling(target_points) @ shieldcoil.j
-
-mlab.quiver3d(*target_points.T, *B_target.T)
-
-
-
-
-extent = 30
-
-##############################################################
-# Compute field along major axes
-
-
-x1 = np.linspace(-extent, extent, 101) * scaling_factor
-
-y1 = z1 = np.zeros_like(x1)
-
-line1_points = np.vstack((x1, y1, z1)).T
-
-B_line1 = coil.B_coupling(line1_points) @ coil.j + shieldcoil.B_coupling(line1_points) @ shieldcoil.j
-
-
-y2 = np.linspace(-extent, extent, 101) * scaling_factor
-
-z2 = x2 = np.zeros_like(y2)
-
-line2_points = np.vstack((x2, y2, z2)).T
-
-B_line2 = coil.B_coupling(line2_points) @ coil.j + shieldcoil.B_coupling(line2_points) @ shieldcoil.j
-
-
-
-z3 = np.linspace(-extent, extent, 101) * scaling_factor
-
-x3 = y3 = np.zeros_like(z1)
-
-line3_points = np.vstack((x3, y3, z3)).T
-
-
-B_line3 = coil.B_coupling(line3_points) @ coil.j + shieldcoil.B_coupling(line3_points) @ shieldcoil.j
-
-fig, axes = plt.subplots(1, 1)
-
-for ax_idx, ax in enumerate([axes]):
-    ax.semilogy(x1 / scaling_factor, np.linalg.norm(B_line1, axis=-1), label='X')
-    ax.semilogy(y2 / scaling_factor, np.linalg.norm(B_line2, axis=-1), label='Y')
-    ax.semilogy(z3 / scaling_factor, np.linalg.norm(B_line3, axis=-1), label='Z')
-    ax.set_title('Field component %d'% ax_idx)
-
-plt.ylabel('Field amplitude (target field units)')
-plt.xlabel('Distance from origin')
-plt.grid(True, which='minor', axis='y')
-plt.grid(True, which='major', axis='y', color='k')
-plt.grid(True, which='major', axis='x')
-
-plt.legend()
-
-
-plt.show()
-
-##############################################################
-# Compute the field and scalar potential on a larger plane
-
-x = y = np.linspace(-20, 20, 50)
+x = y = np.linspace(-0.8, 0.8, 150)
 X,Y = np.meshgrid(x, y, indexing='ij')
 points = np.zeros((X.flatten().shape[0], 3))
 points[:, 0] = X.flatten()
 points[:, 1] = Y.flatten()
 
-CB1 = magnetic_field_coupling_analytic(coil.mesh, points)
-CB2 = magnetic_field_coupling_analytic(shieldcoil.mesh, points)
 
-CU1 = scalar_potential_coupling(coil.mesh, points)
-CU2 = scalar_potential_coupling(shieldcoil.mesh, points)
+CB1 = coil.B_coupling(points)
+CB2 = shieldcoil.B_coupling(points)
 
-B1 = CB1 @ coil.j
-B2 = CB2 @ shieldcoil.j
+CU1 = coil.U_coupling(points)
+CU2 = shieldcoil.U_coupling(points)
 
-U1 = CU1 @ coil.j
-U2 = CU2 @ shieldcoil.j
+B1 = CB1 @ coil.s
+B2 = CB2 @ shieldcoil.s
+
+U1 = CU1 @ coil.s
+U2 = CU2 @ shieldcoil.s
+
 
 
 ##############################################################
-# Plot field and potential planar cross-section
+# Now, plot the field streamlines and scalar potential
+cc1 = scalar_contour(mesh1, mesh1.vertices[:,2], contours= [-0.001])[0]
+cc2 = scalar_contour(mesh2, mesh2.vertices[:,2], contours= [-0.001])[0]
+cx10 = cc1[0][:,1]
+cy10 = cc1[0][:,0]
+cx20 = cc2[0][:,1]
+cy20 = cc2[0][:,0]
+
+cx11 = np.vstack(cc1[1:])[:,1]
+cy11 = np.vstack(cc1[1:])[:,0]
+cx21 = np.vstack(cc2[1:])[:,1]
+cy21 = np.vstack(cc2[1:])[:,0]
+
 B = (B1.T + B2.T)[:2].reshape(2, x.shape[0], y.shape[0])
 lw = np.sqrt(B[0]**2 + B[1]**2)
-lw = 2*lw/np.max(lw)
+lw = 2*np.log(lw/np.max(lw)*np.e+1.1)
+
 xx = np.linspace(-1,1, 16)
-#seed_points = 0.51*np.array([xx, -np.sqrt(1-xx**2)])
-#seed_points = np.hstack([seed_points, (0.51*np.array([xx, np.sqrt(1-xx**2)]))])
+#seed_points = 0.56*np.array([xx, -np.sqrt(1-xx**2)])
+#seed_points = np.hstack([seed_points, (0.56*np.array([xx, np.sqrt(1-xx**2)]))])
+#seed_points = np.hstack([seed_points, (0.56*np.array([np.zeros_like(xx), xx]))])
+seed_points = np.array([cx10+0.001, cy10])
+seed_points = np.hstack([seed_points, np.array([cx11-0.001, cy11])])
+seed_points = np.hstack([seed_points, (0.56*np.array([np.zeros_like(xx), xx]))])
+
 #plt.streamplot(x,y, B[1], B[0], density=2, linewidth=lw, color='k',
 #               start_points=seed_points.T, integration_direction='both')
 U = (U1 + U2).reshape(x.shape[0], y.shape[0])
 U /= np.max(U)
 plt.figure()
-plt.imshow(U, vmin=-1.0, vmax=1.0, cmap='seismic', interpolation='bicubic',
-           extent=(x.min(), x.max(), y.min(), y.max()))
+plt.contourf(X,Y, U.T, cmap='seismic', levels=40)
+#plt.imshow(U, vmin=-1.0, vmax=1.0, cmap='seismic', interpolation='bicubic',
+#           extent=(x.min(), x.max(), y.min(), y.max()))
 plt.streamplot(x,y, B[1], B[0], density=2, linewidth=lw, color='k',
-               #start_points=seed_points.T,
-               integration_direction='both')
+               start_points=seed_points.T, integration_direction='both',
+               arrowsize=0.1)
 
-cc1 = scalar_contour(coil.mesh, coil.mesh.vertices[:,2], contours= [-0.001])[0][0]
-cc2 = scalar_contour(shieldcoil.mesh, shieldcoil.mesh.vertices[:,2], contours= [-0.001])[0][0]
+#plt.plot(seed_points[0], seed_points[1], '*')
 
-plt.plot(cc1[:,1], cc1[:,0], linewidth=3.0)
-plt.plot(cc2[:,1], cc2[:,0], linewidth=3.0)
+plt.plot(cx10, cy10, linewidth=3.0, color='gray')
+plt.plot(cx20, cy20, linewidth=3.0, color='gray')
+plt.plot(cx11, cy11, linewidth=3.0, color='gray')
+plt.plot(cx21, cy21, linewidth=3.0, color='gray')
+plt.axis('image')
 
 plt.xticks([])
 plt.yticks([])
 
 
+######################################################################3
+# Do a quick 3D plot
 
+f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+           size=(800, 800))
+
+coil.s.plot(figure=f, contours=20)
+shieldcoil.s.plot(figure=f, contours=20)

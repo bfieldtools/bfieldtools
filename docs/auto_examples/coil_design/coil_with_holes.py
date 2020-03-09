@@ -50,7 +50,7 @@ coil_minus = trimesh.Trimesh(planemesh.vertices + center_offset - standoff,
 
 joined_planes = coil_plus.union(coil_minus)
 
-#Create mesh class object
+#Create Conductor object, which finds the holes and sets the boundary condition
 coil = Conductor(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
 
 ##############################################################
@@ -77,47 +77,6 @@ target_points = np.array([x, y, z]).T
 target_points = target_points[np.linalg.norm(target_points, axis=1) < sidelength/2]  + center
 
 
-
-
-####################################################################
-# Let's find and separate the inner and outer boundaries of the coil mesh
-
-inner_bounds = np.intersect1d(coil.boundary_verts, np.where(np.linalg.norm(coil.mesh.vertices[:,0::2], axis=1)< 0.015)[0])
-
-centre_hole1 = np.intersect1d(np.intersect1d(coil.boundary_verts,
-                                             np.where(np.linalg.norm(coil.mesh.vertices[:,0::2], axis=1)< 0.004)[0]),
-                              np.where(coil.mesh.vertices[:,1] < 0)[0])
-
-centre_hole2 = np.intersect1d(np.intersect1d(coil.boundary_verts,
-                                             np.where(np.linalg.norm(coil.mesh.vertices[:,0::2], axis=1)< 0.004)[0]),
-                              np.where(coil.mesh.vertices[:,1] > 0)[0])
-
-left_hole1 = np.intersect1d(np.intersect1d(np.intersect1d(coil.boundary_verts,
-                                           np.where(coil.mesh.vertices[:,0] < -0.004)[0]), inner_bounds),
-                            np.where(coil.mesh.vertices[:,1] < 0)[0])
-
-left_hole2 = np.intersect1d(np.intersect1d(np.intersect1d(coil.boundary_verts,
-                                           np.where(coil.mesh.vertices[:,0] < -0.004)[0]), inner_bounds),
-                            np.where(coil.mesh.vertices[:,1] > 0)[0])
-
-right_hole1 = np.intersect1d(np.intersect1d(np.intersect1d(coil.boundary_verts,
-                                           np.where(coil.mesh.vertices[:,0] > 0.004)[0]), inner_bounds),
-                            np.where(coil.mesh.vertices[:,1] < 0)[0])
-
-right_hole2 = np.intersect1d(np.intersect1d(np.intersect1d(coil.boundary_verts,
-                                           np.where(coil.mesh.vertices[:,0] > 0.004)[0]), inner_bounds),
-                            np.where(coil.mesh.vertices[:,1] > 0)[0])
-
-outer_bounds = np.setdiff1d(coil.boundary_verts, inner_bounds)
-
-
-graph = trimesh.graph.vertex_adjacency_graph(coil.mesh)
-
-zero_eq_indices = outer_bounds
-iso_eq_indices = [left_hole1, centre_hole1, right_hole1, left_hole2, centre_hole2, right_hole2]
-
-boundary_constraints = {'zero_eq_indices':zero_eq_indices , 'iso_eq_indices': iso_eq_indices}
-
 ##############################################################
 # Create bfield specifications used when optimizing the coil geometry
 
@@ -142,27 +101,14 @@ bfield_specification = [target_spec]
 # Run QP solver
 import mosek
 
-coil.j, prob = optimize_streamfunctions(coil,
+coil.s, prob = optimize_streamfunctions(coil,
                                    bfield_specification,
                                    objective='minimum_inductive_energy',
                                    solver='MOSEK',
-                                   solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}},
-                                   boundary_constraints=boundary_constraints
+                                   solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
                                    )
 
 #############################################################
-# Plot coil windings and target points
+# Plot the computed streamfunction
 
-N_contours = 20
-
-loops, loop_values= scalar_contour(coil.mesh, coil.j, N_contours=N_contours)
-
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-           size=(800, 800))
-mlab.clf()
-
-plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.1)
-
-B_target = coil.B_coupling(target_points) @ coil.j
-
-mlab.quiver3d(*target_points.T, *B_target.T)
+coil.s.plot(ncolors=256)

@@ -159,7 +159,8 @@ html_theme_options = {
     'navbar_class': "navbar",
     'bootstrap_version': "3",  # default
     'navbar_links': [
-        ("Readme", "readme"),
+        ("Overview", "overview"),
+        ("Installation","installation"),
         ("Literature", "literature"),
         ("Example gallery", "auto_examples/index"),
         ("API Reference", "source/modules")
@@ -171,6 +172,17 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# The name of an image file (within the static path) to use as favicon of the
+# docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
+# pixels large.
+html_favicon = "_static/favicon.ico"
+
+
+# The name of an image file (relative to this directory) to place at the top
+# of the sidebar.
+html_logo = "_static/logo_simple.png"
+html_logo = "_static/logo_simple.png"
 
 # If true, links to the reST sources are added to the pages.
 html_show_sourcelink = False

@@ -13,7 +13,7 @@ Below are a number of examples meant to familiarize you with the functionality o
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
+    <div class="sphx-glr-thumbcontainer" tooltip="Spherical harmonics test">
 
 .. only:: html
 
@@ -53,7 +53,7 @@ Below are a number of examples meant to familiarize you with the functionality o
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
+    <div class="sphx-glr-thumbcontainer" tooltip=" ">
 
 .. only:: html
 
@@ -93,27 +93,7 @@ Below are a number of examples meant to familiarize you with the functionality o
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_test_scalar_potential_thumb.png
-
-        :ref:`sphx_glr_auto_examples_test_scalar_potential.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/test_scalar_potential
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1">
+    <div class="sphx-glr-thumbcontainer" tooltip="This script generates the bfieldtools logo ">
 
 .. only:: html
 
@@ -130,26 +110,6 @@ Below are a number of examples meant to familiarize you with the functionality o
    :hidden:
 
    /auto_examples/logo
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_linear_medium_bem_thumb.png
-
-        :ref:`sphx_glr_auto_examples_linear_medium_bem.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/linear_medium_bem
 .. raw:: html
 
     <div style='clear:both'></div>
@@ -184,6 +144,26 @@ Examples related to coil design.
    :hidden:
 
    /auto_examples/coil_design/spherical_harmonics_coil_design
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing homogeneous field in a target region between th...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_coil_with_holes_thumb.png
+
+        :ref:`sphx_glr_auto_examples_coil_design_coil_with_holes.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/coil_design/coil_with_holes
 
 .. raw:: html
 
@@ -227,7 +207,7 @@ Examples related to coil design.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing a high-order spherical harmonic field in a targ...">
+    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing a high-order spherical harmonic field in a spec...">
 
 .. only:: html
 
@@ -247,13 +227,13 @@ Examples related to coil design.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Coil with minimal eddy currents">
+    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing homogeneous field in a target region between th...">
 
 .. only:: html
 
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_minimal_eddy_current_cylindrical_coil_design_thumb.png
+    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_self-shielded_biplanar_coil_design_thumb.png
 
-        :ref:`sphx_glr_auto_examples_coil_design_minimal_eddy_current_cylindrical_coil_design.py`
+        :ref:`sphx_glr_auto_examples_coil_design_self-shielded_biplanar_coil_design.py`
 
 .. raw:: html
 
@@ -263,7 +243,7 @@ Examples related to coil design.
 .. toctree::
    :hidden:
 
-   /auto_examples/coil_design/minimal_eddy_current_cylindrical_coil_design
+   /auto_examples/coil_design/self-shielded_biplanar_coil_design
 
 .. raw:: html
 
@@ -287,26 +267,6 @@ Examples related to coil design.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing homogeneous field in a target region between th...">
-
-.. only:: html
-
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_coil_with_holes_thumb.png
-
-        :ref:`sphx_glr_auto_examples_coil_design_coil_with_holes.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/coil_design/coil_with_holes
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="Magnetically shielded  coil">
 
 .. only:: html
@@ -327,13 +287,13 @@ Examples related to coil design.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing homogeneous field in a target region between th...">
+    <div class="sphx-glr-thumbcontainer" tooltip="Coil with minimal eddy currents">
 
 .. only:: html
 
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_self-shielded_biplanar_coil_design_thumb.png
+    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_minimal_eddy_current_cylindrical_coil_design_thumb.png
 
-        :ref:`sphx_glr_auto_examples_coil_design_self-shielded_biplanar_coil_design.py`
+        :ref:`sphx_glr_auto_examples_coil_design_minimal_eddy_current_cylindrical_coil_design.py`
 
 .. raw:: html
 
@@ -343,7 +303,20 @@ Examples related to coil design.
 .. toctree::
    :hidden:
 
-   /auto_examples/coil_design/self-shielded_biplanar_coil_design
+   /auto_examples/coil_design/minimal_eddy_current_cylindrical_coil_design
+.. raw:: html
+
+    <div style='clear:both'></div>
+
+
+
+.. _sphx_glr_auto_examples_publication_software:
+
+Software publication examples
+=============================
+
+Example scripts to reproduce the results of the bfieldtools software paper.
+
 .. raw:: html
 
     <div style='clear:both'></div>
@@ -360,7 +333,7 @@ Examples related to the computation of thermal noise generated by thin conductiv
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="@author: Rasmus Zetter ">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example validates the thermal noise computations against the analytical solution for a thi...">
 
 .. only:: html
 
@@ -453,26 +426,6 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
-
-.. only:: html
-
-    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_bfield_disc_thumb.png
-
-        :ref:`sphx_glr_auto_examples_validation_validate_bfield_disc.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/validation/validate_bfield_disc
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="Test and validation of gamma_0">
 
 .. only:: html
@@ -513,7 +466,7 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing homogeneous field in a target region between th...">
+    <div class="sphx-glr-thumbcontainer" tooltip="Inductance computation time and memory benchmark">
 
 .. only:: html
 
@@ -530,26 +483,6 @@ Example scripts validating the core functionality of `bfieldtools`
    :hidden:
 
    /auto_examples/validation/computation_time
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Analytic B">
-
-.. only:: html
-
-    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_bfield_analytic_thumb.png
-
-        :ref:`sphx_glr_auto_examples_validation_validate_bfield_analytic.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/validation/validate_bfield_analytic
 
 .. raw:: html
 
@@ -573,6 +506,26 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Analytic B">
+
+.. only:: html
+
+    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_bfield_analytic_thumb.png
+
+        :ref:`sphx_glr_auto_examples_validation_validate_bfield_analytic.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/validation/validate_bfield_analytic
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="One">
 
 .. only:: html
@@ -593,7 +546,7 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="@author: makinea1 ">
+    <div class="sphx-glr-thumbcontainer" tooltip="Integrals testing">
 
 .. only:: html
 
@@ -624,13 +577,13 @@ Example scripts validating the core functionality of `bfieldtools`
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: auto_examples_python.zip <//m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/docs/auto_examples/auto_examples_python.zip>`
+    :download:`Download all examples in Python source code: auto_examples_python.zip <//l/bfieldtools/docs/auto_examples/auto_examples_python.zip>`
 
 
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/docs/auto_examples/auto_examples_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//l/bfieldtools/docs/auto_examples/auto_examples_jupyter.zip>`
 
 
 .. only:: html

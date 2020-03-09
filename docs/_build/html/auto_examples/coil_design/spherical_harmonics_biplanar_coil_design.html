@@ -7,14 +7,15 @@
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Coil with minimal eddy currents" href="minimal_eddy_current_cylindrical_coil_design.html" />
+    <link rel="next" title="Analytical self-shielded biplanar coil design" href="self-shielded_biplanar_coil_design.html" />
     <link rel="prev" title="MAMBA coil" href="mamba_coil_design.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -36,7 +37,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="../../index.html">
+        <a class="navbar-brand" href="../../index.html"><span><img src="../../_static/logo_simple.png"></span>
           bfieldtools</a>
         <span class="navbar-text navbar-version pull-left"><b></b></span>
       </div>
@@ -44,7 +45,8 @@
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="../../readme.html">Readme</a></li>
+                <li><a href="../../overview.html">Overview</a></li>
+                <li><a href="../../installation.html">Installation</a></li>
                 <li><a href="../../literature.html">Literature</a></li>
                 <li><a href="../index.html">Example gallery</a></li>
                 <li><a href="../../source/modules.html">API Reference</a></li>
@@ -60,10 +62,12 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../literature.html">Literature</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Example gallery</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html#coil-design">Coil design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html#software-publication-examples">Software publication examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html#thermal-noise-computation">Thermal noise computation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html#validation">Validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/modules.html">API Reference</a></li>
@@ -105,15 +109,15 @@
 <div class="sphx-glr-example-title section" id="high-order-spherical-harmonic-biplanar-coil-design">
 <span id="sphx-glr-auto-examples-coil-design-spherical-harmonics-biplanar-coil-design-py"></span><h1>High-order spherical harmonic biplanar coil design<a class="headerlink" href="#high-order-spherical-harmonic-biplanar-coil-design" title="Permalink to this headline">¶</a></h1>
 <p>Example showing a basic biplanar coil producing a high-order spherical harmonic field
-in a target region between the two coil planes.</p>
+in a specific target region between the two coil planes.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="kn">import</span> <span class="n">Conductor</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="kn">import</span> <span class="n">optimize_streamfunctions</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="kn">import</span> <span class="n">scalar_contour</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="kn">import</span> <span class="n">plot_3d_current_loops</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">Conductor</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="k">import</span> <span class="n">optimize_streamfunctions</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="k">import</span> <span class="n">scalar_contour</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="k">import</span> <span class="n">plot_3d_current_loops</span>
 
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 
@@ -151,7 +155,7 @@ in a target region between the two coil planes.</p>
 <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">scaling_factor</span>
 
 <span class="n">sidelength</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">scaling_factor</span>
-<span class="n">n</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">12</span>
 <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 <span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
@@ -189,39 +193,42 @@ in a target region between the two coil planes.</p>
 <span class="c1"># and it is scaled to match the C matrix in the optimization function</span>
 
 
-<span class="kn">from</span> <span class="nn">bfieldtools</span> <span class="kn">import</span> <span class="n">sphtools</span>
+<span class="kn">from</span> <span class="nn">bfieldtools</span> <span class="k">import</span> <span class="n">sphtools</span>
 
 
 <span class="n">lmax</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="n">alm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">lmax</span><span class="o">*</span><span class="p">(</span><span class="n">lmax</span><span class="o">+</span><span class="mi">2</span><span class="p">),))</span>
 <span class="n">blm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">lmax</span><span class="o">*</span><span class="p">(</span><span class="n">lmax</span><span class="o">+</span><span class="mi">2</span><span class="p">),))</span>
 
-<span class="c1">#</span>
-<span class="c1">#alm[22]+=1</span>
 <span class="n">blm</span><span class="p">[</span><span class="mi">22</span><span class="p">]</span><span class="o">+=</span><span class="mi">1</span>
 
 <span class="n">sphfield</span> <span class="o">=</span> <span class="n">sphtools</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">target_points</span><span class="p">,</span> <span class="n">alm</span><span class="p">,</span> <span class="n">blm</span><span class="p">,</span> <span class="n">lmax</span><span class="p">)</span>
 
 <span class="n">target_field</span> <span class="o">=</span> <span class="n">sphfield</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">sphfield</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
 
-<span class="c1">#target_field[:, 2] = 0</span>
 
 
-<span class="n">coil</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">()</span>
+<span class="n">coil</span><span class="o">.</span><span class="n">plot_mesh</span><span class="p">(</span><span class="n">opacity</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">sphfield</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 
 
 
-<span class="n">target_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;coupling&#39;</span><span class="p">:</span><span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">),</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="n">target_field</span><span class="p">}</span>
-<span class="n">stray_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;coupling&#39;</span><span class="p">:</span><span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">stray_points</span><span class="p">),</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;rel_error&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_stray_points</span><span class="p">,</span> <span class="mi">3</span><span class="p">))}</span>
+<span class="n">target_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;coupling&#39;</span><span class="p">:</span><span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">),</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="mf">0.1</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="n">target_field</span><span class="p">}</span>
+<span class="n">stray_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;coupling&#39;</span><span class="p">:</span><span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">stray_points</span><span class="p">),</span> <span class="s1">&#39;abs_error&#39;</span><span class="p">:</span><span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_stray_points</span><span class="p">,</span> <span class="mi">3</span><span class="p">))}</span>
 
 <span class="n">bfield_specification</span> <span class="o">=</span> <span class="p">[</span><span class="n">target_spec</span><span class="p">,</span> <span class="n">stray_spec</span><span class="p">]</span>
+</pre></div>
+</div>
+<img alt="../../_images/sphx_glr_spherical_harmonics_biplanar_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_spherical_harmonics_biplanar_coil_design_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 3184 vertices by 672 target points... took 0.76 seconds.
+Computing magnetic field coupling matrix, 3184 vertices by 642 target points... took 0.69 seconds.
 </pre></div>
 </div>
 <p>Run QP solver</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mosek</span>
 
-<span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
+<span class="n">coil</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
                                    <span class="p">[</span><span class="n">target_spec</span><span class="p">,</span> <span class="n">stray_spec</span><span class="p">],</span>
                                    <span class="n">objective</span><span class="o">=</span><span class="s1">&#39;minimum_inductive_energy&#39;</span><span class="p">,</span>
                                    <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;MOSEK&#39;</span><span class="p">,</span>
@@ -229,10 +236,90 @@ in a target region between the two coil planes.</p>
                                    <span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing the inductance matrix...
+Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
+Estimating 34964 MiB required for 3184 by 3184 vertices...
+Computing inductance matrix in 60 chunks (11705 MiB memory free), when approx_far=True using more chunks is faster...
+Computing 1/r-potential matrix
+Inductance matrix computation took 42.45 seconds.
+Pre-existing problem not passed, creating...
+Passing parameters to problem...
+Passing problem to solver...
+/l/conda-envs/mne/lib/python3.6/site-packages/cvxpy/reductions/solvers/solving_chain.py:170: UserWarning: You are solving a parameterized problem that is not DPP. Because the problem is not DPP, subsequent solves will not be faster than the first one.
+  &quot;You are solving a parameterized problem that is not DPP. &quot;
+
+
+Problem
+  Name                   :
+  Objective sense        : min
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 10782
+  Cones                  : 1
+  Scalar variables       : 6083
+  Matrix variables       : 0
+  Integer variables      : 0
+
+Optimizer started.
+Problem
+  Name                   :
+  Objective sense        : min
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 10782
+  Cones                  : 1
+  Scalar variables       : 6083
+  Matrix variables       : 0
+  Integer variables      : 0
+
+Optimizer  - threads                : 8
+Optimizer  - solved problem         : the dual
+Optimizer  - Constraints            : 2897
+Optimizer  - Cones                  : 1
+Optimizer  - Scalar variables       : 10782             conic                  : 2898
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0
+Factor     - setup time             : 2.82              dense det. time        : 0.00
+Factor     - ML order time          : 0.30              GP order time          : 0.00
+Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06
+Factor     - dense dim.             : 0                 flops                  : 6.55e+10
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
+0   6.6e+02  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  193.66
+1   5.2e+02  8.0e-01  1.8e+00  -9.86e-01  4.923004185e+00   4.170266302e+00   8.0e-01  194.39
+2   3.6e+02  5.6e-01  1.5e+00  -9.81e-01  5.271060710e+01   5.249286736e+01   5.6e-01  195.08
+3   2.7e+02  4.1e-01  1.3e+00  -9.69e-01  2.410919996e+02   2.414514590e+02   4.1e-01  195.76
+4   2.2e+02  3.3e-01  1.1e+00  -9.63e-01  2.680807755e+02   2.690147129e+02   3.3e-01  196.44
+5   1.5e+02  2.3e-01  9.2e-01  -9.55e-01  1.824694249e+03   1.826794837e+03   2.3e-01  197.13
+6   2.1e+01  3.2e-02  2.9e-01  -9.26e-01  2.544651385e+04   2.546414809e+04   3.2e-02  198.11
+7   9.5e+00  1.4e-02  1.7e-01  -7.56e-01  6.646639493e+04   6.649953268e+04   1.4e-02  198.82
+8   7.8e+00  1.2e-02  1.5e-01  -5.96e-01  8.105878983e+04   8.109584779e+04   1.2e-02  199.51
+9   1.0e+00  1.5e-03  2.9e-02  -5.92e-01  4.395893298e+05   4.396771666e+05   1.5e-03  200.48
+10  5.3e-01  8.1e-04  1.2e-02  2.98e-01   6.131845050e+05   6.132416891e+05   8.1e-04  201.16
+11  4.2e-01  6.4e-04  9.8e-03  2.64e-01   6.481199127e+05   6.481784877e+05   6.4e-04  201.85
+12  1.3e-01  2.1e-04  1.9e-03  6.19e-01   8.432815698e+05   8.433029120e+05   2.1e-04  202.53
+13  3.7e-03  5.6e-06  1.1e-05  8.51e-01   9.493346919e+05   9.493355611e+05   5.6e-06  203.38
+14  5.8e-04  2.7e-06  6.7e-07  9.94e-01   9.523270588e+05   9.523271899e+05   8.9e-07  204.11
+15  3.0e-04  1.4e-06  4.1e-07  9.99e-01   9.526052592e+05   9.526053261e+05   4.5e-07  205.73
+16  5.7e-06  2.1e-08  3.0e-08  1.00e+00   9.528934259e+05   9.528934272e+05   6.0e-09  206.94
+17  5.7e-06  2.1e-08  2.9e-08  1.00e+00   9.528934525e+05   9.528934538e+05   5.9e-09  208.35
+18  3.9e-05  1.2e-08  9.3e-09  1.00e+00   9.528951446e+05   9.528951449e+05   3.3e-09  209.55
+19  5.2e-05  1.0e-08  7.9e-09  1.00e+00   9.528953874e+05   9.528953880e+05   3.0e-09  210.82
+20  6.5e-05  9.1e-09  2.5e-09  1.00e+00   9.528956041e+05   9.528956044e+05   2.6e-09  212.10
+21  6.4e-05  9.0e-09  5.7e-10  1.00e+00   9.528956162e+05   9.528956165e+05   2.6e-09  213.49
+22  6.4e-05  9.0e-09  5.7e-10  1.00e+00   9.528956162e+05   9.528956165e+05   2.6e-09  215.07
+23  6.4e-05  9.0e-09  5.7e-10  1.00e+00   9.528956162e+05   9.528956165e+05   2.6e-09  216.67
+Optimizer terminated. Time: 218.97
+
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 9.5289561616e+05    nrm: 2e+06    Viol.  con: 1e-06    var: 0e+00    cones: 0e+00
+  Dual.    obj: 9.5289561653e+05    nrm: 1e+07    Viol.  con: 3e-02    var: 9e-07    cones: 0e+00
+</pre></div>
+</div>
 <p>Plot coil windings and target points</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">N_contours</span> <span class="o">=</span> <span class="mi">10</span>
 
-<span class="n">loops</span><span class="p">,</span> <span class="n">loop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="n">N_contours</span><span class="p">)</span>
+<span class="n">loops</span><span class="p">,</span> <span class="n">loop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="n">N_contours</span><span class="p">)</span>
 
 <span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
            <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
@@ -240,18 +327,20 @@ in a target region between the two coil planes.</p>
 
 <span class="n">plot_3d_current_loops</span><span class="p">(</span><span class="n">loops</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
 
-<span class="n">B_target</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span>
+<span class="n">B_target</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">s</span>
 
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B_target</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<img alt="../../_images/sphx_glr_spherical_harmonics_biplanar_coil_design_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_spherical_harmonics_biplanar_coil_design_002.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 6 minutes  12.030 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  6654 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-spherical-harmonics-biplanar-coil-design-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/a8c74d880a8a609c8d0096b7bff6202c/spherical_harmonics_biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">spherical_harmonics_biplanar_coil_design.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/f43e90830d61141a5657e23a2b8466ec/spherical_harmonics_biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">spherical_harmonics_biplanar_coil_design.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/a6dfb098017f28887dd6bc998ac05764/spherical_harmonics_biplanar_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">spherical_harmonics_biplanar_coil_design.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/e265571db610b5f126998a3ee613a9fa/spherical_harmonics_biplanar_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">spherical_harmonics_biplanar_coil_design.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -270,7 +359,7 @@ in a target region between the two coil planes.</p>
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>
 </footer>

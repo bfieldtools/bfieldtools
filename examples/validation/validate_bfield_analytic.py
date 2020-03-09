@@ -29,6 +29,10 @@ B0 = magnetic_field_coupling(coilmesh, test_points) @ weights
 B1 = magnetic_field_coupling_analytic(coilmesh, test_points) @ weights
 
 
+
+f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
+           size=(800, 800))
+
 s = mlab.triangular_mesh(*coilmesh.vertices.T, coilmesh.faces,
                          scalars=weights, colormap='viridis')
 s.enable_contours = True

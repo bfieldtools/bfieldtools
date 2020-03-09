@@ -23,7 +23,7 @@ The coil is positioned close to the end of the shield to demonstrate the effect
     import trimesh
 
 
-    from bfieldtools.mesh_class import Conductor
+    from bfieldtools.mesh_class import Conductor, StreamFunction
     from bfieldtools.coil_optimize import optimize_streamfunctions
     from bfieldtools.contour import scalar_contour
     from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
@@ -54,14 +54,20 @@ The coil is positioned close to the end of the shield to demonstrate the effect
 
     joined_planes = coil_plus.union(coil_minus)
 
+
     #Create mesh class object
-    coil = Conductor(mesh_obj=joined_planes, fix_normals=True)
+    coil = Conductor(mesh_obj=joined_planes,
+                     fix_normals=True,
+                     basis_name='inner')
 
     # Separate object for shield geometry
-    shieldmesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/closed_cylinder.stl'), process=True)
+    shieldmesh = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/closed_cylinder_remeshed.stl'), process=True)
     shieldmesh.apply_scale(15)
 
-    shield = Conductor(mesh_obj=shieldmesh, process=True, fix_normals=True)
+    shield = Conductor(mesh_obj=shieldmesh,
+                       process=True,
+                       fix_normals=True,
+                       basis_name='vertex')
 
 
 
@@ -106,8 +112,13 @@ Set up target  points and plot geometry
                     size=(800, 800))
 
     coil.plot_mesh(representation='surface')
-    shield.plot_mesh()
+    shield.plot_mesh(representation='surface', cull_front=True, color=(0.9, 0.9, 0.9))
     mlab.points3d(*target_points.T)
+
+
+    f.scene.isometric_view()
+    f.scene.camera.zoom(1.2)
+
 
 
 
@@ -142,21 +153,19 @@ Let's design a coil without taking the magnetic shield into account
     #The absolute target field amplitude is not of importance,
     # and it is scaled to match the C matrix in the optimization function
     target_field = np.zeros(target_points.shape)
-    target_field[:, 1] = target_field[:, 1] + 1 # Homogeneous Z-field
+    target_field[:, 0] = target_field[:, 0] + 1 # Homogeneous Y-field
 
 
-    target_rel_error = np.zeros_like(target_field)
-    target_rel_error[:, 0] += 0.01
 
     target_abs_error = np.zeros_like(target_field)
-    target_abs_error[:, 0] += 0.001
-    target_abs_error[:, 1:3] += 0.005
+    target_abs_error[:, 0] += 0.005
+    target_abs_error[:, 1:3] += 0.01
 
-    target_spec = {'coupling':coil.B_coupling(target_points), 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target':target_field}
+    target_spec = {'coupling':coil.B_coupling(target_points), 'rel_error':0, 'abs_error':target_abs_error, 'target':target_field}
 
     import mosek
 
-    coil.j, coil.prob = optimize_streamfunctions(coil,
+    coil.s, coil.prob = optimize_streamfunctions(coil,
                                        [target_spec],
                                        objective='minimum_inductive_energy',
                                        solver='MOSEK',
@@ -175,16 +184,18 @@ Let's design a coil without taking the magnetic shield into account
 
  .. code-block:: none
 
-    Computing magnetic field coupling matrix, 3184 vertices by 672 target points... took 0.93 seconds.
+    Computing magnetic field coupling matrix, 3184 vertices by 672 target points... took 0.78 seconds.
     Computing the inductance matrix...
     Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
     Estimating 34964 MiB required for 3184 by 3184 vertices...
-    Computing inductance matrix in 100 chunks (7772 MiB memory free), when approx_far=True using more chunks is faster...
-    Computing potential matrix
-    Inductance matrix computation took 50.77 seconds.
+    Computing inductance matrix in 80 chunks (11621 MiB memory free), when approx_far=True using more chunks is faster...
+    Computing 1/r-potential matrix
+    Inductance matrix computation took 42.43 seconds.
     Pre-existing problem not passed, creating...
     Passing parameters to problem...
     Passing problem to solver...
+    /l/conda-envs/mne/lib/python3.6/site-packages/cvxpy/reductions/solvers/solving_chain.py:170: UserWarning: You are solving a parameterized problem that is not DPP. Because the problem is not DPP, subsequent solves will not be faster than the first one.
+      "You are solving a parameterized problem that is not DPP. "
 
 
     Problem
@@ -193,7 +204,7 @@ Let's design a coil without taking the magnetic shield into account
       Type                   : CONIC (conic optimization problem)
       Constraints            : 6930            
       Cones                  : 1               
-      Scalar variables       : 6083            
+      Scalar variables       : 5795            
       Matrix variables       : 0               
       Integer variables      : 0               
 
@@ -204,7 +215,7 @@ Let's design a coil without taking the magnetic shield into account
       Type                   : CONIC (conic optimization problem)
       Constraints            : 6930            
       Cones                  : 1               
-      Scalar variables       : 6083            
+      Scalar variables       : 5795            
       Matrix variables       : 0               
       Integer variables      : 0               
 
@@ -215,32 +226,29 @@ Let's design a coil without taking the magnetic shield into account
     Optimizer  - Scalar variables       : 6930              conic                  : 2898            
     Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
     Factor     - setup time             : 1.82              dense det. time        : 0.00            
-    Factor     - ML order time          : 0.29              GP order time          : 0.00            
+    Factor     - ML order time          : 0.28              GP order time          : 0.00            
     Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06        
     Factor     - dense dim.             : 0                 flops                  : 4.93e+10        
     ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
-    0   6.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  78.38 
-    1   3.9e+01  6.0e-01  2.2e-01  9.32e-01   5.048078588e+01   4.972913092e+01   6.0e-01  78.92 
-    2   9.2e+00  1.4e-01  2.7e-02  1.15e+00   8.981665197e+01   8.968983538e+01   1.4e-01  79.45 
-    3   4.3e+00  6.7e-02  1.1e-02  1.30e+00   9.209533675e+01   9.204271073e+01   6.7e-02  79.98 
-    4   1.3e+00  2.0e-02  2.3e-03  1.05e+00   9.637250546e+01   9.635715466e+01   2.0e-02  80.60 
-    5   1.3e-01  2.0e-03  7.5e-05  1.07e+00   9.809905145e+01   9.809772029e+01   2.0e-03  81.27 
-    6   1.3e-02  2.1e-04  2.6e-06  1.00e+00   9.829109041e+01   9.829095050e+01   2.1e-04  81.90 
-    7   7.2e-03  1.1e-04  1.0e-06  9.99e-01   9.830510384e+01   9.830502787e+01   1.1e-04  82.42 
-    8   9.8e-04  1.5e-05  5.2e-08  1.00e+00   9.831974067e+01   9.831973029e+01   1.5e-05  83.07 
-    9   4.3e-04  6.7e-06  1.5e-08  1.00e+00   9.832108213e+01   9.832107763e+01   6.7e-06  83.57 
-    10  2.6e-05  4.0e-07  1.5e-10  1.00e+00   9.832206844e+01   9.832206828e+01   4.0e-07  84.16 
-    11  9.1e-06  4.6e-08  1.9e-11  1.00e+00   9.832212605e+01   9.832212597e+01   4.6e-08  84.84 
-    12  5.8e-06  3.0e-08  2.0e-11  1.00e+00   9.832212855e+01   9.832212843e+01   3.0e-08  85.36 
-    13  2.8e-06  1.4e-08  3.0e-11  1.00e+00   9.832213110e+01   9.832213085e+01   1.4e-08  85.85 
-    Optimizer terminated. Time: 86.33   
+    0   1.3e+02  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  85.10 
+    1   6.2e+01  4.9e-01  8.3e-01  -1.88e-01  1.238908380e+02   1.233494816e+02   4.9e-01  85.65 
+    2   2.8e+01  2.2e-01  2.7e-01  -7.58e-02  4.723125710e+02   4.720214058e+02   2.2e-01  86.20 
+    3   6.6e+00  5.1e-02  3.4e-02  1.16e+00   7.663818856e+02   7.663394148e+02   5.1e-02  86.91 
+    4   1.2e+00  9.7e-03  2.7e-03  1.01e+00   8.627010809e+02   8.626916977e+02   9.7e-03  87.63 
+    5   1.7e-01  1.3e-03  1.4e-04  9.78e-01   8.843341332e+02   8.843330963e+02   1.3e-03  88.18 
+    6   2.1e-02  1.6e-04  6.4e-06  1.00e+00   8.876119122e+02   8.876117890e+02   1.6e-04  88.81 
+    7   2.6e-03  2.0e-05  2.7e-07  1.00e+00   8.880900344e+02   8.880900201e+02   2.0e-05  89.35 
+    8   3.5e-04  2.7e-06  1.3e-08  1.00e+00   8.881465514e+02   8.881465495e+02   2.7e-06  89.86 
+    9   2.8e-06  1.7e-08  6.2e-11  1.00e+00   8.881555063e+02   8.881555084e+02   1.1e-09  90.59 
+    10  1.4e-05  7.8e-09  1.5e-11  1.00e+00   8.881555079e+02   8.881555087e+02   5.3e-10  91.62 
+    Optimizer terminated. Time: 92.09   
 
 
     Interior-point solution summary
       Problem status  : PRIMAL_AND_DUAL_FEASIBLE
       Solution status : OPTIMAL
-      Primal.  obj: 9.8322131100e+01    nrm: 2e+02    Viol.  con: 6e-09    var: 0e+00    cones: 0e+00  
-      Dual.    obj: 9.8322130854e+01    nrm: 1e+03    Viol.  con: 5e-07    var: 2e-09    cones: 0e+00  
+      Primal.  obj: 8.8815550795e+02    nrm: 2e+03    Viol.  con: 8e-10    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 8.8815550866e+02    nrm: 6e+03    Viol.  con: 2e-08    var: 3e-09    cones: 0e+00  
 
 
 
@@ -250,7 +258,7 @@ Plot coil windings and target points
 .. code-block:: default
 
 
-    loops, loop_values= scalar_contour(coil.mesh, coil.j, N_contours=10)
+    loops, loop_values= scalar_contour(coil.mesh, coil.s.vert, N_contours=10)
 
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                size=(800, 800))
@@ -258,9 +266,15 @@ Plot coil windings and target points
 
     plot_3d_current_loops(loops, colors='auto', figure=f)
 
-    B_target = coil.B_coupling(target_points) @ coil.j
+    B_target = coil.B_coupling(target_points) @ coil.s
 
-    mlab.quiver3d(*target_points.T, *B_target.T)
+    mlab.quiver3d(*target_points.T, *B_target.T, mode='arrow', scale_factor=0.75)
+
+
+
+
+    f.scene.isometric_view()
+    f.scene.camera.zoom(0.95)
 
 
 
@@ -281,26 +295,12 @@ Now, let's compute the effect of the shield on the field produced by the coil
     d = np.mean(np.diff(shield.mesh.vertices[shield.mesh.faces[:,0:2]],axis=1), axis=0)/10
     points = shield.mesh.vertices - d*shield.mesh.vertex_normals
 
-    # Calculate primary potential matrix at the shield surface
-    P_prim = coil.U_coupling(points)
-
-    # Calculate linear collocation BEM matrix
-    P_bem = shield.U_coupling(points)
-
-    # Recalculate diag elements according to de Munck paper
-    #for diag_index in range(P_bem.shape[0]):
-    #    P_bem[diag_index, diag_index] = 0
-    #    P_bem[diag_index, diag_index] = -P_bem[diag_index, :].sum()
-
-    # Matrix misses one rank, make it invertible
-    # by rank-one update (sets potential of constant dipole layer)
-    #P_bem += np.ones(P_bem.shape)/P_bem.shape[0]
-
 
     # Solve equivalent stream function for the perfect linear mu-metal layer.
     # This is the equivalent surface current in the shield that would cause its
     # scalar magnetic potential to be constant
-    shield.j =  np.linalg.solve(P_bem, P_prim @ coil.j)
+    shield.s = StreamFunction(np.linalg.solve(shield.U_coupling(points), coil.U_coupling(points) @ coil.s),
+                              shield)
 
 
 
@@ -312,8 +312,8 @@ Now, let's compute the effect of the shield on the field produced by the coil
 
  .. code-block:: none
 
-    Computing scalar potential coupling matrix, 3184 vertices by 962 target points... took 5.73 seconds.
-    Computing scalar potential coupling matrix, 962 vertices by 962 target points... took 1.78 seconds.
+    Computing scalar potential coupling matrix, 2773 vertices by 2773 target points... took 11.10 seconds.
+    Computing scalar potential coupling matrix, 3184 vertices by 2773 target points... took 12.22 seconds.
 
 
 
@@ -327,42 +327,18 @@ Plot the difference in field when taking the shield into account
                size=(800, 800))
     mlab.clf()
 
-    B_target = coil.B_coupling(target_points) @ coil.j
+    B_target = coil.B_coupling(target_points) @ coil.s
 
-    B_target_w_shield = coil.B_coupling(target_points) @ coil.j + shield.B_coupling(target_points) @ shield.j
+    B_target_w_shield = coil.B_coupling(target_points) @ coil.s + shield.B_coupling(target_points) @ shield.s
 
     B_quiver = mlab.quiver3d(*target_points.T, *(B_target_w_shield - B_target).T, colormap='viridis', mode='arrow')
     f.scene.isometric_view()
     mlab.colorbar(B_quiver, title='Difference in magnetic field (a.u.)')
 
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-
-
-
-
-    fig, axes = plt.subplots(1, 3, figsize=(10, 4))
-
-    fig.suptitle('Component-wise effect of magnetic shield on target field amplitude distribution')
-    for ax_idx, ax in enumerate(axes):
-
-        sns.distplot(B_target[:, ax_idx], label='Without shield', ax=ax)
-        sns.distplot(B_target_w_shield[:, ax_idx], label='With shield', ax=ax)
-        ax.set_xlabel('Magnetic field (a.u.)')
-
-        if ax_idx == 2:
-            ax.legend()
-
-    fig.tight_layout(rect=[0, 0.03, 1, 0.95])
-
-
 
 
 
 .. image:: /auto_examples/coil_design/images/sphx_glr_magnetically_shielded_biplanar_coil_design_005.png
-    :class: sphx-glr-single-img
-
-.. image:: /auto_examples/coil_design/images/sphx_glr_magnetically_shielded_biplanar_coil_design_006.png
     :class: sphx-glr-single-img
 
 
@@ -372,12 +348,8 @@ Plot the difference in field when taking the shield into account
 
  .. code-block:: none
 
-    Computing magnetic field coupling matrix, 962 vertices by 672 target points... took 0.27 seconds.
+    Computing magnetic field coupling matrix, 2773 vertices by 672 target points... took 0.66 seconds.
     This object has no scalar data
-    /u/80/makinea1/unix/miniconda3/lib/python3.6/site-packages/ipykernel/kernelbase.py:19: VisibleDeprecationWarning: zmq.eventloop.minitornado is deprecated in pyzmq 14.0 and will be removed.
-        Install tornado itself to use zmq with the tornado IOLoop.
-    
-      from jupyter_client.session import utcnow as now
 
 
 
@@ -387,16 +359,16 @@ Let's redesign the coil taking the shield into account prospectively
 .. code-block:: default
 
 
-    shield.coupling = np.linalg.solve(P_bem, P_prim)
+    shield.coupling = np.linalg.solve(shield.U_coupling(points), coil.U_coupling(points))
 
-    secondary_B_coupling = shield.B_coupling(target_points) @ shield.coupling
+    secondary_C = shield.B_coupling(target_points) @ shield.coupling
 
-    total_B_coupling = coil.B_coupling(target_points) + secondary_B_coupling
+    total_C = coil.B_coupling(target_points) + secondary_C
 
-    target_spec_w_shield = {'coupling':total_B_coupling, 'rel_error':target_rel_error, 'abs_error':target_abs_error, 'target':target_field}
+    target_spec_w_shield = {'coupling':total_C, 'rel_error':0, 'abs_error':target_abs_error, 'target':target_field}
 
 
-    coil.j2, coil.prob2 = optimize_streamfunctions(coil,
+    coil.s2, coil.prob2 = optimize_streamfunctions(coil,
                                        [target_spec_w_shield],
                                        objective='minimum_inductive_energy',
                                        solver='MOSEK',
@@ -424,7 +396,7 @@ Let's redesign the coil taking the shield into account prospectively
       Type                   : CONIC (conic optimization problem)
       Constraints            : 6930            
       Cones                  : 1               
-      Scalar variables       : 6083            
+      Scalar variables       : 5795            
       Matrix variables       : 0               
       Integer variables      : 0               
 
@@ -435,7 +407,7 @@ Let's redesign the coil taking the shield into account prospectively
       Type                   : CONIC (conic optimization problem)
       Constraints            : 6930            
       Cones                  : 1               
-      Scalar variables       : 6083            
+      Scalar variables       : 5795            
       Matrix variables       : 0               
       Integer variables      : 0               
 
@@ -445,30 +417,37 @@ Let's redesign the coil taking the shield into account prospectively
     Optimizer  - Cones                  : 1
     Optimizer  - Scalar variables       : 6930              conic                  : 2898            
     Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
-    Factor     - setup time             : 1.76              dense det. time        : 0.00            
-    Factor     - ML order time          : 0.27              GP order time          : 0.00            
+    Factor     - setup time             : 1.85              dense det. time        : 0.00            
+    Factor     - ML order time          : 0.28              GP order time          : 0.00            
     Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06        
     Factor     - dense dim.             : 0                 flops                  : 4.93e+10        
     ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
-    0   6.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  90.09 
-    1   3.7e+01  5.7e-01  3.8e-01  8.88e-01   4.754179191e+01   4.682655503e+01   5.7e-01  90.62 
-    2   8.1e+00  1.3e-01  2.1e-02  1.20e+00   7.723939039e+01   7.711370701e+01   1.3e-01  91.16 
-    3   1.3e+00  2.0e-02  2.9e-03  1.32e+00   7.934876951e+01   7.933475709e+01   2.0e-02  91.88 
-    4   6.0e-01  9.3e-03  8.7e-04  1.06e+00   8.012501237e+01   8.011870723e+01   9.3e-03  92.40 
-    5   4.3e-02  6.7e-04  1.6e-05  1.03e+00   8.082162749e+01   8.082116350e+01   6.7e-04  93.09 
-    6   3.5e-02  5.5e-04  1.2e-05  9.84e-01   8.083297867e+01   8.083259415e+01   5.5e-04  93.61 
-    7   1.1e-02  1.7e-04  1.9e-06  1.00e+00   8.086988981e+01   8.086977400e+01   1.7e-04  94.14 
-    8   1.3e-04  2.0e-06  2.5e-09  1.00e+00   8.088581305e+01   8.088581166e+01   2.0e-06  94.72 
-    9   4.1e-06  6.4e-08  1.2e-11  1.00e+00   8.088600442e+01   8.088600439e+01   6.3e-08  95.43 
-    10  1.0e-06  1.6e-08  3.6e-12  1.00e+00   8.088600933e+01   8.088600930e+01   1.6e-08  95.93 
-    Optimizer terminated. Time: 96.39   
+    0   1.3e+02  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  84.60 
+    1   6.6e+01  5.1e-01  9.1e-01  -2.50e-01  1.083065369e+02   1.077565488e+02   5.1e-01  85.17 
+    2   3.2e+01  2.4e-01  3.4e-01  -1.80e-01  4.305860933e+02   4.302841974e+02   2.4e-01  85.72 
+    3   2.2e+01  1.7e-01  2.0e-01  1.11e+00   6.051999340e+02   6.050078995e+02   1.7e-01  86.23 
+    4   8.2e+00  6.4e-02  4.9e-02  9.17e-01   8.680965416e+02   8.680348149e+02   6.4e-02  86.84 
+    5   5.7e+00  4.4e-02  3.1e-02  8.95e-01   9.166094221e+02   9.165751401e+02   4.4e-02  87.35 
+    6   4.5e-01  3.5e-03  6.7e-04  9.00e-01   1.088049692e+03   1.088046363e+03   3.5e-03  87.96 
+    7   2.6e-01  2.0e-03  3.0e-04  9.86e-01   1.095071026e+03   1.095069313e+03   2.0e-03  88.49 
+    8   1.3e-01  1.0e-03  1.1e-04  9.92e-01   1.100298352e+03   1.100297589e+03   1.0e-03  89.00 
+    9   1.4e-02  1.1e-04  4.0e-06  9.96e-01   1.105213834e+03   1.105213803e+03   1.1e-04  89.61 
+    10  1.9e-03  1.5e-05  2.1e-07  1.00e+00   1.105801411e+03   1.105801407e+03   1.5e-05  90.16 
+    11  2.3e-04  1.8e-06  7.1e-09  1.00e+00   1.105888972e+03   1.105888972e+03   1.8e-06  90.77 
+    12  4.1e-05  3.2e-07  4.6e-10  1.00e+00   1.105898566e+03   1.105898568e+03   3.2e-07  91.33 
+    13  2.8e-05  2.2e-07  1.5e-10  1.00e+00   1.105899279e+03   1.105899280e+03   2.2e-07  92.38 
+    14  5.5e-06  4.3e-08  1.2e-10  1.00e+00   1.105900448e+03   1.105900449e+03   4.3e-08  92.88 
+    15  6.1e-06  2.7e-08  7.2e-11  1.00e+00   1.105900556e+03   1.105900556e+03   2.7e-08  93.84 
+    16  6.7e-06  1.6e-08  7.4e-11  1.00e+00   1.105900627e+03   1.105900627e+03   1.6e-08  94.78 
+    17  3.0e-06  2.8e-09  2.5e-11  1.00e+00   1.105900716e+03   1.105900715e+03   2.8e-09  95.70 
+    Optimizer terminated. Time: 96.17   
 
 
     Interior-point solution summary
       Problem status  : PRIMAL_AND_DUAL_FEASIBLE
       Solution status : OPTIMAL
-      Primal.  obj: 8.0886009329e+01    nrm: 2e+02    Viol.  con: 7e-09    var: 0e+00    cones: 0e+00  
-      Dual.    obj: 8.0886009305e+01    nrm: 1e+03    Viol.  con: 1e-06    var: 1e-10    cones: 0e+00  
+      Primal.  obj: 1.1059007158e+03    nrm: 2e+03    Viol.  con: 5e-09    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 1.1059007154e+03    nrm: 1e+04    Viol.  con: 6e-08    var: 7e-10    cones: 0e+00  
 
 
 
@@ -478,15 +457,70 @@ Plot the newly designed coil windings and field at the target points
 .. code-block:: default
 
 
-    loops, loop_values= scalar_contour(coil.mesh, coil.j2, N_contours=10)
+    loops, loop_values= scalar_contour(coil.mesh, coil.s2.vert, N_contours=10)
+
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                size=(800, 800))
     mlab.clf()
 
     plot_3d_current_loops(loops, colors='auto', figure=f)
 
-    B_target2 = total_B_coupling @ coil.j2
-    mlab.quiver3d(*target_points.T, *B_target2.T)
+    B_target2 = total_C @ coil.s2
+    mlab.quiver3d(*target_points.T, *B_target2.T, mode='arrow', scale_factor=0.75)
+
+
+
+
+    f.scene.isometric_view()
+    f.scene.camera.zoom(0.95)
+
+
+
+
+
+.. image:: /auto_examples/coil_design/images/sphx_glr_magnetically_shielded_biplanar_coil_design_006.png
+    :class: sphx-glr-single-img
+
+
+
+
+Plot difference in field
+
+
+.. code-block:: default
+
+
+
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+
+
+
+    fig, axes = plt.subplots(1, 3, figsize=(12, 3))
+
+    axnames = ['X', 'Y', 'Z']
+
+    #fig.suptitle('Component-wise effect of magnetic shield on target field amplitude distribution')
+    for ax_idx, ax in enumerate(axes):
+
+        sns.kdeplot(B_target[:, ax_idx], label='Coil without shield', ax=ax, shade=True, legend=False)
+        sns.kdeplot(B_target_w_shield[:, ax_idx], label='Coil with shield', ax=ax, shade=True, legend=False)
+        sns.kdeplot(B_target2[:, ax_idx], label='Coil designed with shield', ax=ax, shade=True, legend=False)
+    #    ax.set_title(axnames[ax_idx])
+        ax.get_yaxis().set_visible(False)
+
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['left'].set_visible(False)
+
+        ax.set_xlabel('Magnetic field on %s-axis'%axnames[ax_idx])
+
+        if ax_idx == 0:
+            ax.legend()
+
+    fig.tight_layout(rect=[0, 0.03, 1, 0.95])
+
+
 
 
 
@@ -497,41 +531,12 @@ Plot the newly designed coil windings and field at the target points
 
 
 
-Plot the difference in stream functions
-
-
-.. code-block:: default
-
-
-    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-               size=(800, 800))
-    mlab.clf()
-
-    plot_data_on_vertices(coil.mesh, np.nan_to_num(100 * (coil.j-coil.j2)/coil.j), figure=f, colorbar=True)
-
-    mlab.colorbar(title='Relative error (%)')
-
-
-
-.. image:: /auto_examples/coil_design/images/sphx_glr_magnetically_shielded_biplanar_coil_design_008.png
-    :class: sphx-glr-single-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    /m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools/examples/coil_design/magnetically_shielded_biplanar_coil_design.py:239: RuntimeWarning: invalid value encountered in true_divide
-      plot_data_on_vertices(coil.mesh, np.nan_to_num(100 * (coil.j-coil.j2)/coil.j), figure=f, colorbar=True)
-
-
-
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 6 minutes  40.532 seconds)
+   **Total running time of the script:** ( 6 minutes  25.552 seconds)
+
+**Estimated memory usage:**  4533 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_magnetically_shielded_biplanar_coil_design.py:

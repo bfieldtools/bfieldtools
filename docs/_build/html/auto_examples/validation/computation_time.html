@@ -3,18 +3,19 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Biplanar coil design &#8212; bfieldtools 0.1 documentation</title>
+    <title>Inductance computation time and memory benchmark &#8212; bfieldtools 0.1 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Analytic B-field computation" href="validate_bfield_analytic.html" />
+    <link rel="next" title="Linear dipole" href="validate_linear_dipole.html" />
     <link rel="prev" title="Uniform triangle" href="validate_uniform_triangle.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
@@ -36,7 +37,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="../../index.html">
+        <a class="navbar-brand" href="../../index.html"><span><img src="../../_static/logo_simple.png"></span>
           bfieldtools</a>
         <span class="navbar-text navbar-version pull-left"><b></b></span>
       </div>
@@ -44,7 +45,8 @@
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="../../readme.html">Readme</a></li>
+                <li><a href="../../overview.html">Overview</a></li>
+                <li><a href="../../installation.html">Installation</a></li>
                 <li><a href="../../literature.html">Literature</a></li>
                 <li><a href="../index.html">Example gallery</a></li>
                 <li><a href="../../source/modules.html">API Reference</a></li>
@@ -60,10 +62,12 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../literature.html">Literature</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Example gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html#coil-design">Coil design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html#software-publication-examples">Software publication examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html#thermal-noise-computation">Thermal noise computation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html#validation">Validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/modules.html">API Reference</a></li>
@@ -102,10 +106,10 @@
 <p class="admonition-title">Note</p>
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-validation-computation-time-py"><span class="std std-ref">here</span></a> to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="biplanar-coil-design">
-<span id="sphx-glr-auto-examples-validation-computation-time-py"></span><h1>Biplanar coil design<a class="headerlink" href="#biplanar-coil-design" title="Permalink to this headline">¶</a></h1>
-<p>Example showing a basic biplanar coil producing homogeneous field in a target
-region between the two coil planes.</p>
+<div class="sphx-glr-example-title section" id="inductance-computation-time-and-memory-benchmark">
+<span id="sphx-glr-auto-examples-validation-computation-time-py"></span><h1>Inductance computation time and memory benchmark<a class="headerlink" href="#inductance-computation-time-and-memory-benchmark" title="Permalink to this headline">¶</a></h1>
+<p>Benchmark for inductance matrix computation, used
+to set auto-chunking.</p>
 <ul class="sphx-glr-horizontal">
 <li><img alt="../../_images/sphx_glr_computation_time_001.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_computation_time_001.png" />
 </li>
@@ -113,18 +117,18 @@ region between the two coil planes.</p>
 </li>
 </ul>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-Computing potential matrix
-Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-Computing potential matrix
-Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-Computing potential matrix
-Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-Computing potential matrix
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
+Computing 1/r-potential matrix
+Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
+Computing 1/r-potential matrix
+Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
+Computing 1/r-potential matrix
+Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
+Computing 1/r-potential matrix
 Fit:
-t = 0.000003 n**2.17
+t = 0.000006 n**2.09
 Fit:
-memory = 0.389024 n**1.36
+memory = 0.134151 n**1.51
 </pre></div>
 </div>
 <div class="line-block">
@@ -137,7 +141,7 @@ memory = 0.389024 n**1.36
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
 
-<span class="kn">from</span> <span class="nn">memory_profiler</span> <span class="kn">import</span> <span class="n">memory_usage</span>
+<span class="kn">from</span> <span class="nn">memory_profiler</span> <span class="k">import</span> <span class="n">memory_usage</span>
 
 
 <span class="k">def</span> <span class="nf">MakeFacesVectorized1</span><span class="p">(</span><span class="n">Nr</span><span class="p">,</span><span class="n">Nc</span><span class="p">):</span>
@@ -162,7 +166,7 @@ memory = 0.389024 n**1.36
 <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span>
 
 
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_properties</span> <span class="kn">import</span> <span class="n">self_inductance_matrix</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_properties</span> <span class="k">import</span> <span class="n">self_inductance_matrix</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
 <span class="n">N_vertices</span> <span class="o">=</span> <span class="p">[]</span>
@@ -252,14 +256,14 @@ memory = 0.389024 n**1.36
     <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;inductance_memory_usage.pdf&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  35.318 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  8582 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  44.070 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  9464 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-validation-computation-time-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/ad34d9d6638558b76a9285d64925858d/computation_time.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">computation_time.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/39c32254b8c28a7f9dd7158d24d0c003/computation_time.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">computation_time.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/6875f1ead8c27a009f786469e69b7d2f/computation_time.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">computation_time.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/96ff221aa71646093c95f7eaab3846c7/computation_time.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">computation_time.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -278,7 +282,7 @@ memory = 0.389024 n**1.36
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>
 </footer>

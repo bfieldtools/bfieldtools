@@ -7,15 +7,16 @@
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/language_data.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="test_scalar_potential.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="time_eigenvalue_decomp.html" />
+    <link rel="next" title="Logo generation" href="logo.html" />
+    <link rel="prev" title="Computation time for shiftinvert eigenvalue decomp, remove?" href="time_eigenvalue_decomp.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -36,7 +37,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="../index.html">
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/logo_simple.png"></span>
           bfieldtools</a>
         <span class="navbar-text navbar-version pull-left"><b></b></span>
       </div>
@@ -44,7 +45,8 @@
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="../readme.html">Readme</a></li>
+                <li><a href="../overview.html">Overview</a></li>
+                <li><a href="../installation.html">Installation</a></li>
                 <li><a href="../literature.html">Literature</a></li>
                 <li><a href="index.html">Example gallery</a></li>
                 <li><a href="../source/modules.html">API Reference</a></li>
@@ -60,10 +62,12 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../literature.html">Literature</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Example gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="index.html#coil-design">Coil design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#software-publication-examples">Software publication examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="index.html#thermal-noise-computation">Thermal noise computation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="index.html#validation">Validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../source/modules.html">API Reference</a></li>
@@ -106,15 +110,15 @@
 <span id="sphx-glr-auto-examples-interpolate-example-py"></span><h1>Interpolate stream function<a class="headerlink" href="#interpolate-stream-function" title="Permalink to this headline">¶</a></h1>
 <p>Minimal example showing how to subdivide a mesh and interpolate a scalar function
 defined on that mesh to match.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvtk.api</span> <span class="kn">import</span> <span class="n">tvtk</span>
-<span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvtk.api</span> <span class="k">import</span> <span class="n">tvtk</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">eigh</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="k">import</span> <span class="n">eigh</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_calculus</span> <span class="kn">import</span> <span class="n">laplacian_matrix</span><span class="p">,</span> <span class="n">mass_matrix</span>
-<span class="kn">from</span> <span class="nn">bfieldtools</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_calculus</span> <span class="k">import</span> <span class="n">laplacian_matrix</span><span class="p">,</span> <span class="n">mass_matrix</span>
+<span class="kn">from</span> <span class="nn">bfieldtools</span> <span class="k">import</span> <span class="n">utils</span>
 
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 </pre></div>
@@ -175,10 +179,10 @@ In this case, the scalar function is an eigenvector of a generalized eigenvalue 
 <p><strong>Estimated memory usage:</strong>  25 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-interpolate-example-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/36acf1eb6f794b30294809f3b51b620b/interpolate_example.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">interpolate_example.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/632e9c35e198513ca70a6f81ba433632/interpolate_example.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">interpolate_example.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/e2228ab0e437e94fbe888e56faea0677/interpolate_example.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">interpolate_example.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/6fce6cb5907e7d7d82688fa2efd1e480/interpolate_example.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">interpolate_example.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -197,7 +201,7 @@ In this case, the scalar function is an eigenvector of a generalized eigenvalue 
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>
 </footer>

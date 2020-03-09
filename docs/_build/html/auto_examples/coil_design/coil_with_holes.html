@@ -7,15 +7,16 @@
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Magnetically shielded coil" href="magnetically_shielded_biplanar_coil_design.html" />
-    <link rel="prev" title="Biplanar coil design" href="biplanar_coil_design.html" />
+    <link rel="next" title="Head gradient coil" href="head_gradient_coil_design.html" />
+    <link rel="prev" title="Spherical harmonics-generating coil design" href="spherical_harmonics_coil_design.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -36,7 +37,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="../../index.html">
+        <a class="navbar-brand" href="../../index.html"><span><img src="../../_static/logo_simple.png"></span>
           bfieldtools</a>
         <span class="navbar-text navbar-version pull-left"><b></b></span>
       </div>
@@ -44,7 +45,8 @@
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="../../readme.html">Readme</a></li>
+                <li><a href="../../overview.html">Overview</a></li>
+                <li><a href="../../installation.html">Installation</a></li>
                 <li><a href="../../literature.html">Literature</a></li>
                 <li><a href="../index.html">Example gallery</a></li>
                 <li><a href="../../source/modules.html">API Reference</a></li>
@@ -60,10 +62,12 @@
       role="menu"
       aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../../readme.html">Readme</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../literature.html">Literature</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Example gallery</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html#coil-design">Coil design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html#software-publication-examples">Software publication examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html#thermal-noise-computation">Thermal noise computation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../index.html#validation">Validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../source/modules.html">API Reference</a></li>
@@ -107,13 +111,13 @@
 <p>Example showing a basic biplanar coil producing homogeneous field in a target
 region between the two coil planes. The coil planes have holes in them,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="kn">import</span> <span class="n">Conductor</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="kn">import</span> <span class="n">optimize_streamfunctions</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="kn">import</span> <span class="n">scalar_contour</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="kn">import</span> <span class="n">plot_3d_current_loops</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">Conductor</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="k">import</span> <span class="n">optimize_streamfunctions</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="k">import</span> <span class="n">scalar_contour</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="k">import</span> <span class="n">plot_3d_current_loops</span>
 
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 
@@ -149,7 +153,7 @@ region between the two coil planes. The coil planes have holes in them,</p>
 
 <span class="n">joined_planes</span> <span class="o">=</span> <span class="n">coil_plus</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">coil_minus</span><span class="p">)</span>
 
-<span class="c1">#Create mesh class object</span>
+<span class="c1">#Create Conductor object, which finds the holes and sets the boundary condition</span>
 <span class="n">coil</span> <span class="o">=</span> <span class="n">Conductor</span><span class="p">(</span><span class="n">verts</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">tris</span><span class="o">=</span><span class="n">joined_planes</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">fix_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -175,44 +179,6 @@ region between the two coil planes. The coil planes have holes in them,</p>
 <span class="n">target_points</span> <span class="o">=</span> <span class="n">target_points</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">target_points</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">sidelength</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span>  <span class="o">+</span> <span class="n">center</span>
 </pre></div>
 </div>
-<p>Let’s find and separate the inner and outer boundaries of the coil mesh</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">inner_bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">&lt;</span> <span class="mf">0.015</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-
-<span class="n">centre_hole1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span>
-                                             <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">&lt;</span> <span class="mf">0.004</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span>
-                              <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-
-<span class="n">centre_hole2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span>
-                                             <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">&lt;</span> <span class="mf">0.004</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span>
-                              <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-
-<span class="n">left_hole1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span>
-                                           <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.004</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">inner_bounds</span><span class="p">),</span>
-                            <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-
-<span class="n">left_hole2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span>
-                                           <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.004</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">inner_bounds</span><span class="p">),</span>
-                            <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-
-<span class="n">right_hole1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span>
-                                           <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.004</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">inner_bounds</span><span class="p">),</span>
-                            <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-
-<span class="n">right_hole2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span>
-                                           <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.004</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">inner_bounds</span><span class="p">),</span>
-                            <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
-
-<span class="n">outer_bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">boundary_verts</span><span class="p">,</span> <span class="n">inner_bounds</span><span class="p">)</span>
-
-
-<span class="n">graph</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">vertex_adjacency_graph</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">)</span>
-
-<span class="n">zero_eq_indices</span> <span class="o">=</span> <span class="n">outer_bounds</span>
-<span class="n">iso_eq_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">left_hole1</span><span class="p">,</span> <span class="n">centre_hole1</span><span class="p">,</span> <span class="n">right_hole1</span><span class="p">,</span> <span class="n">left_hole2</span><span class="p">,</span> <span class="n">centre_hole2</span><span class="p">,</span> <span class="n">right_hole2</span><span class="p">]</span>
-
-<span class="n">boundary_constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;zero_eq_indices&#39;</span><span class="p">:</span><span class="n">zero_eq_indices</span> <span class="p">,</span> <span class="s1">&#39;iso_eq_indices&#39;</span><span class="p">:</span> <span class="n">iso_eq_indices</span><span class="p">}</span>
-</pre></div>
-</div>
 <p>Create bfield specifications used when optimizing the coil geometry</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#The absolute target field amplitude is not of importance,</span>
 <span class="c1"># and it is scaled to match the C matrix in the optimization function</span>
@@ -232,41 +198,106 @@ region between the two coil planes. The coil planes have holes in them,</p>
 <span class="n">bfield_specification</span> <span class="o">=</span> <span class="p">[</span><span class="n">target_spec</span><span class="p">]</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 2772 vertices by 160 target points... took 0.23 seconds.
+</pre></div>
+</div>
 <p>Run QP solver</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mosek</span>
 
-<span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
+<span class="n">coil</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">optimize_streamfunctions</span><span class="p">(</span><span class="n">coil</span><span class="p">,</span>
                                    <span class="n">bfield_specification</span><span class="p">,</span>
                                    <span class="n">objective</span><span class="o">=</span><span class="s1">&#39;minimum_inductive_energy&#39;</span><span class="p">,</span>
                                    <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;MOSEK&#39;</span><span class="p">,</span>
-                                   <span class="n">solver_opts</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mosek_params&#39;</span><span class="p">:{</span><span class="n">mosek</span><span class="o">.</span><span class="n">iparam</span><span class="o">.</span><span class="n">num_threads</span><span class="p">:</span> <span class="mi">8</span><span class="p">}},</span>
-                                   <span class="n">boundary_constraints</span><span class="o">=</span><span class="n">boundary_constraints</span>
+                                   <span class="n">solver_opts</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mosek_params&#39;</span><span class="p">:{</span><span class="n">mosek</span><span class="o">.</span><span class="n">iparam</span><span class="o">.</span><span class="n">num_threads</span><span class="p">:</span> <span class="mi">8</span><span class="p">}}</span>
                                    <span class="p">)</span>
 </pre></div>
 </div>
-<p>Plot coil windings and target points</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">N_contours</span> <span class="o">=</span> <span class="mi">20</span>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing the inductance matrix...
+Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
+Estimating 27549 MiB required for 2772 by 2772 vertices...
+Computing inductance matrix in 60 chunks (10101 MiB memory free), when approx_far=True using more chunks is faster...
+Computing 1/r-potential matrix
+Inductance matrix computation took 38.12 seconds.
+Pre-existing problem not passed, creating...
+Passing parameters to problem...
+Passing problem to solver...
+/l/conda-envs/mne/lib/python3.6/site-packages/cvxpy/reductions/solvers/solving_chain.py:170: UserWarning: You are solving a parameterized problem that is not DPP. Because the problem is not DPP, subsequent solves will not be faster than the first one.
+  &quot;You are solving a parameterized problem that is not DPP. &quot;
 
-<span class="n">loops</span><span class="p">,</span> <span class="n">loop_values</span><span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">coil</span><span class="o">.</span><span class="n">mesh</span><span class="p">,</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">N_contours</span><span class="o">=</span><span class="n">N_contours</span><span class="p">)</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-           <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
-<span class="n">mlab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+Problem
+  Name                   :
+  Objective sense        : min
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 3364
+  Cones                  : 1
+  Scalar variables       : 5177
+  Matrix variables       : 0
+  Integer variables      : 0
 
-<span class="n">plot_3d_current_loops</span><span class="p">(</span><span class="n">loops</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">tube_radius</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+Optimizer started.
+Problem
+  Name                   :
+  Objective sense        : min
+  Type                   : CONIC (conic optimization problem)
+  Constraints            : 3364
+  Cones                  : 1
+  Scalar variables       : 5177
+  Matrix variables       : 0
+  Integer variables      : 0
 
-<span class="n">B_target</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">B_coupling</span><span class="p">(</span><span class="n">target_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">coil</span><span class="o">.</span><span class="n">j</span>
+Optimizer  - threads                : 8
+Optimizer  - solved problem         : the dual
+Optimizer  - Constraints            : 2403
+Optimizer  - Cones                  : 1
+Optimizer  - Scalar variables       : 3364              conic                  : 2404
+Optimizer  - Semi-definite variables: 0                 scalarized             : 0
+Factor     - setup time             : 0.73              dense det. time        : 0.00
+Factor     - ML order time          : 0.17              GP order time          : 0.00
+Factor     - nonzeros before factor : 2.89e+06          after factor           : 2.89e+06
+Factor     - dense dim.             : 0                 flops                  : 2.13e+10
+ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
+0   6.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  48.81
+1   3.6e+01  5.6e-01  1.5e+00  -6.20e-01  1.057039411e+01   1.024347864e+01   5.6e-01  49.08
+2   3.2e+01  5.1e-01  2.3e-01  8.02e-01   3.529324593e+01   3.427460253e+01   5.1e-01  49.33
+3   1.4e+01  2.1e-01  1.4e-01  -1.12e-01  7.399485968e+01   7.350916188e+01   2.1e-01  49.59
+4   6.7e+00  1.0e-01  1.3e-01  2.45e-01   7.816471843e+01   7.777292693e+01   1.0e-01  49.84
+5   2.1e+00  3.3e-02  2.9e-02  4.36e-01   1.951267296e+02   1.950674157e+02   3.3e-02  50.10
+6   7.0e-01  1.1e-02  7.2e-03  7.37e-01   3.333579805e+02   3.333701148e+02   1.1e-02  50.39
+7   3.0e-01  4.7e-03  2.3e-03  9.23e-01   4.014258016e+02   4.014427924e+02   4.7e-03  50.64
+8   3.2e-02  5.1e-04  1.0e-04  9.58e-01   4.507832760e+02   4.507887089e+02   5.1e-04  50.93
+9   4.2e-03  6.5e-05  4.7e-06  1.03e+00   4.570326404e+02   4.570333241e+02   6.5e-05  51.22
+10  1.1e-03  1.7e-05  6.3e-07  1.01e+00   4.577867972e+02   4.577869831e+02   1.7e-05  51.47
+11  9.6e-05  1.5e-06  1.6e-08  1.00e+00   4.580310515e+02   4.580310678e+02   1.5e-06  51.77
+12  1.5e-05  2.4e-07  1.0e-09  1.00e+00   4.580507069e+02   4.580507095e+02   2.4e-07  52.04
+13  3.0e-07  6.5e-08  3.7e-12  1.00e+00   4.580543203e+02   4.580543203e+02   4.7e-09  52.39
+14  1.6e-07  1.3e-08  1.1e-12  1.00e+00   4.580543787e+02   4.580543787e+02   9.3e-10  52.90
+15  6.6e-07  1.5e-09  9.9e-14  1.00e+00   4.580543915e+02   4.580543915e+02   1.1e-10  53.33
+Optimizer terminated. Time: 53.53
 
-<span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">target_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B_target</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+Interior-point solution summary
+  Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+  Solution status : OPTIMAL
+  Primal.  obj: 4.5805439148e+02    nrm: 9e+02    Viol.  con: 5e-10    var: 0e+00    cones: 0e+00
+  Dual.    obj: 4.5805439149e+02    nrm: 1e+04    Viol.  con: 0e+00    var: 3e-09    cones: 0e+00
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<p>Plot the computed streamfunction</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">coil</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ncolors</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../../_images/sphx_glr_coil_with_holes_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_coil_with_holes_001.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 2 minutes  13.783 seconds)</p>
+<p><strong>Estimated memory usage:</strong>  2662 MB</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-coil-with-holes-py">
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/27a0f3d37810cf070642553936fb1450/coil_with_holes.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">coil_with_holes.py</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/108f11c462f1a5f7355be8241f892d21/coil_with_holes.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">coil_with_holes.py</span></code></a></p>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/3dda25827d05e44d56332c9e5d033734/coil_with_holes.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">coil_with_holes.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../../_downloads/beebbebd6e9300d0b6fc519a8b138dcf/coil_with_holes.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">coil_with_holes.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -285,7 +316,7 @@ region between the two coil planes. The coil planes have holes in them,</p>
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>
 </footer>

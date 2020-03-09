@@ -11,9 +11,10 @@ import trimesh
 from mayavi import mlab
 
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
-from bfieldtools.mesh_class import MeshWrapper
+from bfieldtools.mesh_class import Conductor
 
-from bfieldtools.sphtools import compute_sphcoeffs_mesh, sphbasis
+from bfieldtools.sphtools import compute_sphcoeffs_mesh
+from bfieldtools import sphtools
 
 
 import pkg_resources
@@ -22,18 +23,17 @@ import pkg_resources
 file_obj = pkg_resources.resource_filename('bfieldtools',
                     'example_meshes/10x10_plane.obj')
 coilmesh = trimesh.load(file_obj, process=False)
-coil = MeshWrapper(mesh_obj = coilmesh)
+coil = Conductor(mesh_obj = coilmesh)
 
 coil.mesh.vertices += np.array([0,-1,0])
 weights = np.zeros(coilmesh.vertices.shape[0])
-weights[coil.inner_verts] = 1
+weights[coil.inner_vertices] = 1
 
 test_points = coilmesh.vertices.copy()
 test_points[:, 1] = 0
 
 lmax = 12
 
-sph = sphbasis(20)
 
 sph_C = compute_sphcoeffs_mesh(coil.mesh, lmax)
 
@@ -43,9 +43,7 @@ blms = sph_C[1] @ weights
 alms = np.zeros_like(alms)
 
 B0 = (magnetic_field_coupling(coilmesh, test_points) @ weights).T
-B1 = sph.field(test_points, alms, blms, lmax).T
-
-
+B1 = sphtools.field(test_points, alms, blms, lmax).T
 
 s = mlab.triangular_mesh(*coilmesh.vertices.T, coilmesh.faces,
                          scalars=weights, colormap='viridis')

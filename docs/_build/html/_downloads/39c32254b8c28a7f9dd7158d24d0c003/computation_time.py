@@ -1,9 +1,8 @@
 '''
-Biplanar coil design
-====================
-
-Example showing a basic biplanar coil producing homogeneous field in a target
-region between the two coil planes.
+Inductance computation time and memory benchmark
+================================================
+Benchmark for inductance matrix computation, used
+to set auto-chunking.
 
 '''
 

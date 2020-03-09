@@ -7,11 +7,10 @@
 .. _sphx_glr_auto_examples_validation_computation_time.py:
 
 
-Biplanar coil design
-====================
-
-Example showing a basic biplanar coil producing homogeneous field in a target
-region between the two coil planes.
+Inductance computation time and memory benchmark
+================================================
+Benchmark for inductance matrix computation, used
+to set auto-chunking.
 
 
 
@@ -36,18 +35,18 @@ region between the two coil planes.
 
  .. code-block:: none
 
-    Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-    Computing potential matrix
-    Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-    Computing potential matrix
-    Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-    Computing potential matrix
-    Computing self-inductance matrix using rough quadrature. For higher accuracy, set quad_degree to 4 or more.
-    Computing potential matrix
+    Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
+    Computing 1/r-potential matrix
+    Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
+    Computing 1/r-potential matrix
+    Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
+    Computing 1/r-potential matrix
+    Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
+    Computing 1/r-potential matrix
     Fit:
-    t = 0.000003 n**2.17
+    t = 0.000006 n**2.09
     Fit:
-    memory = 0.389024 n**1.36
+    memory = 0.134151 n**1.51
 
 
 
@@ -184,9 +183,9 @@ region between the two coil planes.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  35.318 seconds)
+   **Total running time of the script:** ( 0 minutes  44.070 seconds)
 
-**Estimated memory usage:**  8582 MB
+**Estimated memory usage:**  9464 MB
 
 
 .. _sphx_glr_download_auto_examples_validation_computation_time.py:

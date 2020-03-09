@@ -61,8 +61,13 @@ region between the two coil planes. The coil planes have holes in them,
 
     joined_planes = coil_plus.union(coil_minus)
 
-    #Create mesh class object
+    #Create Conductor object, which finds the holes and sets the boundary condition
     coil = Conductor(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
+
+
+
+
+
 
 
 Set up target and stray field points
@@ -95,47 +100,7 @@ Set up target and stray field points
 
 
 
-Let's find and separate the inner and outer boundaries of the coil mesh
 
-
-.. code-block:: default
-
-
-    inner_bounds = np.intersect1d(coil.boundary_verts, np.where(np.linalg.norm(coil.mesh.vertices[:,0::2], axis=1)< 0.015)[0])
-
-    centre_hole1 = np.intersect1d(np.intersect1d(coil.boundary_verts,
-                                                 np.where(np.linalg.norm(coil.mesh.vertices[:,0::2], axis=1)< 0.004)[0]),
-                                  np.where(coil.mesh.vertices[:,1] < 0)[0])
-
-    centre_hole2 = np.intersect1d(np.intersect1d(coil.boundary_verts,
-                                                 np.where(np.linalg.norm(coil.mesh.vertices[:,0::2], axis=1)< 0.004)[0]),
-                                  np.where(coil.mesh.vertices[:,1] > 0)[0])
-
-    left_hole1 = np.intersect1d(np.intersect1d(np.intersect1d(coil.boundary_verts,
-                                               np.where(coil.mesh.vertices[:,0] < -0.004)[0]), inner_bounds),
-                                np.where(coil.mesh.vertices[:,1] < 0)[0])
-
-    left_hole2 = np.intersect1d(np.intersect1d(np.intersect1d(coil.boundary_verts,
-                                               np.where(coil.mesh.vertices[:,0] < -0.004)[0]), inner_bounds),
-                                np.where(coil.mesh.vertices[:,1] > 0)[0])
-
-    right_hole1 = np.intersect1d(np.intersect1d(np.intersect1d(coil.boundary_verts,
-                                               np.where(coil.mesh.vertices[:,0] > 0.004)[0]), inner_bounds),
-                                np.where(coil.mesh.vertices[:,1] < 0)[0])
-
-    right_hole2 = np.intersect1d(np.intersect1d(np.intersect1d(coil.boundary_verts,
-                                               np.where(coil.mesh.vertices[:,0] > 0.004)[0]), inner_bounds),
-                                np.where(coil.mesh.vertices[:,1] > 0)[0])
-
-    outer_bounds = np.setdiff1d(coil.boundary_verts, inner_bounds)
-
-
-    graph = trimesh.graph.vertex_adjacency_graph(coil.mesh)
-
-    zero_eq_indices = outer_bounds
-    iso_eq_indices = [left_hole1, centre_hole1, right_hole1, left_hole2, centre_hole2, right_hole2]
-
-    boundary_constraints = {'zero_eq_indices':zero_eq_indices , 'iso_eq_indices': iso_eq_indices}
 
 
 Create bfield specifications used when optimizing the coil geometry
@@ -162,6 +127,19 @@ Create bfield specifications used when optimizing the coil geometry
     bfield_specification = [target_spec]
 
 
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Computing magnetic field coupling matrix, 2772 vertices by 160 target points... took 0.23 seconds.
+
+
+
 Run QP solver
 
 
@@ -169,38 +147,117 @@ Run QP solver
 
     import mosek
 
-    coil.j, prob = optimize_streamfunctions(coil,
+    coil.s, prob = optimize_streamfunctions(coil,
                                        bfield_specification,
                                        objective='minimum_inductive_energy',
                                        solver='MOSEK',
-                                       solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}},
-                                       boundary_constraints=boundary_constraints
+                                       solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
                                        )
 
 
-Plot coil windings and target points
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Computing the inductance matrix...
+    Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
+    Estimating 27549 MiB required for 2772 by 2772 vertices...
+    Computing inductance matrix in 60 chunks (10101 MiB memory free), when approx_far=True using more chunks is faster...
+    Computing 1/r-potential matrix
+    Inductance matrix computation took 38.12 seconds.
+    Pre-existing problem not passed, creating...
+    Passing parameters to problem...
+    Passing problem to solver...
+    /l/conda-envs/mne/lib/python3.6/site-packages/cvxpy/reductions/solvers/solving_chain.py:170: UserWarning: You are solving a parameterized problem that is not DPP. Because the problem is not DPP, subsequent solves will not be faster than the first one.
+      "You are solving a parameterized problem that is not DPP. "
+
+
+    Problem
+      Name                   :                 
+      Objective sense        : min             
+      Type                   : CONIC (conic optimization problem)
+      Constraints            : 3364            
+      Cones                  : 1               
+      Scalar variables       : 5177            
+      Matrix variables       : 0               
+      Integer variables      : 0               
+
+    Optimizer started.
+    Problem
+      Name                   :                 
+      Objective sense        : min             
+      Type                   : CONIC (conic optimization problem)
+      Constraints            : 3364            
+      Cones                  : 1               
+      Scalar variables       : 5177            
+      Matrix variables       : 0               
+      Integer variables      : 0               
+
+    Optimizer  - threads                : 8               
+    Optimizer  - solved problem         : the dual        
+    Optimizer  - Constraints            : 2403
+    Optimizer  - Cones                  : 1
+    Optimizer  - Scalar variables       : 3364              conic                  : 2404            
+    Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
+    Factor     - setup time             : 0.73              dense det. time        : 0.00            
+    Factor     - ML order time          : 0.17              GP order time          : 0.00            
+    Factor     - nonzeros before factor : 2.89e+06          after factor           : 2.89e+06        
+    Factor     - dense dim.             : 0                 flops                  : 2.13e+10        
+    ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
+    0   6.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  48.81 
+    1   3.6e+01  5.6e-01  1.5e+00  -6.20e-01  1.057039411e+01   1.024347864e+01   5.6e-01  49.08 
+    2   3.2e+01  5.1e-01  2.3e-01  8.02e-01   3.529324593e+01   3.427460253e+01   5.1e-01  49.33 
+    3   1.4e+01  2.1e-01  1.4e-01  -1.12e-01  7.399485968e+01   7.350916188e+01   2.1e-01  49.59 
+    4   6.7e+00  1.0e-01  1.3e-01  2.45e-01   7.816471843e+01   7.777292693e+01   1.0e-01  49.84 
+    5   2.1e+00  3.3e-02  2.9e-02  4.36e-01   1.951267296e+02   1.950674157e+02   3.3e-02  50.10 
+    6   7.0e-01  1.1e-02  7.2e-03  7.37e-01   3.333579805e+02   3.333701148e+02   1.1e-02  50.39 
+    7   3.0e-01  4.7e-03  2.3e-03  9.23e-01   4.014258016e+02   4.014427924e+02   4.7e-03  50.64 
+    8   3.2e-02  5.1e-04  1.0e-04  9.58e-01   4.507832760e+02   4.507887089e+02   5.1e-04  50.93 
+    9   4.2e-03  6.5e-05  4.7e-06  1.03e+00   4.570326404e+02   4.570333241e+02   6.5e-05  51.22 
+    10  1.1e-03  1.7e-05  6.3e-07  1.01e+00   4.577867972e+02   4.577869831e+02   1.7e-05  51.47 
+    11  9.6e-05  1.5e-06  1.6e-08  1.00e+00   4.580310515e+02   4.580310678e+02   1.5e-06  51.77 
+    12  1.5e-05  2.4e-07  1.0e-09  1.00e+00   4.580507069e+02   4.580507095e+02   2.4e-07  52.04 
+    13  3.0e-07  6.5e-08  3.7e-12  1.00e+00   4.580543203e+02   4.580543203e+02   4.7e-09  52.39 
+    14  1.6e-07  1.3e-08  1.1e-12  1.00e+00   4.580543787e+02   4.580543787e+02   9.3e-10  52.90 
+    15  6.6e-07  1.5e-09  9.9e-14  1.00e+00   4.580543915e+02   4.580543915e+02   1.1e-10  53.33 
+    Optimizer terminated. Time: 53.53   
+
+
+    Interior-point solution summary
+      Problem status  : PRIMAL_AND_DUAL_FEASIBLE
+      Solution status : OPTIMAL
+      Primal.  obj: 4.5805439148e+02    nrm: 9e+02    Viol.  con: 5e-10    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 4.5805439149e+02    nrm: 1e+04    Viol.  con: 0e+00    var: 3e-09    cones: 0e+00  
+
+
+
+Plot the computed streamfunction
 
 
 .. code-block:: default
 
 
-    N_contours = 20
+    coil.s.plot(ncolors=256)
 
-    loops, loop_values= scalar_contour(coil.mesh, coil.j, N_contours=N_contours)
 
-    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-               size=(800, 800))
-    mlab.clf()
 
-    plot_3d_current_loops(loops, colors='auto', figure=f, tube_radius=0.1)
+.. image:: /auto_examples/coil_design/images/sphx_glr_coil_with_holes_001.png
+    :class: sphx-glr-single-img
 
-    B_target = coil.B_coupling(target_points) @ coil.j
 
-    mlab.quiver3d(*target_points.T, *B_target.T)
+
+
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.000 seconds)
+   **Total running time of the script:** ( 2 minutes  13.783 seconds)
+
+**Estimated memory usage:**  2662 MB
 
 
 .. _sphx_glr_download_auto_examples_coil_design_coil_with_holes.py:
