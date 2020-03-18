@@ -16,7 +16,7 @@ from scipy.sparse.linalg import spsolve
 import trimesh
 
 from .mesh_calculus import gradient
-from .mesh_class import StreamFunction
+from . import mesh_class
 
 
 def scalar_contour(mesh, scalars, N_contours=10, contours=None):
@@ -45,7 +45,7 @@ def scalar_contour(mesh, scalars, N_contours=10, contours=None):
         Vector containing the scalar function value for each contour line
     '''
 
-    if isinstance(scalars, StreamFunction):
+    if isinstance(scalars, mesh_class.StreamFunction):
         scalars = scalars.vert
 
     # Compute rotated gradient of scalars (e.g. current density from a stream function)

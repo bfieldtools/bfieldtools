@@ -31,7 +31,7 @@ def plot_mesh(mesh, cull_front=False, cull_back=False, figure=None, figsize=(800
 
 
 
-def plot_3d_current_loops(current_loops, colors=None, figure=None, figsize=(800, 800), tube_radius=0.05):
+def plot_3d_current_loops(current_loops, colors=None, figure=None, figsize=(800, 800), tube_radius=0.05, origin=np.array([0, 0, 0])):
     '''
     Plot current loops (e.g. contour_polys given by scalar_contour()) in 3D using mayavi.
 
@@ -45,6 +45,10 @@ def plot_3d_current_loops(current_loops, colors=None, figure=None, figsize=(800,
         Optional specification of colors used for current direction. If auto (default),
         color blue-red based on current direction. If None, use middle-grey for all loops.
         If tuple, color all loops according to tuple. If list of tuples, color each loop accordingly.
+    origin: array-like with length 3
+        Shifts the origin used to determine the 'auto' coloring.
+    tune_radius: float
+        radius of loops plotted
     figure: existing mlab figure
         Optional, if passed will plot to existing figure
     figsize: (x, y) tuple
@@ -81,8 +85,7 @@ def plot_3d_current_loops(current_loops, colors=None, figure=None, figsize=(800,
             centre_normal /= np.linalg.norm(centre_normal, axis=-1)
 
             #Check if normal "points in" or "out" (towards or away from origin)
-
-            origin_vector = np.mean(loop, axis=0)
+            origin_vector = np.mean(loop, axis=0) - origin
 
             colors.append(palette[int((np.sign(centre_normal @ origin_vector)+1)/2)])
 
