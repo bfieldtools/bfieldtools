@@ -48,7 +48,7 @@ def get_quad_points(verts, tris, method='sevenpoint', index=None):
                 raise error
     else:
         #raise ValueError('method: '+method+' not in the available list of methods: ' + methods)
-        raise ValueError('method: '+method+' not in the available list of methods (check quadpy.triangle.__all__)')
+        raise ValueError('method: '+method+' not in the available list of quadrature methods (check quadpy.triangle.__all__)')
 
     x = rule.points[:, 0:2]
     w = rule.weights
