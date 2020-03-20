@@ -382,7 +382,7 @@ def fix_normals(mesh, origin = np.array([0, 0, 0])):
 
 def load_example_mesh(mesh_name, process=True, **kwargs):
     '''
-    Convience function used load example meshes included with the package
+    Convenience function used load example meshes included with the package
     
     Parameters
     ----------
