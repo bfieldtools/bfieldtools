@@ -32,26 +32,28 @@ def _fake_streamfunction(vals=None, **kwargs):
 
 def test_conductor_creation():
     """
-    Tests different ways to create Conductor objects
+    Tests different ways to create Conductor objects, check that basis operators work
     """
-    for test_mesh in ['unit_sphere', 'unit_plane', 'plane_with_holes']:
+    for test_mesh in ['unit_sphere', 'unit_disc', 'plane_w_holes']:
         for basis_name in ['suh', 'inner', 'vertex']:
-            c = _fake_conductor(mesh_name=test_mesh, basis_name=basis_name)
             
-
-def test_conductor_basis_change():
-    
-    c = _fake_conductor(basis_name='vertex')
-    
-    assert c
-    
-    c.set_basis('inner')
-    
-    assert c
-    
-    c.set_basis('suh')
-    
-    assert c
+            c = _fake_conductor(mesh_name=test_mesh, basis_name=basis_name, N_suh=10)
+            
+            assert c.inner2vert.shape == (len(c.mesh.vertices), len(c.inner_vertices) + len(c.holes))
+            assert c.vert2inner.shape == (len(c.inner_vertices) + len(c.holes), len(c.mesh.vertices))
+            
+            assert_array_almost_equal((c.vert2inner @ c.inner2vert).toarray(), np.identity(len(c.inner_vertices)  + len(c.holes)))
+            
+            inner_diag = np.zeros((len(c.mesh.vertices), len(c.mesh.vertices)))
+            inner_diag[c.inner_vertices, c.inner_vertices] = 1
+            
+            for hole in c.holes:
+                inner_diag[np.asarray(hole)[:, None], np.asarray(hole)] += 1/len(hole)
+            
+            assert_array_equal((c.inner2vert @ c.vert2inner).toarray(), inner_diag)
+            
+            if basis_name=='suh':
+                assert c.basis.shape == (len(c.inner_vertices) + len(c.holes), c.opts['N_suh'])
     
     
 def test_streamfunction_creation():
