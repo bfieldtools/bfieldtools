@@ -14,6 +14,96 @@ from .mesh_calculus import laplacian_matrix, mass_matrix
 from .mesh_properties import self_inductance_matrix, resistance_matrix
 from . import utils
 
+def compute_current_modes_ind_res(mesh, M, R, freqs, T, closed = True, Nmodes = None, return_eigenvals=False):
+    '''
+    Parameters
+    ----------
+    mesh: Trimesh mesh object
+        The surface mesh
+    M: (Nvertices x Nvertices) array
+        The self-inductance matrix of `mesh`
+    R: (Nvertices x Nvertices) array
+        The resistance matrix of `mesh`
+    freqs: Nfreqs array
+        The frequencies at which the eddy-current modes are computed
+    T: float
+        Temperature in Kelvins
+    closed: boolean
+        Is the mesh closed (True) or not (False)
+    Nmodes: int
+        How many modes are computed? If None, all Nvertices modes are computed
+    return_eigenvals: boolean
+        Return also the eigenvalues (the inverse circuit time constants)?
+
+    Returns
+    -------
+    vl: (Nvertices x Nmodes x Nfreqs) array
+        The spectral eddy-current modes
+    u: Nmodes array
+        The eigenvalues (the inverse circuit time constants)
+
+    '''
+
+    kB = 1.38064852e-23
+
+    boundary_verts, inner_verts = utils.find_mesh_boundaries(mesh)
+    
+    #Ensure that M is symmetric
+    M = 0.5*(M+M.T)
+    
+    R = R.toarray() #convert R to array
+    
+    #If mesh is closed, add 'deflation' to the matrices
+    if closed:
+        R += np.ones_like(R)*np.mean(np.diag(R))
+        M += np.ones_like(M)*np.mean(np.diag(M))
+        
+    #Compute the eigenmodes
+    if Nmodes == None:
+        u, v = eigh(R[inner_verts][:, inner_verts], M[inner_verts][:, inner_verts])
+    else:
+        u, v = eigh(R[inner_verts][:, inner_verts], M[inner_verts][:, inner_verts], eigvals = (0, Nmodes))
+
+    
+    Nfreqs = freqs.shape[0]
+    
+    #Scale the eigenmodes with the spectral density of the thermal noise current
+    vl = np.zeros((M.shape[0],v.shape[1],Nfreqs))
+
+    for i in range(v.shape[1]):
+        amp = 2*np.sqrt(kB*T/u[i])*np.sqrt(1/(1+(2*np.pi*freqs/u[i])**2))
+        vl[inner_verts, i,:] = ((np.zeros((Nfreqs,v.shape[0])) +  v[:, i]).T)*amp
+
+    if return_eigenvals:
+        return vl, u
+    else:
+        return vl
+
+def noise_covar(mesh, B_coupling, vl, Nmodes = None):
+    if Nmodes == None:
+        Nmodes = vl.shape[1]
+    b = np.einsum('ihj,jlk->ilhk', B_coupling, vl[:,0:Nmodes])
+    Bcov = np.einsum('jihk,lihk->jlhk', b,b)
+
+    return Bcov
+
+def noise_var(mesh, B_coupling, vl, Nmodes = None):
+    if Nmodes == None:
+        Nmodes = vl.shape[1]
+    b = np.einsum('ihj,jlk->ilhk', B_coupling, vl[:,0:Nmodes])
+    Bcov = np.einsum('ijhk,ijhk->ihk', b,b)
+
+    return Bcov
+
+
+def noise_covar_dir(mesh, B_coupling, vl, Nmodes = None):
+    if Nmodes == None:
+        Nmodes = vl.shape[1]
+    b = np.einsum('ihj,jlk->ilhk', B_coupling, vl[:,0:Nmodes])
+    Bcov = np.einsum('ihjk,ihlk-> ijlk',b,b)
+
+    return Bcov
+
 
 def compute_current_modes(mesh, boundaries=None, return_eigenvals=False):
     '''
@@ -75,73 +165,6 @@ def compute_current_modes(mesh, boundaries=None, return_eigenvals=False):
     else:
         return vl
 
-def compute_current_modes_ind_res(mesh, sheet_resistance, freqs, T, closed = True, Nmodes = 100, Nchunks = 4, quad_degree = 2, boundaries=None, return_eigenvals=False):
-    '''
-    Parameters
-    ----------
-    mesh: Trimesh mesh object
-        The surface mesh
-    boundaries: list of N_holes
-
-    Returns
-    -------
-    vl: Nvertices x Nvertices array
-        The normalized eddy-current modes vl[:,i]
-
-    '''
-
-    kB = 1.38064852e-23
-
-    boundary_verts, inner_verts = utils.find_mesh_boundaries(mesh)
-
-    R = resistance_matrix(mesh, sheet_resistance = sheet_resistance)
-    M = self_inductance_matrix(mesh, Nchunks = Nchunks, quad_degree = quad_degree)
-    M = 0.5*(M+M.T)
-    R = R.toarray()
-    if closed:
-        R += np.ones_like(R)*np.mean(np.diag(R))
-        M += np.ones_like(M)*np.mean(np.diag(M))
-
-    u, v = eigh(R[inner_verts][:, inner_verts], M[inner_verts][:, inner_verts])
-#    u, v = eigh(R.todense()[inner_verts][:, inner_verts], M[inner_verts][:, inner_verts])
-#    u, v = eigsh(R[inner_verts][:, inner_verts], k = Nmodes, M = M[inner_verts][:, inner_verts])
-    Nfreqs = freqs.shape[0]
-    #Normalize the laplacien eigenvectors
-    vl = np.zeros((M.shape[0],M.shape[1],Nfreqs))
-
-    for i in range(v.shape[1]):
-        amp = 2*np.sqrt(kB*T/u[i])*np.sqrt(1/(1+(2*np.pi*freqs/u[i])**2))
-        vl[inner_verts, i,:] = ((np.zeros((Nfreqs,v.shape[0])) +  v[:, i]).T)*amp
-
-    if return_eigenvals:
-        return vl, u
-    else:
-        return vl
-
-def noise_covar(mesh, B_coupling, vl, Nmodes = None):
-    if Nmodes == None:
-        Nmodes = vl.shape[1]
-    b = np.einsum('ihj,jlk->ilhk', B_coupling, vl[:,0:Nmodes])
-    Bcov = np.einsum('jihk,lihk->jlhk', b,b)
-
-    return Bcov
-
-def noise_var(mesh, B_coupling, vl, Nmodes = None):
-    if Nmodes == None:
-        Nmodes = vl.shape[1]
-    b = np.einsum('ihj,jlk->ilhk', B_coupling, vl[:,0:Nmodes])
-    Bcov = np.einsum('ijhk,ijhk->ihk', b,b)
-
-    return Bcov
-
-
-def noise_covar_dir(mesh, B_coupling, vl, Nmodes = None):
-    if Nmodes == None:
-        Nmodes = vl.shape[1]
-    b = np.einsum('ihj,jlk->ilhk', B_coupling, vl[:,0:Nmodes])
-    Bcov = np.einsum('ihjk,ihlk-> ijlk',b,b)
-
-    return Bcov
 
 
 
