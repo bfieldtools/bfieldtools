@@ -75,7 +75,7 @@ s0 = mlab.triangular_mesh(*shieldmesh.vertices.T, shieldmesh.faces,
 s0.actor.property.backface_culling = False
 s0.actor.property.ambient = 0.5
 
-I_prim = np.load('biplanar_current_x.npy')
+I_prim = np.load('biplanar_current.npy')
 sprim = StreamFunction(I_prim, coil)
 m = max(abs(sprim))
 s1 = sprim.plot(False, 16, vmin = -m, vmax=m)
@@ -168,8 +168,19 @@ cc2 = np.vstack(cc2)
 cc2a = cc1[:cc2.shape[0]//2]
 cc2b = cc1[cc2.shape[0]//2:]
 
-
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=256):
+    new_cmap = colors.LinearSegmentedColormap.from_list(
+        'trunc({n},{a:.2f},{b:.2f})'.format(n=cmap.name, a=minval, b=maxval),
+        cmap(np.linspace(minval, maxval, n)))
+    return new_cmap
+
+
+cmap = plt.get_cmap('RdBu')
+#cmap.set_over((0.95,0.95,0.95))
+#cmap.set_under((0.95,0.95,0.95))
+
 u0 = abs(np.sum(U2_shield, axis=1).reshape(N, N)) # Solid angle of the shield, zero outside
 u0 /= u0.max()
 u0[u0 < 1e-6]  = 0
@@ -177,17 +188,21 @@ u1 = (U2_prim @ I_prim).reshape(N,N)
 u2 = (U2_shield @ I_shield).reshape(N,N)*u0
 u3= (u1 + u2)*u0
 
-vmax = np.max(abs(u3))*0.2
-levels = np.linspace(-vmax, vmax, 30)
+vmax = np.max(abs(u3))*0.99
+levels = np.linspace(-vmax, vmax, 120)
 levels = np.hstack((-np.max(abs(u3)) ,levels, np.max(abs(u3))))
-p =plt.contourf(X,Y, u1, levels=levels, cmap='seismic', vmin=-vmax, vmax=vmax)
+p=plt.contourf(X,Y, u1, levels=levels, cmap=cmap, vmin=-vmax, vmax=vmax,
+                norm=colors.SymLogNorm(linthresh=0.2*vmax, linscale=0.8,
+                                              vmin=-vmax, vmax=vmax))
 plt.plot(cc1a[:,0],cc1a[:,1], linewidth=3, color='gray')
 plt.plot(cc1b[:,0],cc1b[:,1], linewidth=3, color='gray')
 plt.axis('image')
 plt.axis('off')
 xlims = p.ax.get_xlim()
 plt.figure()
-p = plt.contourf(X,Y, u2, levels=levels, cmap='seismic', vmin=-vmax, vmax=vmax)
+p = plt.contourf(X,Y, u2, levels=levels, cmap=cmap, vmin=-vmax, vmax=vmax,
+                                 norm=colors.SymLogNorm(linthresh=0.2*vmax, linscale=0.8,
+                                              vmin=-vmax, vmax=vmax))
 plt.plot(cc1a[:,0],cc1a[:,1], linewidth=3, color='gray')
 plt.plot(cc1b[:,0],cc1b[:,1], linewidth=3, color='gray')
 plt.plot(cc2[:,0],cc2[:,1], linewidth=3, color='gray')
@@ -195,7 +210,9 @@ plt.axis('image')
 plt.axis('off')
 p.ax.set_xlim(xlims)
 plt.figure()
-p =plt.contourf(X,Y, u3, levels=levels, cmap='seismic', vmin=-vmax, vmax=vmax)
+p =plt.contourf(X,Y, u3, levels=levels, cmap=cmap, vmin=-vmax, vmax=vmax,
+                                norm=colors.SymLogNorm(linthresh=0.2*vmax, linscale=0.8,
+                                              vmin=-vmax, vmax=vmax))
 plt.plot(cc1a[:,0],cc1a[:,1], linewidth=3, color='gray')
 plt.plot(cc1b[:,0],cc1b[:,1], linewidth=3, color='gray')
 plt.plot(cc2[:,0],cc2[:,1], linewidth=3, color='gray')

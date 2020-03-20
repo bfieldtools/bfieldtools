@@ -187,12 +187,12 @@ surface = scene.children[0].children[0].children[0].children[0]
 surface.actor.property.representation = 'wireframe'
 surface.actor.mapper.scalar_visibility = False
 scene.scene.isometric_view()
-scene.scene.camera.position = [2.2578932293957665, 2.2578932293957665, 2.2578932293957665]
-scene.scene.camera.focal_point = [0.0, 0.0, 0.0]
-scene.scene.camera.view_angle = 30.0
-scene.scene.camera.view_up = [0.0, 0.0, 1.0]
-scene.scene.camera.clipping_range = [1.5738238620907348, 6.861972426889951]
-scene.scene.camera.compute_view_plane_normal()
+#scene.scene.camera.position = [2.2578932293957665, 2.2578932293957665, 2.2578932293957665]
+#scene.scene.camera.focal_point = [0.0, 0.0, 0.0]
+#scene.scene.camera.view_angle = 30.0
+#scene.scene.camera.view_up = [0.0, 0.0, 1.0]
+#scene.scene.camera.clipping_range = [1.5738238620907348, 6.861972426889951]
+#scene.scene.camera.compute_view_plane_normal()
 scene.scene.render()
 mlab.savefig('/Users/joonas/Documents/Manuscripts/ThermalNoise/figures/validation/cylinder.png',size=(800,800))
 
@@ -239,8 +239,15 @@ plt.ylabel('DC noise (T/rHz)')
 
 mesh = trimesh.load(pkg_resources.resource_filename('bfieldtools', 'example_meshes/unitdisc_extremelyfine.stl'))
 
-Nfreqs = 50
-freqs = np.logspace(0, 4, Nfreqs) #30 frequencies from 1 to 1000 Hz
+
+#Nfreqs = 100
+#freqs = np.logspace(0, 3, Nfreqs) #30 frequencies from 1 to 1000 Hz
+#inds = np.where(freqs < 600)
+#freqs = freqs[inds]
+#Nfreqs = freqs.shape[0]
+
+Nfreqs = 70
+freqs = np.linspace(0, 1200, Nfreqs)
 
 S = np.ones(mesh.triangles_center.shape[0])*sigma
 sheet_resistance = 1/(d*S)
@@ -255,8 +262,8 @@ vl =  compute_current_modes_ind_res(mesh,M,R, freqs, T,closed=False)
 #fp = np.zeros((1,3))
 #fp[0,2] = 0.1
 
-Np = 10
-z = np.linspace(0.05, 0.15, Np)
+Np = 20
+z = np.linspace(0.05, 0.2, Np)
 fp = np.array((np.zeros(z.shape), np.zeros(z.shape), z)).T
 
 B_coupling = magnetic_field_coupling(mesh, fp, analytic = True)
@@ -266,23 +273,31 @@ Bf = np.sqrt(noise_var(mesh, B_coupling, vl))
 #r = 1
 #Ban = mu0*np.sqrt(sigma*d*kB*T/(8*np.pi*fp[0,2]**2))*(1/(1+fp[0,2]**2/r**2))
 
-plt.figure()
-plt.loglog(freqs,Bf[:,2,:].T*1e15,label = 'Numerical')
-#plt.loglog(freqs, Ban*np.ones(freqs.shape), '--',label = 'Analytical, DC')
-plt.xlabel('Frequency (Hz)')
-plt.ylabel('Field noise (fT/rHz)')
-#plt.legend()
+plt.figure(figsize = (5,5))
+plt.loglog(freqs,Bf[:,2,:].T*1e15, linewidth = 2)
 plt.grid()
-#plt.grid(which='both')
+plt.ylim(1,20)
+plt.gca().spines['right'].set_visible(False)
+plt.gca().spines['top'].set_visible(False)
+plt.legend(frameon = False)
+plt.xlabel('Frequency (Hz)')
+plt.ylabel(r'$B_z$ noise (fT/rHz)')
 plt.tight_layout()
 
 cutf = np.zeros(Np)
 for i in range(Np):
-    idx = np.min(np.where(Bf[i,2,:]/Bf[i,2,0] < 1/np.sqrt(2)))
+    idx = np.max(np.where(Bf[i,2,:] >= 1/np.sqrt(2)*Bf[i,2,0]))
     cutf[i] = freqs[idx]
 
 cutf_an = 1/(4*mu0*sigma*d*z)
 
-plt.figure()
-plt.plot(z, cutf_an)
-plt.plot(z, cutf,'x')
+plt.figure(figsize = (5,5))
+plt.loglog(z, cutf_an,linewidth = 2, label = 'Infinite plane')
+plt.loglog(z, cutf,'x',markersize = 10, markeredgewidth = 2, label = 'Disc')
+plt.grid()
+plt.gca().spines['right'].set_visible(False)
+plt.gca().spines['top'].set_visible(False)
+plt.legend(frameon = False)
+plt.xlabel('Distance (z/R)')
+plt.ylabel('3-dB cutoff frequency (Hz)')
+plt.tight_layout()
