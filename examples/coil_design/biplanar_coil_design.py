@@ -38,7 +38,7 @@ standoff = np.array([0, 5, 0]) * scaling_factor
 coil_plus = trimesh.Trimesh(planemesh.vertices + center_offset + standoff,
                          planemesh.faces, process=False)
 
-coil_minus = trimesh.Trimesh(planemesh.vertices + center_offset - standoff,
+coil_minus = trimesh.Trimesh(planemesh.vertices + center_offset - standoff, 
                      planemesh.faces, process=False)
 
 joined_planes = coil_plus.union(coil_minus)
@@ -112,7 +112,7 @@ bfield_specification = [target_spec, stray_spec]
 # Run QP solver
 import mosek
 
-coil.j, prob = optimize_streamfunctions(coil,
+coil.s, prob = optimize_streamfunctions(coil,
                                    [target_spec, stray_spec],
                                    objective='minimum_inductive_energy',
                                    solver='MOSEK',
@@ -124,7 +124,7 @@ coil.j, prob = optimize_streamfunctions(coil,
 
 N_contours = 10
 
-loops, loop_values= scalar_contour(coil.mesh, coil.j, N_contours=N_contours)
+loops, loop_values= scalar_contour(coil.mesh, coil.s, N_contours=N_contours)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
@@ -132,7 +132,7 @@ mlab.clf()
 
 plot_3d_current_loops(loops, colors='auto', figure=f)
 
-B_target = coil.B_coupling(target_points) @ coil.j
+B_target = coil.B_coupling(target_points) @ coil.s
 
 mlab.quiver3d(*target_points.T, *B_target.T)
 

@@ -6,7 +6,7 @@ Example showing a basic biplanar coil producing homogeneous field in a target
 region between the two coil planes.
 
 '''
-PLOT = False
+PLOT = True
 SAVE_FIGURES = False
 
 
@@ -51,7 +51,7 @@ joined_planes = joined_planes.subdivide()
 #Create mesh class object
 coil = Conductor(verts=joined_planes.vertices, tris=joined_planes.faces,
                  fix_normals=True,
-                 basis_name='vertex', N_suh=100)
+                 basis_name='suh', N_suh=100)
 
 ##############################################################
 # Set up target and stray field points
