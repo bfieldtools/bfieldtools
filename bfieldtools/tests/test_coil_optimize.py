@@ -6,8 +6,7 @@ from bfieldtools.tests.test_mesh_class import _fake_conductor
 import cvxpy
 import numpy as np
 
-from numpy.testing import (assert_array_almost_equal, assert_array_equal,
-                           assert_allclose, assert_equal)
+from numpy.testing import assert_allclose
 
 def test_coil_optimize():
     """
@@ -27,6 +26,7 @@ def test_coil_optimize():
             
             for objective in [(0, 1)]:#, (1, 0), (0.5, 0.5)]:
                 
+                #For now, test with all solvers that can handle SOC problems
                 for solver in [i for i in cvxpy.solvers.defines.INSTALLED_CONIC_SOLVERS if i != 'GLPK' and i!= 'GLPK_MI']:
                     results.append(coil_optimize.optimize_streamfunctions(c,
                                                                         [spec],
@@ -34,5 +34,7 @@ def test_coil_optimize():
                                                                         solver
                                                                         )[0])
         if len(results) > 1:
+            #tolerance is quite high, since some solvers give a bit differing results
+            #in real life, let's not use those solvers.
             assert_allclose(results[-2], results[-1], rtol=8e-2)
     
