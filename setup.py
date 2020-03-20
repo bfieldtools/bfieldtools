@@ -30,7 +30,7 @@ def main():
         packages=find_packages(),
 	include_dirs=[numpy.get_include()],
 	include_package_data=True,
-        #package_data={'bfieldtools': ['example_meshes/*.stl', 'example_meshes/*.obj']},
+        package_data={'bfieldtools': ['example_meshes/*']},
         classifiers=['Intended Audience :: Science/Research',
                      'Intended Audience :: Developers',
                      'Programming Language :: Python',
