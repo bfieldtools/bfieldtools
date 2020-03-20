@@ -115,7 +115,7 @@ def optimize_streamfunctions(conductor,
         The resistance matrix is scaled according to the largest singular value of the inductance matrix for consistent behavior
         across meshes.
     solver: string
-        string specifying which solver CVXPy will use
+        string specifying which solver CVXPY will use
     solver_opt: dict
         dict containing solver options CVXPY will pass to the solver
     problem: CVXPY problem object
