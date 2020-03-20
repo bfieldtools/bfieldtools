@@ -21,32 +21,9 @@ from .viz import plot_mesh, plot_data_on_vertices
 from .contour import scalar_contour
 
 
-
-class LazyProperty():
-    '''
-    Implementation of lazily loading properties, see
-    http://blog.pythonisito.com/2008/08/lazy-descriptors.html
-    On first invocation, a lazy property calls a function that populates
-    the property (acts as a method). Afterwards, it acts like a normal property.
-
-    '''
-
-    def __init__(self, func):
-        self._func = func
-        self.__name__ = func.__name__
-        self.__doc__ = func.__doc__
-
-    def __get__(self, obj, klass=None):
-        if obj is None:
-            return None
-
-        result = obj.__dict__[self.__name__] = self._func(obj)
-
-        return result
-
-
 def matrixwrapper(func):
-    """ Wrapper for lazy computation of Conductor matrices with basis change
+    """ 
+    Wrapper for lazy computation of Conductor matrices with basis change
     """
     def wrapper(obj):
         name = func.__name__
@@ -56,8 +33,6 @@ def matrixwrapper(func):
             M = obj.matrices[name[1:]] = func(obj)
         return obj.basis.T @ M @ obj.basis
     return wrapper
-
-
 
 
 class Conductor:

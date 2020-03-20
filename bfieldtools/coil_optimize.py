@@ -3,7 +3,6 @@ import cvxopt
 from cvxopt import matrix
 from scipy.sparse.linalg import svds
 from scipy.linalg import eigh as largest_eigh
-import quadprog
 import cvxpy as cp
 
 from .mesh_class import StreamFunction
@@ -87,38 +86,6 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, sw=None, reg=None, tol
     if 'optimal' not in sol['status']:
         return None, sol
     return np.array(sol['x']).reshape((P.shape[1],)), sol
-
-
-def quadprog_solve_qp(P, q, G=None, h=None, A=None, b=None):
-    '''
-    Use quadprog to minimize
-    (1/2) * x' * P * x + q' * x
-
-    subject to
-    G * x <= h
-
-    and
-    A * x = b
-    '''
-    qp_G = .5 * (P + P.T)   # make sure P is symmetric
-    qp_a = -q
-    if A is not None:
-        if A.ndim == 1:
-            A = A.reshape((1, A.shape[0]))
-        if G is None:
-            qp_C = -A.T
-            qp_b = -b
-        else:
-            qp_C = -np.vstack([A, G]).T
-            qp_b = -np.hstack([b, h])
-        meq = A.shape[0]
-
-    else:  # no equality constraint
-        qp_C = -G.T if G is not None else None
-        qp_b = -h if h is not None else None
-        meq = 0
-
-    return quadprog.solve_qp(qp_G, qp_a, qp_C, qp_b, meq)[0]
 
 
 def optimize_streamfunctions(conductor,

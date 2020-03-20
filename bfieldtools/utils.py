@@ -5,6 +5,9 @@ This module contains miscellaneous utility functions used across bfieldtools.
 import numpy as np
 import quadpy
 from numba import jit
+import os
+import pkg_resources
+import trimesh
 
 def tri_normals_and_areas(r, tri):
     """ Get triangle normals and areas from vertices (r) and
@@ -63,6 +66,7 @@ def get_quad_points(verts, tris, method='sevenpoint', index=None):
         qp[i] = x @ B + p0
 
     return w, qp
+
 
 def get_line_quad_points(line_vertices, method='midpoint', index=None):
     """ Get quad points and weights from quadrature rules implemented in
@@ -212,28 +216,6 @@ def find_mesh_boundaries(mesh):
 
     return boundaries, inner_vertices
 
-#    unique, unique_idx, unique_count = np.unique(np.sort(edges, axis=-1), axis=0,
-#                                                 return_index=True,
-#                                                 return_counts=True)
-#
-#    #If edge only used in one triangle, it is a boundary edge
-#    boundary_edges = edges[unique_idx[np.where(unique_count == 1)]]
-#
-#    #Create index arrays for boundary vertices
-#    boundary_verts = np.unique(boundary_edges.flatten())
-#    inner_verts = np.delete(np.arange(0, len(verts)), boundary_verts)
-#
-#    #Find triangles using boundary vertices
-#    boundary_tris = np.array([], dtype=np.int)
-#    for vert in boundary_verts:
-#        boundary_tris = np.append(boundary_tris, np.where(np.any(tris == vert, axis=-1) is True)[0])
-#
-#    #Create index arrays for boundary triangles
-#    boundary_tris = np.unique(boundary_tris)
-#    inner_tris = np.delete(np.arange(0, len(tris)), boundary_tris)
-#
-#    return boundary_verts, inner_verts, boundary_tris, inner_tris
-
 
 def inner2vert(mesh, inner_vertices, holes):
     """ Linear mapping of the inner (free) weights in the stream function
@@ -368,9 +350,6 @@ def cylinder_points(radius=1, length=1, nlength=10, alpha=360, nalpha=10, center
     return points.dot(R)
 
 
-
-
-
 def fix_normals(mesh, origin = np.array([0, 0, 0])):
     '''
     Attempts to fix face windings and normals such that normals are always "pointing out"
@@ -399,3 +378,35 @@ def fix_normals(mesh, origin = np.array([0, 0, 0])):
     # Could update the cache with values that don't change when flipping triangles
     # self._cache.update(old_cache)
     return mesh
+
+
+def load_example_mesh(mesh_name, process=True, **kwargs):
+    '''
+    Convenience function used load example meshes included with the package
+    
+    Parameters
+    ----------
+    mesh_name: string
+        name of mesh, i.e. filename without extension
+    process: Boolean
+        Whether trimesh should process the mesh on loading
+    kwargs
+        Passed to trimesh object creation
+    
+    Returns
+    -------
+    Trimesh object
+    '''
+    existing_files = pkg_resources.resource_listdir('bfieldtools','example_meshes')
+    existing_names = [os.path.splitext(file)[0] for file in existing_files]
+    
+    if mesh_name not in existing_names:
+        raise ValueError('Mesh with name %s not found in example_meshes folder'%mesh_name)
+    
+    filename = existing_files[existing_names.index(mesh_name)]
+    
+    return trimesh.load(pkg_resources.resource_filename('bfieldtools', 'example_meshes/' + filename),
+                        process=process, **kwargs)
+    
+    
+    
