@@ -398,8 +398,14 @@ def load_example_mesh(mesh_name, process=True, **kwargs):
     Trimesh object
     '''
     existing_files = pkg_resources.resource_listdir('bfieldtools','example_meshes')
+    
+    #Filter according to file extension
+    existing_files = [file for file in existing_files if file.lower().endswith(trimesh.exchange.load.mesh_formats())]
+    
+    #Remove file extension to get name
     existing_names = [os.path.splitext(file)[0] for file in existing_files]
     
+    #Check if name exists
     if mesh_name not in existing_names:
         raise ValueError('Mesh with name %s not found in example_meshes folder'%mesh_name)
     
