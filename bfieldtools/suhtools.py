@@ -56,7 +56,7 @@ class SuhBasis():
         else:
             self.inner2vert = np.eye(len(self.mesh.vertices))
 
-    def calculate_basis(self, closed_mesh=None, shiftinvert=False):
+    def calculate_basis(self, closed_mesh=None, shiftinvert=False, v0=None):
         """ Calculate basis functions as eigenfunctions of the laplacian
 
             closed_mesh: if True, calculate the basis for the whole mesh
@@ -79,8 +79,10 @@ class SuhBasis():
         else:
             N0 = 0
             N = self.Nc
-
-        v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
+        
+        if v0 is None:
+            v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
+            
         if shiftinvert:
             u, v = eigsh(-L, N, M, sigma=0, which='LM', v0 = v0)
         else:

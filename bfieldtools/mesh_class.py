@@ -79,7 +79,7 @@ class Conductor:
                 'mass_lumped':False,
                 'resistance_full_rank': True,
                 'inductance_nchunks':None,
-                'basis_name':'inner' (other: suh, vertex)
+                'basis_name':'vertex' (other: suh, inner)
                 'N_suh': 100
                 'N_sph': 5
 
@@ -601,7 +601,7 @@ class StreamFunction(np.ndarray):
             kwargs['vmin'] = - np.max(abs(scalars))
         if 'vmax' not in kwargs.keys():
             kwargs['vmax'] =   np.max(abs(scalars))
-
+        
         s = plot_data_on_vertices(mesh, scalars, **kwargs)
         if contours:
             s.enable_contours=True
