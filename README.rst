@@ -64,9 +64,9 @@ UPCOMING PREPRINT
 .. code-block:: BiBTeX
 
     @article{bfieldtools_preprint,
-        title = {PLACEHOLDER},
-        year = {2019},
-        journal = {PLACEHOLDER},
+        title = {bfieldtools},
+        year = {2020},
+        journal = {ArXiv},
         author = {PLACEHOLDER},
         month = {X},
         pages = {XX--YY},
