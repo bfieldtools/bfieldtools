@@ -63,8 +63,19 @@ UPCOMING PREPRINT
 
 .. code-block:: BiBTeX
 
-    @article{bfieldtools_preprint,
-        title = {bfieldtools},
+    @article{bfieldtools_preprint1,
+        title = {bfieldtools physics},
+        year = {2020},
+        journal = {ArXiv},
+        author = {PLACEHOLDER},
+        month = {X},
+        pages = {XX--YY},
+        volume = {XX},
+        doi = {10.1016/XXXX.PLACEHOLDER},
+    }
+    
+    @article{bfieldtools_preprint2,
+        title = {bfieldtools software},
         year = {2020},
         journal = {ArXiv},
         author = {PLACEHOLDER},
