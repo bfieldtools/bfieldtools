@@ -59,7 +59,7 @@ Citing bfieldtools
 
 When using the software package in a publication, please cite:
 
-UPCOMING PREPRINT
+UPCOMING PREPRINTS
 
 .. code-block:: BiBTeX
 
