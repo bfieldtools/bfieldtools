@@ -25,7 +25,7 @@ def resistance_matrix(mesh, sheet_resistance):
     return -laplacian_matrix(mesh, sheet_resistance)
 
 
-def self_inductance_matrix(mesh, Nchunks=None, quad_degree=2, approx_far=True):
+def self_inductance_matrix(mesh, Nchunks=None, quad_degree=2, approx_far=True, margin=2):
     """ Calculate a self inductance matrix for hat basis functions
         (stream functions) in the triangular mesh described by
 
@@ -36,6 +36,12 @@ def self_inductance_matrix(mesh, Nchunks=None, quad_degree=2, approx_far=True):
             Number of serial chunks to divide the computation into
         quad_degree: int >= 1
             Quadrature degree (Dunavant scheme) to use. Self-inductance requires higher degree than mutual inductance
+        approx_far: Boolean (True)
+            If True, use approximate calculation for triangles that
+            far from the source triangles using a simple quadrature
+            (see integrals.triangle_potential_approx)
+        margin: float
+            Cut-off distance for "far" points measured in mean triangle side length
         Returns
         -------
         M: (Nvertices x Nvertices) array
@@ -44,10 +50,10 @@ def self_inductance_matrix(mesh, Nchunks=None, quad_degree=2, approx_far=True):
     if quad_degree <= 2:
         print('Computing self-inductance matrix using rough quadrature (degree=%d). For higher accuracy, set quad_degree to 4 or more.'%quad_degree)
 
-    return mutual_inductance_matrix(mesh, mesh, Nchunks=Nchunks, quad_degree=quad_degree, approx_far=approx_far)
+    return mutual_inductance_matrix(mesh, mesh, Nchunks=Nchunks, quad_degree=quad_degree, approx_far=approx_far, margin=margin)
 
 
-def mutual_inductance_matrix(mesh1, mesh2, Nchunks=None, quad_degree=1, approx_far=True):
+def mutual_inductance_matrix(mesh1, mesh2, Nchunks=None, quad_degree=1, approx_far=True, margin=2):
     """ Calculate a mutual inductance matrix for hat basis functions
         (stream functions) between two surface meshes
 
@@ -60,6 +66,12 @@ def mutual_inductance_matrix(mesh1, mesh2, Nchunks=None, quad_degree=1, approx_f
             Number of serial chunks to divide the computation into
         quad_degree: int >= 1
             Quadrature degree (Dunavant scheme) to use. Self-inductance requires higher degree than mutual inductance
+        approx_far: Boolean (True)
+            If True, use approximate calculation for triangles that
+            far from the source triangles using a simple quadrature
+            (see integrals.triangle_potential_approx)
+        margin: float
+            Cut-off distance for "far" points measured in mean triangle side length
 
         Returns
         -------
@@ -98,7 +110,7 @@ def mutual_inductance_matrix(mesh1, mesh2, Nchunks=None, quad_degree=1, approx_f
     Nt = len(mesh2.faces)
     Nv = len(mesh1.vertices)
 
-    A = vector_potential_coupling(mesh1, quadpoints.reshape(-1, 3), Nchunks=Nchunks, approx_far=approx_far).reshape(3, Nt, Nw, Nv)
+    A = vector_potential_coupling(mesh1, quadpoints.reshape(-1, 3), Nchunks=Nchunks, approx_far=approx_far, margin=margin).reshape(3, Nt, Nw, Nv)
 
     # Integrate over the triangles (current patterns are constant over triangles)
     A = np.sum(A*weights[None, None, :, None], axis=2)

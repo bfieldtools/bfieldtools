@@ -82,6 +82,8 @@ class Conductor:
                 'basis_name':'vertex' (other: suh, inner)
                 'N_suh': 100
                 'N_sph': 5
+                'approx_far': True
+                'approx_far_margin': 2
 
 
         '''
@@ -112,7 +114,8 @@ class Conductor:
         self.opts = {'outer_boundaries':None, 'mass_lumped':False,
                      'resistance_full_rank': True, 'inductance_nchunks':None,
                      'basis_name':'vertex', 'N_suh': 100, 'N_sph': 5,
-                     'inductance_quad_degree': 2}
+                     'inductance_quad_degree': 2, 
+                     'approx_far':True, 'approx_far_margin':2}
 
         for key, val in kwargs.items():
             self.opts[key] = val
@@ -259,7 +262,9 @@ class Conductor:
 
         inductance = self_inductance_matrix(self.mesh,
                                             Nchunks=self.opts['inductance_nchunks'],
-                                            quad_degree = self.opts['inductance_quad_degree'])
+                                            quad_degree = self.opts['inductance_quad_degree'],
+                                            approx_far = self.opts['approx_far'],
+                                            margin=self.opts['approx_far_margin'])
 
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)

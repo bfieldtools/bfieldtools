@@ -339,8 +339,8 @@ def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2):
         If True, use approximate calculation for triangles that
         far from the source triangles using a simple quadrature
         (see integrals.triangle_potential_approx)
-    margin: float,
-        cut-off distance for "far" points measured in mean triangle side length.
+    margin: float
+        Cut-off distance for "far" points measured in mean triangle side length.
 
     Returns
     -------
