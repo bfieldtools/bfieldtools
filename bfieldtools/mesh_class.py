@@ -157,6 +157,7 @@ class Conductor:
 
 
     def set_basis(self, basis_name):
+        from scipy.sparse import spdiags
         self.basis_name = basis_name
 
         if self.basis_name == 'suh':
@@ -164,7 +165,8 @@ class Conductor:
                                       self.inner_vertices, self.holes)
             self.basis = self.suh_basis.basis
         elif self.basis_name == 'inner':
-            self.basis = np.eye(len(self.inner_vertices) + len(self.holes))
+            N = len(self.inner_vertices) + len(self.holes)
+            self.basis = spdiags(np.ones(N), 0, N, N)
         elif self.basis_name == 'vertex':
             self.basis = self.vert2inner.toarray()
         else:
@@ -493,7 +495,9 @@ class CouplingMatrix:
             M = M @ self.parent.basis
 
         elif self.matrix.ndim == 3:
-            M = np.einsum('ijk,kl->ijl', M, self.parent.basis)
+            #M = np.einsum('ijk,kl->ijl', M, self.parent.basis)
+            for n in range(3):
+                M[: ,n, :] = M[:, n, :] @ self.parent.basis
 
         else:
             raise ValueError('Matrix dimensions not ok')
