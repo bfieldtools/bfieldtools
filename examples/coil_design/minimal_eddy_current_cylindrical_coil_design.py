@@ -10,7 +10,7 @@ from mayavi import mlab
 import trimesh
 
 
-from bfieldtools.mesh_class import Conductor
+from bfieldtools.conductor import Conductor
 
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
@@ -187,7 +187,7 @@ coil.s, prob = optimize_streamfunctions(coil,
                                    solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
                                    )
 
-from bfieldtools.mesh_class import StreamFunction
+from bfieldtools.conductor import StreamFunction
 shield.induced_s = StreamFunction(shield.M_coupling @ coil.s, shield)
 
 ###############################################################

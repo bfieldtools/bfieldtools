@@ -12,7 +12,7 @@ if path not in sys.path:
     sys.path.insert(0, path)
 
 import numpy as np
-from bfieldtools.mesh_class import Conductor, StreamFunction
+from bfieldtools.conductor import Conductor, StreamFunction
 from bfieldtools.suhtools import SuhBasis
 from trimesh.creation import icosphere
 from mayavi import mlab

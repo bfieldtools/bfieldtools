@@ -16,7 +16,7 @@ path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
 if path not in sys.path:
     sys.path.insert(0,path)
 
-from bfieldtools.mesh_class import Conductor, StreamFunction
+from bfieldtools.conductor import Conductor, StreamFunction
 from bfieldtools.mesh_calculus import gradient
 
 # This doesn't matter, the problem is scale-invariant

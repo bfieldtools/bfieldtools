@@ -11,7 +11,7 @@ import trimesh
 from mayavi import mlab
 
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
-from bfieldtools.mesh_class import Conductor
+from bfieldtools.conductor import Conductor
 
 from bfieldtools.sphtools import compute_sphcoeffs_mesh
 from bfieldtools import sphtools

@@ -5,7 +5,7 @@ Created on Tue Jan 21 16:37:17 2020
 
 @author: Rasmus Zetter
 """
-from bfieldtools.mesh_class import Conductor
+from bfieldtools.conductor import Conductor
 #from bfieldtools.suhtools import SuhBasis
 import numpy as np
 

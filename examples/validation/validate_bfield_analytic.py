@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 from bfieldtools.mesh_calculus import gradient
 from bfieldtools.mesh_magnetics import magnetic_field_coupling, magnetic_field_coupling_analytic
-from bfieldtools.mesh_class import Conductor
+from bfieldtools.conductor import Conductor
 import pkg_resources
 
 

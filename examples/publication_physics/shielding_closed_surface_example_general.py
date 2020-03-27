@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from mayavi import mlab
 #import trimesh
 
-from bfieldtools.mesh_class import Conductor
+from bfieldtools.conductor import Conductor
 from bfieldtools.mesh_magnetics import magnetic_field_coupling as compute_C
 from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic as compute_C_analytic
 from bfieldtools.mesh_magnetics import scalar_potential_coupling as compute_U

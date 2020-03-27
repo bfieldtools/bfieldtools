@@ -1,4 +1,4 @@
-from . import mesh_class
+from . import conductor
 from . import mesh_properties
 from . import mesh_magnetics
 from . import mesh_calculus
@@ -10,4 +10,4 @@ from . import thermal_noise
 from . import utils
 
 __all__=['line_magnetics', 'coil_optimize', 'mesh_calculus',
-'mesh_magnetics', 'mesh_class', 'mesh_properties', 'sphtools', 'suhtools', 'thermal_noise', 'utils']#, 'validation']
+'mesh_magnetics', 'conductor', 'mesh_properties', 'sphtools', 'suhtools', 'thermal_noise', 'utils']#, 'validation']
