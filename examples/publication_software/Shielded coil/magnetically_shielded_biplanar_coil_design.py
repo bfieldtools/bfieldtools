@@ -14,7 +14,7 @@ from mayavi import mlab
 import trimesh
 
 
-from bfieldtools.mesh_class import Conductor, StreamFunction
+from bfieldtools.conductor import Conductor, StreamFunction
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices

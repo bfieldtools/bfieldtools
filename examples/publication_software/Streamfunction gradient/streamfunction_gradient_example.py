@@ -6,7 +6,7 @@ Created on Fri Feb 28 12:44:50 2020
 @author: Rasmus Zetter
 """
 
-from bfieldtools.mesh_class import Conductor, StreamFunction
+from bfieldtools.conductor import Conductor, StreamFunction
 import pkg_resources
 from bfieldtools.mesh_calculus import gradient
 import numpy as np

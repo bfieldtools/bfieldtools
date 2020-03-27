@@ -5,7 +5,7 @@ from scipy.sparse.linalg import svds
 from scipy.linalg import eigh as largest_eigh
 import cvxpy as cp
 
-from .mesh_class import StreamFunction
+from .conductor import StreamFunction
 
 def cvxpy_solve_qp(P, G, h, solver=cp.MOSEK, tolerance=None):
 

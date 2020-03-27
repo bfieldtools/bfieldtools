@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 from mayavi import mlab
 import trimesh
 
-from bfieldtools.mesh_class import Conductor, StreamFunction
+from bfieldtools.conductor import Conductor, StreamFunction
 from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic, scalar_potential_coupling
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices

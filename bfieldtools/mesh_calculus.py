@@ -368,7 +368,7 @@ def curl(vecs, mesh):
 #if __name__ == "__main__":
 #    import numpy as np
 #    from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix
-#    from bfieldtools.mesh_class import Conductor
+#    from bfieldtools.conductor import Conductor
 #    import trimesh
 #    import pkg_resources
 #
