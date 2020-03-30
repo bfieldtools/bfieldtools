@@ -65,7 +65,7 @@ mlab.triangular_mesh(*target.vertices.T, target.faces)
 
 #%%
 B = coil1.B_coupling(target.vertices)
-U = coil1.U_coupling(target.vertices)
+U = coil1.U_coupling(target.vertices, approx_far=True)
 A = dual_areas(target.faces, target.area_faces)
 
 Bn = np.sum(B*target.vertex_normals[:,:,None], axis=1)

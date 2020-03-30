@@ -17,6 +17,8 @@ from .mesh_calculus import laplacian_matrix, mass_matrix
 from .mesh_magnetics import magnetic_field_coupling
 from .utils import inner2vert
 from .viz import plot_data_on_vertices
+from . import conductor
+import trimesh 
 
 from scipy.sparse.linalg import eigsh
 import numpy as np
@@ -26,52 +28,73 @@ class SuhBasis():
     """ Class for representing magnetic field using surface harmonics
     """
 
-    def __init__(self, mesh, Nc, inner_vertices=None, holes=None):
+    def __init__(self, obj, Nc, boundary_condition='dirichlet',
+                 magnetic=False):
         """
         Parameters
-            mesh : Trimesh-object representing the boundary on which
+            obj : Trimesh-object representing the boundary on which
                         current density is specified
+                  or Conductor object that wraps the mesh
             Nc : Number of components
-            inner_vertices
-                If given zero-Dirichlet boundary conditions are used
-                for the calculation, other all vertices are used
-                which corresponds to the (natural) zero-Neumann condition
-            holes:
-                list of lists of indices for vertices that belong to holes
+            boundary_condition : str  "dirichlet" (default) or "neumann"
+                if zero-Dirichlet boundary conditions ("dirichlet") 
+                are used the basis corresponds to inner_vertices
+                else with zero-Neumann condition ("neumann") 
+                the basis corresponds to all vertices
         """
+        
+        if boundary_condition in ("dirichlet", "neumann"):
+          self.bc = boundary_condition
+        else:
+          raise ValueError('boundary_conditions should e either dirichlet or neumann')
 
-        self.mesh = mesh
+        if isinstance(obj, conductor.Conductor):
+          self.conductor = obj
+        elif isinstance(obj, trimesh.Trimesh):
+          # TODO defaults ok?
+          self.conductor = conductor.Conductor(mesh_obj=obj)
+        else:
+          raise TypeError('obj type should be either Trimesh or Conductor')
+        self.mesh = self.conductor.mesh
+
         self.Nc = Nc
-        if inner_vertices is not None:
-            self.inner_vertices = inner_vertices
+        self.magnetic=magnetic
+        
+        
+        if self.bc == 'neumann':
+          self.conductor.set_basis('vertex')
         else:
-            self.inner_vertices = np.arange(len(self.mesh.vertices))
-        self.holes = holes
-        self.calculate_basis()
-        if self.holes is not None:
-            self.inner2vert = inner2vert(self.mesh, self.inner_vertices, self.holes)
-        elif inner_vertices is not None:
-            self.inner2vert = inner2vert(self.mesh, self.inner_vertices, [])
-            self.holes = []
-        else:
-            self.inner2vert = np.eye(len(self.mesh.vertices))
+          self.conductor.set_basis('inner')
 
-    def calculate_basis(self, closed_mesh=None, shiftinvert=False, v0=None):
+          self.inner_vertices = self.conductor.inner_vertices
+          self.holes = self.conductor.holes
+          self.inner2vert = self.conductor.inner2vert
+          
+        # TODO ends
+        
+        self.calculate_basis()
+
+
+    def calculate_basis(self, shiftinvert=False, v0=None):
         """ Calculate basis functions as eigenfunctions of the laplacian
 
-            closed_mesh: if True, calculate the basis for the whole mesh
-                         if False, calculate for inner vertices (zero-dirichlet condition)
-                                    and use zero for the boundary
+            shiftinver: use shiftinvert mode to calculate eigenstuff faster
+                        (experimental)
         """
         print('Calculating surface harmonics expansion...')
 
-        if closed_mesh is None:
-            closed_mesh = self.mesh.is_watertight
 
-        L = laplacian_matrix(self.mesh, None, self.inner_vertices, self.holes)
-        M = mass_matrix(self.mesh, False, self.inner_vertices, self.holes)
+        if not self.magnetic:
+          L = self.conductor.laplacian
+          M = self.conductor.mass
+        else:
+          L = self.conductor.resistance
+          M = self.conductor.inductance
+          
         self.mass = M
 
+        closed_mesh = self.conductor.mesh.is_watertight
+        
         if closed_mesh:
             print('Closed mesh, leaving out the constant component')
             N0 = 1
@@ -213,7 +236,7 @@ if __name__ == '__main__':
     file_obj = pkg_resources.resource_filename('bfieldtools',
                     'example_meshes/closed_cylinder_remeshed.stl')
     mesh = trimesh.load(file_obj, process=True)
-    basis = SuhBasis(mesh, 40, True)
+    basis = SuhBasis(mesh, 40)
 
 #    s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
 #                             scalars=basis.basis[:,6])

@@ -6,10 +6,10 @@ Created on Tue Jan 28 18:24:27 2020
 @author: makinea1
 """
 
-import sys
-path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
-if path not in sys.path:
-    sys.path.insert(0, path)
+#import sys
+#path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
+#if path not in sys.path:
+#    sys.path.insert(0, path)
 
 import numpy as np
 from bfieldtools.conductor import Conductor, StreamFunction

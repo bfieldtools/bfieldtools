@@ -160,18 +160,25 @@ class Conductor:
 
 
     def set_basis(self, basis_name):
+        """ The data is stored in vertex basis i.e. every
+            element corresponds to one vertex. The basis matrix changes basis
+            of the operators so that a coefficient vector in the desired
+            basis can be multiplied directly with the operator
+            
+            basis_names : str 'vertex', 'inner' or 'suh'
+        """
         from scipy.sparse import spdiags
         self.basis_name = basis_name
 
         if self.basis_name == 'suh':
-            self.suh_basis = SuhBasis(self.mesh, self.opts['N_suh'],
-                                      self.inner_vertices, self.holes)
+            # Neumann boudary conditions corresponds to the full Laplacian
+            self.suh_basis = SuhBasis(self, self.opts['N_suh'], boundary_condition='neumann')
             self.basis = self.suh_basis.basis
         elif self.basis_name == 'inner':
-            N = len(self.inner_vertices) + len(self.holes)
-            self.basis = spdiags(np.ones(N), 0, N, N)
+            self.basis = self.inner2vert
         elif self.basis_name == 'vertex':
-            self.basis = self.vert2inner.toarray()
+            N = len(self.mesh.vertices)
+            self.basis = spdiags(np.ones(N), 0, N, N)
         else:
             raise ValueError('streamfunction_basis must inner, vertex or suh')
 
@@ -224,11 +231,7 @@ class Conductor:
         Compute and return surface laplacian matrix.
 
         '''
-        if len(self.holes) == 0:
-            laplacian = laplacian_matrix(self.mesh, None, self.inner_vertices)
-        else:
-            laplacian = laplacian_matrix(self.mesh, None, self.inner_vertices,
-                                         self.holes)
+        laplacian = laplacian_matrix(self.mesh, None)
         return laplacian
 
     @property
@@ -241,12 +244,7 @@ class Conductor:
         Compute and return mesh mass matrix.
 
         '''
-        if len(self.holes) == 0:
-            mass = mass_matrix(self.mesh, self.opts['mass_lumped'], self.inner_vertices)
-        else:
-            mass = mass_matrix(self.mesh, self.opts['mass_lumped'],
-                               self.inner_vertices, self.holes)
-
+        mass = mass_matrix(self.mesh, self.opts['mass_lumped'])
         return mass
 
     @property
@@ -271,8 +269,7 @@ class Conductor:
         duration = time() - start
         print('Inductance matrix computation took %.2f seconds.'%duration)
 
-        U = self.inner2vert
-        return U.T @ inductance @ U
+        return inductance
 
 
     @property
@@ -293,8 +290,7 @@ class Conductor:
             scale = np.mean(sheet_resistance)
             resistance += np.ones(resistance.shape)/resistance.shape[0]*scale
 
-        U = self.inner2vert
-        return U.T @ resistance @ U
+        return resistance
 
     def mutual_inductance(self, conductor_other, quad_degree=1, approx_far=True):
         '''
@@ -310,9 +306,7 @@ class Conductor:
         '''
         M = mutual_inductance_matrix(self.mesh, conductor_other.mesh,
                                      quad_degree=quad_degree, approx_far=approx_far)
-        # Convert to inner basis first
-        M = self.inner2vert.T @ M @ conductor_other.inner2vert
-        # Then to the desired basis
+        # Convert to the desired basis
         M = self.basis.T @ M @ conductor_other.basis
 
         return M
@@ -329,8 +323,8 @@ class Conductor:
             print('Computing coupling matrices')
             Calpha, Cbeta = compute_sphcoeffs_mesh(self.mesh, self.opts['N_sph'])
             # Store the results for further use
-            Calpha = self._alpha_coupling = Calpha @ self.inner2vert
-            Cbeta = self._beta_coupling = Cbeta @ self.inner2vert
+            self._alpha_coupling = Calpha
+            self._beta_coupling = Cbeta
         else:
             Calpha = self._alpha_coupling
             Cbeta = self._beta_coupling
@@ -458,18 +452,8 @@ class CouplingMatrix:
         '''
 
         if len(self.points) == 0:
-            matrix = self.function(self.parent.mesh, points, *fun_args, **kwargs)
-            # Convert to all-vertices to inner vertices
-            if matrix.ndim == 2:
-                self.matrix = matrix @ self.parent.inner2vert
-            elif matrix.ndim == 3:
-                self.matrix = np.zeros((matrix.shape[0], 3,
-                                        self.parent.inner2vert.shape[1]))
-                for n in range(3):
-                    self.matrix[: ,n, :] = matrix[:, n, :] @ self.parent.inner2vert
-            else:
-                raise ValueError('Matrix dimensions not ok')
-
+            # Nothing calculated,yet
+            self.matrix = self.function(self.parent.mesh, points, *fun_args, **kwargs)
             self.points = points
 
             M = self.matrix
@@ -484,8 +468,6 @@ class CouplingMatrix:
                 missing_points = points[missing_point_idx]
 
                 new_matrix_elems = self.function(self.parent.mesh, missing_points, *fun_args, **kwargs)
-                new_matrix_elems = new_matrix_elems @ self.parent.inner2vert.toarray()
-
 
                 #Append newly computed point to coupling matrix, update bookkeeping
                 self.points = np.vstack((self.points, missing_points))
@@ -500,10 +482,10 @@ class CouplingMatrix:
             M = M @ self.parent.basis
 
         elif self.matrix.ndim == 3:
-            #M = np.einsum('ijk,kl->ijl', M, self.parent.basis)
+            Mnew = []
             for n in range(3):
-                M[: ,n, :] = M[:, n, :] @ self.parent.basis
-
+                Mnew.append(M[:, n, :] @ self.parent.basis)
+            M = np.swapaxes(np.array(Mnew), 0, 1)
         else:
             raise ValueError('Matrix dimensions not ok')
 
@@ -579,12 +561,15 @@ class StreamFunction(np.ndarray):
 
     @property
     def vert(self):
-        return self.inner2vert @ self.basis @ self
+        return  self.basis @ self
 
 
     @property
     def inner(self):
-        return self.basis @ self
+        if self.parent.basis_name == 'inner':
+            return self
+        else:
+            return self.vert2inner @ self.basis @ self
 
 
     @property
