@@ -427,43 +427,43 @@ def Blm(l, m, theta, phi):
     Blm *= 1/np.sqrt(l*(l+1))
     return Blm
 
-def Psilm(l,m,theta,phi):
+def Wlm(l,m,theta,phi):
     '''
-    Vector basis function (Psilm) for r**l component of the magnetic field.
-    Normalization <Psilm,Psikn> = delta_lk,mn.
+    Vector basis function (Wlm) for r**l component of the magnetic field.
+    Normalization <Wlm,Psikn> = delta_lk,mn.
 
     Parameters
     ----------
     l: int
-        degree of Psilm
+        degree of Wlm
     m: int
-        order of Psilm
+        order of Wlm
     theta: Nx1 array
         evaluation points, theta at spherical coordinates
     phi: Nx1 array
         evaluation points, phi at spherical coordinates
     Returns
     -------
-    Psilm: Nx3 array
-        Psilm at (theta, phi).
+    Wlm: Nx3 array
+        Wlm at (theta, phi).
 
     '''
 
-    Psilm = l*Plm(l,m,theta,phi) + np.sqrt(l*(l+1))*Blm(l,m,theta,phi)
-    Psilm *= 1/np.sqrt(2*l**2+l)
-    return Psilm
+    Wlm = l*Plm(l,m,theta,phi) + np.sqrt(l*(l+1))*Blm(l,m,theta,phi)
+    Wlm *= 1/np.sqrt(2*l**2+l)
+    return Wlm
 
-def Philm(l,m,theta,phi):
+def Vlm(l,m,theta,phi):
     '''
-    Vector basis function (Philm) for r**(-l) component of the magnetic field.
-    Normalization <Philm,Phikn> = delta_lk,mn.
+    Vector basis function (Vlm) for r**(-l) component of the magnetic field.
+    Normalization <Vlm,Phikn> = delta_lk,mn.
 
     Parameters
     ----------
     l: int
-        degree of Philm
+        degree of Vlm
     m: int
-        order of Philm
+        order of Vlm
     theta: Nx1 array
         evaluation points, theta at spherical coordinates
     phi: Nx1 array
@@ -471,14 +471,14 @@ def Philm(l,m,theta,phi):
 
     Returns
     -------
-    Philm: Nx3 array
-        Philm at (theta, phi).
+    Vlm: Nx3 array
+        Vlm at (theta, phi).
 
     '''
 
-    Philm = -1*(l+1)*Plm(l,m,theta,phi) + np.sqrt(l*(l+1))*Blm(l,m,theta,phi)
-    Philm *= 1/np.sqrt((l+1)*(2*l+1))
-    return Philm
+    Vlm = -1*(l+1)*Plm(l,m,theta,phi) + np.sqrt(l*(l+1))*Blm(l,m,theta,phi)
+    Vlm *= 1/np.sqrt((l+1)*(2*l+1))
+    return Vlm
 
 
 ############################################
@@ -549,23 +549,23 @@ def field(p, acoeffs, bcoeffs, lmax):
     idx = 0
     for l in range(1,lmax+1):
         for m in range(-1*l,l+1):
-            _Psilm = Psilm(l,m, sp[:,1],sp[:,2])
-            _Psilm *= np.sqrt(2*l**2 + l)
-            _Psilm[:,0] *= sp[:,0]**(l-1)
-            _Psilm[:,1] *= sp[:,0]**(l-1)
-            _Psilm[:,2] *= sp[:,0]**(l-1)
-            _Psilm *= bcoeffs[idx] # Fixed a -> b
-            _Psilm = sphvec2cart(sp, _Psilm)
-            B += _Psilm
+            _Wlm = Wlm(l,m, sp[:,1],sp[:,2])
+            _Wlm *= np.sqrt(2*l**2 + l)
+            _Wlm[:,0] *= sp[:,0]**(l-1)
+            _Wlm[:,1] *= sp[:,0]**(l-1)
+            _Wlm[:,2] *= sp[:,0]**(l-1)
+            _Wlm *= bcoeffs[idx] # Fixed a -> b
+            _Wlm = sphvec2cart(sp, _Wlm)
+            B += _Wlm
 
-            _Philm = Philm(l,m, sp[:,1],sp[:,2])
-            _Philm *= np.sqrt((2*l+1)*(l+1))
-            _Philm[:,0] *= sp[:,0]**(-l-2)
-            _Philm[:,1] *= sp[:,0]**(-l-2)
-            _Philm[:,2] *= sp[:,0]**(-l-2)
-            _Philm *= acoeffs[idx] # Fixed b -> a
-            _Philm = sphvec2cart(sp, _Philm)
-            B += _Philm
+            _Vlm = Vlm(l,m, sp[:,1],sp[:,2])
+            _Vlm *= np.sqrt((2*l+1)*(l+1))
+            _Vlm[:,0] *= sp[:,0]**(-l-2)
+            _Vlm[:,1] *= sp[:,0]**(-l-2)
+            _Vlm[:,2] *= sp[:,0]**(-l-2)
+            _Vlm *= acoeffs[idx] # Fixed b -> a
+            _Vlm = sphvec2cart(sp, _Vlm)
+            B += _Vlm
 
             idx += 1
     B *= mu0
@@ -601,21 +601,21 @@ def basis_fields(p, lmax):
     idx = 0
     for l in range(1,lmax+1):
         for m in range(-1*l,l+1):
-            _Psilm = Psilm(l,m, sp[:,1],sp[:,2])
-#                Psilm *= np.sqrt(2*l**2 + l)
-            _Psilm[:,0] *= sp[:,0]**(l-1)
-            _Psilm[:,1] *= sp[:,0]**(l-1)
-            _Psilm[:,2] *= sp[:,0]**(l-1)
-            _Psilm = sphvec2cart(sp, _Psilm)
-            B2[idx] = _Psilm # r**l functions
+            _Wlm = Wlm(l,m, sp[:,1],sp[:,2])
+#                Wlm *= np.sqrt(2*l**2 + l)
+            _Wlm[:,0] *= sp[:,0]**(l-1)
+            _Wlm[:,1] *= sp[:,0]**(l-1)
+            _Wlm[:,2] *= sp[:,0]**(l-1)
+            _Wlm = sphvec2cart(sp, _Wlm)
+            B2[idx] = _Wlm # r**l functions
 
-            _Philm = Philm(l,m, sp[:,1],sp[:,2])
-#                Philm *= np.sqrt((2*l+1)*(l+1))
-            _Philm[:,0] *= sp[:,0]**(-l-2)
-            _Philm[:,1] *= sp[:,0]**(-l-2)
-            _Philm[:,2] *= sp[:,0]**(-l-2)
-            _Philm = sphvec2cart(sp, _Philm)
-            B1[idx] = _Philm # 1/r**l functions
+            _Vlm = Vlm(l,m, sp[:,1],sp[:,2])
+#                Vlm *= np.sqrt((2*l+1)*(l+1))
+            _Vlm[:,0] *= sp[:,0]**(-l-2)
+            _Vlm[:,1] *= sp[:,0]**(-l-2)
+            _Vlm[:,2] *= sp[:,0]**(-l-2)
+            _Vlm = sphvec2cart(sp, _Vlm)
+            B1[idx] = _Vlm # 1/r**l functions
 
             idx += 1
 
@@ -633,7 +633,7 @@ class sphbasis:
     '''
     Class for constructing spherical harmonics (Ylms), their gradients
     and related magnetic field 'basis vectorfunctions'
-    (Psilms for r**l components, Philms for r**(-l) components).
+    (Wlms for r**l components, Vlms for r**(-l) components).
 
     Uses notations and definitions by Plattner and Simons (2014; https://arxiv.org/pdf/1306.3201.pdf)
     and the same normalization conventions.
@@ -745,8 +745,8 @@ class sphbasis:
 
         for l in range(1,lmax+1):
             for m in range(-1*l,l+1):
-                _Psilm = Psilm(l,m,self.sqp[:,1],self.sqp[:,2])
-                ctemp = self.innerproduct(fun, _Psilm)
+                _Wlm = Wlm(l,m,self.sqp[:,1],self.sqp[:,2])
+                ctemp = self.innerproduct(fun, _Wlm)
                 ctemp /= (self.sqp[0,0]**(l-1)*np.sqrt(2*l**2 +l)) # we use this normalization
 #                ctemp /= (self.sqp[0,0]**(l-1))
                 coeffs.append(ctemp)
@@ -777,8 +777,8 @@ class sphbasis:
 
         for l in range(1,lmax+1):
             for m in range(-1*l,l+1):
-                _Philm = Philm(l,m,self.sqp[:,1],self.sqp[:,2])
-                ctemp = self.innerproduct(fun, _Philm)
+                _Vlm = Vlm(l,m,self.sqp[:,1],self.sqp[:,2])
+                ctemp = self.innerproduct(fun, _Vlm)
                 ctemp /= (self.sqp[0,0]**(l-1)*np.sqrt((l+1)*(2*l+1))) # we use this normalization
 #                ctemp /= (self.sqp[0,0]**(l-1))
                 coeffs.append(ctemp)
@@ -823,13 +823,13 @@ def fitSpectra(coords, Bmeas, lmax):
         lind = 0
         for l in range(1,lmax+1):
             for m in range(-1*l,l+1):
-                _Psilm = Psilm(l,m, sp[:,1],sp[:,2])
-                _Psilm *= np.sqrt(2*l**2 + l)
-                _Psilm[:,0] *= sp[:,0]**(l-1)
-                _Psilm[:,1] *= sp[:,0]**(l-1)
-                _Psilm[:,2] *= sp[:,0]**(l-1)
-                _Psilm = sphvec2cart(sp, _Psilm)
-                A[e*Nmeas:(e+1)*Nmeas, lind] = _Psilm[:,e]
+                _Wlm = Wlm(l,m, sp[:,1],sp[:,2])
+                _Wlm *= np.sqrt(2*l**2 + l)
+                _Wlm[:,0] *= sp[:,0]**(l-1)
+                _Wlm[:,1] *= sp[:,0]**(l-1)
+                _Wlm[:,2] *= sp[:,0]**(l-1)
+                _Wlm = sphvec2cart(sp, _Wlm)
+                A[e*Nmeas:(e+1)*Nmeas, lind] = _Wlm[:,e]
                 lind += 1
     print("Condition number = %f" % (np.linalg.cond(A))) #print the condition number of A
 
@@ -878,14 +878,14 @@ def reconstructB(p, coeffs,lmax):
     idx = 0
     for l in range(1,lmax+1):
         for m in range(-1*l,l+1):
-            _Psilm = Psilm(l,m, sp[:,1],sp[:,2])
-            _Psilm *= np.sqrt(2*l**2 + l)
-            _Psilm[:,0] *= sp[:,0]**(l-1)
-            _Psilm[:,1] *= sp[:,0]**(l-1)
-            _Psilm[:,2] *= sp[:,0]**(l-1)
-            _Psilm *= coeffs[idx]
-            _Psilm = sphvec2cart(sp, _Psilm)
-            B += _Psilm
+            _Wlm = Wlm(l,m, sp[:,1],sp[:,2])
+            _Wlm *= np.sqrt(2*l**2 + l)
+            _Wlm[:,0] *= sp[:,0]**(l-1)
+            _Wlm[:,1] *= sp[:,0]**(l-1)
+            _Wlm[:,2] *= sp[:,0]**(l-1)
+            _Wlm *= coeffs[idx]
+            _Wlm = sphvec2cart(sp, _Wlm)
+            B += _Wlm
             idx += 1
     return B
 
@@ -968,9 +968,9 @@ def plotYlm(sph, l,m):
               scalars=np.abs(_ylm), colormap='Spectral')
 
 
-def plotPsilm(sph,l, m):
+def plotWlm(sph,l, m):
     '''
-    Plots magnetic field basis function 'Psilm' (r**l) over a sphere.
+    Plots magnetic field basis function 'Wlm' (r**l) over a sphere.
 
     Parameters
     ----------
@@ -986,16 +986,16 @@ def plotPsilm(sph,l, m):
 
     '''
 
-    _Psilm = Psilm(l,m, sph.sp[:,1], sph.sp[:,2])
-    _Psilm = sphvec2cart(sph.sp, _Psilm)
+    _Wlm = Wlm(l,m, sph.sp[:,1], sph.sp[:,2])
+    _Wlm = sphvec2cart(sph.sp, _Wlm)
     obj = mlab.quiver3d(sph.p[:,0],sph.p[:,1],sph.p[:,2],
-                        _Psilm[:,0], _Psilm[:,1], _Psilm[:,2])
+                        _Wlm[:,0], _Wlm[:,1], _Wlm[:,2])
     obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
     return obj
 
-def plotBPsilm_volume(sph,l, m, lim, Np, offset):
+def plotBWlm_volume(sph,l, m, lim, Np, offset):
     '''
-    Plots magnetic field basis function 'Psilm' (r**l) over a 3D volume.
+    Plots magnetic field basis function 'Wlm' (r**l) over a 3D volume.
 
     Parameters
     ----------
@@ -1009,7 +1009,7 @@ def plotBPsilm_volume(sph,l, m, lim, Np, offset):
     Np: int
         number of points along different coordinates
     offset: 1x3 array
-        offset of the volume in which Psilm is plotted
+        offset of the volume in which Wlm is plotted
 
     Returns
     -------
@@ -1022,23 +1022,23 @@ def plotBPsilm_volume(sph,l, m, lim, Np, offset):
     p = np.array((x.flatten(), y.flatten(), z.flatten())).T
     sp = cartesian2spherical(p)
 
-    _Psilm = Psilm(l,m, sp[:,1], sp[:,2])
-    _Psilm *= np.sqrt(2*l**2 +l)
-    _Psilm[:,0] *= sp[:,0]**(l-1)
-    _Psilm[:,1] *= sp[:,0]**(l-1)
-    _Psilm[:,2] *= sp[:,0]**(l-1)
+    _Wlm = Wlm(l,m, sp[:,1], sp[:,2])
+    _Wlm *= np.sqrt(2*l**2 +l)
+    _Wlm[:,0] *= sp[:,0]**(l-1)
+    _Wlm[:,1] *= sp[:,0]**(l-1)
+    _Wlm[:,2] *= sp[:,0]**(l-1)
 
-    _Psilm = sphvec2cart(sp, _Psilm)
+    _Wlm = sphvec2cart(sp, _Wlm)
     obj = mlab.quiver3d(p[:,0],p[:,1],p[:,2],
-                        _Psilm[:,0], _Psilm[:,1], _Psilm[:,2])
+                        _Wlm[:,0], _Wlm[:,1], _Wlm[:,2])
     obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
     return obj
 
 
 
-def plotPhilm(sph,l, m):
+def plotVlm(sph,l, m):
     '''
-    Plots magnetic field basis function 'Philm' (r**(-l)) over a sphere.
+    Plots magnetic field basis function 'Vlm' (r**(-l)) over a sphere.
 
     Parameters
     ----------
@@ -1054,16 +1054,16 @@ def plotPhilm(sph,l, m):
 
     '''
 
-    _Philm = Philm(l,m, sph.sp[:,1], sph.sp[:,2])
-    _Philm = sphvec2cart(sph.sp, _Philm)
+    _Vlm = Vlm(l,m, sph.sp[:,1], sph.sp[:,2])
+    _Vlm = sphvec2cart(sph.sp, _Vlm)
     obj = mlab.quiver3d(sph.p[:,0],sph.p[:,1],sph.p[:,2],
-                        _Philm[:,0], _Philm[:,1], _Philm[:,2])
+                        _Vlm[:,0], _Vlm[:,1], _Vlm[:,2])
     obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
     return obj
 
-def plotBPhilm_volume(sph,l, m, lim, Np, offset):
+def plotBVlm_volume(sph,l, m, lim, Np, offset):
     '''
-    Plots magnetic field basis function 'Philm' (r**(-l)) over a 3D volume.
+    Plots magnetic field basis function 'Vlm' (r**(-l)) over a 3D volume.
 
     Parameters
     ----------
@@ -1077,7 +1077,7 @@ def plotBPhilm_volume(sph,l, m, lim, Np, offset):
     Np: int
         number of points along different coordinates
     offset: 1x3 array
-        offset of the volume in which Philm is plotted
+        offset of the volume in which Vlm is plotted
 
     Returns
     -------
@@ -1090,16 +1090,16 @@ def plotBPhilm_volume(sph,l, m, lim, Np, offset):
     p = np.array((x.flatten(), y.flatten(), z.flatten())).T
     sp = cartesian2spherical(p)
 
-    _Philm = Philm(l,m, sp[:,1], sp[:,2])
-    _Philm *= np.sqrt((l+1)*(2*l+1))
+    _Vlm = Vlm(l,m, sp[:,1], sp[:,2])
+    _Vlm *= np.sqrt((l+1)*(2*l+1))
 
-    _Philm[:,0] *= sp[:,0]**(-1*(l+2))
-    _Philm[:,1] *= sp[:,0]**(-1*(l+2))
-    _Philm[:,2] *= sp[:,0]**(-1*(l+2))
+    _Vlm[:,0] *= sp[:,0]**(-1*(l+2))
+    _Vlm[:,1] *= sp[:,0]**(-1*(l+2))
+    _Vlm[:,2] *= sp[:,0]**(-1*(l+2))
 
-    _Philm = sphvec2cart(sp, _Philm)
+    _Vlm = sphvec2cart(sp, _Vlm)
     obj = mlab.quiver3d(p[:,0],p[:,1],p[:,2],
-                        _Philm[:,0], _Philm[:,1], _Philm[:,2])
+                        _Vlm[:,0], _Vlm[:,1], _Vlm[:,2])
     obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
     return obj
 
