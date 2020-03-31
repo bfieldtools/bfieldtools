@@ -127,16 +127,7 @@ class Conductor:
 
         self.boundaries, self.inner_vertices = utils.find_mesh_boundaries(self.mesh)
         self.set_holes(self.opts['outer_boundaries'])
-
-        #######################################################################
-        # Set up stream function basis
-        #######################################################################
-
-        self.inner2vert = utils.inner2vert(self.mesh, self.inner_vertices, self.holes)
-        self.vert2inner = utils.vert2inner(self.mesh, self.inner_vertices, self.holes)
-
-        #Sets basis for first time, calling self.set_basis()
-        self.set_basis(self.opts['basis_name'])
+        
 
         #######################################################################
         # Set up physical properties and coupling matrices
@@ -157,6 +148,18 @@ class Conductor:
         # Matrices in inner-weight basis
         self.matrices = {'laplacian': None, 'mass': None, 'inductance': None,
                         'resistance': None}
+
+        #######################################################################
+        # Set up stream function basis
+        #######################################################################
+
+        self.inner2vert = utils.inner2vert(self.mesh, self.inner_vertices, self.holes)
+        self.vert2inner = utils.vert2inner(self.mesh, self.inner_vertices, self.holes)
+
+        #Sets basis for first time, calling self.set_basis()
+        self.set_basis(self.opts['basis_name'])
+
+
 
 
     def set_basis(self, basis_name):
