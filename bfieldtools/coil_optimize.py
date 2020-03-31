@@ -3,6 +3,7 @@ import cvxopt
 from cvxopt import matrix
 from scipy.sparse.linalg import svds
 from scipy.linalg import eigh as largest_eigh
+from scipy.linalg import eigvalsh
 import cvxpy as cp
 
 from .conductor import StreamFunction
@@ -101,7 +102,7 @@ def optimize_streamfunctions(conductor,
     Parameters
     ----------
     conductor: Conductor object
-        Contains Trimesh mesh
+        Contains Trimesh mesh as well as physical properties, e.g. inductance
     bfield_specification: list
         List in which element is a dictionary containing a field specification.
         Each dict contains:
@@ -137,84 +138,10 @@ def optimize_streamfunctions(conductor,
     elif objective == 'minimum_resistive_energy':
         objective = (0, 1)
 
-
-    #Initialize inequality constraint matrix and constraints
-    constraint_matrix = np.zeros((0, conductor.basis.shape[1]))
-    upper_bounds = np.zeros((0, ))
-    lower_bounds = np.zeros((0, ))
-
-    #Populate inequality constraints with bfield specifications
-    for spec in bfield_specification:
-
-        #Reshape so that values on axis 1 are x1, y1, z1, x2, y2, z2, etc.
-        #If not 3D matrix, assuming the use of spherical harmonics
-        if spec['coupling'].ndim == 3:
-            C = spec['coupling'].transpose((2, 0, 1))
-            C = C.reshape((C.shape[0], -1)).T
-        else:
-            C = spec['coupling']
-
-        #Apply relative error to bounds
-        if 'rel_error' in spec:
-            upper_bound = spec['target'] * (1 + np.sign(spec['target']) * spec['rel_error'])
-            lower_bound = spec['target'] * (1 - np.sign(spec['target']) * spec['rel_error'])
-
-        #Apply absolute error to bounds
-        if 'abs_error' in spec:
-            upper_bound = spec['target'] + spec['abs_error']
-            lower_bound = spec['target'] - spec['abs_error']
-
-        if ('abs_error' not in spec) and ('rel_error' not in spec):
-            raise ValueError('You should pass at least either rel_error or abs_error to give \
-                             some slack to the optimization.\
-                             If this is what you really want, modify the function!')
+    quadratic_matrix = _construct_quadratic_objective(objective, conductor)
 
 
-        #Flatten to match C matrix
-        upper_bound = upper_bound.flatten()
-        lower_bound = lower_bound.flatten()
-
-
-        # Append specification to constraint matrix and bounds
-        constraint_matrix = np.append(constraint_matrix, C, axis=0)
-
-        upper_bounds = np.append(upper_bounds, upper_bound, axis=0)
-        lower_bounds = np.append(lower_bounds, lower_bound, axis=0)
-
-
-    #Construct quadratic objective matrix
-    if objective == (1, 0):
-
-        quadratic_matrix = conductor.inductance
-
-    elif objective == (0, 1):
-
-        quadratic_matrix = conductor.resistance
-
-    elif type(objective) == tuple:
-
-        L = conductor.inductance
-
-        R = conductor.resistance
-
-        print('Scaling inductance and resistance matrices before optimization. This requires eigenvalue computation, hold on.')
-
-        max_eval_L = largest_eigh(L, eigvals=(L.shape[0]-1, L.shape[0]-1))[0][0]
-        max_eval_R = largest_eigh(R, eigvals=(L.shape[0]-1, L.shape[0]-1))[0][0]
-
-        scaled_R = max_eval_L / max_eval_R * R
-
-        quadratic_matrix = (objective[0] * L  + objective[1] * scaled_R)
-    else:
-        print('Custom objective passed, assuming it is a matrix of correct dimensions')
-        quadratic_matrix = objective
-
-    #Scale whole quadratic term according to largest eigenvalue
-    max_eval_quad = largest_eigh(quadratic_matrix, eigvals=(quadratic_matrix.shape[0]-1, quadratic_matrix.shape[0]-1))[0][0]
-
-    quadratic_matrix /= max_eval_quad
-
-
+    constraint_matrix, upper_bounds, lower_bounds = _construct_constraints(conductor, bfield_specification)
     #Compute, scale constraint matrix according to largest singular value
     u, s, vt = svds(constraint_matrix, k=1)
 
@@ -261,6 +188,167 @@ def optimize_streamfunctions(conductor,
     problem.solve(solver=solver, verbose=True, **solver_opts)
 
     #extract optimized streamfunction, scale by same singular value as constraint matrix
-    s = StreamFunction(problem.variables()[0].value / s[0], conductor=conductor)
+    S = StreamFunction(problem.variables()[0].value / s[0], conductor=conductor)
 
-    return s, problem
+    return S, problem
+
+
+def optimize_lsq(conductor, bfield_specification, reg=1e3, objective='minimum_inductive_energy'):
+    '''
+    Parameters
+    ----------
+    conductor: Conductor object
+        Contains Trimesh mesh as well as physical properties, e.g. inductance
+    bfield_specification: list
+        List in which element is a dictionary containing a field specification.
+        Each dict contains:
+        coupling: Coupling matrix (N_r, N_verts, 3)
+        target: (N_r, 3)
+        abs_error: float or (N_r, 3)
+        rel_error: float or (N_r, 3)
+    objective: string or dict
+        if string, either 'minimum_inductive_energy' or 'minimum_resistive_energy'
+        if tuple, should contain: (a, b), where a and b are floats describing the inductive and resitive weighting factors.
+        The resistance matrix is scaled according to the largest singular value of the inductance matrix for consistent behavior
+        across meshes.
+    reg: float
+        Regularization/tradeoff parameter (lambda). A larger lambda leads to more emphasis on the specification,
+        at the cost of the quadratic objective. The lambda value is relative to the maximum singular value
+        of C.T @ C @ v[:,i] = w[i] @ Q @ v[:,i]
+    Returns
+    -------
+    S: StreamFunction
+        Optimization solution
+    '''
+    
+    if objective == 'minimum_inductive_energy':
+        objective = (1, 0)
+    elif objective == 'minimum_resistive_energy':
+        objective = (0, 1)
+
+    quadratic_matrix = _construct_quadratic_objective(objective, conductor)
+    
+    #Make sure that quadratic matrix is positive semi-definite
+    quadratic_matrix = .5 * (quadratic_matrix + quadratic_matrix.T)
+    
+    print('Error tolerances in specification will be ignored when use lsq')
+    [spec.pop('abs_error', None) for spec in bfield_specification]
+    [spec.pop('rel_error', None) for spec in bfield_specification]
+    
+    constraint_matrix, target = _construct_constraints(conductor, bfield_specification)
+    
+    #Compute, scale constraint matrix according to largest singular value
+    u, s, vt = svds(constraint_matrix, k=1)
+    constraint_matrix /= s[0]
+    
+    ss_max = eigvalsh(constraint_matrix.T @ constraint_matrix, quadratic_matrix, 
+                     eigvals=[quadratic_matrix.shape[1]-1, quadratic_matrix.shape[1]-1])
+    
+    S = np.linalg.solve(constraint_matrix.T @ constraint_matrix + ss_max/reg * quadratic_matrix, 
+                        constraint_matrix.T @ target)
+
+    return StreamFunction(S/ s[0], conductor)
+
+
+def _construct_constraints(conductor, bfield_specification):
+    '''
+    Stacks together constraint and coupling matrices for stream function optimization
+    
+    '''
+    #Initialize inequality constraint matrix and constraints
+    constraint_matrix = np.zeros((0, conductor.basis.shape[1]))
+    upper_bound_stack = np.zeros((0, ))
+    lower_bound_stack = np.zeros((0, ))
+    
+    target_stack = np.zeros((0, ))
+
+    #Populate inequality constraints with bfield specifications
+    for spec in bfield_specification:
+
+        #Reshape so that values on axis 1 are x1, y1, z1, x2, y2, z2, etc.
+        #If not 3D matrix, assuming the use of spherical harmonics
+        if spec['coupling'].ndim == 3:
+            C = spec['coupling'].transpose((2, 0, 1))
+            C = C.reshape((C.shape[0], -1)).T
+        else:
+            C = spec['coupling']
+            
+        # Append specification to constraint matrix and bounds
+        constraint_matrix = np.append(constraint_matrix, C, axis=0)
+        
+        if 'rel_error' in spec or 'abs_error' in spec:
+            #Apply relative error to bounds
+            if 'rel_error' in spec:
+                upper_bound = spec['target'] * (1 + np.sign(spec['target']) * spec['rel_error'])
+                lower_bound = spec['target'] * (1 - np.sign(spec['target']) * spec['rel_error'])
+                
+                #If present, also apply absolute error
+                if 'abs_error' in spec:
+                    upper_bound += spec['abs_error']
+                    lower_bound -= spec['abs_error']
+    
+            #Apply absolute error to bounds
+            else:
+                upper_bound = spec['target'] + spec['abs_error']
+                lower_bound = spec['target'] - spec['abs_error']
+                
+            #Flatten to match C matrix
+            upper_bound = upper_bound.flatten()
+            lower_bound = lower_bound.flatten()
+            
+            #Append to stack
+            upper_bound_stack = np.append(upper_bound_stack, upper_bound, axis=0)
+            lower_bound_stack = np.append(lower_bound_stack, lower_bound, axis=0)
+        
+        else:
+            target = spec['target']
+
+            #Flatten to match C matrix
+            target = target.flatten()
+
+            #Append to stack
+            target_stack = np.append(target_stack, target, axis=0)
+        
+        if 'rel_error' in spec or 'abs_error' in spec:
+            return constraint_matrix, upper_bound_stack, lower_bound_stack
+        else:
+            return constraint_matrix, target_stack
+    
+    
+def _construct_quadratic_objective(objective, conductor):
+    '''
+    
+    '''
+    #Construct quadratic objective matrix
+    if objective == (1, 0):
+
+        quadratic_matrix = conductor.inductance
+
+    elif objective == (0, 1):
+
+        quadratic_matrix = conductor.resistance
+
+    elif type(objective) == tuple:
+
+        L = conductor.inductance
+
+        R = conductor.resistance
+
+        print('Scaling inductance and resistance matrices before optimization. This requires eigenvalue computation, hold on.')
+
+        max_eval_L = largest_eigh(L, eigvals=(L.shape[0]-1, L.shape[0]-1))[0][0]
+        max_eval_R = largest_eigh(R, eigvals=(L.shape[0]-1, L.shape[0]-1))[0][0]
+
+        scaled_R = max_eval_L / max_eval_R * R
+
+        quadratic_matrix = (objective[0] * L  + objective[1] * scaled_R)
+    else:
+        print('Custom objective passed, assuming it is a matrix of correct dimensions')
+        quadratic_matrix = objective
+
+    #Scale whole quadratic term according to largest eigenvalue
+    max_eval_quad = largest_eigh(quadratic_matrix, eigvals=(quadratic_matrix.shape[0]-1, quadratic_matrix.shape[0]-1))[0][0]
+
+    quadratic_matrix /= max_eval_quad
+    
+    return quadratic_matrix
