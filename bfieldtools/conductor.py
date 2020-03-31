@@ -113,7 +113,7 @@ class Conductor:
         #Populate options dictionary with defaults if not specified
         self.opts = {'outer_boundaries':None, 'mass_lumped':False,
                      'resistance_full_rank': True, 'inductance_nchunks':None,
-                     'basis_name':'vertex', 'N_suh': 100, 'N_sph': 5,
+                     'basis_name':'inner', 'N_suh': 100, 'N_sph': 5,
                      'inductance_quad_degree': 2, 
                      'approx_far':True, 'approx_far_margin':2}
 
