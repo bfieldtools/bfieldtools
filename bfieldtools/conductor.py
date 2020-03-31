@@ -175,7 +175,7 @@ class Conductor:
 
         if self.basis_name == 'suh':
             # SUH basis with dirichlet boundary conditions
-            self.suh_basis = SuhBasis(self, self.opts['N_suh'], boundary_condition='dirichlet')
+            self.suh_basis = SuhBasis(self.mesh, self.opts['N_suh'], boundary_condition='dirichlet')
             self.basis = self.inner2vert @ self.suh_basis.basis
         elif self.basis_name == 'inner':
             self.basis = self.inner2vert
