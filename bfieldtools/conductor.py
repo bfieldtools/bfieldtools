@@ -174,9 +174,9 @@ class Conductor:
         self.basis_name = basis_name
 
         if self.basis_name == 'suh':
-            # Neumann boudary conditions corresponds to the full Laplacian
-            self.suh_basis = SuhBasis(self, self.opts['N_suh'], boundary_condition='neumann')
-            self.basis = self.suh_basis.basis
+            # SUH basis with dirichlet boundary conditions
+            self.suh_basis = SuhBasis(self, self.opts['N_suh'], boundary_condition='dirichlet')
+            self.basis = self.inner2vert @ self.suh_basis.basis
         elif self.basis_name == 'inner':
             self.basis = self.inner2vert
         elif self.basis_name == 'vertex':
