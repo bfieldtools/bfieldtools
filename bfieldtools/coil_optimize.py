@@ -309,10 +309,10 @@ def _construct_constraints(conductor, bfield_specification):
             #Append to stack
             target_stack = np.append(target_stack, target, axis=0)
         
-        if 'rel_error' in spec or 'abs_error' in spec:
-            return constraint_matrix, upper_bound_stack, lower_bound_stack
-        else:
-            return constraint_matrix, target_stack
+    if 'rel_error' in spec or 'abs_error' in spec:
+        return constraint_matrix, upper_bound_stack, lower_bound_stack
+    else:
+        return constraint_matrix, target_stack
     
     
 def _construct_quadratic_objective(objective, conductor):
