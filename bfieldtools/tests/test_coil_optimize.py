@@ -1,5 +1,4 @@
 
-
 import pytest
 from bfieldtools import coil_optimize
 from bfieldtools.tests.test_conductor import _fake_conductor
@@ -36,5 +35,5 @@ def test_coil_optimize():
         if len(results) > 1:
             #tolerance is quite high, since some solvers give a bit differing results
             #in real life, let's not use those solvers.
-            assert_allclose(results[-2], results[-1], rtol=8e-2)
+            assert_allclose(results[-2], results[-1], rtol=2e-1)
     
