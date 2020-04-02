@@ -6,6 +6,7 @@ The effects of eddy currents due to inductive interaction with the shield is min
 '''
 PLOT = True
 SAVE_FIGURES = True
+SAVE_PATH = 'C:/Users/Rasmus Zetter/Documents/Aalto/bfieldtools/examples/publication_software/Minimal eddy current coil/'
 
 
 
@@ -242,7 +243,7 @@ if PLOT:
        _gui.process_events()
 
     if SAVE_FIGURES:
-        mlab.savefig('/l/bfieldtools/examples/publication_software/Minimal eddy current coil/eddy_yes.png', figure=f, magnification=4)
+        mlab.savefig(SAVE_PATH+'eddy_yes.png', figure=f, magnification=4)
         mlab.close()
 #mlab.triangular_mesh(*shield.mesh.vertices.T, shield.mesh.faces, scalars=shield.induced_I)
 
@@ -288,7 +289,7 @@ if PLOT:
        _gui.process_events()
 
     if SAVE_FIGURES:
-        mlab.savefig('/l/bfieldtools/examples/publication_software/Minimal eddy current coil/eddy_no.png', figure=f, magnification=4)
+        mlab.savefig(SAVE_PATH+'eddy_no.png', figure=f, magnification=4)
         mlab.close()
 
 ####################################################################
@@ -369,7 +370,7 @@ if PLOT and SAVE_FIGURES:
 
     ax.vlines([1, 5, 10, 20], 1e-4, 0.5, alpha=0.1, linewidth=3, color='r')
 
-    plt.savefig('/l/bfieldtools/examples/publication_software/Minimal eddy current coil/eddy_transient.pdf')
+    plt.savefig(SAVE_PATH+'eddy_transient.pdf')
 
 #
 #    fig, ax = plt.subplots(1, 1, sharex=True, figsize=(3, 4))
@@ -426,6 +427,7 @@ if PLOT and SAVE_FIGURES:
         surface1 = engine.scenes[0].children[1].children[0].children[0].children[0]
         surface1.enable_contours = True
         surface1.contour.number_of_contours = 20
+        surface1.actor.property.line_width = 10.0
 
         f.scene.camera.parallel_projection=1
         f.scene.isometric_view()
@@ -440,7 +442,7 @@ if PLOT and SAVE_FIGURES:
 
         f.scene.light_manager.light_mode = "raymond"
 
-        mlab.savefig('/l/bfieldtools/examples/publication_software/Minimal eddy current coil/shield_eddy_yes_time_%.3f.png'%time[plot_time_idx], figure=f, magnification=2)
+        mlab.savefig(SAVE_PATH+'shield_eddy_yes_time_%.3f.png'%time[plot_time_idx], figure=f, magnification=2)
         mlab.close()
 
     for plot_time_idx in [2, 10, 20, 40]:
@@ -462,6 +464,7 @@ if PLOT and SAVE_FIGURES:
         surface1 = engine.scenes[0].children[1].children[0].children[0].children[0]
         surface1.enable_contours = True
         surface1.contour.number_of_contours = 20
+        surface1.actor.property.line_width = 10.0
 
         f.scene.camera.parallel_projection=1
         f.scene.isometric_view()
@@ -475,5 +478,5 @@ if PLOT and SAVE_FIGURES:
 
         f.scene.light_manager.light_mode = "raymond"
 
-        mlab.savefig('/l/bfieldtools/examples/publication_software/Minimal eddy current coil/shield_eddy_no_time_%.3f.png'%time[plot_time_idx], figure=f, magnification=2)
+        mlab.savefig(SAVE_PATH+'shield_eddy_no_time_%.3f.png'%time[plot_time_idx], figure=f, magnification=2)
         mlab.close()
