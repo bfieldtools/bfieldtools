@@ -1,8 +1,7 @@
 
 
-from bfieldtools import mesh_class
+from bfieldtools import conductor
 from bfieldtools.utils import load_example_mesh
-import pkg_resources
 
 import pytest
 
@@ -16,7 +15,7 @@ def _fake_conductor(mesh_name='10x10_plane', **kwargs):
     """
     Creates an example 'fake' Conductor object
     """
-    return mesh_class.Conductor(mesh_obj=load_example_mesh(mesh_name), **kwargs)
+    return conductor.Conductor(mesh_obj=load_example_mesh(mesh_name), **kwargs)
 
 
 def _fake_streamfunction(vals=None, **kwargs):
@@ -24,10 +23,10 @@ def _fake_streamfunction(vals=None, **kwargs):
     Creates an example 'fake' StreamFunction object
     """
     if vals:
-        return mesh_class.StreamFunction(vals, _fake_conductor())
+        return conductor.StreamFunction(vals, _fake_conductor())
     else:
         
-        return mesh_class.StreamFunction()
+        return conductor.StreamFunction()
 
 
 def test_conductor_creation():
@@ -61,9 +60,9 @@ def test_streamfunction_creation():
     Test creating StreamFunctions with different bases
     """
     
-    mesh_class.StreamFunction(np.zeros((10,)), _fake_conductor(basis_name='suh', N_suh=10))
-    mesh_class.StreamFunction(np.zeros((584,)), _fake_conductor(basis_name='inner'))
-    mesh_class.StreamFunction(np.zeros((676,)), _fake_conductor(basis_name='vertex'))
+    conductor.StreamFunction(np.zeros((10,)), _fake_conductor(basis_name='suh', N_suh=10))
+    conductor.StreamFunction(np.zeros((584,)), _fake_conductor(basis_name='inner'))
+    conductor.StreamFunction(np.zeros((676,)), _fake_conductor(basis_name='vertex'))
     
     
     
