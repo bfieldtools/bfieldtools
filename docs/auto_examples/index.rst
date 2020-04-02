@@ -13,13 +13,13 @@ Below are a number of examples meant to familiarize you with the functionality o
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Spherical harmonics test">
+    <div class="sphx-glr-thumbcontainer" tooltip="Spherical harmonics test, remove?">
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_sph_test_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_sph_test_thumb.png
 
-        :ref:`sphx_glr_auto_examples_sph_test.py`
+     :ref:`sphx_glr_auto_examples_sph_test.py`
 
 .. raw:: html
 
@@ -37,9 +37,9 @@ Below are a number of examples meant to familiarize you with the functionality o
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_gradient_example_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_gradient_example_thumb.png
 
-        :ref:`sphx_glr_auto_examples_gradient_example.py`
+     :ref:`sphx_glr_auto_examples_gradient_example.py`
 
 .. raw:: html
 
@@ -53,13 +53,13 @@ Below are a number of examples meant to familiarize you with the functionality o
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip=" ">
+    <div class="sphx-glr-thumbcontainer" tooltip="Computation time for shiftinvert eigenvalue decomp, remove?">
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_time_eigenvalue_decomp_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_time_eigenvalue_decomp_thumb.png
 
-        :ref:`sphx_glr_auto_examples_time_eigenvalue_decomp.py`
+     :ref:`sphx_glr_auto_examples_time_eigenvalue_decomp.py`
 
 .. raw:: html
 
@@ -77,9 +77,9 @@ Below are a number of examples meant to familiarize you with the functionality o
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_interpolate_example_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_interpolate_example_thumb.png
 
-        :ref:`sphx_glr_auto_examples_interpolate_example.py`
+     :ref:`sphx_glr_auto_examples_interpolate_example.py`
 
 .. raw:: html
 
@@ -93,13 +93,13 @@ Below are a number of examples meant to familiarize you with the functionality o
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This script generates the bfieldtools logo ">
+    <div class="sphx-glr-thumbcontainer" tooltip="This script generates the bfieldtools logo">
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_logo_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_logo_thumb.png
 
-        :ref:`sphx_glr_auto_examples_logo.py`
+     :ref:`sphx_glr_auto_examples_logo.py`
 
 .. raw:: html
 
@@ -112,7 +112,7 @@ Below are a number of examples meant to familiarize you with the functionality o
    /auto_examples/logo
 .. raw:: html
 
-    <div style='clear:both'></div>
+    <div class="sphx-glr-clear"></div>
 
 
 
@@ -131,9 +131,9 @@ Examples related to coil design.
 
 .. only:: html
 
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_spherical_harmonics_coil_design_thumb.png
+ .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_spherical_harmonics_coil_design_thumb.png
 
-        :ref:`sphx_glr_auto_examples_coil_design_spherical_harmonics_coil_design.py`
+     :ref:`sphx_glr_auto_examples_coil_design_spherical_harmonics_coil_design.py`
 
 .. raw:: html
 
@@ -151,9 +151,9 @@ Examples related to coil design.
 
 .. only:: html
 
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_coil_with_holes_thumb.png
+ .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_coil_with_holes_thumb.png
 
-        :ref:`sphx_glr_auto_examples_coil_design_coil_with_holes.py`
+     :ref:`sphx_glr_auto_examples_coil_design_coil_with_holes.py`
 
 .. raw:: html
 
@@ -167,13 +167,13 @@ Examples related to coil design.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a gradient coil designed on the surface of a MEG system helmet ">
+    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a gradient coil designed on the surface of a MEG system helmet">
 
 .. only:: html
 
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_head_gradient_coil_design_thumb.png
+ .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_head_gradient_coil_design_thumb.png
 
-        :ref:`sphx_glr_auto_examples_coil_design_head_gradient_coil_design.py`
+     :ref:`sphx_glr_auto_examples_coil_design_head_gradient_coil_design.py`
 
 .. raw:: html
 
@@ -191,9 +191,9 @@ Examples related to coil design.
 
 .. only:: html
 
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_mamba_coil_design_thumb.png
+ .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_mamba_coil_design_thumb.png
 
-        :ref:`sphx_glr_auto_examples_coil_design_mamba_coil_design.py`
+     :ref:`sphx_glr_auto_examples_coil_design_mamba_coil_design.py`
 
 .. raw:: html
 
@@ -211,9 +211,9 @@ Examples related to coil design.
 
 .. only:: html
 
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_spherical_harmonics_biplanar_coil_design_thumb.png
+ .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_high_order_spherical_harmonics_coil_thumb.png
 
-        :ref:`sphx_glr_auto_examples_coil_design_spherical_harmonics_biplanar_coil_design.py`
+     :ref:`sphx_glr_auto_examples_coil_design_high_order_spherical_harmonics_coil.py`
 
 .. raw:: html
 
@@ -223,7 +223,7 @@ Examples related to coil design.
 .. toctree::
    :hidden:
 
-   /auto_examples/coil_design/spherical_harmonics_biplanar_coil_design
+   /auto_examples/coil_design/high_order_spherical_harmonics_coil
 
 .. raw:: html
 
@@ -231,9 +231,9 @@ Examples related to coil design.
 
 .. only:: html
 
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_self-shielded_biplanar_coil_design_thumb.png
+ .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_self-shielded_biplanar_coil_design_thumb.png
 
-        :ref:`sphx_glr_auto_examples_coil_design_self-shielded_biplanar_coil_design.py`
+     :ref:`sphx_glr_auto_examples_coil_design_self-shielded_biplanar_coil_design.py`
 
 .. raw:: html
 
@@ -251,9 +251,9 @@ Examples related to coil design.
 
 .. only:: html
 
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_biplanar_coil_design_thumb.png
+ .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_biplanar_coil_design_thumb.png
 
-        :ref:`sphx_glr_auto_examples_coil_design_biplanar_coil_design.py`
+     :ref:`sphx_glr_auto_examples_coil_design_biplanar_coil_design.py`
 
 .. raw:: html
 
@@ -271,9 +271,9 @@ Examples related to coil design.
 
 .. only:: html
 
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_magnetically_shielded_biplanar_coil_design_thumb.png
+ .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_magnetically_shielded_biplanar_coil_design_thumb.png
 
-        :ref:`sphx_glr_auto_examples_coil_design_magnetically_shielded_biplanar_coil_design.py`
+     :ref:`sphx_glr_auto_examples_coil_design_magnetically_shielded_biplanar_coil_design.py`
 
 .. raw:: html
 
@@ -291,9 +291,9 @@ Examples related to coil design.
 
 .. only:: html
 
-    .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_minimal_eddy_current_cylindrical_coil_design_thumb.png
+ .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_minimal_eddy_current_cylindrical_coil_design_thumb.png
 
-        :ref:`sphx_glr_auto_examples_coil_design_minimal_eddy_current_cylindrical_coil_design.py`
+     :ref:`sphx_glr_auto_examples_coil_design_minimal_eddy_current_cylindrical_coil_design.py`
 
 .. raw:: html
 
@@ -306,7 +306,7 @@ Examples related to coil design.
    /auto_examples/coil_design/minimal_eddy_current_cylindrical_coil_design
 .. raw:: html
 
-    <div style='clear:both'></div>
+    <div class="sphx-glr-clear"></div>
 
 
 
@@ -319,7 +319,7 @@ Example scripts to reproduce the results of the bfieldtools software paper.
 
 .. raw:: html
 
-    <div style='clear:both'></div>
+    <div class="sphx-glr-clear"></div>
 
 
 
@@ -337,9 +337,9 @@ Examples related to the computation of thermal noise generated by thin conductiv
 
 .. only:: html
 
-    .. figure:: /auto_examples/thermal_noise/images/thumb/sphx_glr_discs_validation_thumb.png
+ .. figure:: /auto_examples/thermal_noise/images/thumb/sphx_glr_discs_validation_thumb.png
 
-        :ref:`sphx_glr_auto_examples_thermal_noise_discs_validation.py`
+     :ref:`sphx_glr_auto_examples_thermal_noise_discs_validation.py`
 
 .. raw:: html
 
@@ -357,9 +357,9 @@ Examples related to the computation of thermal noise generated by thin conductiv
 
 .. only:: html
 
-    .. figure:: /auto_examples/thermal_noise/images/thumb/sphx_glr_thermal_noise_platinum_heater_thumb.png
+ .. figure:: /auto_examples/thermal_noise/images/thumb/sphx_glr_thermal_noise_platinum_heater_thumb.png
 
-        :ref:`sphx_glr_auto_examples_thermal_noise_thermal_noise_platinum_heater.py`
+     :ref:`sphx_glr_auto_examples_thermal_noise_thermal_noise_platinum_heater.py`
 
 .. raw:: html
 
@@ -377,9 +377,9 @@ Examples related to the computation of thermal noise generated by thin conductiv
 
 .. only:: html
 
-    .. figure:: /auto_examples/thermal_noise/images/thumb/sphx_glr_thermal_noise_simulation_thumb.png
+ .. figure:: /auto_examples/thermal_noise/images/thumb/sphx_glr_thermal_noise_simulation_thumb.png
 
-        :ref:`sphx_glr_auto_examples_thermal_noise_thermal_noise_simulation.py`
+     :ref:`sphx_glr_auto_examples_thermal_noise_thermal_noise_simulation.py`
 
 .. raw:: html
 
@@ -392,7 +392,7 @@ Examples related to the computation of thermal noise generated by thin conductiv
    /auto_examples/thermal_noise/thermal_noise_simulation
 .. raw:: html
 
-    <div style='clear:both'></div>
+    <div class="sphx-glr-clear"></div>
 
 
 
@@ -406,13 +406,13 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Spherical harmonics B">
+    <div class="sphx-glr-thumbcontainer" tooltip="Spherical harmonics B-field computation validation">
 
 .. only:: html
 
-    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_spherical_harmonics_bfield_validation_thumb.png
+ .. figure:: /auto_examples/validation/images/thumb/sphx_glr_spherical_harmonics_bfield_validation_thumb.png
 
-        :ref:`sphx_glr_auto_examples_validation_spherical_harmonics_bfield_validation.py`
+     :ref:`sphx_glr_auto_examples_validation_spherical_harmonics_bfield_validation.py`
 
 .. raw:: html
 
@@ -430,9 +430,9 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. only:: html
 
-    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_line_charge_potential_thumb.png
+ .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_line_charge_potential_thumb.png
 
-        :ref:`sphx_glr_auto_examples_validation_validate_line_charge_potential.py`
+     :ref:`sphx_glr_auto_examples_validation_validate_line_charge_potential.py`
 
 .. raw:: html
 
@@ -450,9 +450,9 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. only:: html
 
-    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_uniform_triangle_thumb.png
+ .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_uniform_triangle_thumb.png
 
-        :ref:`sphx_glr_auto_examples_validation_validate_uniform_triangle.py`
+     :ref:`sphx_glr_auto_examples_validation_validate_uniform_triangle.py`
 
 .. raw:: html
 
@@ -470,9 +470,9 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. only:: html
 
-    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_computation_time_thumb.png
+ .. figure:: /auto_examples/validation/images/thumb/sphx_glr_computation_time_thumb.png
 
-        :ref:`sphx_glr_auto_examples_validation_computation_time.py`
+     :ref:`sphx_glr_auto_examples_validation_computation_time.py`
 
 .. raw:: html
 
@@ -486,33 +486,13 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Test and validation of potential of linearly distributed dipolar density">
+    <div class="sphx-glr-thumbcontainer" tooltip="Analytic B-field computation">
 
 .. only:: html
 
-    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_linear_dipole_thumb.png
+ .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_bfield_analytic_thumb.png
 
-        :ref:`sphx_glr_auto_examples_validation_validate_linear_dipole.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/validation/validate_linear_dipole
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="Analytic B">
-
-.. only:: html
-
-    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_bfield_analytic_thumb.png
-
-        :ref:`sphx_glr_auto_examples_validation_validate_bfield_analytic.py`
+     :ref:`sphx_glr_auto_examples_validation_validate_bfield_analytic.py`
 
 .. raw:: html
 
@@ -526,13 +506,33 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="One">
+    <div class="sphx-glr-thumbcontainer" tooltip="Test and validation of potential of linearly distributed dipolar density">
 
 .. only:: html
 
-    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_one_element_thumb.png
+ .. figure:: /auto_examples/validation/images/thumb/sphx_glr_validate_linear_dipole_thumb.png
 
-        :ref:`sphx_glr_auto_examples_validation_one_element.py`
+     :ref:`sphx_glr_auto_examples_validation_validate_linear_dipole.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/validation/validate_linear_dipole
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="One-element validation">
+
+.. only:: html
+
+ .. figure:: /auto_examples/validation/images/thumb/sphx_glr_one_element_thumb.png
+
+     :ref:`sphx_glr_auto_examples_validation_one_element.py`
 
 .. raw:: html
 
@@ -550,9 +550,9 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. only:: html
 
-    .. figure:: /auto_examples/validation/images/thumb/sphx_glr_test_integrals_thumb.png
+ .. figure:: /auto_examples/validation/images/thumb/sphx_glr_test_integrals_thumb.png
 
-        :ref:`sphx_glr_auto_examples_validation_test_integrals.py`
+     :ref:`sphx_glr_auto_examples_validation_test_integrals.py`
 
 .. raw:: html
 
@@ -565,7 +565,7 @@ Example scripts validating the core functionality of `bfieldtools`
    /auto_examples/validation/test_integrals
 .. raw:: html
 
-    <div style='clear:both'></div>
+    <div class="sphx-glr-clear"></div>
 
 
 
@@ -575,15 +575,15 @@ Example scripts validating the core functionality of `bfieldtools`
     :class: sphx-glr-footer-gallery
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
-    :download:`Download all examples in Python source code: auto_examples_python.zip <//l/bfieldtools/docs/auto_examples/auto_examples_python.zip>`
+    :download:`Download all examples in Python source code: auto_examples_python.zip </C:/Users/Rasmus Zetter/Documents/Aalto/bfieldtools/docs/auto_examples/auto_examples_python.zip>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
-    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//l/bfieldtools/docs/auto_examples/auto_examples_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip </C:/Users/Rasmus Zetter/Documents/Aalto/bfieldtools/docs/auto_examples/auto_examples_jupyter.zip>`
 
 
 .. only:: html

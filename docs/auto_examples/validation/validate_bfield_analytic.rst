@@ -1,52 +1,17 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_validation_validate_bfield_analytic.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_validation_validate_bfield_analytic.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_validation_validate_bfield_analytic.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_validation_validate_bfield_analytic.py:
 
 
 Analytic B-field computation
 ==================================================
 Validation of analytic mesh operator for magnetic field computation.
-
-
-
-.. image:: /auto_examples/validation/images/sphx_glr_validate_bfield_analytic_001.png
-    :class: sphx-glr-single-img
-
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image:: /auto_examples/validation/images/sphx_glr_validate_bfield_analytic_002.png
-            :class: sphx-glr-multi-img
-
-    *
-
-      .. image:: /auto_examples/validation/images/sphx_glr_validate_bfield_analytic_003.png
-            :class: sphx-glr-multi-img
-
-
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.17 seconds.
-    Computing magnetic field coupling matrix analytically, 676 vertices by 676 target points... took 0.56 seconds.
-    Relative RMS error 0.005229286958362662
-    Computing magnetic field coupling matrix, 4701 vertices by 100 target points... took 0.29 seconds.
-    Computing magnetic field coupling matrix analytically, 4701 vertices by 100 target points... took 0.62 seconds.
-
-
-
-
-
-|
 
 
 .. code-block:: default
@@ -59,7 +24,7 @@ Validation of analytic mesh operator for magnetic field computation.
 
     from bfieldtools.mesh_calculus import gradient
     from bfieldtools.mesh_magnetics import magnetic_field_coupling, magnetic_field_coupling_analytic
-    from bfieldtools.mesh_class import Conductor
+    from bfieldtools.conductor import Conductor
     import pkg_resources
 
 
@@ -92,8 +57,31 @@ Validation of analytic mesh operator for magnetic field computation.
 
     print('Relative RMS error',  np.sqrt(np.mean((B1-B0)**2))/np.sqrt(np.mean((B0)**2)))
 
-    #%% Test against analytic formula
-    #Load simple plane mesh that is centered on the origin
+
+
+
+.. image:: /auto_examples/validation/images/sphx_glr_validate_bfield_analytic_001.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.20 seconds.
+    Computing magnetic field coupling matrix analytically, 676 vertices by 676 target points... took 0.77 seconds.
+    Relative RMS error 0.005229286958362796
+
+
+
+
+Load simple plane mesh that is centered on the origin
+
+
+.. code-block:: default
+
     file_obj = pkg_resources.resource_filename('bfieldtools',
                         'example_meshes/unit_disc.stl')
     discmesh = trimesh.load(file_obj, process=True)
@@ -128,11 +116,31 @@ Validation of analytic mesh operator for magnetic field computation.
 
 
 
+
+.. image:: /auto_examples/validation/images/sphx_glr_validate_bfield_analytic_002.png
+    :class: sphx-glr-single-img
+
+.. image:: /auto_examples/validation/images/sphx_glr_validate_bfield_analytic_003.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Computing magnetic field coupling matrix, 4701 vertices by 100 target points... took 0.38 seconds.
+    Computing magnetic field coupling matrix analytically, 4701 vertices by 100 target points... took 0.83 seconds.
+
+    Text(0, 0.5, 'B [T]')
+
+
+
+
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.621 seconds)
-
-**Estimated memory usage:**  189 MB
+   **Total running time of the script:** ( 0 minutes  4.414 seconds)
 
 
 .. _sphx_glr_download_auto_examples_validation_validate_bfield_analytic.py:
@@ -145,13 +153,13 @@ Validation of analytic mesh operator for magnetic field computation.
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: validate_bfield_analytic.py <validate_bfield_analytic.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: validate_bfield_analytic.ipynb <validate_bfield_analytic.ipynb>`
 

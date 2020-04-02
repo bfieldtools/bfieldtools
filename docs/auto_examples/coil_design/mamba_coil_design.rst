@@ -1,10 +1,12 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_coil_design_mamba_coil_design.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_coil_design_mamba_coil_design.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_coil_design_mamba_coil_design.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_coil_design_mamba_coil_design.py:
 
 
 MAMBA coil
@@ -12,7 +14,6 @@ MAMBA coil
 
 Compact example of a biplanar coil producing homogeneous field in a number of target
 regions arranged in a grid.
-
 
 
 .. code-block:: default
@@ -24,7 +25,7 @@ regions arranged in a grid.
     import trimesh
 
 
-    from bfieldtools.mesh_class import Conductor
+    from bfieldtools.conductor import Conductor
     from bfieldtools.coil_optimize import optimize_streamfunctions
     from bfieldtools.contour import scalar_contour
     from bfieldtools.viz import plot_3d_current_loops
@@ -60,6 +61,7 @@ regions arranged in a grid.
 
     #Create mesh class object
     coil = Conductor(verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True)
+
 
 
 
@@ -123,6 +125,7 @@ Set up target and stray field points. Here, the target points are on a planar
 
 
 
+
 Plot target points and mesh
 
 
@@ -152,6 +155,15 @@ Plot target points and mesh
             :class: sphx-glr-multi-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <mayavi.modules.surface.Surface object at 0x000001B5C4CB2258>
+
 
 
 Compute coupling matrix that is used to compute the generated magnetic field, create field specification
@@ -173,7 +185,8 @@ Compute coupling matrix that is used to compute the generated magnetic field, cr
 
  .. code-block:: none
 
-    Computing magnetic field coupling matrix, 3184 vertices by 512 target points... took 0.77 seconds.
+    Computing magnetic field coupling matrix, 3184 vertices by 512 target points... took 0.92 seconds.
+
 
 
 
@@ -206,9 +219,9 @@ Run QP solver
     Computing the inductance matrix...
     Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
     Estimating 34964 MiB required for 3184 by 3184 vertices...
-    Computing inductance matrix in 100 chunks (7721 MiB memory free), when approx_far=True using more chunks is faster...
-    Computing potential matrix
-    Inductance matrix computation took 51.41 seconds.
+    Computing inductance matrix in 160 chunks (4872 MiB memory free), when approx_far=True using more chunks is faster...
+    Computing 1/r-potential matrix
+    Inductance matrix computation took 59.93 seconds.
     Pre-existing problem not passed, creating...
     Passing parameters to problem...
     Passing problem to solver...
@@ -220,7 +233,7 @@ Run QP solver
       Type                   : CONIC (conic optimization problem)
       Constraints            : 5970            
       Cones                  : 1               
-      Scalar variables       : 6083            
+      Scalar variables       : 5795            
       Matrix variables       : 0               
       Integer variables      : 0               
 
@@ -231,7 +244,7 @@ Run QP solver
       Type                   : CONIC (conic optimization problem)
       Constraints            : 5970            
       Cones                  : 1               
-      Scalar variables       : 6083            
+      Scalar variables       : 5795            
       Matrix variables       : 0               
       Integer variables      : 0               
 
@@ -241,32 +254,35 @@ Run QP solver
     Optimizer  - Cones                  : 1
     Optimizer  - Scalar variables       : 5970              conic                  : 2898            
     Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
-    Factor     - setup time             : 1.56              dense det. time        : 0.00            
-    Factor     - ML order time          : 0.29              GP order time          : 0.00            
+    Factor     - setup time             : 0.97              dense det. time        : 0.00            
+    Factor     - ML order time          : 0.17              GP order time          : 0.00            
     Factor     - nonzeros before factor : 4.20e+06          after factor           : 4.20e+06        
     Factor     - dense dim.             : 0                 flops                  : 4.53e+10        
     ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
-    0   2.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  83.60 
-    1   9.3e+00  3.9e-01  3.8e-01  2.47e-01   8.986716880e+01   8.930318288e+01   3.9e-01  84.10 
-    2   5.8e+00  2.4e-01  2.4e-01  2.56e-01   1.459868334e+02   1.455890101e+02   2.4e-01  84.56 
-    3   3.1e+00  1.3e-01  1.2e-01  4.77e-01   2.464479906e+02   2.462403695e+02   1.3e-01  85.02 
-    4   5.2e-01  2.2e-02  8.7e-03  1.12e+00   3.761420355e+02   3.761145905e+02   2.2e-02  85.66 
-    5   9.5e-02  3.9e-03  7.0e-04  9.85e-01   4.218574067e+02   4.218530667e+02   3.9e-03  86.33 
-    6   1.5e-02  6.4e-04  5.1e-05  1.00e+00   4.302001154e+02   4.301996807e+02   6.4e-04  86.81 
-    7   3.3e-04  1.4e-05  1.6e-07  1.00e+00   4.325179742e+02   4.325179645e+02   1.4e-05  87.33 
-    8   6.5e-05  2.7e-06  1.4e-08  1.00e+00   4.325601843e+02   4.325601825e+02   2.7e-06  87.86 
-    9   2.4e-06  1.0e-07  2.2e-10  1.00e+00   4.325701464e+02   4.325701459e+02   1.0e-07  88.41 
-    10  1.2e-06  5.0e-08  4.3e-11  1.00e+00   4.325703387e+02   4.325703387e+02   5.0e-08  89.45 
-    11  1.1e-06  4.7e-08  5.1e-11  1.00e+00   4.325703508e+02   4.325703511e+02   4.7e-08  90.33 
-    12  3.6e-06  3.2e-09  6.4e-13  1.00e+00   4.325705314e+02   4.325705313e+02   4.2e-11  90.82 
-    Optimizer terminated. Time: 91.24   
+    0   5.1e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  110.84
+    1   2.3e+01  4.5e-01  4.3e-01  3.68e-01   9.097536404e+01   9.035380857e+01   4.5e-01  112.11
+    2   6.7e+00  1.3e-01  7.2e-02  6.98e-01   1.640403677e+02   1.638441069e+02   1.3e-01  113.41
+    3   2.9e+00  5.7e-02  2.5e-02  9.63e-01   1.756176942e+02   1.755420942e+02   5.7e-02  114.63
+    4   5.5e-02  1.1e-03  4.8e-05  1.13e+00   1.893885484e+02   1.893868913e+02   1.1e-03  115.97
+    5   1.6e-02  3.1e-04  9.1e-06  1.01e+00   1.894687206e+02   1.894683206e+02   3.1e-04  117.20
+    6   1.4e-03  2.7e-05  2.7e-07  1.00e+00   1.895439780e+02   1.895439508e+02   2.7e-05  118.48
+    7   1.9e-04  3.8e-06  1.4e-08  1.00e+00   1.895547446e+02   1.895547408e+02   3.8e-06  119.75
+    8   1.1e-04  2.1e-06  6.0e-09  1.00e+00   1.895555468e+02   1.895555446e+02   2.1e-06  121.14
+    9   7.5e-05  1.5e-06  3.5e-09  1.00e+00   1.895558422e+02   1.895558407e+02   1.5e-06  122.48
+    10  2.8e-05  5.6e-07  8.1e-10  1.00e+00   1.895562935e+02   1.895562930e+02   5.6e-07  123.78
+    11  4.0e-06  8.0e-08  3.7e-11  1.00e+00   1.895565244e+02   1.895565243e+02   8.0e-08  125.06
+    12  2.0e-06  4.0e-08  1.1e-11  1.00e+00   1.895565436e+02   1.895565435e+02   4.0e-08  126.55
+    13  1.0e-06  2.0e-08  5.3e-12  1.00e+00   1.895565533e+02   1.895565533e+02   2.0e-08  127.97
+    14  5.1e-07  1.0e-08  3.1e-12  1.00e+00   1.895565581e+02   1.895565582e+02   1.0e-08  129.44
+    Optimizer terminated. Time: 129.88  
 
 
     Interior-point solution summary
       Problem status  : PRIMAL_AND_DUAL_FEASIBLE
       Solution status : OPTIMAL
-      Primal.  obj: 4.3257053142e+02    nrm: 9e+02    Viol.  con: 2e-10    var: 0e+00    cones: 0e+00  
-      Dual.    obj: 4.3257053132e+02    nrm: 5e+02    Viol.  con: 0e+00    var: 1e-09    cones: 0e+00  
+      Primal.  obj: 1.8955655815e+02    nrm: 4e+02    Viol.  con: 3e-08    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 1.8955655819e+02    nrm: 1e+02    Viol.  con: 1e-07    var: 2e-10    cones: 0e+00  
+
 
 
 
@@ -299,9 +315,10 @@ Plot coil windings and target points
 
 
 
+
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 3 minutes  48.926 seconds)
+   **Total running time of the script:** ( 4 minutes  5.728 seconds)
 
 
 .. _sphx_glr_download_auto_examples_coil_design_mamba_coil_design.py:
@@ -314,13 +331,13 @@ Plot coil windings and target points
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: mamba_coil_design.py <mamba_coil_design.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: mamba_coil_design.ipynb <mamba_coil_design.ipynb>`
 

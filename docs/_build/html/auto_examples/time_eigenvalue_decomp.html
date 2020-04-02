@@ -7,11 +7,13 @@
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -104,7 +106,7 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-time-eigenvalue-decomp-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-time-eigenvalue-decomp-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="computation-time-for-shiftinvert-eigenvalue-decomp-remove">
 <span id="sphx-glr-auto-examples-time-eigenvalue-decomp-py"></span><h1>Computation time for shiftinvert eigenvalue decomp, remove?<a class="headerlink" href="#computation-time-for-shiftinvert-eigenvalue-decomp-remove" title="Permalink to this headline">¶</a></h1>
@@ -122,14 +124,24 @@
 </ul>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Calculating surface harmonics expansion...
+Computing the laplacian matrix...
+Computing the mass matrix...
+C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\time_eigenvalue_decomp.py:42: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+  t0=clock()
 Calculating surface harmonics expansion...
-Time with shift invert: 1.618588
+C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\time_eigenvalue_decomp.py:44: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+  print(&#39;Time with shift invert:&#39;, clock()-t0)
+Time with shift invert: 0.14910089999999965
 0 0
 1 0
 2 0
 3 0
+C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\time_eigenvalue_decomp.py:49: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+  t0=clock()
 Calculating surface harmonics expansion...
-Time without shift invert: 6.142037
+C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\time_eigenvalue_decomp.py:51: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+  print(&#39;Time without shift invert:&#39;, clock()-t0)
+Time without shift invert: 0.5939591999999987
 0 0
 1 0
 2 0
@@ -153,6 +165,8 @@ Time without shift invert: 6.142037
 2 3
 3 3
 4 3
+
+[&lt;matplotlib.lines.Line2D object at 0x00000253FEC805F8&gt;]
 </pre></div>
 </div>
 <div class="line-block">
@@ -188,7 +202,7 @@ Time without shift invert: 6.142037
 <span class="n">boundary</span><span class="p">,</span> <span class="n">inner_verts</span> <span class="o">=</span> <span class="n">find_mesh_boundaries</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
 
 <span class="n">closed</span><span class="o">=</span><span class="kc">False</span>
-<span class="n">basis</span> <span class="o">=</span> <span class="n">SuhBasis</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">inner_vertices</span><span class="o">=</span><span class="n">inner_verts</span><span class="p">)</span>
+<span class="n">basis</span> <span class="o">=</span> <span class="n">SuhBasis</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
 <span class="n">basis</span><span class="o">.</span><span class="n">Nc</span> <span class="o">=</span> <span class="mi">100</span>
 <span class="n">t0</span><span class="o">=</span><span class="n">clock</span><span class="p">()</span>
@@ -210,14 +224,13 @@ Time without shift invert: 6.142037
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">e2</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.460 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  191 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  9.632 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-time-eigenvalue-decomp-py">
-<div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/e8f5562b9bf1d77d3db6e86c40b8a259/time_eigenvalue_decomp.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">time_eigenvalue_decomp.py</span></code></a></p>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/18b83403b1e766f6914f3c8bdc175dfc/time_eigenvalue_decomp.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">time_eigenvalue_decomp.py</span></code></a></p>
 </div>
-<div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/288c8bff373f74a9455829158aa342e9/time_eigenvalue_decomp.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">time_eigenvalue_decomp.ipynb</span></code></a></p>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/ba86f803e9f78fbf7fad83dbab1db8b6/time_eigenvalue_decomp.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">time_eigenvalue_decomp.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -236,7 +249,7 @@ Time without shift invert: 6.142037
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
     </p>
   </div>
 </footer>

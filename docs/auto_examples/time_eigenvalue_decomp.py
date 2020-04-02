@@ -36,7 +36,7 @@ mesh.apply_transform(t)
 boundary, inner_verts = find_mesh_boundaries(mesh)
 
 closed=False
-basis = SuhBasis(mesh, 1, inner_vertices=inner_verts)
+basis = SuhBasis(mesh, 1)
 
 basis.Nc = 100
 t0=clock()

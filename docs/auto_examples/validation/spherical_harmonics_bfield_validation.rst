@@ -1,17 +1,16 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_validation_spherical_harmonics_bfield_validation.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_validation_spherical_harmonics_bfield_validation.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_validation_spherical_harmonics_bfield_validation.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_validation_spherical_harmonics_bfield_validation.py:
 
 
 Spherical harmonics B-field computation validation
 ==================================================
-
-
-
 
 
 
@@ -37,8 +36,9 @@ Spherical harmonics B-field computation validation
     l = 10 computed
     l = 11 computed
     l = 12 computed
-    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.17 seconds.
-    Relative RMS error 0.6416322231111602
+    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.21 seconds.
+    Relative RMS error 0.641632257631014
+
 
 
 
@@ -55,7 +55,7 @@ Spherical harmonics B-field computation validation
     from mayavi import mlab
 
     from bfieldtools.mesh_magnetics import magnetic_field_coupling
-    from bfieldtools.mesh_class import Conductor
+    from bfieldtools.conductor import Conductor
 
     from bfieldtools.sphtools import compute_sphcoeffs_mesh
     from bfieldtools import sphtools
@@ -104,7 +104,7 @@ Spherical harmonics B-field computation validation
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  39.992 seconds)
+   **Total running time of the script:** ( 0 minutes  51.704 seconds)
 
 
 .. _sphx_glr_download_auto_examples_validation_spherical_harmonics_bfield_validation.py:
@@ -117,13 +117,13 @@ Spherical harmonics B-field computation validation
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: spherical_harmonics_bfield_validation.py <spherical_harmonics_bfield_validation.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: spherical_harmonics_bfield_validation.ipynb <spherical_harmonics_bfield_validation.ipynb>`
 

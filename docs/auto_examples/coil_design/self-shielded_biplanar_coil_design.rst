@@ -1,10 +1,12 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_coil_design_self-shielded_biplanar_coil_design.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_coil_design_self-shielded_biplanar_coil_design.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_coil_design_self-shielded_biplanar_coil_design.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_coil_design_self-shielded_biplanar_coil_design.py:
 
 
 Analytical self-shielded biplanar coil design
@@ -29,7 +31,7 @@ and the geometry.
     from mayavi import mlab
     import trimesh
 
-    from bfieldtools.mesh_class import Conductor, StreamFunction
+    from bfieldtools.conductor import Conductor, StreamFunction
     from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic, scalar_potential_coupling
     from bfieldtools.contour import scalar_contour
     from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
@@ -76,6 +78,7 @@ and the geometry.
 
 
 
+
 Plot geometry
 
 
@@ -92,6 +95,15 @@ Plot geometry
 .. image:: /auto_examples/coil_design/images/sphx_glr_self-shielded_biplanar_coil_design_001.png
     :class: sphx-glr-single-img
 
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <mayavi.modules.surface.Surface object at 0x00000192FD83A1A8>
 
 
 
@@ -126,17 +138,17 @@ Compute inductances and coupling
     Computing the inductance matrix...
     Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
     Estimating 34964 MiB required for 3184 by 3184 vertices...
-    Computing inductance matrix in 80 chunks (11499 MiB memory free), when approx_far=True using more chunks is faster...
+    Computing inductance matrix in 80 chunks (9151 MiB memory free), when approx_far=True using more chunks is faster...
     Computing 1/r-potential matrix
-    Inductance matrix computation took 38.97 seconds.
+    Inductance matrix computation took 51.80 seconds.
     Computing the inductance matrix...
     Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
     Estimating 34964 MiB required for 3184 by 3184 vertices...
-    Computing inductance matrix in 80 chunks (11289 MiB memory free), when approx_far=True using more chunks is faster...
+    Computing inductance matrix in 80 chunks (9013 MiB memory free), when approx_far=True using more chunks is faster...
     Computing 1/r-potential matrix
-    Inductance matrix computation took 39.28 seconds.
+    Inductance matrix computation took 51.73 seconds.
     Estimating 34964 MiB required for 3184 by 3184 vertices...
-    Computing inductance matrix in 80 chunks (11177 MiB memory free), when approx_far=True using more chunks is faster...
+    Computing inductance matrix in 80 chunks (8872 MiB memory free), when approx_far=True using more chunks is faster...
     Computing 1/r-potential matrix
     Computing coupling matrices
     l = 1 computed
@@ -148,6 +160,7 @@ Compute inductances and coupling
     l = 2 computed
     l = 3 computed
     l = 4 computed
+
 
 
 
@@ -164,6 +177,7 @@ Precalculations for the solution
     #Regularization
     from scipy.linalg import eigvalsh
     ssmax = eigvalsh(C.T @ C, M, eigvals=[M.shape[1]-1, M.shape[1]-1])
+
 
 
 
@@ -195,6 +209,7 @@ Specify spherical harmonic and calculate corresponding shielded field
     #s.enable_contours=True
     #s = mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces, scalars=I2)
     #s.enable_contours=True
+
 
 
 
@@ -238,10 +253,11 @@ Specify spherical harmonic and calculate corresponding shielded field
 
  .. code-block:: none
 
-    Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 24.04 seconds.
-    Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 23.25 seconds.
-    Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 106.70 seconds.
-    Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 106.34 seconds.
+    Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 29.69 seconds.
+    Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 29.43 seconds.
+    Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 264.12 seconds.
+    Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 137.45 seconds.
+
 
 
 
@@ -305,6 +321,15 @@ Now, plot the field streamlines and scalar potential
     :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    ([], <a list of 0 Text yticklabel objects>)
+
 
 
 Do a quick 3D plot
@@ -324,14 +349,21 @@ Do a quick 3D plot
     :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <mayavi.modules.surface.Surface object at 0x0000019282186780>
+
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 11 minutes  54.460 seconds)
-
-**Estimated memory usage:**  11658 MB
+   **Total running time of the script:** ( 10 minutes  33.413 seconds)
 
 
 .. _sphx_glr_download_auto_examples_coil_design_self-shielded_biplanar_coil_design.py:
@@ -344,13 +376,13 @@ Do a quick 3D plot
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: self-shielded_biplanar_coil_design.py <self-shielded_biplanar_coil_design.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: self-shielded_biplanar_coil_design.ipynb <self-shielded_biplanar_coil_design.ipynb>`
 

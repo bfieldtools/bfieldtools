@@ -1,10 +1,12 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_coil_design_coil_with_holes.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_coil_design_coil_with_holes.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_coil_design_coil_with_holes.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_coil_design_coil_with_holes.py:
 
 
 Coil with interior holes
@@ -14,7 +16,6 @@ Example showing a basic biplanar coil producing homogeneous field in a target
 region between the two coil planes. The coil planes have holes in them,
 
 
-
 .. code-block:: default
 
 
@@ -22,7 +23,7 @@ region between the two coil planes. The coil planes have holes in them,
     from mayavi import mlab
     import trimesh
 
-    from bfieldtools.mesh_class import Conductor
+    from bfieldtools.conductor import Conductor
     from bfieldtools.coil_optimize import optimize_streamfunctions
     from bfieldtools.contour import scalar_contour
     from bfieldtools.viz import plot_3d_current_loops
@@ -70,6 +71,7 @@ region between the two coil planes. The coil planes have holes in them,
 
 
 
+
 Set up target and stray field points
 
 
@@ -95,6 +97,7 @@ Set up target and stray field points
 
     #Turn cube into sphere by rejecting points "in the corners"
     target_points = target_points[np.linalg.norm(target_points, axis=1) < sidelength/2]  + center
+
 
 
 
@@ -136,7 +139,8 @@ Create bfield specifications used when optimizing the coil geometry
 
  .. code-block:: none
 
-    Computing magnetic field coupling matrix, 2772 vertices by 160 target points... took 0.23 seconds.
+    Computing magnetic field coupling matrix, 2772 vertices by 160 target points... took 0.29 seconds.
+
 
 
 
@@ -167,23 +171,21 @@ Run QP solver
     Computing the inductance matrix...
     Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
     Estimating 27549 MiB required for 2772 by 2772 vertices...
-    Computing inductance matrix in 60 chunks (10101 MiB memory free), when approx_far=True using more chunks is faster...
+    Computing inductance matrix in 80 chunks (8096 MiB memory free), when approx_far=True using more chunks is faster...
     Computing 1/r-potential matrix
-    Inductance matrix computation took 38.12 seconds.
+    Inductance matrix computation took 51.41 seconds.
     Pre-existing problem not passed, creating...
     Passing parameters to problem...
     Passing problem to solver...
-    /l/conda-envs/mne/lib/python3.6/site-packages/cvxpy/reductions/solvers/solving_chain.py:170: UserWarning: You are solving a parameterized problem that is not DPP. Because the problem is not DPP, subsequent solves will not be faster than the first one.
-      "You are solving a parameterized problem that is not DPP. "
 
 
     Problem
       Name                   :                 
       Objective sense        : min             
       Type                   : CONIC (conic optimization problem)
-      Constraints            : 3364            
+      Constraints            : 3732            
       Cones                  : 1               
-      Scalar variables       : 5177            
+      Scalar variables       : 5545            
       Matrix variables       : 0               
       Integer variables      : 0               
 
@@ -192,47 +194,43 @@ Run QP solver
       Name                   :                 
       Objective sense        : min             
       Type                   : CONIC (conic optimization problem)
-      Constraints            : 3364            
+      Constraints            : 3732            
       Cones                  : 1               
-      Scalar variables       : 5177            
+      Scalar variables       : 5545            
       Matrix variables       : 0               
       Integer variables      : 0               
 
     Optimizer  - threads                : 8               
     Optimizer  - solved problem         : the dual        
-    Optimizer  - Constraints            : 2403
+    Optimizer  - Constraints            : 2773
     Optimizer  - Cones                  : 1
-    Optimizer  - Scalar variables       : 3364              conic                  : 2404            
+    Optimizer  - Scalar variables       : 3732              conic                  : 2772            
     Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
-    Factor     - setup time             : 0.73              dense det. time        : 0.00            
+    Factor     - setup time             : 0.75              dense det. time        : 0.00            
     Factor     - ML order time          : 0.17              GP order time          : 0.00            
-    Factor     - nonzeros before factor : 2.89e+06          after factor           : 2.89e+06        
-    Factor     - dense dim.             : 0                 flops                  : 2.13e+10        
+    Factor     - nonzeros before factor : 3.85e+06          after factor           : 3.85e+06        
+    Factor     - dense dim.             : 0                 flops                  : 3.21e+10        
     ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
-    0   6.4e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  48.81 
-    1   3.6e+01  5.6e-01  1.5e+00  -6.20e-01  1.057039411e+01   1.024347864e+01   5.6e-01  49.08 
-    2   3.2e+01  5.1e-01  2.3e-01  8.02e-01   3.529324593e+01   3.427460253e+01   5.1e-01  49.33 
-    3   1.4e+01  2.1e-01  1.4e-01  -1.12e-01  7.399485968e+01   7.350916188e+01   2.1e-01  49.59 
-    4   6.7e+00  1.0e-01  1.3e-01  2.45e-01   7.816471843e+01   7.777292693e+01   1.0e-01  49.84 
-    5   2.1e+00  3.3e-02  2.9e-02  4.36e-01   1.951267296e+02   1.950674157e+02   3.3e-02  50.10 
-    6   7.0e-01  1.1e-02  7.2e-03  7.37e-01   3.333579805e+02   3.333701148e+02   1.1e-02  50.39 
-    7   3.0e-01  4.7e-03  2.3e-03  9.23e-01   4.014258016e+02   4.014427924e+02   4.7e-03  50.64 
-    8   3.2e-02  5.1e-04  1.0e-04  9.58e-01   4.507832760e+02   4.507887089e+02   5.1e-04  50.93 
-    9   4.2e-03  6.5e-05  4.7e-06  1.03e+00   4.570326404e+02   4.570333241e+02   6.5e-05  51.22 
-    10  1.1e-03  1.7e-05  6.3e-07  1.01e+00   4.577867972e+02   4.577869831e+02   1.7e-05  51.47 
-    11  9.6e-05  1.5e-06  1.6e-08  1.00e+00   4.580310515e+02   4.580310678e+02   1.5e-06  51.77 
-    12  1.5e-05  2.4e-07  1.0e-09  1.00e+00   4.580507069e+02   4.580507095e+02   2.4e-07  52.04 
-    13  3.0e-07  6.5e-08  3.7e-12  1.00e+00   4.580543203e+02   4.580543203e+02   4.7e-09  52.39 
-    14  1.6e-07  1.3e-08  1.1e-12  1.00e+00   4.580543787e+02   4.580543787e+02   9.3e-10  52.90 
-    15  6.6e-07  1.5e-09  9.9e-14  1.00e+00   4.580543915e+02   4.580543915e+02   1.1e-10  53.33 
-    Optimizer terminated. Time: 53.53   
+    0   3.2e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  82.08 
+    1   2.2e+01  6.9e-01  9.8e-01  3.92e-02   3.841820107e+00   3.041284579e+00   6.9e-01  83.88 
+    2   1.5e+01  4.8e-01  1.2e-01  2.65e-01   1.450577318e+01   1.394852532e+01   4.8e-01  84.78 
+    3   7.6e+00  2.4e-01  5.5e-02  2.40e+00   2.470331119e+01   2.455714325e+01   2.4e-01  85.70 
+    4   1.3e+00  4.0e-02  5.4e-03  1.73e+00   2.666954569e+01   2.665266899e+01   4.0e-02  86.69 
+    5   3.4e-01  1.1e-02  7.1e-04  1.08e+00   2.728123817e+01   2.727662870e+01   1.1e-02  87.72 
+    6   2.5e-01  7.9e-03  5.3e-04  6.43e-01   2.732205442e+01   2.731806651e+01   7.9e-03  88.59 
+    7   1.4e-01  4.5e-03  2.2e-04  7.70e-01   2.746821574e+01   2.746581829e+01   4.5e-03  89.47 
+    8   2.5e-02  7.8e-04  1.4e-05  5.94e-01   2.766833285e+01   2.766780009e+01   7.8e-04  90.39 
+    9   8.7e-05  2.7e-06  3.0e-09  9.43e-01   2.771597599e+01   2.771597409e+01   2.7e-06  91.28 
+    10  8.3e-07  3.5e-08  3.1e-12  1.00e+00   2.771616534e+01   2.771616532e+01   2.6e-08  93.97 
+    Optimizer terminated. Time: 94.23   
 
 
     Interior-point solution summary
       Problem status  : PRIMAL_AND_DUAL_FEASIBLE
       Solution status : OPTIMAL
-      Primal.  obj: 4.5805439148e+02    nrm: 9e+02    Viol.  con: 5e-10    var: 0e+00    cones: 0e+00  
-      Dual.    obj: 4.5805439149e+02    nrm: 1e+04    Viol.  con: 0e+00    var: 3e-09    cones: 0e+00  
+      Primal.  obj: 2.7716165339e+01    nrm: 6e+01    Viol.  con: 1e-08    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 2.7716165318e+01    nrm: 3e+02    Viol.  con: 2e-08    var: 2e-09    cones: 0e+00  
+
 
 
 
@@ -250,14 +248,21 @@ Plot the computed streamfunction
     :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <mayavi.modules.surface.Surface object at 0x000001504D6BE9E8>
+
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 2 minutes  13.783 seconds)
-
-**Estimated memory usage:**  2662 MB
+   **Total running time of the script:** ( 2 minutes  51.801 seconds)
 
 
 .. _sphx_glr_download_auto_examples_coil_design_coil_with_holes.py:
@@ -270,13 +275,13 @@ Plot the computed streamfunction
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: coil_with_holes.py <coil_with_holes.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: coil_with_holes.ipynb <coil_with_holes.ipynb>`
 

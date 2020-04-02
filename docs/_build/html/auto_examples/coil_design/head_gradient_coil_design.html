@@ -7,11 +7,13 @@
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -104,7 +106,7 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-coil-design-head-gradient-coil-design-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-coil-design-head-gradient-coil-design-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="head-gradient-coil">
 <span id="sphx-glr-auto-examples-coil-design-head-gradient-coil-design-py"></span><h1>Head gradient coil<a class="headerlink" href="#head-gradient-coil" title="Permalink to this headline">¶</a></h1>
@@ -114,7 +116,7 @@
 <span class="kn">import</span> <span class="nn">trimesh</span>
 
 
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">Conductor</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.conductor</span> <span class="k">import</span> <span class="n">Conductor</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="k">import</span> <span class="n">optimize_streamfunctions</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="k">import</span> <span class="n">scalar_contour</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="k">import</span> <span class="n">plot_3d_current_loops</span>
@@ -222,13 +224,13 @@ Here, the target points are on a volumetric grid within a sphere</p>
 </div>
 <img alt="../../_images/sphx_glr_head_gradient_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_head_gradient_coil_design_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 2044 vertices by 672 target points... took 0.58 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 2044 vertices by 672 target points... took 0.75 seconds.
 Computing the inductance matrix...
 Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
 Estimating 16313 MiB required for 2044 by 2044 vertices...
-Computing inductance matrix in 60 chunks (7745 MiB memory free), when approx_far=True using more chunks is faster...
-Computing potential matrix
-Inductance matrix computation took 20.52 seconds.
+Computing inductance matrix in 80 chunks (5418 MiB memory free), when approx_far=True using more chunks is faster...
+Computing 1/r-potential matrix
+Inductance matrix computation took 25.88 seconds.
 Pre-existing problem not passed, creating...
 Passing parameters to problem...
 Passing problem to solver...
@@ -240,7 +242,7 @@ Problem
   Type                   : CONIC (conic optimization problem)
   Constraints            : 5979
   Cones                  : 1
-  Scalar variables       : 3992
+  Scalar variables       : 3893
   Matrix variables       : 0
   Integer variables      : 0
 
@@ -251,7 +253,7 @@ Problem
   Type                   : CONIC (conic optimization problem)
   Constraints            : 5979
   Cones                  : 1
-  Scalar variables       : 3992
+  Scalar variables       : 3893
   Matrix variables       : 0
   Integer variables      : 0
 
@@ -261,34 +263,30 @@ Optimizer  - Constraints            : 1946
 Optimizer  - Cones                  : 1
 Optimizer  - Scalar variables       : 5979              conic                  : 1947
 Optimizer  - Semi-definite variables: 0                 scalarized             : 0
-Factor     - setup time             : 0.91              dense det. time        : 0.00
+Factor     - setup time             : 0.58              dense det. time        : 0.00
 Factor     - ML order time          : 0.09              GP order time          : 0.00
 Factor     - nonzeros before factor : 1.89e+06          after factor           : 1.89e+06
 Factor     - dense dim.             : 0                 flops                  : 1.75e+10
 ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
-0   1.4e+02  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  33.18
-1   5.1e+01  3.6e-01  1.0e+00  -8.22e-01  5.753343851e+01   5.786493454e+01   3.6e-01  33.42
-2   1.4e+01  9.7e-02  3.4e-01  -5.55e-01  4.500836472e+02   4.522180008e+02   9.7e-02  33.65
-3   1.8e+00  1.3e-02  3.2e-02  5.33e-02   9.768646705e+02   9.781318367e+02   1.3e-02  33.91
-4   3.1e-01  2.2e-03  2.0e-03  8.17e-01   9.221917278e+02   9.223518215e+02   2.2e-03  34.27
-5   8.9e-02  6.3e-04  3.1e-04  9.69e-01   9.162883526e+02   9.163346487e+02   6.3e-04  34.61
-6   4.1e-02  2.9e-04  9.7e-05  9.90e-01   9.159409663e+02   9.159627834e+02   2.9e-04  34.87
-7   2.4e-02  1.7e-04  4.4e-05  9.95e-01   9.165772787e+02   9.165901906e+02   1.7e-04  35.09
-8   1.4e-03  9.6e-06  5.9e-07  9.97e-01   9.173529626e+02   9.173537200e+02   9.6e-06  35.39
-9   2.3e-05  1.7e-07  1.3e-09  1.00e+00   9.174520496e+02   9.174520627e+02   1.7e-07  35.68
-10  1.2e-05  8.3e-08  4.7e-10  1.00e+00   9.174530837e+02   9.174530902e+02   8.3e-08  36.19
-11  5.8e-06  4.1e-08  1.7e-10  1.00e+00   9.174536007e+02   9.174536040e+02   4.1e-08  36.54
-12  2.9e-06  2.1e-08  5.8e-11  1.00e+00   9.174538593e+02   9.174538609e+02   2.1e-08  36.92
-13  1.5e-06  1.0e-08  2.1e-11  1.00e+00   9.174539885e+02   9.174539894e+02   1.0e-08  37.29
-14  6.7e-11  3.7e-11  2.9e-16  1.00e+00   9.174541178e+02   9.174541178e+02   4.8e-13  37.49
-Optimizer terminated. Time: 37.76
+0   1.4e+02  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  50.16
+1   5.1e+01  3.6e-01  1.0e+00  -8.22e-01  5.753343851e+01   5.786493454e+01   3.6e-01  50.72
+2   1.4e+01  9.7e-02  3.4e-01  -5.55e-01  4.500836472e+02   4.522180008e+02   9.7e-02  51.22
+3   1.8e+00  1.3e-02  3.2e-02  5.33e-02   9.768646705e+02   9.781318367e+02   1.3e-02  51.73
+4   3.1e-01  2.2e-03  2.0e-03  8.17e-01   9.221917278e+02   9.223518215e+02   2.2e-03  52.34
+5   8.9e-02  6.3e-04  3.1e-04  9.69e-01   9.162883526e+02   9.163346487e+02   6.3e-04  52.91
+6   4.1e-02  2.9e-04  9.7e-05  9.90e-01   9.159409663e+02   9.159627834e+02   2.9e-04  53.45
+7   2.4e-02  1.7e-04  4.4e-05  9.95e-01   9.165772787e+02   9.165901906e+02   1.7e-04  53.95
+8   1.4e-03  9.6e-06  5.9e-07  9.97e-01   9.173529626e+02   9.173537201e+02   9.6e-06  54.53
+9   2.3e-05  1.7e-07  1.3e-09  1.00e+00   9.174520496e+02   9.174520627e+02   1.7e-07  55.08
+10  8.0e-07  1.9e-09  7.9e-12  1.00e+00   9.174541177e+02   9.174541151e+02   9.6e-12  55.61
+Optimizer terminated. Time: 55.91
 
 
 Interior-point solution summary
   Problem status  : PRIMAL_AND_DUAL_FEASIBLE
   Solution status : OPTIMAL
-  Primal.  obj: 9.1745411782e+02    nrm: 2e+03    Viol.  con: 5e-12    var: 0e+00    cones: 0e+00
-  Dual.    obj: 9.1745411782e+02    nrm: 4e+03    Viol.  con: 1e-09    var: 2e-10    cones: 0e+00
+  Primal.  obj: 9.1745411770e+02    nrm: 2e+03    Viol.  con: 1e-10    var: 0e+00    cones: 0e+00
+  Dual.    obj: 9.1745411514e+02    nrm: 4e+03    Viol.  con: 2e-08    var: 4e-09    cones: 0e+00
 </pre></div>
 </div>
 <p>Plot coil windings and magnetic field in target points</p>
@@ -308,13 +306,13 @@ Interior-point solution summary
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_head_gradient_coil_design_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_head_gradient_coil_design_002.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  29.388 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  50.616 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-head-gradient-coil-design-py">
-<div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/dfd6dab15c682ecb3d97d07910fb87d7/head_gradient_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">head_gradient_coil_design.py</span></code></a></p>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/f276ebd7e190fa7ce12fea6b19f72431/head_gradient_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">head_gradient_coil_design.py</span></code></a></p>
 </div>
-<div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/86f1b050e701c88ad8eb4513536b6008/head_gradient_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">head_gradient_coil_design.ipynb</span></code></a></p>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/48d565aba17abdc25cd9045ad40b0ca0/head_gradient_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">head_gradient_coil_design.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -333,7 +331,7 @@ Interior-point solution summary
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
     </p>
   </div>
 </footer>

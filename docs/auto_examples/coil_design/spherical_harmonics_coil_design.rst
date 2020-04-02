@@ -1,10 +1,12 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_coil_design_spherical_harmonics_coil_design.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_coil_design_spherical_harmonics_coil_design.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_coil_design_spherical_harmonics_coil_design.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_coil_design_spherical_harmonics_coil_design.py:
 
 
 Spherical harmonics-generating coil design
@@ -12,7 +14,6 @@ Spherical harmonics-generating coil design
 
 Example showing a basic biplanar coil producing a field profile defined by
 spherical harmonics.
-
 
 
 .. code-block:: default
@@ -28,7 +29,7 @@ spherical harmonics.
     from mayavi import mlab
     import trimesh
 
-    from bfieldtools.mesh_class import Conductor
+    from bfieldtools.conductor import Conductor
     from bfieldtools.coil_optimize import optimize_streamfunctions
     from bfieldtools.contour import scalar_contour
     from bfieldtools.viz import plot_3d_current_loops
@@ -115,6 +116,10 @@ spherical harmonics.
  .. code-block:: none
 
     Calculating surface harmonics expansion...
+    Computing the laplacian matrix...
+    Computing the mass matrix...
+
+    <mayavi.modules.vectors.Vectors object at 0x000001310E5183B8>
 
 
 
@@ -146,6 +151,7 @@ Create bfield specifications used when optimizing the coil geometry
 
 
 
+
 Run QP solver
 
 
@@ -174,9 +180,9 @@ Run QP solver
     Computing the inductance matrix...
     Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
     Estimating 34964 MiB required for 3184 by 3184 vertices...
-    Computing inductance matrix in 100 chunks (7503 MiB memory free), when approx_far=True using more chunks is faster...
-    Computing potential matrix
-    Inductance matrix computation took 52.38 seconds.
+    Computing inductance matrix in 80 chunks (8840 MiB memory free), when approx_far=True using more chunks is faster...
+    Computing 1/r-potential matrix
+    Inductance matrix computation took 56.65 seconds.
     Pre-existing problem not passed, creating...
     Passing parameters to problem...
     Passing problem to solver...
@@ -207,30 +213,30 @@ Run QP solver
     Optimizer  - solved problem         : the dual        
     Optimizer  - Constraints            : 81
     Optimizer  - Cones                  : 1
-    Optimizer  - Scalar variables       : 130               conic                  : 82              
+    Optimizer  - Scalar variables       : 110               conic                  : 82              
     Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
     Factor     - setup time             : 0.00              dense det. time        : 0.00            
     Factor     - ML order time          : 0.00              GP order time          : 0.00            
     Factor     - nonzeros before factor : 3321              after factor           : 3321            
-    Factor     - dense dim.             : 0                 flops                  : 8.61e+05        
+    Factor     - dense dim.             : 0                 flops                  : 7.96e+05        
     ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
-    0   1.0e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  0.03  
-    1   3.6e+00  3.5e-01  7.8e-01  -6.16e-01  6.843060430e-01   5.766876460e-01   3.5e-01  0.07  
-    2   1.7e+00  1.7e-01  3.8e-01  -2.47e-01  4.307239132e+00   4.600847171e+00   1.7e-01  0.07  
-    3   7.7e-01  7.5e-02  1.4e-01  6.35e-02   1.122605585e+01   1.148745057e+01   7.5e-02  0.07  
-    4   1.0e-01  1.0e-02  4.8e-03  9.38e-01   1.770154008e+01   1.768332845e+01   1.0e-02  0.07  
-    5   1.5e-02  1.5e-03  2.2e-04  1.22e+00   1.883522060e+01   1.883138500e+01   1.5e-03  0.07  
-    6   4.1e-04  4.0e-05  1.4e-06  1.12e+00   1.904763480e+01   1.904768955e+01   4.0e-05  0.07  
-    7   6.9e-07  6.7e-08  9.3e-11  1.01e+00   1.905276377e+01   1.905276386e+01   6.7e-08  0.07  
-    8   9.5e-10  9.5e-11  5.4e-15  1.00e+00   1.905277126e+01   1.905277127e+01   4.5e-12  0.08  
-    Optimizer terminated. Time: 0.08    
+    0   4.0e+00  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  0.02  
+    1   9.8e-01  2.4e-01  4.4e-01  -4.16e-02  1.125986870e+00   1.036083846e+00   2.4e-01  0.02  
+    2   2.0e-01  5.0e-02  4.4e-02  3.29e-01   4.793669109e+00   4.753626457e+00   5.0e-02  0.02  
+    3   9.4e-03  2.3e-03  1.2e-04  1.42e+00   5.783225382e+00   5.775510486e+00   2.3e-03  0.02  
+    4   8.0e-04  2.0e-04  8.7e-06  1.22e+00   5.851111015e+00   5.850951896e+00   2.0e-04  0.02  
+    5   1.2e-05  3.0e-06  1.6e-08  1.01e+00   5.852809333e+00   5.852806982e+00   3.0e-06  0.02  
+    6   7.6e-08  1.9e-08  7.9e-12  1.00e+00   5.852851889e+00   5.852851874e+00   1.9e-08  0.02  
+    7   4.2e-10  6.5e-11  2.0e-15  1.00e+00   5.852852242e+00   5.852852241e+00   8.7e-12  0.02  
+    Optimizer terminated. Time: 0.02    
 
 
     Interior-point solution summary
       Problem status  : PRIMAL_AND_DUAL_FEASIBLE
       Solution status : OPTIMAL
-      Primal.  obj: 1.9052771265e+01    nrm: 4e+01    Viol.  con: 1e-11    var: 0e+00    cones: 0e+00  
-      Dual.    obj: 1.9052771268e+01    nrm: 6e+02    Viol.  con: 1e-08    var: 2e-10    cones: 0e+00  
+      Primal.  obj: 5.8528522417e+00    nrm: 1e+01    Viol.  con: 1e-11    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 5.8528522410e+00    nrm: 2e+02    Viol.  con: 2e-09    var: 1e-10    cones: 0e+00  
+
 
 
 
@@ -265,14 +271,16 @@ Plot coil windings and target points
 
  .. code-block:: none
 
-    Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.26 seconds.
+    Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.33 seconds.
+
+    <mayavi.modules.vectors.Vectors object at 0x000001310F7BB518>
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  12.342 seconds)
+   **Total running time of the script:** ( 1 minutes  23.821 seconds)
 
 
 .. _sphx_glr_download_auto_examples_coil_design_spherical_harmonics_coil_design.py:
@@ -285,13 +293,13 @@ Plot coil windings and target points
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: spherical_harmonics_coil_design.py <spherical_harmonics_coil_design.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: spherical_harmonics_coil_design.ipynb <spherical_harmonics_coil_design.ipynb>`
 
