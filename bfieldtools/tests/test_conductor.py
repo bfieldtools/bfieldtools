@@ -52,7 +52,7 @@ def test_conductor_creation():
             assert_array_equal((c.inner2vert @ c.vert2inner).toarray(), inner_diag)
             
             if basis_name=='suh':
-                assert c.basis.shape == (len(c.mesh.vertices) + len(c.holes), c.opts['N_suh'])
+                assert c.basis.shape == (len(c.mesh.vertices), c.opts['N_suh'])
     
     
 def test_streamfunction_creation():
