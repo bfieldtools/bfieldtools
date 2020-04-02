@@ -13,7 +13,7 @@ test:
   stage: test
   script:
     - pytest --pyargs bfieldtools
-    - pytest --cov=bfieldtools ./bfieldtools/tests
+    - pytest --cov=bfieldtools ./tests
 
 # staging:
   # stage: deploy
