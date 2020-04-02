@@ -9,6 +9,38 @@ import os
 import pkg_resources
 import trimesh
 
+
+def combine_meshes(meshes):
+    """
+    Combine two or more non-overlapping Trimesh meshes without any dependency
+    requirements. For more demanding applications, use Trimesh boolean operations
+    
+    Parameters
+    ----------
+    meshes: list or tuple
+        Each element should be a Trimesh mesh
+    
+    Returns
+    -------
+    combined_mesh: Trimesh mesh
+    """
+    
+    N_meshes = len(meshes)
+    
+    vertices = np.zeros((0, 3))
+    faces = np.zeros((0, 3))
+    
+    for idx in range(N_meshes):
+        
+        faces = np.vstack((faces, meshes[idx].faces + len(vertices)))
+        vertices = np.vstack((vertices, meshes[idx].vertices))
+    
+    combined_mesh = trimesh.Trimesh(vertices=vertices,
+                                    faces=faces,
+                                    process=False)
+    return combined_mesh
+
+
 def tri_normals_and_areas(r, tri):
     """ Get triangle normals and areas from vertices (r) and
         triangle indices (tri)
