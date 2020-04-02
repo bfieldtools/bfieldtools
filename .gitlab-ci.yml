@@ -1,20 +1,19 @@
-image: bfieldtools:1.0
+image:
+  name: bfieldtools:1.0
+  entrypoint: [""]
 
+before_script:
+   - Xvfb :99 -screen 0 800x800x8&
+   - python setup.py install
+   
 stages:
-  - install
   - test
-
-install:
-    stage: install
-    script:
-    - Xvfb :99 -screen 0 800x800x8&
-    - python setup.py install
 
 test:
   stage: test
   script:
-  - pytest --pyargs bfieldtools
-  - pytest --cov=bfieldtools ./bfieldtools/tests
+    - pytest --pyargs bfieldtools
+    - pytest --cov=bfieldtools ./bfieldtools/tests
 
 # staging:
   # stage: deploy
