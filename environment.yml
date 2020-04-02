@@ -21,6 +21,8 @@ dependencies:
  - mayavi
  - pyqt
  - pip
+ - pytest
+ - pytest-cov
  - pip:
     - pybtex==0.22.2
     - pybtex-docutils==0.2.2

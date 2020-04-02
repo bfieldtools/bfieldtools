@@ -23,4 +23,4 @@ RUN conda env update --name base --file environment.yml
 
 EXPOSE 8080
 # The code to run when container is started:
-ENTRYPOINT ["/bin/bash"]
+#ENTRYPOINT ["/bin/bash"]
