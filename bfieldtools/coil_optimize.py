@@ -129,9 +129,10 @@ def optimize_streamfunctions(conductor,
         rel_error: float or (N_r, 3)
     objective: string or dict
         if string, either 'minimum_inductive_energy' or 'minimum_resistive_energy'
-        if tuple, should contain: (a, b), where a and b are floats describing the inductive and resitive weighting factors.
-        The resistance matrix is scaled according to the largest singular value of the inductance matrix for consistent behavior
-        across meshes.
+        if tuple, should contain: (a, b), where a and b are floats describing the
+        inductive and resitive weighting factors.
+        The resistance matrix is scaled according to the largest singular value
+        of the inductance matrix for consistent behavior across meshes.
     solver: string
         string specifying which solver CVXPY will use
     solver_opt: dict
@@ -171,7 +172,7 @@ def optimize_streamfunctions(conductor,
         #Parameters into which data is loaded
         P = cp.Parameter(shape=quadratic_matrix.shape, name='P', PSD=True)
         G = cp.Parameter(shape=constraint_matrix.shape, name='G')
-        lb = cp.Parameter(shape=lower_bounds.shape, name ='lb')
+        lb = cp.Parameter(shape=lower_bounds.shape, name='lb')
         ub = cp.Parameter(shape=upper_bounds.shape, name='ub')
 
         #Formulate problem and constraints
@@ -225,9 +226,10 @@ def optimize_lsq(conductor, bfield_specification, reg=1e3, objective='minimum_in
         rel_error: float or (N_r, 3)
     objective: string or dict
         if string, either 'minimum_inductive_energy' or 'minimum_resistive_energy'
-        if tuple, should contain: (a, b), where a and b are floats describing the inductive and resitive weighting factors.
-        The resistance matrix is scaled according to the largest singular value of the inductance matrix for consistent behavior
-        across meshes.
+        if tuple, should contain: (a, b), where a and b are floats describing the
+        inductive and resitive weighting factors.
+        The resistance matrix is scaled according to the largest singular value
+        of the inductance matrix for consistent behavior across meshes.
     reg: float
         Regularization/tradeoff parameter (lambda). A larger lambda leads to more emphasis on the specification,
         at the cost of the quadratic objective. The lambda value is relative to the maximum singular value
@@ -365,7 +367,9 @@ def _construct_quadratic_objective(objective, conductor):
         quadratic_matrix = objective
 
     #Scale whole quadratic term according to largest eigenvalue
-    max_eval_quad = largest_eigh(quadratic_matrix, eigvals=(quadratic_matrix.shape[0]-1, quadratic_matrix.shape[0]-1))[0][0]
+    max_eval_quad = largest_eigh(quadratic_matrix, 
+                                 eigvals=(quadratic_matrix.shape[0]-1,
+                                          quadratic_matrix.shape[0]-1))[0][0]
 
     quadratic_matrix /= max_eval_quad
     
