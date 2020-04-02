@@ -1,4 +1,6 @@
-image: bfieldtools:1.0
+image:
+  name: bfieldtools:1.0
+  entrypoint: [""]
 
 stages:
   - install
