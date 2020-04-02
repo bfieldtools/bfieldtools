@@ -144,8 +144,8 @@ def optimize_streamfunctions(conductor,
     Returns
     -------
     s: vector
-        Vector with length len(`conductor.mesh.vertices`), containing the optimized current density values
-        at each mesh vertex
+        Vector with length len(`conductor.mesh.vertices`), containing the 
+        optimized current density values at each mesh vertex
     prob: CVXPY problem object
         CVXPY problem object containing data, formulation, solution, metric etc
 
@@ -159,7 +159,8 @@ def optimize_streamfunctions(conductor,
     quadratic_matrix = _construct_quadratic_objective(objective, conductor)
 
 
-    constraint_matrix, upper_bounds, lower_bounds = _construct_constraints(conductor, bfield_specification)
+    constraint_matrix, upper_bounds, lower_bounds = _construct_constraints(conductor,
+                                                                           bfield_specification)
     #Compute, scale constraint matrix according to largest singular value
     u, s, vt = svds(constraint_matrix, k=1)
 
@@ -231,8 +232,9 @@ def optimize_lsq(conductor, bfield_specification, reg=1e3, objective='minimum_in
         The resistance matrix is scaled according to the largest singular value
         of the inductance matrix for consistent behavior across meshes.
     reg: float
-        Regularization/tradeoff parameter (lambda). A larger lambda leads to more emphasis on the specification,
-        at the cost of the quadratic objective. The lambda value is relative to the maximum singular value
+        Regularization/tradeoff parameter (lambda). A larger lambda leads to
+        more emphasis on the specification, at the cost of the quadratic objective.
+        The lambda value is relative to the maximum singular value
         of C.T @ C @ v[:,i] = w[i] @ Q @ v[:,i]
     Returns
     -------
@@ -250,9 +252,10 @@ def optimize_lsq(conductor, bfield_specification, reg=1e3, objective='minimum_in
     #Make sure that quadratic matrix is positive semi-definite
     quadratic_matrix = .5 * (quadratic_matrix + quadratic_matrix.T)
     
-    print('Error tolerances in specification will be ignored when use lsq')
-    [spec.pop('abs_error', None) for spec in bfield_specification]
-    [spec.pop('rel_error', None) for spec in bfield_specification]
+    print('Error tolerances in specification will be ignored when using lsq')
+    for spec in bfield_specification:
+        spec.pop('abs_error', None)
+        spec.pop('rel_error', None)
     
     constraint_matrix, target = _construct_constraints(conductor, bfield_specification)
     
