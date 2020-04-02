@@ -2,17 +2,12 @@ image:
   name: bfieldtools:1.0
   entrypoint: [""]
 
+before_script:
+   - Xvfb :99 -screen 0 800x800x8&
+   - python setup.py install
+   
 stages:
-  - install
   - test
-
-install:
-    stage: install
-    script:
-      - Xvfb :99 -screen 0 800x800x8&
-      - python setup.py install
-    artifacts:
-      untracked: true
 
 test:
   stage: test
