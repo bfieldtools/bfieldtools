@@ -2,7 +2,7 @@
 
 import pytest
 from bfieldtools import coil_optimize
-from bfieldtools.tests.test_mesh_class import _fake_conductor
+from bfieldtools.tests.test_conductor import _fake_conductor
 import cvxpy
 import numpy as np
 
