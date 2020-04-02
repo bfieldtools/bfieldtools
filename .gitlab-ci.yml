@@ -1,0 +1,37 @@
+image: bfieldtools:1.0
+
+stages:
+  - install
+  - test
+
+install:
+    stage: install
+    script:
+    - Xvfb :99 -screen 0 800x800x8&
+    - python setup.py install
+
+test:
+  stage: test
+  script:
+  - pytest --pyargs bfieldtools
+  - pytest --cov=bfieldtools ./bfieldtools/tests
+
+# staging:
+  # stage: deploy
+  # script:
+  # - apt-get update -qy
+  # - apt-get install -y ruby-dev
+  # - gem install dpl
+  # - dpl --provider=heroku --app=gitlab-ci-python-test-staging --api-key=$HEROKU_STAGING_API_KEY
+  # only:
+  # - master
+
+# production:
+  # stage: deploy
+  # script:
+  # - apt-get update -qy
+  # - apt-get install -y ruby-dev
+  # - gem install dpl
+  # - dpl --provider=heroku --app=gitlab-ci-python-test-prod --api-key=$HEROKU_PRODUCTION_API_KEY
+  # only:
+  # - tags
