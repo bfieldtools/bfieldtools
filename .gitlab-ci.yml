@@ -12,7 +12,7 @@ stages:
 test:
   stage: test
   script:
-    - pytest --pyargs bfieldtools
+    - pytest ./tests
     - pytest --cov=bfieldtools ./tests
 
 # staging:

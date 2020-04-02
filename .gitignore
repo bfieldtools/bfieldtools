@@ -1,4 +1,3 @@
-
 bfieldtools/__pycache__
 __pycache__/
 eggs/
@@ -9,4 +8,5 @@ dist/
 *.egg
 docs/_build
 docs/auto_examples
+.DS_Store
 
