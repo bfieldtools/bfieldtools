@@ -1,3 +1,9 @@
+'''
+Includes files for coil optimization (stream function optimization)
+using either a numerical solver or regularized least squares
+
+'''
+
 import numpy as np
 import cvxopt
 from cvxopt import matrix
@@ -9,6 +15,13 @@ import cvxpy as cp
 from .conductor import StreamFunction
 
 def cvxpy_solve_qp(P, G, h, solver=cp.MOSEK, tolerance=None):
+    '''
+    Bare-bones quadratic programming solver function for CVXPY, minimizes
+    (1/2) * x' * P * x
+
+    subject to
+    G * x <= h
+    '''
 
     P = .5 * (P + P.T)
 
@@ -22,10 +35,13 @@ def cvxpy_solve_qp(P, G, h, solver=cp.MOSEK, tolerance=None):
                       constraints)
     if tolerance is None:
         prob.solve(solver=solver, verbose=True)  # Returns the optimal value.
-    elif solver==cp.CVXOPT:
-        prob.solve(solver=solver, verbose=True, abstol=tolerance, feastol=tolerance, reltol=tolerance)  # Returns the optimal value.
-    elif solver==cp.SCS:
-        prob.solve(solver=solver, verbose=True, eps=tolerance)  # Returns the optimal value.
+    elif solver == cp.CVXOPT:
+        prob.solve(solver=solver, verbose=True,
+                   abstol=tolerance, feastol=tolerance,
+                   reltol=tolerance)  # Returns the optimal value.
+    elif solver == cp.SCS:
+        prob.solve(solver=solver,
+                   verbose=True, eps=tolerance)  # Returns the optimal value.
 
 
     # Print result.
@@ -38,7 +54,8 @@ def cvxpy_solve_qp(P, G, h, solver=cp.MOSEK, tolerance=None):
     return x.value, prob
 
 
-def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, sw=None, reg=None, tolerance=1e-7):
+def cvxopt_solve_qp(P, q, G=None, h=None, A=None,
+                    b=None, sw=None, reg=None, tolerance=1e-7):
     '''
     Use cvxopt to minimize
     (1/2) * x' * P * x + q' * x
@@ -163,7 +180,7 @@ def optimize_streamfunctions(conductor,
         constraints = [G@x >= lb, G@x <= ub]
 
         problem = cp.Problem(objective,
-                          constraints)
+                             constraints)
     else:
         print('Existing problem passed')
 
@@ -220,7 +237,7 @@ def optimize_lsq(conductor, bfield_specification, reg=1e3, objective='minimum_in
     S: StreamFunction
         Optimization solution
     '''
-    
+
     if objective == 'minimum_inductive_energy':
         objective = (1, 0)
     elif objective == 'minimum_resistive_energy':
@@ -242,7 +259,7 @@ def optimize_lsq(conductor, bfield_specification, reg=1e3, objective='minimum_in
     constraint_matrix /= s[0]
     
     ss_max = eigvalsh(constraint_matrix.T @ constraint_matrix, quadratic_matrix, 
-                     eigvals=[quadratic_matrix.shape[1]-1, quadratic_matrix.shape[1]-1])
+                      eigvals=[quadratic_matrix.shape[1]-1, quadratic_matrix.shape[1]-1])
     
     S = np.linalg.solve(constraint_matrix.T @ constraint_matrix + ss_max/reg * quadratic_matrix, 
                         constraint_matrix.T @ target)
@@ -311,8 +328,8 @@ def _construct_constraints(conductor, bfield_specification):
         
     if 'rel_error' in spec or 'abs_error' in spec:
         return constraint_matrix, upper_bound_stack, lower_bound_stack
-    else:
-        return constraint_matrix, target_stack
+
+    return constraint_matrix, target_stack
     
     
 def _construct_quadratic_objective(objective, conductor):
@@ -328,13 +345,14 @@ def _construct_quadratic_objective(objective, conductor):
 
         quadratic_matrix = conductor.resistance
 
-    elif type(objective) == tuple:
+    elif isinstance(objective) == tuple:
 
         L = conductor.inductance
 
         R = conductor.resistance
 
-        print('Scaling inductance and resistance matrices before optimization. This requires eigenvalue computation, hold on.')
+        print('Scaling inductance and resistance matrices before optimization.\
+              This requires eigenvalue computation, hold on.')
 
         max_eval_L = largest_eigh(L, eigvals=(L.shape[0]-1, L.shape[0]-1))[0][0]
         max_eval_R = largest_eigh(R, eigvals=(L.shape[0]-1, L.shape[0]-1))[0][0]

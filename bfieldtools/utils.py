@@ -1,11 +1,10 @@
 '''
 This module contains miscellaneous utility functions used across bfieldtools.
 '''
-
+import os
 import numpy as np
 import quadpy
 from numba import jit
-import os
 import pkg_resources
 import trimesh
 
@@ -241,10 +240,10 @@ def find_mesh_boundaries(mesh):
     outline = mesh.outline(process=False)
 
     boundaries = []
-    for idx, i in enumerate(outline.entities):
-            boundaries.append(np.unique(i.points))
+    for i in outline.entities:
+        boundaries.append(np.unique(i.points))
 
-            inner_vertices = np.setdiff1d(inner_vertices, i.points)
+        inner_vertices = np.setdiff1d(inner_vertices, i.points)
 
     return boundaries, inner_vertices
 
@@ -369,7 +368,7 @@ def cylinder_points(radius=1, length=1, nlength=10, alpha=360, nalpha=10, center
                          [2*(b*d-a*c), 2*(c*d+a*b), a*a+d*d-b*b-c*c]])
 
     ovec = orientation / np.linalg.norm(orientation)
-    cylvec = np.array([1,0,0])
+    cylvec = np.array([1, 0, 0])
 
     if np.allclose(cylvec, ovec):
         return points
@@ -382,7 +381,7 @@ def cylinder_points(radius=1, length=1, nlength=10, alpha=360, nalpha=10, center
     return points.dot(R)
 
 
-def fix_normals(mesh, origin = np.array([0, 0, 0])):
+def fix_normals(mesh, origin=np.array([0, 0, 0])):
     '''
     Attempts to fix face windings and normals such that normals are always "pointing out"
     from the origin.
@@ -429,7 +428,8 @@ def load_example_mesh(mesh_name, process=True, **kwargs):
     -------
     Trimesh object
     '''
-    existing_files = pkg_resources.resource_listdir('bfieldtools','example_meshes')
+    existing_files = pkg_resources.resource_listdir('bfieldtools', 
+                                                    'example_meshes')
     
     #Filter according to file extension
     existing_files = [file for file in existing_files if file.lower().endswith(tuple(trimesh.exchange.load.mesh_formats()))]

@@ -2,12 +2,13 @@
 Contains functions for computing the inductance matrices of triangle surface meshes,
 including both self- and mutual-inductance.
 '''
-
+from psutil import virtual_memory
 import numpy as np
+
 from .utils import get_quad_points, get_line_quad_points
 from .mesh_magnetics import vector_potential_coupling
 from .mesh_calculus import gradient_matrix, laplacian_matrix
-from psutil import virtual_memory
+
 
 def resistance_matrix(mesh, sheet_resistance):
     """ Resistance matrix
@@ -48,9 +49,13 @@ def self_inductance_matrix(mesh, Nchunks=None, quad_degree=2, approx_far=True, m
             Self.inductance matrix of `mesh`
     """
     if quad_degree <= 2:
-        print('Computing self-inductance matrix using rough quadrature (degree=%d). For higher accuracy, set quad_degree to 4 or more.'%quad_degree)
+        print('Computing self-inductance matrix using rough quadrature (degree=%d).\
+              For higher accuracy, set quad_degree to 4 or more.'%quad_degree)
 
-    return mutual_inductance_matrix(mesh, mesh, Nchunks=Nchunks, quad_degree=quad_degree, approx_far=approx_far, margin=margin)
+    return mutual_inductance_matrix(mesh, mesh, Nchunks=Nchunks, 
+                                    quad_degree=quad_degree, 
+                                    approx_far=approx_far, 
+                                    margin=margin)
 
 
 def mutual_inductance_matrix(mesh1, mesh2, Nchunks=None, quad_degree=1, approx_far=True, margin=2):
@@ -88,14 +93,16 @@ def mutual_inductance_matrix(mesh1, mesh2, Nchunks=None, quad_degree=1, approx_f
         #Estimate of memory usage in megabytes for a single chunk, when quad_degree=2 (very close with quad_degree=1)
         mem_use = 0.033 * (len(mesh1.vertices) * len(mesh2.vertices))**0.86
 
-        print('Estimating %d MiB required for %d by %d vertices...'%(mem_use, len(mesh1.vertices), len(mesh2.vertices)))
+        print('Estimating %d MiB required for %d by %d vertices...'%
+              (mem_use, len(mesh1.vertices), len(mesh2.vertices)))
 
         #Chunk computation so that available memory is sufficient
         Nchunks = int(np.ceil(mem_use/mem))
 
         if approx_far:
             Nchunks *= 20
-            print('Computing inductance matrix in %d chunks (%d MiB memory free), when approx_far=True using more chunks is faster...'%(Nchunks, mem))
+            print('Computing inductance matrix in %d chunks (%d MiB memory free),\
+                  when approx_far=True using more chunks is faster...'%(Nchunks, mem))
         else:
             print('Computing inductance matrix in %d chunks since %d MiB memory is available...'%(Nchunks, mem))
 
@@ -110,11 +117,13 @@ def mutual_inductance_matrix(mesh1, mesh2, Nchunks=None, quad_degree=1, approx_f
     Nt = len(mesh2.faces)
     Nv = len(mesh1.vertices)
 
-    A = vector_potential_coupling(mesh1, quadpoints.reshape(-1, 3), Nchunks=Nchunks, approx_far=approx_far, margin=margin).reshape(3, Nt, Nw, Nv)
+    A = vector_potential_coupling(mesh1, quadpoints.reshape(-1, 3), Nchunks=Nchunks,
+                                  approx_far=approx_far,
+                                  margin=margin).reshape(3, Nt, Nw, Nv)
 
     # Integrate over the triangles (current patterns are constant over triangles)
     A = np.sum(A*weights[None, None, :, None], axis=2)
-    A *= mesh2.area_faces[None,:,None]
+    A *= mesh2.area_faces[None, :, None]
 
     # Dot product with current patterns and sum over triangle neighbourhoods
     Gx, Gy, Gz = gradient_matrix(mesh2, rotated=True)
@@ -152,7 +161,7 @@ def mesh2line_mutual_inductance(mesh, line_vertices, quad_degree=3):
     weights, quadpoints = get_line_quad_points(line_vertices, 'gauss_legendre', quad_degree)
     # Ne x Nquad x  3 (x,y,z)
 
-    segments=np.roll(line_vertices, shift=-1, axis=0) - line_vertices
+    segments = np.roll(line_vertices, shift=-1, axis=0) - line_vertices
 
     # Compute vector potential to quadrature points
     Nw = len(weights)

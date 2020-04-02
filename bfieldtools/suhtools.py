@@ -13,16 +13,15 @@ Surface harmonics == Laplace-Beltrami eigenfunctions
 
 """
 
-from .mesh_calculus import laplacian_matrix, mass_matrix
-from .mesh_magnetics import magnetic_field_coupling
-from .utils import inner2vert
-from .viz import plot_data_on_vertices
-from . import conductor
 import trimesh 
-
 from scipy.sparse.linalg import eigsh
 import numpy as np
 from mayavi import mlab
+
+from .mesh_magnetics import magnetic_field_coupling
+from .viz import plot_data_on_vertices
+from . import conductor
+
 
 class SuhBasis():
     """ Class for representing magnetic field using surface harmonics
@@ -44,35 +43,35 @@ class SuhBasis():
         """
         
         if boundary_condition in ("dirichlet", "neumann"):
-          self.bc = boundary_condition
+            self.bc = boundary_condition
         else:
-          raise ValueError('boundary_conditions should e either dirichlet or neumann')
+            raise ValueError('boundary_conditions should e either dirichlet or neumann')
 
         if isinstance(obj, conductor.Conductor):
-          self.conductor = obj
+            self.conductor = obj
         elif isinstance(obj, trimesh.Trimesh):
-          # TODO defaults ok?
-          self.conductor = conductor.Conductor(mesh_obj=obj)
+            # TODO defaults ok?
+            self.conductor = conductor.Conductor(mesh_obj=obj)
         else:
-          raise TypeError('obj type should be either Trimesh or Conductor')
+            raise TypeError('obj type should be either Trimesh or Conductor')
         self.mesh = self.conductor.mesh
 
         self.Nc = Nc
-        self.magnetic=magnetic
+        self.magnetic = magnetic
         
         
         if self.bc == 'neumann':
-          self.conductor.set_basis('vertex')
+            self.conductor.set_basis('vertex')
         else:
-          self.conductor.set_basis('inner')
-
-          self.inner_vertices = self.conductor.inner_vertices
-          self.holes = self.conductor.holes
-          self.inner2vert = self.conductor.inner2vert
+            self.conductor.set_basis('inner')
+            
+            self.inner_vertices = self.conductor.inner_vertices
+            self.holes = self.conductor.holes
+            self.inner2vert = self.conductor.inner2vert
           
-        # TODO ends
+            # TODO ends
         
-        self.calculate_basis()
+            self.calculate_basis()
 
 
     def calculate_basis(self, shiftinvert=False, v0=None):
@@ -85,11 +84,11 @@ class SuhBasis():
 
 
         if not self.magnetic:
-          L = self.conductor.laplacian
-          M = self.conductor.mass
+            L = self.conductor.laplacian
+            M = self.conductor.mass
         else:
-          L = self.conductor.resistance
-          M = self.conductor.inductance
+            L = self.conductor.resistance
+            M = self.conductor.inductance
           
         self.mass = M
 
@@ -107,12 +106,12 @@ class SuhBasis():
             v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
             
         if shiftinvert:
-            u, v = eigsh(-L, N, M, sigma=0, which='LM', v0 = v0)
+            u, v = eigsh(-L, N, M, sigma=0, which='LM', v0=v0)
         else:
-            u, v = eigsh(-L, N, M, which='SA', v0 = v0)
+            u, v = eigsh(-L, N, M, which='SA', v0=v0)
 
         # The first function is constant and does not yield any field
-        self.basis = v[:,N0:]
+        self.basis = v[:, N0:]
         self.eigenvals = u[N0:]
 
     def field(self, coeffs, points):
@@ -127,7 +126,7 @@ class SuhBasis():
 
                 field : (N_points, 3) magnetic field
         """
-        return (self.basis_fields(points) @ coeffs)
+        return self.basis_fields(points) @ coeffs
 
     def basis_fields(self, points):
         """ Calculate basis fields at points
@@ -155,7 +154,7 @@ class SuhBasis():
 
 
     def plot(self, Nfuncs, dist=0.5, Ncols=None, figure=None,
-             figsize=(800,800), **kwargs):
+             figsize=(800, 800), **kwargs):
         """ Plot basis functions on the mesh
 
             Nfuncs: int or array-like
@@ -182,10 +181,10 @@ class SuhBasis():
 
         if figure is None:
             figure = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                             size=figsize)
+                                 size=figsize)
 
-        if type(Nfuncs) == int:
-            N=Nfuncs
+        if isinstance(Nfuncs) == int:
+            N = Nfuncs
             indices = np.arange(Nfuncs)
         else:
             indices = Nfuncs
@@ -194,47 +193,45 @@ class SuhBasis():
         if Ncols is None:
             Ncols = np.floor(np.sqrt(N)+1)
 
-        dx = (self.mesh.vertices[:,0].max() - self.mesh.vertices[:,0].min())*(1+dist)
-        dy = (self.mesh.vertices[:,1].max() - self.mesh.vertices[:,1].min())*(1+dist)
+        dx = (self.mesh.vertices[:, 0].max() - self.mesh.vertices[:, 0].min())*(1+dist)
+        dy = (self.mesh.vertices[:, 1].max() - self.mesh.vertices[:, 1].min())*(1+dist)
 
         i = 0
         j = 0
 
         for n in indices:
-            print(i,j)
+            print(i, j)
 
             tmp_mesh = self.mesh.copy()
-            tmp_mesh.vertices[:,0] += i*dx
-            tmp_mesh.vertices[:,1] -= j*dy
+            tmp_mesh.vertices[:, 0] += i*dx
+            tmp_mesh.vertices[:, 1] -= j*dy
 
-            scalars = self.inner2vert @ self.basis[:,n]
+            scalars = self.inner2vert @ self.basis[:, n]
 
             s = plot_data_on_vertices(tmp_mesh, scalars, figure=figure, **kwargs)
 
-            if i<Ncols:
-                i+=1
+            if i < Ncols:
+                i += 1
             else:
-                j+=1
-                i=0
+                j += 1
+                i = 0
 
         return s
 
 
 
 if __name__ == '__main__':
-    """ Simple testing script
+    """ 
+    Simple testing script
     """
-
-    from trimesh.creation import icosphere
 
     # Create basis for a sphere (basis.eigenvals shere the same structure
     # as spherical harmonic eigenvalues)
 #    mesh = icosphere(4)
     import pkg_resources
-    import trimesh
     #Load simple plane mesh that is centered on the origin
     file_obj = pkg_resources.resource_filename('bfieldtools',
-                    'example_meshes/closed_cylinder_remeshed.stl')
+                                               'example_meshes/closed_cylinder_remeshed.stl')
     mesh = trimesh.load(file_obj, process=True)
     basis = SuhBasis(mesh, 40)
 

@@ -80,7 +80,7 @@ def laplacian_matrix(mesh, material_param=None, inner_vertices=None, holes=None)
         if holes:
             L = _laplacian_matrix_w_holes(L, inner_vertices, holes)
         else:
-            L = L[inner_vertices][:,inner_vertices]
+            L = L[inner_vertices][:, inner_vertices]
     #Catch if only holes specified, but not inner_vertices
     elif holes:
         raise ValueError('You need to specify both inner_vertices and holes')
@@ -132,7 +132,7 @@ def _laplacian_matrix_w_holes(L, inner_vertices, holes):
     #Add columns
     for b_idx, b in enumerate(holes):
         #Hole contribution in original Laplacian matrix
-        Lb[b_idx] = coo_matrix(np.sum(L[b,:][:, inner_vertices], axis=0))
+        Lb[b_idx] = coo_matrix(np.sum(L[b, :][:, inner_vertices], axis=0))
 
         #Add on the values at the right-hand side of the matrix
         L_holes = hstack((L_holes, Lb[b_idx].T))
@@ -140,7 +140,7 @@ def _laplacian_matrix_w_holes(L, inner_vertices, holes):
     #Add rows, including new diagonal
     for b_idx, b in enumerate(holes):
         #Construct the added-on diagonal part
-        concat = np.zeros((len(holes),1))
+        concat = np.zeros((len(holes), 1))
         concat[b_idx] = -np.sum(Lb[b_idx])
 
         #Add on the values at the bottom of the matrix, including the diagonal part
@@ -213,7 +213,7 @@ def mass_matrix(mesh, lumped=False, inner_vertices=None, holes=None):
     return M
 
 
-def _mass_matrix_w_holes(M, inner_vertices, holes, lumped=False):
+def _mass_matrix_w_holes(M, inner_vertices, holes):
     '''
     Computes mass matrix of mesh with added holes (see laplacian_matrix_w_holes)
     '''
@@ -222,7 +222,7 @@ def _mass_matrix_w_holes(M, inner_vertices, holes, lumped=False):
     m = M.diagonal()
 
     M_holes = Minner.diagonal()
-    for b_idx, b in enumerate(holes):
+    for b in holes:
         M_holes = np.concatenate((M_holes, np.array([np.sum(m[b])])))
 
     M_holes = spdiags(M_holes, diags=0, m=M_holes.shape[0], n=M_holes.shape[0], format='csr')
@@ -386,3 +386,4 @@ def curl(vecs, mesh):
 #    L2 = Dx @ Gx + Dy @ Gy + Dz @ Gz
 #    Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
 #    L3 = Cx @ Gx + Cy @ Gy + Cz @ Gz
+    
