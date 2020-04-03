@@ -10,6 +10,7 @@ import pickle
 from mayavi import mlab
 import trimesh
 import numpy as np
+from scipy.sparse import issparse
 
 from . import utils
 from .mesh_calculus import laplacian_matrix, mass_matrix
@@ -501,10 +502,16 @@ class CouplingMatrix:
             M = M @ self.parent.basis
 
         elif self.matrix.ndim == 3:
-            Mnew = []
-            for n in range(3):
-                Mnew.append(M[:, n, :] @ self.parent.basis)
-            M = np.swapaxes(np.array(Mnew), 0, 1)
+            
+            #Handle both sparse and dense basis matrices quickly
+            if issparse(self.parent.basis):
+                Mnew = []
+                for n in range(3):
+                    Mnew.append(M[:, n, :] @ self.parent.basis)
+                M = np.swapaxes(np.array(Mnew), 0, 1)
+            else:
+                M = np.einsum('ijk,kl->ijl', M, self.parent.basis)
+
         else:
             raise ValueError('Matrix dimensions not ok')
 
