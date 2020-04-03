@@ -183,7 +183,7 @@ class SuhBasis():
             figure = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                                  size=figsize)
 
-        if isinstance(Nfuncs) == int:
+        if isinstance(Nfuncs, type(int)):
             N = Nfuncs
             indices = np.arange(Nfuncs)
         else:

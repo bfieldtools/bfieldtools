@@ -350,7 +350,7 @@ def _construct_quadratic_objective(objective, conductor):
 
         quadratic_matrix = conductor.resistance
 
-    elif isinstance(objective) == tuple:
+    elif isinstance(objective, type(tuple)):
 
         L = conductor.inductance
 
