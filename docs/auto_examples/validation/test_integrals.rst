@@ -1,15 +1,16 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_validation_test_integrals.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_validation_test_integrals.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_validation_test_integrals.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_validation_test_integrals.py:
 
 
 Integrals testing
 ==================================================
-
 
 
 .. code-block:: default
@@ -21,6 +22,7 @@ Integrals testing
 
     import trimesh
     from mayavi import mlab
+
 
 
 
@@ -48,7 +50,16 @@ Integrals testing
     scalars = np.zeros(7)
     scalars[0] = 1
 
-    #%% Linear dipole density
+
+
+
+
+
+
+
+
+.. code-block:: default
+
 
     # Sign ok
     points = np.array([[0.1, 1, 1],
@@ -88,7 +99,28 @@ Integrals testing
     mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces, scalars=(p1-p2)[:,:,0].sum(axis=1)); mlab.colorbar()
 
 
-    #%%
+
+
+.. rst-class:: sphx-glr-script-out
+
+
+.. code-block:: pytb
+
+    Traceback (most recent call last):
+      File "d:\anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py", line 460, in _memory_usage
+        out = func()
+      File "d:\anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py", line 442, in __call__
+        exec(self.code, self.fake_main.__dict__)
+      File "C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\validation\test_integrals.py", line 49, in <module>
+        p2 = t2(RR, mesh.face_normals, mesh.area_faces, planar=False)
+    TypeError: triangle_potential_dipole_linear() got an unexpected keyword argument 'planar'
+
+
+
+
+
+.. code-block:: default
+
     points = np.zeros((100,3))
     points[:,2] = np.linspace(-1,1,100)
     from bfieldtools.integrals_old import omega as omega1
@@ -106,7 +138,10 @@ Integrals testing
     mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
 
 
-    #%% Plot x_i
+
+
+.. code-block:: default
+
 
     from bfieldtools.integrals import x_distance
     RR =  mesh2.vertices[:, None, None, :] - mesh.vertices[None, mesh.faces]
@@ -117,7 +152,10 @@ Integrals testing
     mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
 
 
-    #%% Uniform charge density
+
+
+.. code-block:: default
+
     from bfieldtools.integrals_old import triangle_potential_uniform as u1
     from bfieldtools.integrals import triangle_potential_uniform as u2
 
@@ -138,7 +176,10 @@ Integrals testing
     mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
 
 
-    #%%
+
+
+.. code-block:: default
+
     from bfieldtools.integrals import d_distance
     RR =  mesh2.vertices[:, None, None, :] - mesh.vertices[None, mesh.faces]
     ddist = d_distance(RR, mesh.face_normals)
@@ -148,7 +189,10 @@ Integrals testing
     mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, representation='wireframe')
     mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
 
-    #%%
+
+
+.. code-block:: default
+
     from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic_old
     from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic
 
@@ -162,7 +206,10 @@ Integrals testing
     mlab.quiver3d(*mesh2.vertices.T, *b2[:,:,0].T)
 
 
-    #%% gammma
+
+
+.. code-block:: default
+
     from bfieldtools.integrals_old import gamma0 as g1
     from bfieldtools.integrals import gamma0 as g2
 
@@ -183,29 +230,9 @@ Integrals testing
     plt.plot(p2[:,0,:])
 
 
-
-.. code-block:: pytb
-
-    Traceback (most recent call last):
-      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 474, in _memory_usage
-        multiprocess=True)
-      File "/l/conda-envs/mne/lib/python3.6/site-packages/memory_profiler.py", line 336, in memory_usage
-        returned = f(*args, **kw)
-      File "/l/conda-envs/mne/lib/python3.6/site-packages/sphinx_gallery/gen_rst.py", line 465, in __call__
-        exec(self.code, self.globals)
-      File "/l/bfieldtools/examples/validation/test_integrals.py", line 49, in <module>
-        p2 = t2(RR, mesh.face_normals, mesh.area_faces, planar=False)
-    TypeError: triangle_potential_dipole_linear() got an unexpected keyword argument 'planar'
-
-
-
-
-
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.560 seconds)
-
-**Estimated memory usage:**  42 MB
+   **Total running time of the script:** ( 0 minutes  0.150 seconds)
 
 
 .. _sphx_glr_download_auto_examples_validation_test_integrals.py:
@@ -218,13 +245,13 @@ Integrals testing
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: test_integrals.py <test_integrals.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: test_integrals.ipynb <test_integrals.ipynb>`
 

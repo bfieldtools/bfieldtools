@@ -7,16 +7,18 @@
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Biplanar coil design" href="biplanar_coil_design.html" />
-    <link rel="prev" title="High-order spherical harmonic biplanar coil design" href="spherical_harmonics_biplanar_coil_design.html" />
+    <link rel="prev" title="High-order spherical harmonic biplanar coil design" href="high_order_spherical_harmonics_coil.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -104,7 +106,7 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-coil-design-self-shielded-biplanar-coil-design-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-coil-design-self-shielded-biplanar-coil-design-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="analytical-self-shielded-biplanar-coil-design">
 <span id="sphx-glr-auto-examples-coil-design-self-shielded-biplanar-coil-design-py"></span><h1>Analytical self-shielded biplanar coil design<a class="headerlink" href="#analytical-self-shielded-biplanar-coil-design" title="Permalink to this headline">¶</a></h1>
@@ -121,7 +123,7 @@ and the geometry.</p>
 <span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">Conductor</span><span class="p">,</span> <span class="n">StreamFunction</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.conductor</span> <span class="k">import</span> <span class="n">Conductor</span><span class="p">,</span> <span class="n">StreamFunction</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="k">import</span> <span class="n">magnetic_field_coupling_analytic</span><span class="p">,</span> <span class="n">scalar_potential_coupling</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="k">import</span> <span class="n">scalar_contour</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="k">import</span> <span class="n">plot_3d_current_loops</span><span class="p">,</span> <span class="n">plot_data_on_vertices</span>
@@ -167,6 +169,10 @@ and the geometry.</p>
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_self-shielded_biplanar_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_self-shielded_biplanar_coil_design_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;mayavi.modules.surface.Surface object at 0x00000192FD83A1A8&gt;
+</pre></div>
+</div>
 <p>Compute inductances and coupling</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">M11</span> <span class="o">=</span> <span class="n">coil</span><span class="o">.</span><span class="n">inductance</span>
 <span class="n">M22</span> <span class="o">=</span> <span class="n">shieldcoil</span><span class="o">.</span><span class="n">inductance</span>
@@ -184,17 +190,17 @@ and the geometry.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing the inductance matrix...
 Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
 Estimating 34964 MiB required for 3184 by 3184 vertices...
-Computing inductance matrix in 80 chunks (11499 MiB memory free), when approx_far=True using more chunks is faster...
+Computing inductance matrix in 80 chunks (9151 MiB memory free), when approx_far=True using more chunks is faster...
 Computing 1/r-potential matrix
-Inductance matrix computation took 38.97 seconds.
+Inductance matrix computation took 51.80 seconds.
 Computing the inductance matrix...
 Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
 Estimating 34964 MiB required for 3184 by 3184 vertices...
-Computing inductance matrix in 80 chunks (11289 MiB memory free), when approx_far=True using more chunks is faster...
+Computing inductance matrix in 80 chunks (9013 MiB memory free), when approx_far=True using more chunks is faster...
 Computing 1/r-potential matrix
-Inductance matrix computation took 39.28 seconds.
+Inductance matrix computation took 51.73 seconds.
 Estimating 34964 MiB required for 3184 by 3184 vertices...
-Computing inductance matrix in 80 chunks (11177 MiB memory free), when approx_far=True using more chunks is faster...
+Computing inductance matrix in 80 chunks (8872 MiB memory free), when approx_far=True using more chunks is faster...
 Computing 1/r-potential matrix
 Computing coupling matrices
 l = 1 computed
@@ -261,10 +267,10 @@ l = 4 computed
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 24.04 seconds.
-Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 23.25 seconds.
-Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 106.70 seconds.
-Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 106.34 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 29.69 seconds.
+Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 29.43 seconds.
+Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 264.12 seconds.
+Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 137.45 seconds.
 </pre></div>
 </div>
 <p>Now, plot the field streamlines and scalar potential</p>
@@ -317,6 +323,10 @@ Computing scalar potential coupling matrix, 3184 vertices by 22500 target points
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_self-shielded_biplanar_coil_design_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_self-shielded_biplanar_coil_design_002.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>([], &lt;a list of 0 Text yticklabel objects&gt;)
+</pre></div>
+</div>
 <p>Do a quick 3D plot</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
            <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
@@ -326,14 +336,17 @@ Computing scalar potential coupling matrix, 3184 vertices by 22500 target points
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_self-shielded_biplanar_coil_design_003.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_self-shielded_biplanar_coil_design_003.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 11 minutes  54.460 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  11658 MB</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-self-shielded-biplanar-coil-design-py">
-<div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/dc2f992bd69cd010c0aae8f303524936/self-shielded_biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">self-shielded_biplanar_coil_design.py</span></code></a></p>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;mayavi.modules.surface.Surface object at 0x0000019282186780&gt;
+</pre></div>
 </div>
-<div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/ac201d89f64bc1a8ef4c9490e7a36ca5/self-shielded_biplanar_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">self-shielded_biplanar_coil_design.ipynb</span></code></a></p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 10 minutes  33.413 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-self-shielded-biplanar-coil-design-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/ecab8a3ca4d24f36a46aaa6a390571c8/self-shielded_biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">self-shielded_biplanar_coil_design.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/10c3e27979d99cfb3296d5ae881bd3c3/self-shielded_biplanar_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">self-shielded_biplanar_coil_design.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -352,7 +365,7 @@ Computing scalar potential coupling matrix, 3184 vertices by 22500 target points
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
     </p>
   </div>
 </footer>

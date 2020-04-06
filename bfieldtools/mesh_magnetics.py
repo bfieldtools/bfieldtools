@@ -3,10 +3,10 @@ Contains functions for calculating the coupling of surface current density in a
 triangle mesh to magnetic field as well as scalar and vector potentials.
 
 '''
-
+import time
 import numpy as np
 #from numba import jit
-import time
+
 
 from .utils import get_quad_points
 from .mesh_calculus import gradient_matrix
@@ -46,7 +46,8 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
     mu0 = 4 * np.pi * 1e-7
     coef = mu0 / (4 * np.pi)
 
-    print('Computing magnetic field coupling matrix, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
+    print('Computing magnetic field coupling matrix, %d vertices by %d target points... '%
+          (len(mesh.vertices), len(r)), end='')
     start = time.time()
 
     w_quad, r_quad = get_quad_points(mesh.vertices, mesh.faces, method='dunavant_0'+str(quad_degree))
@@ -116,7 +117,8 @@ def magnetic_field_coupling_analytic_old(mesh, r, Nchunks=None):
     from .integrals_old import omega, gamma0
     coef = 1e-7
 
-    print('Computing magnetic field coupling matrix analytically, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
+    print('Computing magnetic field coupling matrix analytically, %d vertices by %d target points... '%
+          (len(mesh.vertices), len(r)), end='')
     start = time.time()
 
     if Nchunks is None:
@@ -157,7 +159,7 @@ def magnetic_field_coupling_analytic_old(mesh, r, Nchunks=None):
     G = (Gx, Gy, Gz)
     for i in range(3):
         cc = coeffs*tn[:, i, None]
-        C[i] += cc[:,:,0] @ Rx + cc[:,:,1] @ Ry + cc[:,:,2] @ Rz
+        C[i] += cc[:, :, 0] @ Rx + cc[:, :, 1] @ Ry + cc[:, :, 2] @ Rz
         C[i] += -solid_angle @ G[i]
 
     duration = time.time() - start
@@ -195,7 +197,8 @@ def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
     from .integrals import omega, gamma0
     coef = 1e-7
 
-    print('Computing magnetic field coupling matrix analytically, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
+    print('Computing magnetic field coupling matrix analytically, %d vertices by %d target points... '%
+          (len(mesh.vertices), len(r)), end='')
     start = time.time()
 
     if Nchunks is None:
@@ -275,7 +278,8 @@ def scalar_potential_coupling(mesh, r, Nchunks=None, multiply_coeff=True,
         on the mesh to scalar potential at the evaluation points
     """
 
-    print('Computing scalar potential coupling matrix, %d vertices by %d target points... '%(len(mesh.vertices), len(r)), end='')
+    print('Computing scalar potential coupling matrix, %d vertices by %d target points... '%
+          (len(mesh.vertices), len(r)), end='')
     start = time.time()
 
     # Source and eval locations
@@ -289,7 +293,7 @@ def scalar_potential_coupling(mesh, r, Nchunks=None, multiply_coeff=True,
             Nchunks = 1
 
     R2chunks = np.array_split(R2, Nchunks, axis=0)
-    i0=0
+    i0 = 0
     Uf = np.zeros((R2.shape[0], mesh.faces.shape[0], 3))
     for R2chunk in R2chunks:
         RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
@@ -304,8 +308,8 @@ def scalar_potential_coupling(mesh, r, Nchunks=None, multiply_coeff=True,
                                                mesh.area_faces[far])
         else:
             Uf[i0:i1] = triangle_potential_dipole_linear(RRchunk, mesh.face_normals,
-                                                 mesh.area_faces)
-        i0=i1
+                                                         mesh.area_faces)
+        i0 = i1
 
 #     Accumulate the elements
     Uv = np.zeros((R2.shape[0], mesh.vertices.shape[0]))
@@ -365,6 +369,7 @@ def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2,
 #    R2chunks = np.array_split(R2, Nchunks, axis=0)
     R2chunks, ichunks = get_chunks(R2, Nchunks, chunk_clusters)
     i0=0
+
     Af = np.zeros((R2.shape[0], mesh.faces.shape[0]))
     print('Computing 1/r-potential matrix')    
 
@@ -381,7 +386,7 @@ def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2,
         else:
             Af[ichunk] = triangle_potential_uniform(RRchunk, mesh.face_normals, False)
 #        print((100*i1)//R2.shape[0], '% computed')
-        i0=i1
+        i0 = i1
 
     #Free some memory by deleting old variables
     del R1, R2, RRchunk, R2chunks, ichunks, temp
@@ -438,5 +443,3 @@ def _split_by_distance(mesh, RR, margin=3):
 
 #    print('near: %d, far: %d'%(len(near), len(far)))
     return near, far
-
-

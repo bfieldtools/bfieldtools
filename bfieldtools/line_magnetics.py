@@ -1,3 +1,9 @@
+'''
+Functions for working with current line segments
+
+'''
+
+
 import numpy as np
 from .integrals import omega
 
@@ -284,34 +290,34 @@ def flux(vertices, loops, vertices_other, Nquad=2):
     return np.sum(a * segments, axis=(1, 2, 3))
 
 
-
-if __name__ == "__main__":
-    """
-    Plot field of a circular current path
-
-    """
-    x = np.linspace(-1, 1, 200)
-    Ntheta = 5
-    theta = np.linspace(0, 2 * np.pi, Ntheta)
-    vertices = np.zeros((Ntheta, 3), dtype=np.float64)
-    vertices[:, 0] = np.cos(theta) * 0.1
-    vertices[:, 1] = np.sin(theta) * 0.1
-    vertices[:, 2] = 0.01
-
-    X, Y = np.meshgrid(x, x, indexing='ij')
-
-    points = np.zeros((3, X.size), dtype=np.float64)
-    points[0] = X.flatten()
-    points[1] = Y.flatten()
-
-    b1 = magnetic_field_current_loops(vertices, points.T, [np.arange(Ntheta)])[0]
-
-    from mayavi import mlab
-    mlab.figure()
-    q = mlab.quiver3d(*points, *b1.T)
-    q.glyph.glyph_source.glyph_position = 'center'
-
-    loops = np.array([np.arange(len(vertices)-1), np.array([3, 2, 1, 0])])
-    a1 = vector_potential(vertices, points.T, loops)[1]
-    q = mlab.quiver3d(*points, *a1.T, colormap='viridis')
-    q.glyph.glyph_source.glyph_position = 'center'
+#
+#if __name__ == "__main__":
+#    """
+#    Plot field of a circular current path
+#
+#    """
+#    x = np.linspace(-1, 1, 200)
+#    Ntheta = 5
+#    theta = np.linspace(0, 2 * np.pi, Ntheta)
+#    vertices = np.zeros((Ntheta, 3), dtype=np.float64)
+#    vertices[:, 0] = np.cos(theta) * 0.1
+#    vertices[:, 1] = np.sin(theta) * 0.1
+#    vertices[:, 2] = 0.01
+#
+#    X, Y = np.meshgrid(x, x, indexing='ij')
+#
+#    points = np.zeros((3, X.size), dtype=np.float64)
+#    points[0] = X.flatten()
+#    points[1] = Y.flatten()
+#
+#    b1 = magnetic_field_current_loops(vertices, points.T, [np.arange(Ntheta)])[0]
+#
+#    from mayavi import mlab
+#    mlab.figure()
+#    q = mlab.quiver3d(*points, *b1.T)
+#    q.glyph.glyph_source.glyph_position = 'center'
+#
+#    loops = np.array([np.arange(len(vertices)-1), np.array([3, 2, 1, 0])])
+#    a1 = vector_potential(vertices, points.T, loops)[1]
+#    q = mlab.quiver3d(*points, *a1.T, colormap='viridis')
+#    q.glyph.glyph_source.glyph_position = 'center'

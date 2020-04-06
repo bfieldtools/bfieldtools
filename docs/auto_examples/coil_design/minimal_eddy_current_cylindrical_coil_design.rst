@@ -1,10 +1,12 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_coil_design_minimal_eddy_current_cylindrical_coil_design.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_coil_design_minimal_eddy_current_cylindrical_coil_design.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_coil_design_minimal_eddy_current_cylindrical_coil_design.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_coil_design_minimal_eddy_current_cylindrical_coil_design.py:
 
 
 Coil with minimal eddy currents
@@ -21,7 +23,7 @@ The effects of eddy currents due to inductive interaction with the shield is min
     import trimesh
 
 
-    from bfieldtools.mesh_class import Conductor
+    from bfieldtools.conductor import Conductor
 
     from bfieldtools.coil_optimize import optimize_streamfunctions
     from bfieldtools.contour import scalar_contour
@@ -103,6 +105,9 @@ The effects of eddy currents due to inductive interaction with the shield is min
 
     face_normals didn't match triangles, ignoring!
     Calculating surface harmonics expansion...
+    Computing the laplacian matrix...
+    Computing the mass matrix...
+
 
 
 
@@ -165,6 +170,15 @@ Set up target  points and plot geometry
             :class: sphx-glr-multi-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <mayavi.modules.glyph.Glyph object at 0x000001D585B1A150>
+
 
 
 Compute C matrices that are used to compute the generated magnetic field
@@ -192,15 +206,16 @@ Compute C matrices that are used to compute the generated magnetic field
  .. code-block:: none
 
     Estimating 69923 MiB required for 4764 by 4764 vertices...
-    Computing inductance matrix in 140 chunks (10101 MiB memory free), when approx_far=True using more chunks is faster...
+    Computing inductance matrix in 180 chunks (8210 MiB memory free), when approx_far=True using more chunks is faster...
     Computing 1/r-potential matrix
     Computing the inductance matrix...
     Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
     Estimating 69923 MiB required for 4764 by 4764 vertices...
-    Computing inductance matrix in 160 chunks (9979 MiB memory free), when approx_far=True using more chunks is faster...
+    Computing inductance matrix in 180 chunks (8305 MiB memory free), when approx_far=True using more chunks is faster...
     Computing 1/r-potential matrix
-    Inductance matrix computation took 97.45 seconds.
-    Computing magnetic field coupling matrix, 4764 vertices by 672 target points... took 1.42 seconds.
+    Inductance matrix computation took 126.19 seconds.
+    Computing magnetic field coupling matrix, 4764 vertices by 672 target points... took 1.50 seconds.
+
 
 
 
@@ -267,8 +282,9 @@ Create bfield specifications used when optimizing the coil geometry
 
  .. code-block:: none
 
-    Computing magnetic field coupling matrix, 4764 vertices by 672 target points... took 1.22 seconds.
+    Computing magnetic field coupling matrix, 4764 vertices by 672 target points... took 1.46 seconds.
     Computing the resistance matrix...
+
 
 
 
@@ -287,7 +303,7 @@ Run QP solver
                                        solver_opts={'mosek_params':{mosek.iparam.num_threads: 8}}
                                        )
 
-    from bfieldtools.mesh_class import StreamFunction
+    from bfieldtools.conductor import StreamFunction
     shield.induced_s = StreamFunction(shield.M_coupling @ coil.s, shield)
 
 
@@ -303,14 +319,12 @@ Run QP solver
     Computing the inductance matrix...
     Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
     Estimating 69923 MiB required for 4764 by 4764 vertices...
-    Computing inductance matrix in 160 chunks (8960 MiB memory free), when approx_far=True using more chunks is faster...
+    Computing inductance matrix in 180 chunks (8574 MiB memory free), when approx_far=True using more chunks is faster...
     Computing 1/r-potential matrix
-    Inductance matrix computation took 102.11 seconds.
+    Inductance matrix computation took 127.74 seconds.
     Pre-existing problem not passed, creating...
     Passing parameters to problem...
     Passing problem to solver...
-    /l/conda-envs/mne/lib/python3.6/site-packages/cvxpy/reductions/solvers/solving_chain.py:170: UserWarning: You are solving a parameterized problem that is not DPP. Because the problem is not DPP, subsequent solves will not be faster than the first one.
-      "You are solving a parameterized problem that is not DPP. "
 
 
     Problem
@@ -340,49 +354,54 @@ Run QP solver
     Optimizer  - Cones                  : 1
     Optimizer  - Scalar variables       : 16530             conic                  : 402             
     Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
-    Factor     - setup time             : 0.50              dense det. time        : 0.00            
+    Factor     - setup time             : 0.25              dense det. time        : 0.00            
     Factor     - ML order time          : 0.00              GP order time          : 0.00            
     Factor     - nonzeros before factor : 8.06e+04          after factor           : 8.06e+04        
     Factor     - dense dim.             : 0                 flops                  : 1.33e+09        
     ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
-    0   3.2e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  4.27  
-    1   1.9e+01  5.9e-01  1.2e+00  -5.51e-01  6.314966278e+01   6.260479394e+01   5.9e-01  4.36  
-    2   1.3e+01  4.0e-01  8.7e-01  -3.18e-01  2.086352147e+02   2.083517407e+02   4.0e-01  4.44  
-    3   9.5e+00  2.9e-01  6.2e-01  -1.03e-01  7.110150519e+02   7.108741541e+02   2.9e-01  4.51  
-    4   6.9e+00  2.1e-01  5.1e-01  -2.17e-01  8.569354260e+02   8.571030006e+02   2.1e-01  4.58  
-    5   2.1e+00  6.5e-02  1.8e-01  -3.63e-01  6.462740473e+03   6.463820814e+03   6.5e-02  4.67  
-    6   9.4e-01  2.9e-02  6.2e-02  1.64e-01   1.550188042e+04   1.550256715e+04   2.9e-02  4.74  
-    7   4.2e-01  1.3e-02  2.2e-02  3.94e-01   2.266716792e+04   2.266764722e+04   1.3e-02  4.82  
-    8   3.6e-01  1.1e-02  1.9e-02  6.82e-01   2.341888345e+04   2.341938164e+04   1.1e-02  4.91  
-    9   1.6e-01  5.0e-03  6.7e-03  5.40e-01   2.854405860e+04   2.854438944e+04   5.0e-03  5.00  
-    10  4.9e-02  1.5e-03  1.4e-03  6.91e-01   3.274798622e+04   3.274816497e+04   1.5e-03  5.19  
-    11  7.8e-03  2.4e-04  1.2e-04  7.38e-01   3.533437395e+04   3.533442513e+04   2.4e-04  5.34  
-    12  2.4e-03  7.5e-05  2.1e-05  9.39e-01   3.583090193e+04   3.583091844e+04   7.5e-05  5.41  
-    13  9.0e-05  2.8e-06  1.5e-07  9.86e-01   3.605497779e+04   3.605497841e+04   2.8e-06  5.49  
-    14  1.3e-06  3.9e-08  3.9e-10  9.99e-01   3.606364887e+04   3.606364888e+04   3.9e-08  5.63  
-    15  1.0e-06  1.9e-08  3.8e-11  1.00e+00   3.606371080e+04   3.606371080e+04   1.9e-08  5.91  
-    16  4.7e-07  1.5e-08  6.4e-12  1.00e+00   3.606372634e+04   3.606372635e+04   1.5e-08  6.14  
-    17  4.7e-07  1.5e-08  2.0e-11  1.00e+00   3.606372652e+04   3.606372653e+04   1.5e-08  6.43  
-    18  8.2e-07  7.3e-09  9.6e-12  1.00e+00   3.606374976e+04   3.606374976e+04   7.3e-09  6.65  
-    19  8.2e-07  7.3e-09  9.6e-12  1.00e+00   3.606374976e+04   3.606374976e+04   7.3e-09  6.98  
-    20  7.9e-07  7.3e-09  1.7e-11  1.00e+00   3.606374977e+04   3.606374977e+04   7.3e-09  7.26  
-    21  2.9e-06  3.6e-09  9.4e-12  1.00e+00   3.606376139e+04   3.606376139e+04   3.6e-09  7.47  
-    22  2.9e-06  3.6e-09  9.4e-12  1.00e+00   3.606376139e+04   3.606376139e+04   3.6e-09  7.76  
-    23  2.9e-06  3.6e-09  9.4e-12  1.00e+00   3.606376139e+04   3.606376139e+04   3.6e-09  8.07  
-    24  2.8e-06  3.5e-09  1.9e-11  1.00e+00   3.606376176e+04   3.606376176e+04   3.5e-09  8.29  
-    25  3.5e-06  3.3e-09  6.2e-12  1.00e+00   3.606376246e+04   3.606376246e+04   3.3e-09  8.53  
-    26  3.5e-06  3.3e-09  6.2e-12  1.00e+00   3.606376246e+04   3.606376246e+04   3.3e-09  8.80  
-    27  3.5e-06  3.3e-09  1.2e-11  1.00e+00   3.606376247e+04   3.606376247e+04   3.3e-09  9.09  
-    28  1.1e-05  1.7e-09  1.0e-11  1.00e+00   3.606376774e+04   3.606376774e+04   1.7e-09  9.27  
-    29  1.1e-05  1.7e-09  1.0e-11  1.00e+00   3.606376774e+04   3.606376774e+04   1.7e-09  9.55  
-    Optimizer terminated. Time: 9.97    
+    0   3.2e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  4.97  
+    1   1.9e+01  5.9e-01  1.2e+00  -5.51e-01  6.314966279e+01   6.260479394e+01   5.9e-01  5.08  
+    2   1.3e+01  4.0e-01  8.7e-01  -3.18e-01  2.086352147e+02   2.083517407e+02   4.0e-01  5.19  
+    3   9.5e+00  2.9e-01  6.2e-01  -1.03e-01  7.110150519e+02   7.108741541e+02   2.9e-01  5.26  
+    4   6.9e+00  2.1e-01  5.1e-01  -2.17e-01  8.569354260e+02   8.571030006e+02   2.1e-01  5.36  
+    5   2.1e+00  6.5e-02  1.8e-01  -3.63e-01  6.462740473e+03   6.463820814e+03   6.5e-02  5.47  
+    6   9.4e-01  2.9e-02  6.2e-02  1.64e-01   1.550188042e+04   1.550256715e+04   2.9e-02  5.55  
+    7   4.2e-01  1.3e-02  2.2e-02  3.94e-01   2.266716792e+04   2.266764722e+04   1.3e-02  5.66  
+    8   3.6e-01  1.1e-02  1.9e-02  6.82e-01   2.341888345e+04   2.341938164e+04   1.1e-02  5.73  
+    9   1.6e-01  5.0e-03  6.7e-03  5.40e-01   2.854405860e+04   2.854438944e+04   5.0e-03  5.86  
+    10  4.9e-02  1.5e-03  1.4e-03  6.91e-01   3.274798622e+04   3.274816497e+04   1.5e-03  6.00  
+    11  7.8e-03  2.4e-04  1.2e-04  7.38e-01   3.533437395e+04   3.533442513e+04   2.4e-04  6.14  
+    12  2.4e-03  7.5e-05  2.1e-05  9.39e-01   3.583090147e+04   3.583091798e+04   7.5e-05  6.23  
+    13  9.0e-05  2.8e-06  1.5e-07  9.86e-01   3.605497785e+04   3.605497847e+04   2.8e-06  6.33  
+    14  1.3e-06  1.1e-07  9.0e-11  9.99e-01   3.606364888e+04   3.606364888e+04   3.9e-08  6.47  
+    15  1.1e-06  8.1e-08  8.1e-11  1.00e+00   3.606366437e+04   3.606366438e+04   3.4e-08  6.70  
+    16  1.1e-06  8.1e-08  4.5e-11  1.00e+00   3.606366440e+04   3.606366441e+04   3.4e-08  6.92  
+    17  1.1e-06  8.1e-08  4.5e-11  1.00e+00   3.606366440e+04   3.606366441e+04   3.4e-08  7.20  
+    18  1.3e-06  4.1e-08  1.4e-11  1.00e+00   3.606371861e+04   3.606371861e+04   1.7e-08  7.41  
+    19  1.0e-06  3.5e-08  1.7e-11  1.00e+00   3.606372540e+04   3.606372541e+04   1.5e-08  7.59  
+    20  6.7e-07  3.3e-08  2.1e-11  1.00e+00   3.606372838e+04   3.606372838e+04   1.4e-08  7.80  
+    21  6.1e-07  3.3e-08  2.3e-11  1.00e+00   3.606372847e+04   3.606372847e+04   1.4e-08  8.02  
+    22  4.2e-07  3.1e-08  8.8e-12  1.00e+00   3.606373125e+04   3.606373125e+04   1.3e-08  8.22  
+    23  4.2e-07  3.1e-08  1.4e-11  1.00e+00   3.606373125e+04   3.606373126e+04   1.3e-08  8.50  
+    24  4.2e-07  3.1e-08  6.2e-12  1.00e+00   3.606373191e+04   3.606373191e+04   1.3e-08  8.70  
+    25  5.5e-06  1.5e-08  9.6e-12  1.00e+00   3.606375245e+04   3.606375246e+04   6.4e-09  8.91  
+    26  5.4e-06  1.5e-08  1.5e-11  1.00e+00   3.606375249e+04   3.606375250e+04   6.4e-09  9.13  
+    27  5.8e-06  7.5e-09  4.0e-12  1.00e+00   3.606376275e+04   3.606376276e+04   3.2e-09  9.30  
+    28  5.8e-06  7.5e-09  4.0e-12  1.00e+00   3.606376275e+04   3.606376276e+04   3.2e-09  9.53  
+    29  5.8e-06  7.5e-09  4.0e-12  1.00e+00   3.606376275e+04   3.606376276e+04   3.2e-09  9.78  
+    30  5.8e-06  7.5e-09  3.1e-12  1.00e+00   3.606376276e+04   3.606376276e+04   3.2e-09  10.05 
+    31  2.9e-06  3.8e-09  7.2e-12  1.00e+00   3.606376789e+04   3.606376789e+04   1.6e-09  10.25 
+    32  2.9e-06  3.8e-09  7.2e-12  1.00e+00   3.606376789e+04   3.606376789e+04   1.6e-09  10.52 
+    33  2.9e-06  3.8e-09  7.2e-12  1.00e+00   3.606376789e+04   3.606376789e+04   1.6e-09  10.75 
+    Optimizer terminated. Time: 11.14   
 
 
     Interior-point solution summary
       Problem status  : PRIMAL_AND_DUAL_FEASIBLE
       Solution status : OPTIMAL
-      Primal.  obj: 3.6063767744e+04    nrm: 7e+04    Viol.  con: 3e-08    var: 0e+00    cones: 0e+00  
-      Dual.    obj: 3.6063767744e+04    nrm: 5e+05    Viol.  con: 0e+00    var: 3e-08    cones: 0e+00  
+      Primal.  obj: 3.6063767888e+04    nrm: 7e+04    Viol.  con: 3e-08    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 3.6063767889e+04    nrm: 5e+05    Viol.  con: 0e+00    var: 3e-08    cones: 0e+00  
+
 
 
 
@@ -418,6 +437,7 @@ Plot coil windings and target points
 
 .. image:: /auto_examples/coil_design/images/sphx_glr_minimal_eddy_current_cylindrical_coil_design_004.png
     :class: sphx-glr-single-img
+
 
 
 
@@ -503,26 +523,28 @@ For comparison, let's see how the coils look when we ignore the conducting shiel
     Optimizer  - Cones                  : 1
     Optimizer  - Scalar variables       : 4434              conic                  : 402             
     Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
-    Factor     - setup time             : 0.08              dense det. time        : 0.00            
+    Factor     - setup time             : 0.06              dense det. time        : 0.00            
     Factor     - ML order time          : 0.00              GP order time          : 0.00            
     Factor     - nonzeros before factor : 8.06e+04          after factor           : 8.06e+04        
     Factor     - dense dim.             : 0                 flops                  : 3.55e+08        
     ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
-    0   3.2e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  0.97  
-    1   2.6e+01  7.9e-01  2.6e-01  1.74e+00   2.900745817e+01   2.819111151e+01   7.9e-01  0.99  
-    2   8.4e+00  2.6e-01  5.7e-02  1.64e+00   5.562629197e+01   5.547375887e+01   2.6e-01  1.01  
-    3   2.3e-01  7.3e-03  2.3e-04  1.29e+00   5.240829623e+01   5.240463761e+01   7.3e-03  1.04  
-    4   3.1e-02  9.5e-04  1.3e-05  1.01e+00   5.240018741e+01   5.239972995e+01   9.5e-04  1.08  
-    5   1.5e-03  4.6e-05  1.7e-07  1.00e+00   5.241813628e+01   5.241811480e+01   4.6e-05  1.10  
-    6   1.4e-07  4.4e-09  2.0e-13  1.00e+00   5.241917991e+01   5.241917991e+01   4.4e-09  1.14  
-    Optimizer terminated. Time: 1.17    
+    0   3.2e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  1.33  
+    1   2.5e+01  7.7e-01  2.5e-01  2.02e+00   3.758490047e+01   3.682062549e+01   7.7e-01  1.36  
+    2   1.6e+00  4.9e-02  9.2e-03  1.33e+00   5.286967142e+01   5.284269794e+01   4.9e-02  1.39  
+    3   1.0e-01  3.2e-03  1.0e-04  1.07e+00   5.245107002e+01   5.244907373e+01   3.2e-03  1.42  
+    4   2.1e-02  6.4e-04  1.1e-05  1.00e+00   5.241313400e+01   5.241274476e+01   6.4e-04  1.45  
+    5   1.7e-04  5.3e-06  8.5e-09  1.00e+00   5.241904987e+01   5.241904677e+01   5.3e-06  1.48  
+    6   1.7e-06  5.2e-08  8.7e-12  1.00e+00   5.241917851e+01   5.241917848e+01   5.2e-08  1.51  
+    7   3.5e-07  6.1e-09  1.5e-13  1.00e+00   5.241918001e+01   5.241917997e+01   1.4e-11  1.55  
+    Optimizer terminated. Time: 1.58    
 
 
     Interior-point solution summary
       Problem status  : PRIMAL_AND_DUAL_FEASIBLE
       Solution status : OPTIMAL
-      Primal.  obj: 5.2419179910e+01    nrm: 1e+02    Viol.  con: 1e-09    var: 0e+00    cones: 0e+00  
-      Dual.    obj: 5.2419179907e+01    nrm: 5e+01    Viol.  con: 3e-08    var: 2e-11    cones: 0e+00  
+      Primal.  obj: 5.2419180010e+01    nrm: 1e+02    Viol.  con: 5e-12    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 5.2419179969e+01    nrm: 5e+01    Viol.  con: 8e-11    var: 2e-09    cones: 0e+00  
+
 
 
 
@@ -577,14 +599,21 @@ Finally, let's compare the time-courses
     :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <matplotlib.collections.LineCollection object at 0x000001D58B0FAC18>
+
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 8 minutes  2.367 seconds)
-
-**Estimated memory usage:**  9017 MB
+   **Total running time of the script:** ( 8 minutes  20.019 seconds)
 
 
 .. _sphx_glr_download_auto_examples_coil_design_minimal_eddy_current_cylindrical_coil_design.py:
@@ -597,13 +626,13 @@ Finally, let's compare the time-courses
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: minimal_eddy_current_cylindrical_coil_design.py <minimal_eddy_current_cylindrical_coil_design.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: minimal_eddy_current_cylindrical_coil_design.ipynb <minimal_eddy_current_cylindrical_coil_design.ipynb>`
 

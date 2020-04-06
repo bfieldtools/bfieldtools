@@ -10,6 +10,7 @@ import pickle
 from mayavi import mlab
 import trimesh
 import numpy as np
+from scipy.sparse import issparse
 
 from . import utils
 from .mesh_calculus import laplacian_matrix, mass_matrix
@@ -133,9 +134,12 @@ class Conductor:
         # Set up physical properties and coupling matrices
         #######################################################################
 
+        # Matrices in inner-weight basis
+        self.matrices = {'laplacian': None, 'mass': None, 'inductance': None,
+                        'resistance': None}
 
-        self.__dict__['resistivity'] = resistivity
-        self.__dict__['thickness'] = thickness
+        self.resistivity = resistivity
+        self.thickness = thickness
 
         self.B_coupling = CouplingMatrix(self, magnetic_field_coupling)
         self.U_coupling = CouplingMatrix(self, scalar_potential_coupling)
@@ -145,9 +149,7 @@ class Conductor:
         self._alpha_coupling = None
         self._beta_coupling = None
 
-        # Matrices in inner-weight basis
-        self.matrices = {'laplacian': None, 'mass': None, 'inductance': None,
-                        'resistance': None}
+
 
         #######################################################################
         # Set up stream function basis
@@ -226,6 +228,9 @@ class Conductor:
 
     @property
     def laplacian(self):
+        '''
+        property-decorated wrapper
+        '''
         return self._laplacian()
 
     @matrixwrapper
@@ -239,6 +244,9 @@ class Conductor:
 
     @property
     def mass(self):
+        '''
+        property-decorated wrapper
+        '''
         return self._mass()
 
     @matrixwrapper
@@ -252,6 +260,9 @@ class Conductor:
 
     @property
     def inductance(self):
+        '''
+        property-decorated wrapper
+        '''
         return self._inductance()
 
     @matrixwrapper
@@ -265,8 +276,8 @@ class Conductor:
 
         inductance = self_inductance_matrix(self.mesh,
                                             Nchunks=self.opts['inductance_nchunks'],
-                                            quad_degree = self.opts['inductance_quad_degree'],
-                                            approx_far = self.opts['approx_far'],
+                                            quad_degree=self.opts['inductance_quad_degree'],
+                                            approx_far=self.opts['approx_far'],
                                             margin=self.opts['approx_far_margin'])
 
         duration = time() - start
@@ -277,6 +288,9 @@ class Conductor:
 
     @property
     def resistance(self):
+        '''
+        property-decorated wrapper
+        '''
         return self._resistance()
 
     @matrixwrapper
@@ -285,7 +299,7 @@ class Conductor:
         Back-end of resistance matrix computation
         '''
         sheet_resistance = self.resistivity / self.thickness
-        resistance =  resistance_matrix(self.mesh, sheet_resistance).toarray()
+        resistance = resistance_matrix(self.mesh, sheet_resistance).toarray()
 
         # Compensate for rank n-1 by adding offset, otherwise this
         # operator map constant vectors to zero
@@ -316,6 +330,9 @@ class Conductor:
 
     @property
     def sph_couplings(self):
+        '''
+        property-decorated wrapper
+        '''
         return self._sph_couplings()
 
     def _sph_couplings(self):
@@ -343,7 +360,7 @@ class Conductor:
 
         #If resistance-affecting parameter is changed after the resistance matrix has been computed,
         #then flush old result and re-compute
-        if (name == "resistivity" or name == "thickness") and self.matrices['resistance'] is not None:
+        if (name in ("resistivity", "thickness")) and self.matrices['resistance'] is not None:
             self.matrices['resistance'] = self._resistance() #Re-compute with new parameters
 
 
@@ -485,10 +502,16 @@ class CouplingMatrix:
             M = M @ self.parent.basis
 
         elif self.matrix.ndim == 3:
-            Mnew = []
-            for n in range(3):
-                Mnew.append(M[:, n, :] @ self.parent.basis)
-            M = np.swapaxes(np.array(Mnew), 0, 1)
+            
+            #Handle both sparse and dense basis matrices quickly
+            if issparse(self.parent.basis):
+                Mnew = []
+                for n in range(3):
+                    Mnew.append(M[:, n, :] @ self.parent.basis)
+                M = np.swapaxes(np.array(Mnew), 0, 1)
+            else:
+                M = np.einsum('ijk,kl->ijl', M, self.parent.basis)
+
         else:
             raise ValueError('Matrix dimensions not ok')
 
@@ -559,30 +582,44 @@ class StreamFunction(np.ndarray):
 
 
     def __repr__(self):
-        return '%s, %s,  basis: %s'%(self.__class__.__name__, self.view(np.ndarray).__repr__(), self.basis_name)
+        return '%s, %s,  basis: %s'%(self.__class__.__name__,
+                                     self.view(np.ndarray).__repr__(),
+                                     self.basis_name)
 
 
     @property
     def vert(self):
+        '''
+        Returns the stream function in vertex basis
+        '''
         return  self.basis @ self
 
 
     @property
     def inner(self):
+        '''
+        Returns the stream function in inner basis
+        '''
         if self.parent.basis_name == 'inner':
             return self
-        else:
-            return self.vert2inner @ self.basis @ self
+        
+        return self.vert2inner @ self.basis @ self
 
 
     @property
     def power(self):
+        '''
+        Stream-function resistive power
+        '''
         R = self.conductor.matrices['resistance']
         return 0.5 *  self.T @ self.basis.T @ R @ self.basis @ self
 
 
     @property
     def magnetic_energy(self):
+        '''
+        Stream-function magnetic energy
+        '''
         M = self.conductor.matrices['inductance']
         return 0.5 *  self.T @ self.basis.T @ M @ self.basis @ self
 
@@ -595,17 +632,17 @@ class StreamFunction(np.ndarray):
         mesh = self.conductor.mesh
         scalars = self.vert
         if 'vmin' not in kwargs.keys():
-            kwargs['vmin'] = - np.max(abs(scalars))
+            kwargs['vmin'] = -np.max(abs(scalars))
         if 'vmax' not in kwargs.keys():
-            kwargs['vmax'] =   np.max(abs(scalars))
+            kwargs['vmax'] = np.max(abs(scalars))
         
         s = plot_data_on_vertices(mesh, scalars, **kwargs)
         if contours:
             s.enable_contours=True
             s.contour.number_of_contours = contours
-            if background==True:
+            if background:
                 mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
-                                      color=(0.5,0.5,0.5), opacity=0.2)
+                                     color=(0.5, 0.5, 0.5), opacity=0.2)
 
         return s
 

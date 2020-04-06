@@ -1,17 +1,17 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_time_eigenvalue_decomp.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_time_eigenvalue_decomp.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_time_eigenvalue_decomp.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_time_eigenvalue_decomp.py:
 
 
 Computation time for shiftinvert eigenvalue decomp, remove?
 ===========================================================
 To validation or removed? New benchmarking folder?
-
-
 
 
 
@@ -49,14 +49,24 @@ To validation or removed? New benchmarking folder?
  .. code-block:: none
 
     Calculating surface harmonics expansion...
+    Computing the laplacian matrix...
+    Computing the mass matrix...
+    C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\time_eigenvalue_decomp.py:42: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+      t0=clock()
     Calculating surface harmonics expansion...
-    Time with shift invert: 1.618588
+    C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\time_eigenvalue_decomp.py:44: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+      print('Time with shift invert:', clock()-t0)
+    Time with shift invert: 0.14910089999999965
     0 0
     1 0
     2 0
     3 0
+    C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\time_eigenvalue_decomp.py:49: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+      t0=clock()
     Calculating surface harmonics expansion...
-    Time without shift invert: 6.142037
+    C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\time_eigenvalue_decomp.py:51: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
+      print('Time without shift invert:', clock()-t0)
+    Time without shift invert: 0.5939591999999987
     0 0
     1 0
     2 0
@@ -80,6 +90,8 @@ To validation or removed? New benchmarking folder?
     2 3
     3 3
     4 3
+
+    [<matplotlib.lines.Line2D object at 0x00000253FEC805F8>]
 
 
 
@@ -121,7 +133,7 @@ To validation or removed? New benchmarking folder?
     boundary, inner_verts = find_mesh_boundaries(mesh)
 
     closed=False
-    basis = SuhBasis(mesh, 1, inner_vertices=inner_verts)
+    basis = SuhBasis(mesh, 1)
 
     basis.Nc = 100
     t0=clock()
@@ -145,9 +157,7 @@ To validation or removed? New benchmarking folder?
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  5.460 seconds)
-
-**Estimated memory usage:**  191 MB
+   **Total running time of the script:** ( 0 minutes  9.632 seconds)
 
 
 .. _sphx_glr_download_auto_examples_time_eigenvalue_decomp.py:
@@ -160,13 +170,13 @@ To validation or removed? New benchmarking folder?
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: time_eigenvalue_decomp.py <time_eigenvalue_decomp.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: time_eigenvalue_decomp.ipynb <time_eigenvalue_decomp.ipynb>`
 

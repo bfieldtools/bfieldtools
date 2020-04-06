@@ -7,11 +7,13 @@
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -104,7 +106,7 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-validation-spherical-harmonics-bfield-validation-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-validation-spherical-harmonics-bfield-validation-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="spherical-harmonics-b-field-computation-validation">
 <span id="sphx-glr-auto-examples-validation-spherical-harmonics-bfield-validation-py"></span><h1>Spherical harmonics B-field computation validation<a class="headerlink" href="#spherical-harmonics-b-field-computation-validation" title="Permalink to this headline">¶</a></h1>
@@ -122,8 +124,8 @@ l = 9 computed
 l = 10 computed
 l = 11 computed
 l = 12 computed
-Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.17 seconds.
-Relative RMS error 0.6416322231111602
+Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.21 seconds.
+Relative RMS error 0.641632257631014
 </pre></div>
 </div>
 <div class="line-block">
@@ -134,7 +136,7 @@ Relative RMS error 0.6416322231111602
 <span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
 
 <span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="k">import</span> <span class="n">magnetic_field_coupling</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">Conductor</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.conductor</span> <span class="k">import</span> <span class="n">Conductor</span>
 
 <span class="kn">from</span> <span class="nn">bfieldtools.sphtools</span> <span class="k">import</span> <span class="n">compute_sphcoeffs_mesh</span>
 <span class="kn">from</span> <span class="nn">bfieldtools</span> <span class="k">import</span> <span class="n">sphtools</span>
@@ -182,13 +184,13 @@ Relative RMS error 0.6416322231111602
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Relative RMS error&#39;</span><span class="p">,</span>  <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">B1</span><span class="o">-</span><span class="n">B0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">B0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  39.992 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  51.704 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-validation-spherical-harmonics-bfield-validation-py">
-<div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/67d134fa1c63df76dadd6c4a97cb9255/spherical_harmonics_bfield_validation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">spherical_harmonics_bfield_validation.py</span></code></a></p>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/d094d3162223d1e9813b1fc49ba5e9ae/spherical_harmonics_bfield_validation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">spherical_harmonics_bfield_validation.py</span></code></a></p>
 </div>
-<div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/f620a1c6e4cbc348413cec05e9b7f1ff/spherical_harmonics_bfield_validation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">spherical_harmonics_bfield_validation.ipynb</span></code></a></p>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/f6914f478f2913c2a971dea8ab202478/spherical_harmonics_bfield_validation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">spherical_harmonics_bfield_validation.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -207,7 +209,7 @@ Relative RMS error 0.6416322231111602
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
     </p>
   </div>
 </footer>

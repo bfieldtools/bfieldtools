@@ -7,11 +7,13 @@
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -104,7 +106,7 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-coil-design-spherical-harmonics-coil-design-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-coil-design-spherical-harmonics-coil-design-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="spherical-harmonics-generating-coil-design">
 <span id="sphx-glr-auto-examples-coil-design-spherical-harmonics-coil-design-py"></span><h1>Spherical harmonics-generating coil design<a class="headerlink" href="#spherical-harmonics-generating-coil-design" title="Permalink to this headline">¶</a></h1>
@@ -120,7 +122,7 @@ spherical harmonics.</p>
 <span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">Conductor</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.conductor</span> <span class="k">import</span> <span class="n">Conductor</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="k">import</span> <span class="n">optimize_streamfunctions</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="k">import</span> <span class="n">scalar_contour</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="k">import</span> <span class="n">plot_3d_current_loops</span>
@@ -195,6 +197,10 @@ spherical harmonics.</p>
 <img alt="../../_images/sphx_glr_spherical_harmonics_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_spherical_harmonics_coil_design_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Calculating surface harmonics expansion...
+Computing the laplacian matrix...
+Computing the mass matrix...
+
+&lt;mayavi.modules.vectors.Vectors object at 0x000001310E5183B8&gt;
 </pre></div>
 </div>
 <p>Create bfield specifications used when optimizing the coil geometry</p>
@@ -224,9 +230,9 @@ l = 4 computed
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing the inductance matrix...
 Computing self-inductance matrix using rough quadrature (degree=2). For higher accuracy, set quad_degree to 4 or more.
 Estimating 34964 MiB required for 3184 by 3184 vertices...
-Computing inductance matrix in 100 chunks (7503 MiB memory free), when approx_far=True using more chunks is faster...
-Computing potential matrix
-Inductance matrix computation took 52.38 seconds.
+Computing inductance matrix in 80 chunks (8840 MiB memory free), when approx_far=True using more chunks is faster...
+Computing 1/r-potential matrix
+Inductance matrix computation took 56.65 seconds.
 Pre-existing problem not passed, creating...
 Passing parameters to problem...
 Passing problem to solver...
@@ -257,30 +263,29 @@ Optimizer  - threads                : 8
 Optimizer  - solved problem         : the dual
 Optimizer  - Constraints            : 81
 Optimizer  - Cones                  : 1
-Optimizer  - Scalar variables       : 130               conic                  : 82
+Optimizer  - Scalar variables       : 110               conic                  : 82
 Optimizer  - Semi-definite variables: 0                 scalarized             : 0
 Factor     - setup time             : 0.00              dense det. time        : 0.00
 Factor     - ML order time          : 0.00              GP order time          : 0.00
 Factor     - nonzeros before factor : 3321              after factor           : 3321
-Factor     - dense dim.             : 0                 flops                  : 8.61e+05
+Factor     - dense dim.             : 0                 flops                  : 7.96e+05
 ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME
-0   1.0e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  0.03
-1   3.6e+00  3.5e-01  7.8e-01  -6.16e-01  6.843060430e-01   5.766876460e-01   3.5e-01  0.07
-2   1.7e+00  1.7e-01  3.8e-01  -2.47e-01  4.307239132e+00   4.600847171e+00   1.7e-01  0.07
-3   7.7e-01  7.5e-02  1.4e-01  6.35e-02   1.122605585e+01   1.148745057e+01   7.5e-02  0.07
-4   1.0e-01  1.0e-02  4.8e-03  9.38e-01   1.770154008e+01   1.768332845e+01   1.0e-02  0.07
-5   1.5e-02  1.5e-03  2.2e-04  1.22e+00   1.883522060e+01   1.883138500e+01   1.5e-03  0.07
-6   4.1e-04  4.0e-05  1.4e-06  1.12e+00   1.904763480e+01   1.904768955e+01   4.0e-05  0.07
-7   6.9e-07  6.7e-08  9.3e-11  1.01e+00   1.905276377e+01   1.905276386e+01   6.7e-08  0.07
-8   9.5e-10  9.5e-11  5.4e-15  1.00e+00   1.905277126e+01   1.905277127e+01   4.5e-12  0.08
-Optimizer terminated. Time: 0.08
+0   4.0e+00  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  0.02
+1   9.8e-01  2.4e-01  4.4e-01  -4.16e-02  1.125986870e+00   1.036083846e+00   2.4e-01  0.02
+2   2.0e-01  5.0e-02  4.4e-02  3.29e-01   4.793669109e+00   4.753626457e+00   5.0e-02  0.02
+3   9.4e-03  2.3e-03  1.2e-04  1.42e+00   5.783225382e+00   5.775510486e+00   2.3e-03  0.02
+4   8.0e-04  2.0e-04  8.7e-06  1.22e+00   5.851111015e+00   5.850951896e+00   2.0e-04  0.02
+5   1.2e-05  3.0e-06  1.6e-08  1.01e+00   5.852809333e+00   5.852806982e+00   3.0e-06  0.02
+6   7.6e-08  1.9e-08  7.9e-12  1.00e+00   5.852851889e+00   5.852851874e+00   1.9e-08  0.02
+7   4.2e-10  6.5e-11  2.0e-15  1.00e+00   5.852852242e+00   5.852852241e+00   8.7e-12  0.02
+Optimizer terminated. Time: 0.02
 
 
 Interior-point solution summary
   Problem status  : PRIMAL_AND_DUAL_FEASIBLE
   Solution status : OPTIMAL
-  Primal.  obj: 1.9052771265e+01    nrm: 4e+01    Viol.  con: 1e-11    var: 0e+00    cones: 0e+00
-  Dual.    obj: 1.9052771268e+01    nrm: 6e+02    Viol.  con: 1e-08    var: 2e-10    cones: 0e+00
+  Primal.  obj: 5.8528522417e+00    nrm: 1e+01    Viol.  con: 1e-11    var: 0e+00    cones: 0e+00
+  Dual.    obj: 5.8528522410e+00    nrm: 2e+02    Viol.  con: 2e-09    var: 1e-10    cones: 0e+00
 </pre></div>
 </div>
 <p>Plot coil windings and target points</p>
@@ -301,16 +306,18 @@ Interior-point solution summary
 </div>
 <img alt="../../_images/sphx_glr_spherical_harmonics_coil_design_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_spherical_harmonics_coil_design_002.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.26 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.33 seconds.
+
+&lt;mayavi.modules.vectors.Vectors object at 0x000001310F7BB518&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  12.342 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  23.821 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-spherical-harmonics-coil-design-py">
-<div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/6b1d83973c057ef157ef81f35111086a/spherical_harmonics_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">spherical_harmonics_coil_design.py</span></code></a></p>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/d3b743a4e2e956b5631b06a55eb9e7af/spherical_harmonics_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">spherical_harmonics_coil_design.py</span></code></a></p>
 </div>
-<div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/f5148620e91d54e574af185d35212cdb/spherical_harmonics_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">spherical_harmonics_coil_design.ipynb</span></code></a></p>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/1a324113ecbda6139cb78dfbcbe13442/spherical_harmonics_coil_design.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">spherical_harmonics_coil_design.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -329,7 +336,7 @@ Interior-point solution summary
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
     </p>
   </div>
 </footer>

@@ -7,16 +7,18 @@
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="One-element validation" href="one_element.html" />
-    <link rel="prev" title="Linear dipole" href="validate_linear_dipole.html" />
+    <link rel="next" title="Linear dipole" href="validate_linear_dipole.html" />
+    <link rel="prev" title="Inductance computation time and memory benchmark" href="computation_time.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -104,29 +106,11 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-validation-validate-bfield-analytic-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-validation-validate-bfield-analytic-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="analytic-b-field-computation">
 <span id="sphx-glr-auto-examples-validation-validate-bfield-analytic-py"></span><h1>Analytic B-field computation<a class="headerlink" href="#analytic-b-field-computation" title="Permalink to this headline">¶</a></h1>
 <p>Validation of analytic mesh operator for magnetic field computation.</p>
-<img alt="../../_images/sphx_glr_validate_bfield_analytic_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_bfield_analytic_001.png" />
-<ul class="sphx-glr-horizontal">
-<li><img alt="../../_images/sphx_glr_validate_bfield_analytic_002.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_validate_bfield_analytic_002.png" />
-</li>
-<li><img alt="../../_images/sphx_glr_validate_bfield_analytic_003.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_validate_bfield_analytic_003.png" />
-</li>
-</ul>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.17 seconds.
-Computing magnetic field coupling matrix analytically, 676 vertices by 676 target points... took 0.56 seconds.
-Relative RMS error 0.005229286958362662
-Computing magnetic field coupling matrix, 4701 vertices by 100 target points... took 0.29 seconds.
-Computing magnetic field coupling matrix analytically, 4701 vertices by 100 target points... took 0.62 seconds.
-</pre></div>
-</div>
-<div class="line-block">
-<div class="line"><br /></div>
-</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
 <span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
@@ -134,7 +118,7 @@ Computing magnetic field coupling matrix analytically, 4701 vertices by 100 targ
 
 <span class="kn">from</span> <span class="nn">bfieldtools.mesh_calculus</span> <span class="k">import</span> <span class="n">gradient</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="k">import</span> <span class="n">magnetic_field_coupling</span><span class="p">,</span> <span class="n">magnetic_field_coupling_analytic</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_class</span> <span class="k">import</span> <span class="n">Conductor</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.conductor</span> <span class="k">import</span> <span class="n">Conductor</span>
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 
 
@@ -166,10 +150,17 @@ Computing magnetic field coupling matrix analytically, 4701 vertices by 100 targ
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">test_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B1</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Relative RMS error&#39;</span><span class="p">,</span>  <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">B1</span><span class="o">-</span><span class="n">B0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">B0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
-
-<span class="c1">#%% Test against analytic formula</span>
-<span class="c1">#Load simple plane mesh that is centered on the origin</span>
-<span class="n">file_obj</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;bfieldtools&#39;</span><span class="p">,</span>
+</pre></div>
+</div>
+<img alt="../../_images/sphx_glr_validate_bfield_analytic_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_bfield_analytic_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.20 seconds.
+Computing magnetic field coupling matrix analytically, 676 vertices by 676 target points... took 0.77 seconds.
+Relative RMS error 0.005229286958362796
+</pre></div>
+</div>
+<p>Load simple plane mesh that is centered on the origin</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">file_obj</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;bfieldtools&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;example_meshes/unit_disc.stl&#39;</span><span class="p">)</span>
 <span class="n">discmesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
@@ -202,14 +193,22 @@ Computing magnetic field coupling matrix analytically, 4701 vertices by 100 targ
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;B [T]&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.621 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  189 MB</p>
-<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-validation-validate-bfield-analytic-py">
-<div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/641aca383a51453c2ae86afc881fa364/validate_bfield_analytic.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">validate_bfield_analytic.py</span></code></a></p>
+<img alt="../../_images/sphx_glr_validate_bfield_analytic_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_bfield_analytic_002.png" />
+<img alt="../../_images/sphx_glr_validate_bfield_analytic_003.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_bfield_analytic_003.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 4701 vertices by 100 target points... took 0.38 seconds.
+Computing magnetic field coupling matrix analytically, 4701 vertices by 100 target points... took 0.83 seconds.
+
+Text(0, 0.5, &#39;B [T]&#39;)
+</pre></div>
 </div>
-<div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../../_downloads/4940449b8b99e8dbfebf5cb588fdb2ea/validate_bfield_analytic.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">validate_bfield_analytic.ipynb</span></code></a></p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.414 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-validation-validate-bfield-analytic-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/ffbc65844a59c658cc3fc589ad79358c/validate_bfield_analytic.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">validate_bfield_analytic.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/c267b0614804849dd6931f97c4428d99/validate_bfield_analytic.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">validate_bfield_analytic.ipynb</span></code></a></p>
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
@@ -228,7 +227,7 @@ Computing magnetic field coupling matrix analytically, 4701 vertices by 100 targ
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
     </p>
   </div>
 </footer>
