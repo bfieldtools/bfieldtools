@@ -31,7 +31,7 @@ def plot_mesh(mesh, cull_front=False, cull_back=False, figure=None, figsize=(800
 
 
 
-def plot_3d_current_loops(current_loops, colors=None, figure=None, figsize=(800, 800),
+def plot_3d_current_loops(current_loops, colors='auto', figure=None, figsize=(800, 800),
                           tube_radius=0.05, origin=np.array([0, 0, 0])):
     '''
     Plot current loops (e.g. contour_polys given by scalar_contour()) in 3D using mayavi.
