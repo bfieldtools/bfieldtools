@@ -230,7 +230,7 @@ def triangle_potential_uniform(R, tn, planar=False):
     return result
 
 
-def triangle_potential_approx(R, ta, reg=1e-12):
+def triangle_potential_approx(Rcenters, ta, reg=1e-12):
     """ 1/r potential of a uniform triangle using centroid approximation
 
         Calculates 1/R potentials for triangle centroids
@@ -239,8 +239,9 @@ def triangle_potential_approx(R, ta, reg=1e-12):
 
         Parameters
         ----------
-        R : (N, (Ntri), 3, 3) array
-            Displacement vectors (Neval, ...., Ntri_verts, xyz)
+        Rcenters : (N, (Ntri), 3) array
+            Displacement vectors (Neval, Ntri, xyz)
+            from triangle centers
         ta : (Ntri) array
             Triangle areas
 
@@ -254,7 +255,7 @@ def triangle_potential_approx(R, ta, reg=1e-12):
             in each triangle (Ntri) in the displacement vectors R
 
     """
-    result = 1/(norm(np.mean(R, axis=-2)) + reg)*ta
+    result = ta/(norm(Rcenters) + reg)
     return result
 
 
@@ -283,6 +284,28 @@ def potential_dipoles(R, face_normals, face_areas):
     Rquad = np.einsum('...ij,ik->...kj', R, weights)
     pot = np.einsum('ik, ...ijk->...ij', nn, Rquad)/(norm(Rquad)**3)
     pot = pot*(face_areas[:, None]/3)
+
+    return pot
+
+def potential_vertex_dipoles(R, vertex_normals, vertex_areas):
+    """ Approximate the potential of linearly varying dipole density by
+        by dipoles at each vertex
+
+    Parameters
+            R : ndarray (Neval, Nvertex, N_xyz)
+                Displacement vectors
+            vertex_normals: ndarray (Nvertex, 3)
+                normals for each triangle
+            vertex_areas: ndarray (Nvertex,)
+                areas for each triangle
+
+    Return
+        Potential approximation for vertex in each face
+        pot: (Neval, Ntri, Ntriverts)
+    """
+    nn = vertex_normals
+    pot = np.einsum('ik, lik->li', nn, R)/(norm(R)**3)
+    pot *= vertex_areas
 
     return pot
 

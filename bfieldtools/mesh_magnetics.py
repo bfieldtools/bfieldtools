@@ -378,10 +378,11 @@ def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2,
         RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
         i1 = i0+RRchunk.shape[0]
         if approx_far:
-            temp = np.zeros(RRchunk.shape[:-2])
-            near, far = _split_by_distance(mesh, RRchunk, margin)
+            RRchunk_centers = R2chunk[:,None,:] - mesh.triangles_center[None,:,:]
+            temp = np.zeros(RRchunk.shape[:2])
+            near, far = _split_by_distance_centers(mesh, RRchunk_centers, margin)
             temp[:,near] = triangle_potential_uniform(RRchunk[:, near], mesh.face_normals[near], False)
-            temp[:,far] = triangle_potential_approx(RRchunk[:, far], mesh.area_faces[far], reg=0)
+            temp[:,far] = triangle_potential_approx(RRchunk_centers[:, far], mesh.area_faces[far], reg=0)
             Af[ichunk] = temp
         else:
             Af[ichunk] = triangle_potential_uniform(RRchunk, mesh.face_normals, False)
@@ -428,16 +429,23 @@ def get_chunks(r, Nchunks, clusters=True):
         
     return rchunks, ichunks
 
+def _split_by_distance_centers(mesh, RR, margin=3):
+    avg_sidelength = np.sqrt(4/np.sqrt(3)*np.mean(mesh.area_faces[::100]))
+
+    RRnorm = np.linalg.norm(RR, axis=-1)
+    near = np.nonzero(np.min(RRnorm, axis=0) < avg_sidelength * margin)[0]
+
+    far = np.setdiff1d(np.arange(0, len(mesh.faces)), near, assume_unique=True)
+
+    return near, far
+
 
 def _split_by_distance(mesh, RR, margin=3):
     avg_sidelength = np.sqrt(4/np.sqrt(3)*np.mean(mesh.area_faces[::100]))
 #    np.mean(np.linalg.norm(np.diff(mesh.vertices[mesh.edges[::1000]], axis=1), axis=-1))
 
     RRnorm = np.linalg.norm(RR, axis=-1)
-    try:
-        near = np.nonzero(np.min(RRnorm, axis=(0, 2)) < avg_sidelength * margin)[0]
-    except ValueError:
-        near = 0
+    near = np.nonzero(np.min(RRnorm, axis=(0, 2)) < avg_sidelength * margin)[0]
 
     far = np.setdiff1d(np.arange(0, len(mesh.faces)), near, assume_unique=True)
 
