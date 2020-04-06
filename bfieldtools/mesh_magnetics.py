@@ -323,7 +323,8 @@ def scalar_potential_coupling(mesh, r, Nchunks=None, multiply_coeff=True,
     return Uv*coeff
 
 
-def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2):
+def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2,
+                              chunk_clusters=False):
     """
     Compute vector potential coupling matrices
     from linear stream functions using analytic integral
@@ -355,33 +356,36 @@ def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2):
     R1 = mesh.vertices[mesh.faces]
     R2 = r
 
-    if Nchunks is None:
-        if r.shape[0] > 1000:
-            Nchunks = r.shape[0]//100
-        else:
-            Nchunks = 1
-
-    R2chunks = np.array_split(R2, Nchunks, axis=0)
+#    if Nchunks is None:
+#        if r.shape[0] > 1000:
+#            Nchunks = r.shape[0]//100
+#        else:
+#            Nchunks = 1
+#
+#    R2chunks = np.array_split(R2, Nchunks, axis=0)
+    R2chunks, ichunks = get_chunks(R2, Nchunks, chunk_clusters)
     i0=0
     Af = np.zeros((R2.shape[0], mesh.faces.shape[0]))
-    print('Computing 1/r-potential matrix')
+    print('Computing 1/r-potential matrix')    
 
-    for chunk_idx, R2chunk in enumerate(R2chunks):
+    for ichunk, R2chunk in zip(ichunks, R2chunks):
 #        print('Computing chunk %d/%d'%(chunk_idx+1, Nchunks))
         RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
         i1 = i0+RRchunk.shape[0]
         if approx_far:
+            temp = np.zeros(RRchunk.shape[:-2])
             near, far = _split_by_distance(mesh, RRchunk, margin)
-            Af[i0:i1, near] = triangle_potential_uniform(RRchunk[:, near], mesh.face_normals[near], False)
-            Af[i0:i1, far] = triangle_potential_approx(RRchunk[:, far], mesh.area_faces[far], reg=0)
+            temp[:,near] = triangle_potential_uniform(RRchunk[:, near], mesh.face_normals[near], False)
+            temp[:,far] = triangle_potential_approx(RRchunk[:, far], mesh.area_faces[far], reg=0)
+            Af[ichunk] = temp
         else:
-            Af[i0:i1] = triangle_potential_uniform(RRchunk, mesh.face_normals, False)
+            Af[ichunk] = triangle_potential_uniform(RRchunk, mesh.face_normals, False)
 #        print((100*i1)//R2.shape[0], '% computed')
         i0=i1
 
     #Free some memory by deleting old variables
-    del R1, R2, RRchunk, R2chunks
-
+    del R1, R2, RRchunk, R2chunks, ichunks, temp
+    
     # Rotated gradients (currents)
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
     # Accumulate the elements
@@ -390,12 +394,45 @@ def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2):
     return Av*coeff
 
 
+def get_chunks(r, Nchunks, clusters=True):
+    """ Chunk points in 'r' to Nchunks 
+    
+        r : ndarray (Npoints, 3)
+    """
+    if Nchunks is None:
+        if r.shape[0] > 1000:
+            Nchunks = r.shape[0]//100
+        else:
+            Nchunks = 1
+    if clusters:
+        # Voronoi cells of random vertices
+        i_samples = np.random.randint(0,r.shape[0], Nchunks)
+        dists = np.linalg.norm(r[:, None, :] - r[None, i_samples, :], axis=-1)
+        labels = np.argmin(dists, axis=1)
+        # indices as boolean arrays
+        # Number of unique labels can be smaller than Nchunks if
+        # there are vertices without any points in their cells
+        ichunks = [labels==label for label in np.unique(labels)]
+        rchunks = [r[mask] for mask in ichunks]
+    else:
+        # Chunk r by array split and get the corresponding indices as slices
+        rchunks = np.array_split(r, Nchunks, axis=0)
+        lengths =  [len(ri) for ri in rchunks]
+        inds = np.cumsum([0]+lengths)
+        ichunks = [slice(inds[i],inds[i+1]) for i in range(len(lengths))]
+        
+    return rchunks, ichunks
+
+
 def _split_by_distance(mesh, RR, margin=3):
-    avg_sidelength = 8/np.sqrt(3)*np.mean(mesh.area_faces[::100])
+    avg_sidelength = np.sqrt(4/np.sqrt(3)*np.mean(mesh.area_faces[::100]))
 #    np.mean(np.linalg.norm(np.diff(mesh.vertices[mesh.edges[::1000]], axis=1), axis=-1))
 
     RRnorm = np.linalg.norm(RR, axis=-1)
-    near = np.nonzero(np.min(RRnorm, axis=(0, 2)) < avg_sidelength * margin)[0]
+    try:
+        near = np.nonzero(np.min(RRnorm, axis=(0, 2)) < avg_sidelength * margin)[0]
+    except ValueError:
+        near = 0
 
     far = np.setdiff1d(np.arange(0, len(mesh.faces)), near, assume_unique=True)
 

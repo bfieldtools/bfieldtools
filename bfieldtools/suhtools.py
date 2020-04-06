@@ -21,6 +21,8 @@ from . import conductor
 import trimesh 
 
 from scipy.sparse.linalg import eigsh
+from scipy.linalg import eigh
+
 import numpy as np
 from mayavi import mlab
 
@@ -29,7 +31,7 @@ class SuhBasis():
     """
 
     def __init__(self, obj, Nc, boundary_condition='dirichlet',
-                 magnetic=False):
+                 magnetic=False, solver_sparse=True):
         """
         Parameters
             obj : Trimesh-object representing the boundary on which
@@ -41,6 +43,7 @@ class SuhBasis():
                 are used the basis corresponds to inner_vertices
                 else with zero-Neumann condition ("neumann") 
                 the basis corresponds to all vertices
+              
         """
         
         if boundary_condition in ("dirichlet", "neumann"):
@@ -52,13 +55,14 @@ class SuhBasis():
           self.conductor = obj
         elif isinstance(obj, trimesh.Trimesh):
           # TODO defaults ok?
-          self.conductor = conductor.Conductor(mesh_obj=obj)
+          self.conductor = conductor.Conductor(mesh_obj=obj, resistance_full_rank=False)
         else:
           raise TypeError('obj type should be either Trimesh or Conductor')
         self.mesh = self.conductor.mesh
 
         self.Nc = Nc
-        self.magnetic=magnetic
+        self.magnetic = magnetic
+        self.solver_sparse = solver_sparse
         
         
         if self.bc == 'neumann':
@@ -70,15 +74,14 @@ class SuhBasis():
           self.holes = self.conductor.holes
           self.inner2vert = self.conductor.inner2vert
           
-        # TODO ends
         
         self.calculate_basis()
 
 
-    def calculate_basis(self, shiftinvert=False, v0=None):
+    def calculate_basis(self, shiftinvert=True, v0=None):
         """ Calculate basis functions as eigenfunctions of the laplacian
 
-            shiftinver: use shiftinvert mode to calculate eigenstuff faster
+            shiftinvert: use shiftinvert mode to calculate eigenstuff faster
                         (experimental)
         """
         print('Calculating surface harmonics expansion...')
@@ -88,7 +91,7 @@ class SuhBasis():
           L = self.conductor.laplacian
           M = self.conductor.mass
         else:
-          L = self.conductor.resistance
+          L = -self.conductor.resistance
           M = self.conductor.inductance
           
         self.mass = M
@@ -106,10 +109,16 @@ class SuhBasis():
         if v0 is None:
             v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
             
-        if shiftinvert:
-            u, v = eigsh(-L, N, M, sigma=0, which='LM', v0 = v0)
+        if (not self.magnetic) and self.solver_sparse:         
+          if shiftinvert:
+              u, v = eigsh(-L, N, M, sigma=0, which='LM', v0 = v0)
+          else:
+              u, v = eigsh(-L, N, M, which='SA', v0 = v0)
         else:
-            u, v = eigsh(-L, N, M, which='SA', v0 = v0)
+            if not self.magnetic:
+                L = L.toarray()
+                M = M.toarray()
+            u, v = eigh(-L, M, eigvals=(0, N))
 
         # The first function is constant and does not yield any field
         self.basis = v[:,N0:]
