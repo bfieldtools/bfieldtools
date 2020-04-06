@@ -214,8 +214,10 @@ class SuhBasis():
             tmp_mesh.vertices[:, 0] += i*dx
             tmp_mesh.vertices[:, 1] -= j*dy
 
-            #TODO
-            scalars = self.inner2vert @ self.basis[:, n]
+            if self.bc == 'neumann':
+                scalars = self.basis[:, n]
+            else:
+                scalars = self.inner2vert @ self.basis[:, n]
 
             s = plot_data_on_vertices(tmp_mesh, scalars, figure=figure, **kwargs)
 
