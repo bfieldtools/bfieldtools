@@ -20,6 +20,7 @@ from .suhtools import SuhBasis
 from .sphtools import compute_sphcoeffs_mesh
 from .viz import plot_mesh, plot_data_on_vertices
 from .contour import scalar_contour
+from .line_path import LinePath
 
 
 def matrixwrapper(func):
@@ -665,7 +666,7 @@ class StreamFunction(np.ndarray):
         contour_values: array-like
             Vector containing the scalar function value for each contour line
         '''
-        return scalar_contour(self.conductor.mesh, self.vert, N_contours=N_contours, contours=contours)
+        return LinePath(scalar_contour(self.conductor.mesh, self.vert, N_contours=N_contours, contours=contours))
 
 
 

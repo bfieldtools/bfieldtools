@@ -9,33 +9,77 @@ from trimesh.path import Path3D
 from trimesh.path.entities import Line
 
 from .viz import plot_3d_current_loops
+from .contour import scalar_contour, simplify_contour
 from . import line_magnetics
+
 
 
 
 class LinePath(Path3D):
     '''
-    Class that inherits Trimesh.path.Path3D for handling discretized current loops
+    Class that inherits Trimesh.path.Path3D for handling discretized current loops.
+    Functions inside assume that vertices are unique for each entity.
 
     '''
 
-    def __init__(self, loops):
+    def __init__(self, loops=None, mesh=None, scalars=None, **kwargs):
         '''
-        Init with inheritance 
+        Init with inheritance. First priority is given to passed loops parameter,
+        if not present will compute loops from mesh and scalars.
+        
+        Parameters
+        ----------
+        loops: list of array-like (x, 3)
+            Each list element corresponds to a Polyline (current loop), with the 
+            last element being connected to the first
+        mesh: Trimesh mesh object
+            mesh geometry
+        scalars: array-like or StreamFunction
+            scalar function defined in the vertices of the mesh
+        kwargs: dict
+            passed to scalar_contour if called. Relevant kw:s are N_contours
+            and contours
         '''
         vertices = np.zeros((0, 3))
         entities = []
         
+        if loops is None:
+            loops = scalar_contour(mesh, scalars, **kwargs)
+        
         for loop in loops:
-            
-            points = np.append(np.arange(0, len(loop)), 0) + len(vertices)
+            if np.all(loop[0] == loop[-1]):
+                points = np.arange(0, len(loop)) + len(vertices)
+            else: #Enforce closed loops
+                points = np.append(np.arange(0, len(loop)), 0) + len(vertices)
             entities.append(Line(points))
             
             vertices = np.append(vertices, loop, axis=0)      
         
-        
         Path3D.__init__(self, entities, vertices)
-        self.attr3 = 'three'
+        
+    def simplify(self, min_edge=1e-3, angle_threshold=2e-2, smooth=True):
+        '''
+        Simplifies contour paths
+        c: array-like
+            List of polygons describing closed loops.
+        min_edge: float
+            Minimum edge length. Edges shorter than this are merged.
+        angle_threshold: float
+            Minimum angle. Edges with smaller angle differences are merged.
+        smooth: bool
+            If True, apply smoothing to the polygon shapes.
+        
+        Returns
+        -------
+        simplified_linepath: LinePath
+        '''
+        simplified_loops = [simplify_contour(e.discrete(self.vertices),
+                                             min_edge,
+                                             angle_threshold,
+                                             smooth) for e in self.entities]
+    
+        return LinePath(simplified_loops)
+                                                         
         
     def plot_loops(self, **kwargs):
         '''
@@ -135,7 +179,8 @@ class LinePath(Path3D):
         if not separate_loops:
             Ufield = np.sum(Ufield, axis=0)
             
-        return Ufield      
+        return Ufield
+    
         
         
         

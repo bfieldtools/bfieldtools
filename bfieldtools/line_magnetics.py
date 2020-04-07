@@ -110,30 +110,7 @@ def magnetic_field(vertices, points):
     return field.T * 1e-7
 
 
-def magnetic_field_current_loops(vertices, points, loops):
-    """ B field for segmented current loops
-
-        Parameters
-        ----------
-        vertices: (N_line, 3) array
-            Vertices of the line with N_line-1 segments
-        points: (N_points, 3) array
-            Magnetic field evaluation points
-        loops: list
-            list of ordered indices defining closed loops of vertices,
-            if None use all vertices in the order of vertices.
-            Example: Giving array of 4 vertices, the closed loop can be
-            defined as loops = np.array([[0,1,2,3,0]])
-
-    """
-    bfield = np.zeros((len(loops), len(points), 3))
-    for ii, loop in enumerate(loops):
-        bfield[ii] = magnetic_field(vertices[loop], points)
-
-    return bfield
-
-
-def vector_potential(vertices, points, loops=None,
+def vector_potential(vertices, points,
                      reg=1e-12, symmetrize=True):
     """ Compute vector potential of a segmented line currents.
         Based on straightforward integration of 1/r potential over a line
@@ -144,29 +121,19 @@ def vector_potential(vertices, points, loops=None,
             by Hanson & Hirshman
 
 
-
         Parameters
         ----------
         vertices: (N_line, 3) array
             Vertices of the line with N_line-1 segments
         points: (N_points, 3) array
             Magnetic field evaluation points
-        loops: list
-            list of ordered indices defining closed loops of vertices,
-            if None use all vertices in the order of vertices.
-            All loops must have the same number of indices
-            (this could be changed in future)
-            Example: Giving array of 4 vertices, a closed loop can be
-            defined as loops = np.array([[0,1,2,3]])
-
-
         Returns
         -------
             Vector potential (Nloops, Npoints, 3)
 
     """
-    if loops is None:
-        loops = np.array([np.arange(len(vertices))])
+ 
+    loops = np.array([np.arange(len(vertices))])
 
     loops2 = np.roll(loops, -1, 1)
     loops1 = loops

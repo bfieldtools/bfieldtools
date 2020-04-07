@@ -15,7 +15,7 @@ from .mesh_calculus import gradient
 from . import conductor
 
 
-def scalar_contour(mesh, scalars, N_contours=10, contours=None):
+def scalar_contour(mesh, scalars, N_contours=10, contours=None, return_values=False):
     '''
     Computes contour loops (isolines) for a scalar function defined on a mesh.
     The winding direction of the loops is defined according to the rotated gradient of the scalar
@@ -31,6 +31,8 @@ def scalar_contour(mesh, scalars, N_contours=10, contours=None):
         Number of contours to generate
     contours: array-like
         Optional argument for manual input of contour levels. Overrides `N_contours`
+    return_values: Boolean
+        If True, also return contour values
 
     Returns
     -------
@@ -38,7 +40,8 @@ def scalar_contour(mesh, scalars, N_contours=10, contours=None):
         list with length `N_contours`. Each list element is anumpy array containing the
         coordinats of each polygon vertex.
     contour_values: array-like
-        Vector containing the scalar function value for each contour line
+        Vector containing the scalar function value for each contour line,
+        returned if return_values is True
     '''
 
     if isinstance(scalars, conductor.StreamFunction):
@@ -164,8 +167,10 @@ def scalar_contour(mesh, scalars, N_contours=10, contours=None):
 
             if k == kmax:
                 raise RuntimeWarning('Something wrong with the contours, number of max iterations exceeded')
-
-    return contour_polys, contour_values
+    if return_values:
+        return contour_polys, contour_values
+    
+    return contour_polys
 
 
 def simplify_contour(c, min_edge=1e-3, angle_threshold=2e-2, smooth=True):
