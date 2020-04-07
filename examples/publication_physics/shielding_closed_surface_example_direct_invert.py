@@ -135,8 +135,8 @@ for bi in  (b1,b2):
 
     # Plot
     # Extract the cross-sections of the plane and the surfaces
-    cc1 = scalar_contour(mesh1, mesh1.vertices[:,2], contours= [-0.001])[0][0]
-    cc2 = scalar_contour(mesh2, mesh2.vertices[:,2], contours= [-0.001])[0][0]
+    cc1 = scalar_contour(mesh1, mesh1.vertices[:,2], contours= [-0.001])[0]
+    cc2 = scalar_contour(mesh2, mesh2.vertices[:,2], contours= [-0.001])[0]
 
     B = (B1.T + B2.T)[:2].reshape(2, x.shape[0], y.shape[0])
     lw = np.sqrt(B[0]**2 + B[1]**2)
@@ -167,8 +167,8 @@ for bi in  (b1,b2):
 
     # Plot "coils"
     mlab.figure(bgcolor=(1,1,1))
-    contours1 = scalar_contour(mesh1, I1, 12)[0]
-    contours2 = scalar_contour(mesh2, I2, 12)[0]
+    contours1 = scalar_contour(mesh1, I1, 12)
+    contours2 = scalar_contour(mesh2, I2, 12)
 
 #    fig = plot_3d_current_loops(contours1, tube_radius=0.005, colors=(1,1,1))
     surf = mlab.triangular_mesh(*mesh1.vertices.T, mesh1.faces, scalars=I1,

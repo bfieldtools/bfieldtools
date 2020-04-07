@@ -147,7 +147,7 @@ coil.s, prob = optimize_streamfunctions(coil,
 
 N_contours = 6
 
-loops, loop_values= scalar_contour(coil.mesh, coil.s.vert, N_contours=N_contours)
+loops= scalar_contour(coil.mesh, coil.s.vert, N_contours=N_contours)
 
 if PLOT:
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),

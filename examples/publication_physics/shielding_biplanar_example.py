@@ -113,8 +113,8 @@ B2 = CB2 @ s2
 U1 = CU1 @ s1
 U2 = CU2 @ s2
 #%% Plot
-cc1 = scalar_contour(mesh1, mesh1.vertices[:,2], contours= [-0.001])[0]
-cc2 = scalar_contour(mesh2, mesh2.vertices[:,2], contours= [-0.001])[0]
+cc1 = scalar_contour(mesh1, mesh1.vertices[:,2], contours= [-0.001])
+cc2 = scalar_contour(mesh2, mesh2.vertices[:,2], contours= [-0.001])
 cx10 = cc1[0][:,1]
 cy10 = cc1[0][:,0]
 cx20 = cc2[0][:,1]
@@ -174,8 +174,8 @@ if N2%2==0:
 vmin = -dd*N2/2
 vmax = mm
 contour_vals2 = np.arange(vmin, vmax, dd)
-contours1 = scalar_contour(mesh1, s1.vert, contours=contour_vals1)[0]
-contours2 = scalar_contour(mesh2, s2.vert, contours=contour_vals2)[0]
+contours1 = scalar_contour(mesh1, s1.vert, contours=contour_vals1)
+contours2 = scalar_contour(mesh2, s2.vert, contours=contour_vals2)
 
 def setscene(scene1, coil):
     scene1.actor.mapper.interpolate_scalars_before_mapping = True

@@ -212,7 +212,7 @@ shield.induced_s = StreamFunction(shield.M_coupling @ coil.s, shield)
 # Plot coil windings and target points
 
 
-loops, loop_values= scalar_contour(coil.mesh, coil.s.vert, N_contours=6)
+loops= scalar_contour(coil.mesh, coil.s.vert, N_contours=6)
 
 #loops = [simplify_contour(loop, min_edge=1e-2, angle_threshold=2e-2, smooth=True) for loop in loops]
 
@@ -263,7 +263,7 @@ coil.unshielded_s, coil.unshielded_prob = optimize_streamfunctions(coil,
 
 shield.unshielded_induced_s = StreamFunction(shield.M_coupling @ coil.unshielded_s, shield)
 
-loops, loop_values= scalar_contour(coil.mesh, coil.unshielded_s.vert, N_contours=6)
+loops= scalar_contour(coil.mesh, coil.unshielded_s.vert, N_contours=6)
 if PLOT:
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                size=(600, 500))

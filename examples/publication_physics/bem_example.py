@@ -159,11 +159,11 @@ U2_prim = coil.U_coupling(points)
 
 #%%
 from bfieldtools.contour import scalar_contour
-cc1 = scalar_contour(planemesh, planemesh.vertices[:,2], contours= [-0.1])[0]
+cc1 = scalar_contour(planemesh, planemesh.vertices[:,2], contours= [-0.1])
 cc1 = np.vstack(cc1)
 cc1a = cc1[:cc1.shape[0]//2]
 cc1b = cc1[cc1.shape[0]//2:]
-cc2 = scalar_contour(shieldmesh, shieldmesh.vertices[:,2], contours= [-0.1])[0]
+cc2 = scalar_contour(shieldmesh, shieldmesh.vertices[:,2], contours= [-0.1])
 cc2 = np.vstack(cc2)
 cc2a = cc1[:cc2.shape[0]//2]
 cc2b = cc1[cc2.shape[0]//2:]
