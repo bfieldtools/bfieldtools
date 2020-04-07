@@ -106,7 +106,7 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-sph-test-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-sph-test-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="spherical-harmonics-test-remove">
 <span id="sphx-glr-auto-examples-sph-test-py"></span><h1>Spherical harmonics test, remove?<a class="headerlink" href="#spherical-harmonics-test-remove" title="Permalink to this headline">¶</a></h1>
@@ -130,52 +130,58 @@ nans in sph component  4 :  0
 nans in sph component  5 :  0
 nans in sph component  6 :  0
 nans in sph component  7 :  0
+
+&lt;mayavi.modules.surface.Surface object at 0x0000025453408308&gt;
 </pre></div>
 </div>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
-<span class="c1">#import sys</span>
-<span class="c1">#path = &#39;/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools&#39;</span>
-<span class="c1">#if path not in sys.path:</span>
+<span class="c1"># import sys</span>
+<span class="c1"># path = &#39;/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools&#39;</span>
+<span class="c1"># if path not in sys.path:</span>
 <span class="c1">#    sys.path.insert(0, path)</span>
 
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.sphtools</span> <span class="k">import</span> <span class="n">basis_fields</span><span class="p">,</span> <span class="n">ylm</span><span class="p">,</span> <span class="n">derxlm</span><span class="p">,</span> <span class="n">sinxlm</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.sphtools</span> <span class="kn">import</span> <span class="n">basis_fields</span><span class="p">,</span> <span class="n">ylm</span><span class="p">,</span> <span class="n">derxlm</span><span class="p">,</span> <span class="n">sinxlm</span>
 
-<span class="kn">from</span> <span class="nn">trimesh.creation</span> <span class="k">import</span> <span class="n">icosphere</span>
+<span class="kn">from</span> <span class="nn">trimesh.creation</span> <span class="kn">import</span> <span class="n">icosphere</span>
+
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">icosphere</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Positions of evaluation points&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Positions of evaluation points&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span>
 
-<span class="n">theta</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">0.999</span><span class="p">)</span>
-<span class="n">sp</span> <span class="o">=</span> <span class="n">sinxlm</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">0.999</span><span class="p">)</span>
+<span class="n">sp</span> <span class="o">=</span> <span class="n">sinxlm</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span>
 
-<span class="n">aa</span><span class="p">,</span> <span class="n">bb</span><span class="o">=</span> <span class="n">basis_fields</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">aa</span><span class="p">,</span> <span class="n">bb</span> <span class="o">=</span> <span class="n">basis_fields</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">aa</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;nans in sph component &#39;</span><span class="p">,</span> <span class="n">ii</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">aa</span><span class="p">[:,</span><span class="n">ii</span><span class="p">,:])</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;nans in sph component &quot;</span><span class="p">,</span> <span class="n">ii</span><span class="p">,</span> <span class="s2">&quot;: &quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">aa</span><span class="p">[:,</span> <span class="n">ii</span><span class="p">,</span> <span class="p">:])</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
 
 <span class="n">aa</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">aa</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">100</span>
 
 <span class="c1"># Plot the first component</span>
-<span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span>
-                     <span class="n">scalars</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">aa</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;RdBu&#39;</span><span class="p">)</span>
+<span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span>
+    <span class="n">scalars</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">aa</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+    <span class="n">colormap</span><span class="o">=</span><span class="s2">&quot;RdBu&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  7.691 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  129 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  9.302 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-sph-test-py">
-<div class="sphx-glr-download docutils container">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/e7411c184ad4602bb12e6eb8bebbbff3/sph_test.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">sph_test.py</span></code></a></p>
 </div>
-<div class="sphx-glr-download docutils container">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/3470cb032d527b94c3c2af4cd8e1aca8/sph_test.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">sph_test.ipynb</span></code></a></p>
 </div>
 </div>
@@ -195,7 +201,7 @@ nans in sph component  7 :  0
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.0.<br/>
     </p>
   </div>
 </footer>

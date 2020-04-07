@@ -19,15 +19,20 @@ def _fake_conductor(mesh_name="10x10_plane", **kwargs):
     return conductor.Conductor(mesh_obj=load_example_mesh(mesh_name), **kwargs)
 
 
-def _fake_streamfunction(vals=None, **kwargs):
+def _fake_streamfunction(vals=None, mesh_name="unit_disc", **kwargs):
     """
     Creates an example 'fake' StreamFunction object
     """
     if vals:
-        return conductor.StreamFunction(vals, _fake_conductor())
+        return conductor.StreamFunction(vals, _fake_conductor(mesh_name, **kwargs))
     else:
+        mesh = load_example_mesh(mesh_name)
 
-        return conductor.StreamFunction()
+        vals = 1 - np.linalg.norm(mesh.vertices, axis=1)
+
+        return conductor.StreamFunction(
+            vals, _fake_conductor(mesh_name, basis_name="vertex")
+        )
 
 
 def test_conductor_creation():
@@ -81,10 +86,42 @@ def test_conductor_attributes():
     """
     tests Conductor attributes
     """
-    pass
+    c = _fake_conductor("unit_disc")
+
+    c2 = _fake_conductor("unit_disc")
+    c2.mesh.vertices += np.array([0, 0, 1])
+
+    ind = c.inductance
+    m_ind = c.mutual_inductance(c2)
+
+    c2.sph_couplings()
+
+    # This should cause an error
+    try:
+        c.set_basis("foo")
+    except:
+        print("Failed as expected")
+
+    c.plot_mesh()
+
+    c.U_coupling(np.array([[0, 0, 2]]))
+    c.U_coupling.reset()
 
 
 def test_streamfunction_attributes():
     """
+    tests StreamFunction functionality
     """
-    pass
+    s = _fake_streamfunction(mesh_name="unit_disc")
+    s.__repr__()
+
+    assert len(s.inner) == len(s.conductor.inner_vertices)
+    assert len(s.vert) == len(s.conductor.mesh.vertices)
+
+    s.power
+    s.magnetic_energy
+
+    s.plot()
+    s.plot(contours=6)
+
+    lp = s.discretize(N_contours=6)

@@ -106,7 +106,7 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-validation-validate-line-charge-potential-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-validation-validate-line-charge-potential-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="line-charge">
 <span id="sphx-glr-auto-examples-validation-validate-line-charge-potential-py"></span><h1>Line charge<a class="headerlink" href="#line-charge" title="Permalink to this headline">¶</a></h1>
@@ -123,44 +123,49 @@ doi: 10.1109/10.293220</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
-<span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools&#39;</span>
-<span class="k">if</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
-    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">path</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.integrals</span> <span class="k">import</span> <span class="n">gamma0</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.utils</span> <span class="k">import</span> <span class="n">tri_normals_and_areas</span>
+<span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools&quot;</span>
+<span class="k">if</span> <span class="n">path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">bfieldtools.integrals</span> <span class="kn">import</span> <span class="n">gamma0</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.utils</span> <span class="kn">import</span> <span class="n">tri_normals_and_areas</span>
 </pre></div>
 </div>
 <p>%% Test potential shape slightly above the surface</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
-                   <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
-                   <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
 
-<span class="n">tris</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]])</span>
+<span class="n">tris</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
 <span class="n">p_tris</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">tris</span><span class="p">]</span>
 
 <span class="c1"># Evaluation points</span>
 <span class="n">Nx</span> <span class="o">=</span> <span class="mi">100</span>
 <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">Nx</span><span class="p">)</span>
-<span class="n">X</span><span class="p">,</span><span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s1">&#39;ij&#39;</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">xx</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;ij&quot;</span><span class="p">)</span>
 <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.1</span>
-<span class="n">p_eval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">,</span><span class="n">Z</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="n">p_eval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
 
 <span class="c1"># Difference vectors</span>
-<span class="n">RR</span> <span class="o">=</span> <span class="n">p_eval</span><span class="p">[:,</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,:]</span> <span class="o">-</span> <span class="n">p_tris</span><span class="p">[</span><span class="kc">None</span><span class="p">,:,:,:]</span>
+<span class="n">RR</span> <span class="o">=</span> <span class="n">p_eval</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">p_tris</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
 
 <span class="n">pot</span> <span class="o">=</span> <span class="n">gamma0</span><span class="p">(</span><span class="n">RR</span><span class="p">)</span>
 
 <span class="c1"># Plot shape</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">pot</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Nx</span><span class="p">),</span> <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span><span class="n">xx</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
-                                             <span class="n">xx</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="n">xx</span><span class="o">.</span><span class="n">min</span><span class="p">()))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+    <span class="n">pot</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Nx</span><span class="p">),</span>
+    <span class="n">extent</span><span class="o">=</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">xx</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">xx</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">xx</span><span class="o">.</span><span class="n">min</span><span class="p">()),</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_validate_line_charge_potential_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_line_charge_potential_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Text(0.5, 0, &#39;y&#39;)
+</pre></div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot; Test potential at directly at the edge. As the line has no</span>
 <span class="sd">    perpendicular dimensions, the potential is infinite at the edge.</span>
 <span class="sd">    The regularization factor given to the function apprximates the line</span>
@@ -171,42 +176,45 @@ doi: 10.1109/10.293220</p>
 <span class="sd">    The &quot;symmetrize&quot; option symmeterizes the result with respect to the</span>
 <span class="sd">    mid point. This removes errors (Nans) on the other continuoation of the edge</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="c1">#%%</span>
-<span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
-                   <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
-                   <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&#39; Test potential at directly at the edge. As the line has no\n    perpendicular dimensions, the potential is infinite at the edge.\n    The regularization factor given to the function apprximates the line\n    current with a small radius, giving rougly constant potential on the line.\n    The relative error between the regularized verison and\n    the infinitely thin line charge seems to be on the order of the &quot;reg&quot; value\n\n    The &quot;symmetrize&quot; option symmeterizes the result with respect to the\n    mid point. This removes errors (Nans) on the other continuoation of the edge\n&#39;
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
 
-<span class="n">tris</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]])</span>
+<span class="n">tris</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
 <span class="n">p_tris</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">tris</span><span class="p">]</span>
 
 <span class="c1"># Evaluation points</span>
 <span class="n">Nx</span> <span class="o">=</span> <span class="mi">1000</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">Nx</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="n">p_eval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+<span class="n">p_eval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
 
 <span class="c1"># Difference vectors</span>
-<span class="n">RR</span> <span class="o">=</span> <span class="n">p_eval</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,:]</span> <span class="o">-</span> <span class="n">p_tris</span><span class="p">[</span><span class="kc">None</span><span class="p">,:,:,:]</span>
+<span class="n">RR</span> <span class="o">=</span> <span class="n">p_eval</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">p_tris</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
 
 <span class="c1"># Regularize and symmetrize</span>
 <span class="n">pot</span> <span class="o">=</span> <span class="n">gamma0</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="mf">1e-13</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-<span class="n">pot0</span> <span class="o">=</span>  <span class="n">pot</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">pot0</span> <span class="o">=</span> <span class="n">pot</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pot0</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 <span class="c1"># Symmetrize, but do not regularize</span>
 <span class="n">pot</span> <span class="o">=</span> <span class="n">gamma0</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-<span class="n">pot1</span> <span class="o">=</span>  <span class="n">pot</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pot1</span><span class="p">,</span> <span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">pot1</span> <span class="o">=</span> <span class="n">pot</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pot1</span><span class="p">,</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="c1"># Neither</span>
 <span class="n">pot</span> <span class="o">=</span> <span class="n">gamma0</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-<span class="n">pot2</span> <span class="o">=</span> <span class="n">pot</span><span class="p">[:,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">pot2</span> <span class="o">=</span> <span class="n">pot</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pot2</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">((</span><span class="s1">&#39;reg + sym&#39;</span><span class="p">,</span> <span class="s1">&#39;sym&#39;</span><span class="p">,</span> <span class="s1">&#39;neither&#39;</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">((</span><span class="s2">&quot;reg + sym&quot;</span><span class="p">,</span> <span class="s2">&quot;sym&quot;</span><span class="p">,</span> <span class="s2">&quot;neither&quot;</span><span class="p">))</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Relative error&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">pot0</span><span class="o">-</span><span class="n">pot1</span><span class="p">)</span><span class="o">/</span><span class="n">pot1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Relative error&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">pot0</span> <span class="o">-</span> <span class="n">pot1</span><span class="p">)</span> <span class="o">/</span> <span class="n">pot1</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="sphx-glr-horizontal">
@@ -216,25 +224,28 @@ doi: 10.1109/10.293220</p>
 </li>
 </ul>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/l/bfieldtools/bfieldtools/integrals.py:54: RuntimeWarning: invalid value encountered in true_divide
-  res = np.log((nn1 + dotprods2 + reg) / (nn2 + dotprods1 + reg))
-/l/bfieldtools/bfieldtools/integrals.py:54: RuntimeWarning: divide by zero encountered in log
-  res = np.log((nn1 + dotprods2 + reg) / (nn2 + dotprods1 + reg))
-/l/bfieldtools/bfieldtools/integrals.py:60: RuntimeWarning: divide by zero encountered in true_divide
-  res2 = -np.log((nn1 - dotprods2 + reg) / (nn2 - dotprods1 + reg))
-/l/bfieldtools/bfieldtools/integrals.py:60: RuntimeWarning: invalid value encountered in true_divide
-  res2 = -np.log((nn1 - dotprods2 + reg) / (nn2 - dotprods1 + reg))
-/l/bfieldtools/examples/validation/validate_line_charge_potential.py:102: RuntimeWarning: invalid value encountered in true_divide
-  plt.plot(x, abs(pot0-pot1)/pot1)
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\bfieldtools\integrals.py:73: RuntimeWarning: invalid value encountered in true_divide
+  res = np.log((nn1 + dotprods1 + reg) / (nn2 + dotprods2 + reg))
+C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\bfieldtools\integrals.py:73: RuntimeWarning: divide by zero encountered in log
+  res = np.log((nn1 + dotprods1 + reg) / (nn2 + dotprods2 + reg))
+C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\bfieldtools\integrals.py:81: RuntimeWarning: divide by zero encountered in true_divide
+  (nn1[mask] - dotprods1[mask] + reg) / (nn2[mask] - dotprods2[mask] + reg)
+C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\bfieldtools\integrals.py:73: RuntimeWarning: invalid value encountered in true_divide
+  res = np.log((nn1 + dotprods1 + reg) / (nn2 + dotprods2 + reg))
+C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\bfieldtools\integrals.py:73: RuntimeWarning: divide by zero encountered in log
+  res = np.log((nn1 + dotprods1 + reg) / (nn2 + dotprods2 + reg))
+C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\validation\validate_line_charge_potential.py:101: RuntimeWarning: invalid value encountered in true_divide
+  plt.plot(x, abs(pot0 - pot1) / pot1)
+
+[&lt;matplotlib.lines.Line2D object at 0x0000025409DA30B8&gt;]
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.016 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  9 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.260 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-validation-validate-line-charge-potential-py">
-<div class="sphx-glr-download docutils container">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/75119b921b456856d95a1bbdadb382c3/validate_line_charge_potential.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">validate_line_charge_potential.py</span></code></a></p>
 </div>
-<div class="sphx-glr-download docutils container">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/464d692aee9abe69db80f4dcfa497401/validate_line_charge_potential.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">validate_line_charge_potential.ipynb</span></code></a></p>
 </div>
 </div>
@@ -254,7 +265,7 @@ doi: 10.1109/10.293220</p>
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.0.<br/>
     </p>
   </div>
 </footer>

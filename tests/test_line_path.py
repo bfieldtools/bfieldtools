@@ -26,12 +26,25 @@ def _fake_line_path():
     return line_path.LinePath(loops)
 
 
+def _fake_line_path_closed():
+    """
+    return synthetic LinePath
+    """
+    loops = [
+        np.array([[0, 0, 1], [0, 1, 0], [0, 2, 0], [1, 2, 1], [1, 1, 0], [0, 0, 1]]),
+        2
+        * np.array([[0, 0, 1], [2, 1, 0], [1, 2, 0], [1, 2, 1], [1, 1, 0], [0, 0, 1]]),
+    ]
+    return line_path.LinePath(loops)
+
+
 def test_line_path_functionality():
     """
-    Test LinePath creation
+    Test LinePath creation and functionality
     """
 
     lp = _fake_line_path()
+    lp2 = _fake_line_path_closed()
 
     lp.plot_loops()
 

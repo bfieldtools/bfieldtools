@@ -106,62 +106,78 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-interpolate-example-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-interpolate-example-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="interpolate-stream-function">
 <span id="sphx-glr-auto-examples-interpolate-example-py"></span><h1>Interpolate stream function<a class="headerlink" href="#interpolate-stream-function" title="Permalink to this headline">¶</a></h1>
 <p>Minimal example showing how to subdivide a mesh and interpolate a scalar function
 defined on that mesh to match.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvtk.api</span> <span class="k">import</span> <span class="n">tvtk</span>
-<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tvtk.api</span> <span class="kn">import</span> <span class="n">tvtk</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="k">import</span> <span class="n">eigh</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">eigh</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_calculus</span> <span class="k">import</span> <span class="n">laplacian_matrix</span><span class="p">,</span> <span class="n">mass_matrix</span>
-<span class="kn">from</span> <span class="nn">bfieldtools</span> <span class="k">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_calculus</span> <span class="kn">import</span> <span class="n">laplacian_matrix</span><span class="p">,</span> <span class="n">mass_matrix</span>
+<span class="kn">from</span> <span class="nn">bfieldtools</span> <span class="kn">import</span> <span class="n">utils</span>
 
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 </pre></div>
 </div>
 <p>Load a simple mesh and compute an example scalar function on it.
 In this case, the scalar function is an eigenvector of a generalized eigenvalue decomposition</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;bfieldtools&#39;</span><span class="p">,</span> <span class="s1">&#39;example_meshes/10x10_plane.obj&#39;</span><span class="p">))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+    <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s2">&quot;bfieldtools&quot;</span><span class="p">,</span> <span class="s2">&quot;example_meshes/10x10_plane.obj&quot;</span><span class="p">)</span>
+<span class="p">)</span>
 
 
-<span class="n">boundary_verts</span><span class="p">,</span> <span class="n">inner_verts</span><span class="p">,</span> <span class="n">boundary_tris</span><span class="p">,</span> <span class="n">inner_tris</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">find_mesh_boundaries</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span>
+<span class="n">boundary_verts</span><span class="p">,</span> <span class="n">inner_verts</span><span class="p">,</span> <span class="n">boundary_tris</span><span class="p">,</span> <span class="n">inner_tris</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">find_mesh_boundaries</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">edges</span>
+<span class="p">)</span>
 
 <span class="n">L</span> <span class="o">=</span> <span class="n">laplacian_matrix</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
 <span class="n">M</span> <span class="o">=</span> <span class="n">mass_matrix</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
 
-<span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">eigh</span><span class="p">(</span><span class="o">-</span><span class="n">L</span><span class="o">.</span><span class="n">todense</span><span class="p">()[</span><span class="n">inner_verts</span><span class="p">][:,</span><span class="n">inner_verts</span><span class="p">],</span> <span class="n">M</span><span class="o">.</span><span class="n">todense</span><span class="p">()[</span><span class="n">inner_verts</span><span class="p">][:,</span><span class="n">inner_verts</span><span class="p">])</span>
+<span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">eigh</span><span class="p">(</span>
+    <span class="o">-</span><span class="n">L</span><span class="o">.</span><span class="n">todense</span><span class="p">()[</span><span class="n">inner_verts</span><span class="p">][:,</span> <span class="n">inner_verts</span><span class="p">],</span> <span class="n">M</span><span class="o">.</span><span class="n">todense</span><span class="p">()[</span><span class="n">inner_verts</span><span class="p">][:,</span> <span class="n">inner_verts</span><span class="p">]</span>
+<span class="p">)</span>
 
 <span class="n">scalars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">scalars</span><span class="p">[</span><span class="n">inner_verts</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[:,</span><span class="mi">12</span><span class="p">]</span>
-
-
+<span class="n">scalars</span><span class="p">[</span><span class="n">inner_verts</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[:,</span> <span class="mi">12</span><span class="p">]</span>
 
 
 <span class="n">original_scalars</span> <span class="o">=</span> <span class="n">scalars</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">original_mesh</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Plot original scalars and mesh</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scene</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-               <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
-
-<span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="o">*</span><span class="n">original_mesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">original_mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">scalars</span><span class="o">=</span><span class="n">original_scalars</span><span class="p">,</span>
-                     <span class="n">representation</span><span class="o">=</span><span class="s1">&#39;wireframe&#39;</span><span class="p">)</span>
+<div class="sphx-glr-script-out highlight-pytb notranslate"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py&quot;</span>, line <span class="m">460</span>, in <span class="n">_memory_usage</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
+  File <span class="nb">&quot;D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py&quot;</span>, line <span class="m">442</span>, in <span class="n">__call__</span>
+    <span class="n">exec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fake_main</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+  File <span class="nb">&quot;C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\interpolate_example.py&quot;</span>, line <span class="m">33</span>, in <span class="n">&lt;module&gt;</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">edges</span>
+<span class="gr">TypeError</span>: <span class="n">find_mesh_boundaries() takes 1 positional argument but 3 were given</span>
 </pre></div>
 </div>
-<img alt="../_images/sphx_glr_interpolate_example_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_interpolate_example_001.png" />
+<p>Plot original scalars and mesh</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scene</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
+
+<span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">original_mesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+    <span class="n">original_mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span>
+    <span class="n">scalars</span><span class="o">=</span><span class="n">original_scalars</span><span class="p">,</span>
+    <span class="n">representation</span><span class="o">=</span><span class="s2">&quot;wireframe&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 <p>Now, interpolate scalars</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ug</span> <span class="o">=</span> <span class="n">tvtk</span><span class="o">.</span><span class="n">UnstructuredGrid</span><span class="p">(</span><span class="n">points</span><span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ug</span> <span class="o">=</span> <span class="n">tvtk</span><span class="o">.</span><span class="n">UnstructuredGrid</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span>
 
 <span class="n">ug</span><span class="o">.</span><span class="n">set_cells</span><span class="p">(</span><span class="n">tvtk</span><span class="o">.</span><span class="n">Triangle</span><span class="p">()</span><span class="o">.</span><span class="n">cell_type</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">)</span>
 <span class="n">ug</span><span class="o">.</span><span class="n">point_data</span><span class="o">.</span><span class="n">scalars</span> <span class="o">=</span> <span class="n">scalars</span>
-<span class="n">ug</span><span class="o">.</span><span class="n">point_data</span><span class="o">.</span><span class="n">scalars</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;scalars&#39;</span>
+<span class="n">ug</span><span class="o">.</span><span class="n">point_data</span><span class="o">.</span><span class="n">scalars</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;scalars&quot;</span>
 
 
 <span class="n">mesh</span> <span class="o">=</span> <span class="n">original_mesh</span><span class="o">.</span><span class="n">subdivide</span><span class="p">()</span><span class="o">.</span><span class="n">subdivide</span><span class="p">()</span>
@@ -169,21 +185,19 @@ In this case, the scalar function is an eigenvector of a generalized eigenvalue 
 </pre></div>
 </div>
 <p>Plot subdivided mesh and interpolated scalars</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scene</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-               <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">scene</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
 
-<span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">scalars</span><span class="o">=</span><span class="n">scalars</span><span class="p">,</span>
-                     <span class="n">representation</span><span class="o">=</span><span class="s1">&#39;wireframe&#39;</span><span class="p">)</span>
+<span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">scalars</span><span class="o">=</span><span class="n">scalars</span><span class="p">,</span> <span class="n">representation</span><span class="o">=</span><span class="s2">&quot;wireframe&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/sphx_glr_interpolate_example_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_interpolate_example_002.png" />
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.211 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  25 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.012 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-interpolate-example-py">
-<div class="sphx-glr-download docutils container">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/fe4530461aedba286e4637fab9b915bd/interpolate_example.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">interpolate_example.py</span></code></a></p>
 </div>
-<div class="sphx-glr-download docutils container">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/fe5c2700d4b7e3b44aae6fd24a131c50/interpolate_example.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">interpolate_example.ipynb</span></code></a></p>
 </div>
 </div>
@@ -203,7 +217,7 @@ In this case, the scalar function is an eigenvector of a generalized eigenvalue 
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.0.<br/>
     </p>
   </div>
 </footer>

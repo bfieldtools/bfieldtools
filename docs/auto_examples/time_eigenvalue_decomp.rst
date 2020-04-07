@@ -14,84 +14,22 @@ Computation time for shiftinvert eigenvalue decomp, remove?
 To validation or removed? New benchmarking folder?
 
 
-
-.. image:: /auto_examples/images/sphx_glr_time_eigenvalue_decomp_001.png
-    :class: sphx-glr-single-img
-
-.. rst-class:: sphx-glr-horizontal
-
-
-    *
-
-      .. image:: /auto_examples/images/sphx_glr_time_eigenvalue_decomp_002.png
-            :class: sphx-glr-multi-img
-
-    *
-
-      .. image:: /auto_examples/images/sphx_glr_time_eigenvalue_decomp_003.png
-            :class: sphx-glr-multi-img
-
-    *
-
-      .. image:: /auto_examples/images/sphx_glr_time_eigenvalue_decomp_004.png
-            :class: sphx-glr-multi-img
-
-    *
-
-      .. image:: /auto_examples/images/sphx_glr_time_eigenvalue_decomp_005.png
-            :class: sphx-glr-multi-img
-
-
 .. rst-class:: sphx-glr-script-out
 
- Out:
 
- .. code-block:: none
+.. code-block:: pytb
 
-    Calculating surface harmonics expansion...
-    Computing the laplacian matrix...
-    Computing the mass matrix...
-    C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\time_eigenvalue_decomp.py:42: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
-      t0=clock()
-    Calculating surface harmonics expansion...
-    C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\time_eigenvalue_decomp.py:44: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
-      print('Time with shift invert:', clock()-t0)
-    Time with shift invert: 0.14910089999999965
-    0 0
-    1 0
-    2 0
-    3 0
-    C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\time_eigenvalue_decomp.py:49: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
-      t0=clock()
-    Calculating surface harmonics expansion...
-    C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\time_eigenvalue_decomp.py:51: DeprecationWarning: time.clock has been deprecated in Python 3.3 and will be removed from Python 3.8: use time.perf_counter or time.process_time instead
-      print('Time without shift invert:', clock()-t0)
-    Time without shift invert: 0.5939591999999987
-    0 0
-    1 0
-    2 0
-    3 0
-    4 0
-    5 0
-    0 1
-    1 1
-    2 1
-    3 1
-    4 1
-    5 1
-    0 2
-    1 2
-    2 2
-    3 2
-    4 2
-    5 2
-    0 3
-    1 3
-    2 3
-    3 3
-    4 3
+    Traceback (most recent call last):
+      File "D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py", line 460, in _memory_usage
+        out = func()
+      File "D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py", line 442, in __call__
+        exec(self.code, self.fake_main.__dict__)
+      File "C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\time_eigenvalue_decomp.py", line 48, in <module>
+        basis.plot(4)
+      File "C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\bfieldtools\suhtools.py", line 205, in plot
+        N = len(indices)
+    TypeError: object of type 'int' has no len()
 
-    [<matplotlib.lines.Line2D object at 0x00000253FEC805F8>]
 
 
 
@@ -103,9 +41,9 @@ To validation or removed? New benchmarking folder?
 .. code-block:: default
 
 
-    #import sys
-    #path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
-    #if path not in sys.path:
+    # import sys
+    # path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
+    # if path not in sys.path:
     #    sys.path.insert(0, path)
 
     import numpy as np
@@ -119,34 +57,36 @@ To validation or removed? New benchmarking folder?
 
     # Create basis for a sphere (basis.eigenvals shere the same structure
     # as spherical harmonic eigenvalues)
-    #mesh = icosphere(4)
+    # mesh = icosphere(4)
 
     import pkg_resources
-    #Load simple plane mesh that is centered on the origin
-    file_obj = pkg_resources.resource_filename('bfieldtools',
-                    'example_meshes/10x10_plane_hires.obj')
+
+    # Load simple plane mesh that is centered on the origin
+    file_obj = pkg_resources.resource_filename(
+        "bfieldtools", "example_meshes/10x10_plane_hires.obj"
+    )
     mesh = trimesh.load(file_obj, process=True)
     t = np.eye(4)
-    t[1:3,1:3] = np.array([[0,1],[-1,0]])
+    t[1:3, 1:3] = np.array([[0, 1], [-1, 0]])
     mesh.apply_transform(t)
 
     boundary, inner_verts = find_mesh_boundaries(mesh)
 
-    closed=False
+    closed = False
     basis = SuhBasis(mesh, 1)
 
     basis.Nc = 100
-    t0=clock()
+    t0 = clock()
     basis.calculate_basis(shiftinvert=True)
-    print('Time with shift invert:', clock()-t0)
+    print("Time with shift invert:", clock() - t0)
     mlab.figure()
     basis.plot(4)
-    e1= basis.eigenvals
-    b1=basis.basis
-    t0=clock()
+    e1 = basis.eigenvals
+    b1 = basis.basis
+    t0 = clock()
     basis.calculate_basis(shiftinvert=False)
-    print('Time without shift invert:', clock()-t0)
-    b2=basis.basis
+    print("Time without shift invert:", clock() - t0)
+    b2 = basis.basis
     mlab.figure()
     basis.plot(23)
     e2 = basis.eigenvals
@@ -157,7 +97,7 @@ To validation or removed? New benchmarking folder?
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  9.632 seconds)
+   **Total running time of the script:** ( 0 minutes  2.230 seconds)
 
 
 .. _sphx_glr_download_auto_examples_time_eigenvalue_decomp.py:

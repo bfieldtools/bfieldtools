@@ -32,7 +32,7 @@ from .line_path import LinePath
 
 
 def matrixwrapper(func):
-    """ 
+    """
     Wrapper for lazy computation of Conductor matrices with basis change
     """
 
@@ -198,7 +198,7 @@ class Conductor:
             element corresponds to one vertex. The basis matrix changes basis
             of the operators so that a coefficient vector in the desired
             basis can be multiplied directly with the operator
-            
+
             basis_names : str 'vertex', 'inner' or 'suh'
         """
         from scipy.sparse import spdiags
@@ -646,7 +646,7 @@ class StreamFunction(np.ndarray):
         """
         Returns the stream function in inner basis
         """
-        if self.parent.basis_name == "inner":
+        if self.conductor.basis_name == "inner":
             return self
 
         return self.vert2inner @ self.basis @ self
@@ -656,7 +656,7 @@ class StreamFunction(np.ndarray):
         """
         Stream-function resistive power
         """
-        R = self.conductor.matrices["resistance"]
+        R = self.conductor.resistance
         return 0.5 * self.T @ self.basis.T @ R @ self.basis @ self
 
     @property
@@ -664,7 +664,7 @@ class StreamFunction(np.ndarray):
         """
         Stream-function magnetic energy
         """
-        M = self.conductor.matrices["inductance"]
+        M = self.conductor.inductance
         return 0.5 * self.T @ self.basis.T @ M @ self.basis @ self
 
     def plot(self, background=True, contours=False, **kwargs):
