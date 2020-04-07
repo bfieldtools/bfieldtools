@@ -130,7 +130,7 @@ coil.s, coil.prob = optimize_streamfunctions(coil,
 ##############################################################
 # Plot coil windings and target points
 
-loops, loop_values= scalar_contour(coil.mesh, coil.s.vert, N_contours=10)
+loops= scalar_contour(coil.mesh, coil.s.vert, N_contours=10)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
@@ -199,7 +199,7 @@ coil.s2, coil.prob2 = optimize_streamfunctions(coil,
 ##############################################################
 # Plot the newly designed coil windings and field at the target points
 
-loops, loop_values= scalar_contour(coil.mesh, coil.s2.vert, N_contours=10)
+loops= scalar_contour(coil.mesh, coil.s2.vert, N_contours=10)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))

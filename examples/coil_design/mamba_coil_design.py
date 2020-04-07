@@ -128,7 +128,7 @@ coil.j, prob = optimize_streamfunctions(coil,
 ###############################################################
 # Plot coil windings and target points
 
-loops, loop_values= scalar_contour(coil.mesh, coil.j, N_contours=10)
+loops= scalar_contour(coil.mesh, coil.j, N_contours=10)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
            size=(800, 800))
