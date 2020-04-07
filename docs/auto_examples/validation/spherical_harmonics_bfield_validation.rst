@@ -36,7 +36,7 @@ Spherical harmonics B-field computation validation
     l = 10 computed
     l = 11 computed
     l = 12 computed
-    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.21 seconds.
+    Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.22 seconds.
     Relative RMS error 0.641632257631014
 
 
@@ -63,13 +63,14 @@ Spherical harmonics B-field computation validation
 
     import pkg_resources
 
-    #Load simple plane mesh that is centered on the origin
-    file_obj = pkg_resources.resource_filename('bfieldtools',
-                        'example_meshes/10x10_plane.obj')
+    # Load simple plane mesh that is centered on the origin
+    file_obj = pkg_resources.resource_filename(
+        "bfieldtools", "example_meshes/10x10_plane.obj"
+    )
     coilmesh = trimesh.load(file_obj, process=False)
-    coil = Conductor(mesh_obj = coilmesh)
+    coil = Conductor(mesh_obj=coilmesh)
 
-    coil.mesh.vertices += np.array([0,-1,0])
+    coil.mesh.vertices += np.array([0, -1, 0])
     weights = np.zeros(coilmesh.vertices.shape[0])
     weights[coil.inner_vertices] = 1
 
@@ -89,22 +90,30 @@ Spherical harmonics B-field computation validation
     B0 = (magnetic_field_coupling(coilmesh, test_points) @ weights).T
     B1 = sphtools.field(test_points, alms, blms, lmax).T
 
-    s = mlab.triangular_mesh(*coilmesh.vertices.T, coilmesh.faces,
-                             scalars=weights, colormap='viridis')
+    s = mlab.triangular_mesh(
+        *coilmesh.vertices.T, coilmesh.faces, scalars=weights, colormap="viridis"
+    )
     s.enable_contours = True
     s.actor.property.render_lines_as_tubes = True
     s.actor.property.line_width = 3.0
 
-    mlab.quiver3d(*test_points.T, *B0, color=(1,0,0), scale_factor=0.5e7, vmin=0, vmax=2e-7)
-    mlab.quiver3d(*test_points.T, *B1, color=(0,0,1), scale_factor=0.5e7, vmin=0, vmax=2e-7)
+    mlab.quiver3d(
+        *test_points.T, *B0, color=(1, 0, 0), scale_factor=0.5e7, vmin=0, vmax=2e-7
+    )
+    mlab.quiver3d(
+        *test_points.T, *B1, color=(0, 0, 1), scale_factor=0.5e7, vmin=0, vmax=2e-7
+    )
     s.scene.isometric_view()
 
 
-    print('Relative RMS error',  np.sqrt(np.mean((B1-B0)**2))/np.sqrt(np.mean((B0)**2)))
+    print(
+        "Relative RMS error", np.sqrt(np.mean((B1 - B0) ** 2)) / np.sqrt(np.mean((B0) ** 2))
+    )
+
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  51.704 seconds)
+   **Total running time of the script:** ( 0 minutes  56.279 seconds)
 
 
 .. _sphx_glr_download_auto_examples_validation_spherical_harmonics_bfield_validation.py:

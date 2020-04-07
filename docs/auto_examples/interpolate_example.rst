@@ -1,10 +1,12 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_interpolate_example.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_interpolate_example.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_interpolate_example.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_interpolate_example.py:
 
 
 Interpolate stream function
@@ -12,7 +14,6 @@ Interpolate stream function
 
 Minimal example showing how to subdivide a mesh and interpolate a scalar function
 defined on that mesh to match.
-
 
 
 .. code-block:: default
@@ -37,6 +38,7 @@ defined on that mesh to match.
 
 
 
+
 Load a simple mesh and compute an example scalar function on it.
 In this case, the scalar function is an eigenvector of a generalized eigenvalue decomposition
 
@@ -44,20 +46,24 @@ In this case, the scalar function is an eigenvector of a generalized eigenvalue 
 .. code-block:: default
 
 
-    mesh = trimesh.load(pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane.obj'))
+    mesh = trimesh.load(
+        pkg_resources.resource_filename("bfieldtools", "example_meshes/10x10_plane.obj")
+    )
 
 
-    boundary_verts, inner_verts, boundary_tris, inner_tris = utils.find_mesh_boundaries(mesh.vertices, mesh.faces, mesh.edges)
+    boundary_verts, inner_verts, boundary_tris, inner_tris = utils.find_mesh_boundaries(
+        mesh.vertices, mesh.faces, mesh.edges
+    )
 
     L = laplacian_matrix(mesh)
     M = mass_matrix(mesh)
 
-    u, v = eigh(-L.todense()[inner_verts][:,inner_verts], M.todense()[inner_verts][:,inner_verts])
+    u, v = eigh(
+        -L.todense()[inner_verts][:, inner_verts], M.todense()[inner_verts][:, inner_verts]
+    )
 
     scalars = np.zeros(mesh.vertices.shape[0])
-    scalars[inner_verts] = v[:,12]
-
-
+    scalars[inner_verts] = v[:, 12]
 
 
     original_scalars = scalars.copy()
@@ -65,6 +71,19 @@ In this case, the scalar function is an eigenvector of a generalized eigenvalue 
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+
+.. code-block:: pytb
+
+    Traceback (most recent call last):
+      File "D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py", line 460, in _memory_usage
+        out = func()
+      File "D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py", line 442, in __call__
+        exec(self.code, self.fake_main.__dict__)
+      File "C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\interpolate_example.py", line 33, in <module>
+        mesh.vertices, mesh.faces, mesh.edges
+    TypeError: find_mesh_boundaries() takes 1 positional argument but 3 were given
 
 
 
@@ -75,20 +94,14 @@ Plot original scalars and mesh
 .. code-block:: default
 
 
-    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                   size=(800, 800))
+    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
 
-    mlab.triangular_mesh(*original_mesh.vertices.T, original_mesh.faces, scalars=original_scalars,
-                         representation='wireframe')
-
-
-
-
-
-
-.. image:: /auto_examples/images/sphx_glr_interpolate_example_001.png
-    :class: sphx-glr-single-img
-
+    mlab.triangular_mesh(
+        *original_mesh.vertices.T,
+        original_mesh.faces,
+        scalars=original_scalars,
+        representation="wireframe"
+    )
 
 
 
@@ -99,20 +112,15 @@ Now, interpolate scalars
 
 
 
-    ug = tvtk.UnstructuredGrid(points= mesh.vertices)
+    ug = tvtk.UnstructuredGrid(points=mesh.vertices)
 
     ug.set_cells(tvtk.Triangle().cell_type, mesh.faces)
     ug.point_data.scalars = scalars
-    ug.point_data.scalars.name = 'scalars'
+    ug.point_data.scalars.name = "scalars"
 
 
     mesh = original_mesh.subdivide().subdivide()
     scalars = mlab.pipeline.probe_data(ug, *mesh.vertices.T)
-
-
-
-
-
 
 
 
@@ -122,25 +130,16 @@ Plot subdivided mesh and interpolated scalars
 .. code-block:: default
 
 
-    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                   size=(800, 800))
+    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
 
-    mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars,
-                         representation='wireframe')
-
-
-.. image:: /auto_examples/images/sphx_glr_interpolate_example_002.png
-    :class: sphx-glr-single-img
-
-
-
+    mlab.triangular_mesh(
+        *mesh.vertices.T, mesh.faces, scalars=scalars, representation="wireframe"
+    )
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.211 seconds)
-
-**Estimated memory usage:**  25 MB
+   **Total running time of the script:** ( 0 minutes  0.012 seconds)
 
 
 .. _sphx_glr_download_auto_examples_interpolate_example.py:
@@ -153,13 +152,13 @@ Plot subdivided mesh and interpolated scalars
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: interpolate_example.py <interpolate_example.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: interpolate_example.ipynb <interpolate_example.ipynb>`
 

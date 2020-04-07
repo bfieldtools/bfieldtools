@@ -18,7 +18,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Linear dipole" href="validate_linear_dipole.html" />
-    <link rel="prev" title="Inductance computation time and memory benchmark" href="computation_time.html" />
+    <link rel="prev" title="Uniform triangle" href="validate_uniform_triangle.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -113,64 +113,71 @@
 <p>Validation of analytic mesh operator for magnetic field computation.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
-<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_calculus</span> <span class="k">import</span> <span class="n">gradient</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="k">import</span> <span class="n">magnetic_field_coupling</span><span class="p">,</span> <span class="n">magnetic_field_coupling_analytic</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.conductor</span> <span class="k">import</span> <span class="n">Conductor</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_calculus</span> <span class="kn">import</span> <span class="n">gradient</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">magnetic_field_coupling</span><span class="p">,</span>
+    <span class="n">magnetic_field_coupling_analytic</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.conductor</span> <span class="kn">import</span> <span class="n">Conductor</span>
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 
 
-<span class="c1">#Load simple plane mesh that is centered on the origin</span>
-<span class="n">file_obj</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;bfieldtools&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;example_meshes/10x10_plane.obj&#39;</span><span class="p">)</span>
+<span class="c1"># Load simple plane mesh that is centered on the origin</span>
+<span class="n">file_obj</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span>
+    <span class="s2">&quot;bfieldtools&quot;</span><span class="p">,</span> <span class="s2">&quot;example_meshes/10x10_plane.obj&quot;</span>
+<span class="p">)</span>
 <span class="n">coilmesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">coil</span> <span class="o">=</span> <span class="n">Conductor</span><span class="p">(</span><span class="n">mesh_obj</span> <span class="o">=</span> <span class="n">coilmesh</span><span class="p">)</span>
+<span class="n">coil</span> <span class="o">=</span> <span class="n">Conductor</span><span class="p">(</span><span class="n">mesh_obj</span><span class="o">=</span><span class="n">coilmesh</span><span class="p">)</span>
 <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">weights</span><span class="p">[</span><span class="n">coil</span><span class="o">.</span><span class="n">inner_vertices</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
-<span class="n">test_points</span> <span class="o">=</span> <span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">test_points</span> <span class="o">=</span> <span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 
 <span class="n">B0</span> <span class="o">=</span> <span class="n">magnetic_field_coupling</span><span class="p">(</span><span class="n">coilmesh</span><span class="p">,</span> <span class="n">test_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">weights</span>
 <span class="n">B1</span> <span class="o">=</span> <span class="n">magnetic_field_coupling_analytic</span><span class="p">(</span><span class="n">coilmesh</span><span class="p">,</span> <span class="n">test_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">weights</span>
 
 
+<span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
 
-<span class="n">f</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">fgcolor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
-           <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">))</span>
-
-<span class="n">s</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="o">*</span><span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">coilmesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span>
-                         <span class="n">scalars</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">)</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">coilmesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">coilmesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">scalars</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span>
+<span class="p">)</span>
 <span class="n">s</span><span class="o">.</span><span class="n">enable_contours</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">s</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">render_lines_as_tubes</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">s</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">property</span><span class="o">.</span><span class="n">line_width</span> <span class="o">=</span> <span class="mf">3.0</span>
 
-<span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">test_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B0</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
-<span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">test_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B1</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">test_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B0</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">test_points</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">B1</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Relative RMS error&#39;</span><span class="p">,</span>  <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">B1</span><span class="o">-</span><span class="n">B0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">B0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;Relative RMS error&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">B1</span> <span class="o">-</span> <span class="n">B0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">B0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_validate_bfield_analytic_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_bfield_analytic_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.20 seconds.
-Computing magnetic field coupling matrix analytically, 676 vertices by 676 target points... took 0.77 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 676 vertices by 676 target points... took 0.23 seconds.
+Computing magnetic field coupling matrix analytically, 676 vertices by 676 target points... took 0.85 seconds.
 Relative RMS error 0.005229286958362796
 </pre></div>
 </div>
 <p>Load simple plane mesh that is centered on the origin</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">file_obj</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span><span class="s1">&#39;bfieldtools&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;example_meshes/unit_disc.stl&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">file_obj</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span>
+    <span class="s2">&quot;bfieldtools&quot;</span><span class="p">,</span> <span class="s2">&quot;example_meshes/unit_disc.stl&quot;</span>
+<span class="p">)</span>
 <span class="n">discmesh</span> <span class="o">=</span> <span class="n">trimesh</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_obj</span><span class="p">,</span> <span class="n">process</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
     <span class="n">discmesh</span> <span class="o">=</span> <span class="n">discmesh</span><span class="o">.</span><span class="n">subdivide</span><span class="p">()</span>
-<span class="n">disc</span> <span class="o">=</span> <span class="n">Conductor</span><span class="p">(</span><span class="n">mesh_obj</span> <span class="o">=</span> <span class="n">discmesh</span><span class="p">)</span>
+<span class="n">disc</span> <span class="o">=</span> <span class="n">Conductor</span><span class="p">(</span><span class="n">mesh_obj</span><span class="o">=</span><span class="n">discmesh</span><span class="p">)</span>
 <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">discmesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">weights</span><span class="p">[</span><span class="n">disc</span><span class="o">.</span><span class="n">inner_vertices</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-<span class="n">s</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span><span class="o">*</span><span class="n">discmesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">discmesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span>
-                         <span class="n">scalars</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">)</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">triangular_mesh</span><span class="p">(</span>
+    <span class="o">*</span><span class="n">discmesh</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">discmesh</span><span class="o">.</span><span class="n">faces</span><span class="p">,</span> <span class="n">scalars</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span>
+<span class="p">)</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">gradient</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">discmesh</span><span class="p">,</span> <span class="n">rotated</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">discmesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">discmesh</span><span class="o">.</span><span class="n">faces</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">g</span><span class="p">)</span>
 
@@ -183,26 +190,26 @@ Relative RMS error 0.005229286958362796
 <span class="n">B1</span> <span class="o">=</span> <span class="n">magnetic_field_coupling_analytic</span><span class="p">(</span><span class="n">discmesh</span><span class="p">,</span> <span class="n">test_points</span><span class="p">)</span> <span class="o">@</span> <span class="n">weights</span>
 
 <span class="c1"># Analytic formula for unit disc</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mf">1e-7</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">test_points</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="mf">1e-7</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">test_points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">3</span><span class="p">))</span>
 <span class="c1"># Field from the mesh</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">B0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">B1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">((</span><span class="s1">&#39;Analytic&#39;</span><span class="p">,</span> <span class="s1">&#39;Quadrature mesh&#39;</span><span class="p">,</span> <span class="s1">&#39;Analytic mesh&#39;</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Distance, z [m]&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;B [T]&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">((</span><span class="s2">&quot;Analytic&quot;</span><span class="p">,</span> <span class="s2">&quot;Quadrature mesh&quot;</span><span class="p">,</span> <span class="s2">&quot;Analytic mesh&quot;</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Distance, z [m]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;B [T]&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="../../_images/sphx_glr_validate_bfield_analytic_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_bfield_analytic_002.png" />
 <img alt="../../_images/sphx_glr_validate_bfield_analytic_003.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_bfield_analytic_003.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 4701 vertices by 100 target points... took 0.38 seconds.
-Computing magnetic field coupling matrix analytically, 4701 vertices by 100 target points... took 0.83 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 4701 vertices by 100 target points... took 0.41 seconds.
+Computing magnetic field coupling matrix analytically, 4701 vertices by 100 target points... took 0.94 seconds.
 
 Text(0, 0.5, &#39;B [T]&#39;)
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.414 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.018 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-validation-validate-bfield-analytic-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/ffbc65844a59c658cc3fc589ad79358c/validate_bfield_analytic.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">validate_bfield_analytic.py</span></code></a></p>
@@ -227,7 +234,7 @@ Text(0, 0.5, &#39;B [T]&#39;)
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.0.<br/>
     </p>
   </div>
 </footer>

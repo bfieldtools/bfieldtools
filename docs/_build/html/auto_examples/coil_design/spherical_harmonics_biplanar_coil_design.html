@@ -111,13 +111,13 @@
 <p>Example showing a basic biplanar coil producing a high-order spherical harmonic field
 in a specific target region between the two coil planes.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mayavi</span> <span class="k">import</span> <span class="n">mlab</span>
+<span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
 <span class="kn">import</span> <span class="nn">trimesh</span>
 
-<span class="kn">from</span> <span class="nn">bfieldtools.conductor</span> <span class="k">import</span> <span class="n">Conductor</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="k">import</span> <span class="n">optimize_streamfunctions</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="k">import</span> <span class="n">scalar_contour</span>
-<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="k">import</span> <span class="n">plot_3d_current_loops</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.conductor</span> <span class="kn">import</span> <span class="n">Conductor</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.coil_optimize</span> <span class="kn">import</span> <span class="n">optimize_streamfunctions</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.contour</span> <span class="kn">import</span> <span class="n">scalar_contour</span>
+<span class="kn">from</span> <span class="nn">bfieldtools.viz</span> <span class="kn">import</span> <span class="n">plot_3d_current_loops</span>
 
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
 
@@ -193,7 +193,7 @@ in a specific target region between the two coil planes.</p>
 <span class="c1"># and it is scaled to match the C matrix in the optimization function</span>
 
 
-<span class="kn">from</span> <span class="nn">bfieldtools</span> <span class="k">import</span> <span class="n">sphtools</span>
+<span class="kn">from</span> <span class="nn">bfieldtools</span> <span class="kn">import</span> <span class="n">sphtools</span>
 
 
 <span class="n">lmax</span> <span class="o">=</span> <span class="mi">4</span>
@@ -240,11 +240,11 @@ Computing magnetic field coupling matrix, 3184 vertices by 642 target points... 
   File <span class="nb">&quot;d:\anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py&quot;</span>, line <span class="m">460</span>, in <span class="n">_memory_usage</span>
     <span class="n">out</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
   File <span class="nb">&quot;d:\anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py&quot;</span>, line <span class="m">442</span>, in <span class="n">__call__</span>
-    <span class="k">exec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fake_main</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+    <span class="n">exec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fake_main</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
   File <span class="nb">&quot;C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\coil_design\spherical_harmonics_biplanar_coil_design.py&quot;</span>, line <span class="m">132</span>, in <span class="n">&lt;module&gt;</span>
     <span class="n">solver_opts</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mosek_params&#39;</span><span class="p">:{</span><span class="n">mosek</span><span class="o">.</span><span class="n">iparam</span><span class="o">.</span><span class="n">num_threads</span><span class="p">:</span> <span class="mi">8</span><span class="p">}}</span>
   File <span class="nb">&quot;C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\bfieldtools\coil_optimize.py&quot;</span>, line <span class="m">261</span>, in <span class="n">optimize_streamfunctions</span>
-    <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="o">**</span><span class="n">solver_opts</span><span class="p">)</span>
+    <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">solver_opts</span><span class="p">)</span>
   File <span class="nb">&quot;d:\anaconda3\lib\site-packages\cvxpy\problems\problem.py&quot;</span>, line <span class="m">290</span>, in <span class="n">solve</span>
     <span class="k">return</span> <span class="n">solve_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
   File <span class="nb">&quot;d:\anaconda3\lib\site-packages\cvxpy\problems\problem.py&quot;</span>, line <span class="m">575</span>, in <span class="n">_solve</span>
@@ -295,7 +295,7 @@ Computing magnetic field coupling matrix, 3184 vertices by 642 target points... 
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.0.<br/>
     </p>
   </div>
 </footer>

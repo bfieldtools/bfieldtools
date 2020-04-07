@@ -17,6 +17,7 @@ from bfieldtools.conductor import Conductor
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
+from bfieldtools.utils import combine_meshes
 
 import pkg_resources
 
@@ -49,7 +50,7 @@ coil_minus = trimesh.Trimesh(
     planemesh.vertices + center_offset - standoff, planemesh.faces, process=False
 )
 
-joined_planes = coil_plus.union(coil_minus)
+joined_planes = combine_meshes((coil_plus, coil_minus))
 
 # Create mesh class object
 coil = Conductor(mesh_obj=joined_planes, fix_normals=True, basis_name="suh", N_suh=100)
@@ -112,7 +113,7 @@ target_spec = {
 }
 stray_spec = {
     "coupling": coil.B_coupling(stray_points),
-    "abs_error": 0.001,
+    "abs_error": 0.01,
     "target": np.zeros((n_stray_points, 3)),
 }
 
@@ -125,7 +126,7 @@ import mosek
 coil.s, prob = optimize_streamfunctions(
     coil,
     [target_spec, stray_spec],
-    objective="minimum_inductive_energy",
+    objective="minimum_resistive_energy",
     solver="MOSEK",
     solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
 )
@@ -136,7 +137,7 @@ coil.s, prob = optimize_streamfunctions(
 
 N_contours = 10
 
-loops, loop_values = scalar_contour(coil.mesh, coil.s, N_contours=N_contours)
+loops = scalar_contour(coil.mesh, coil.s, N_contours=N_contours)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
 mlab.clf()
@@ -214,7 +215,7 @@ coil.s2 = optimize_lsq(
 
 N_contours = 10
 
-loops, loop_values = scalar_contour(coil.mesh, coil.s2, N_contours=N_contours)
+loops = scalar_contour(coil.mesh, coil.s2, N_contours=N_contours)
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
 mlab.clf()
