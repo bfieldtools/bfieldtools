@@ -10,5 +10,16 @@ from . import suhtools
 from . import thermal_noise
 from . import utils
 
-__all__=['line_magnetics', 'line_path', 'coil_optimize', 'mesh_calculus',
-'mesh_magnetics', 'conductor', 'mesh_properties', 'sphtools', 'suhtools', 'thermal_noise', 'utils']#, 'validation']
+__all__ = [
+    "line_magnetics",
+    "line_path",
+    "coil_optimize",
+    "mesh_calculus",
+    "mesh_magnetics",
+    "conductor",
+    "mesh_properties",
+    "sphtools",
+    "suhtools",
+    "thermal_noise",
+    "utils",
+]  # , 'validation']

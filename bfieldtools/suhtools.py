@@ -13,7 +13,7 @@ Surface harmonics == Laplace-Beltrami eigenfunctions
 
 """
 
-import trimesh 
+import trimesh
 from scipy.sparse.linalg import eigsh
 from scipy.linalg import eigh
 
@@ -25,12 +25,18 @@ from .viz import plot_data_on_vertices
 from . import conductor
 
 
-class SuhBasis():
+class SuhBasis:
     """ Class for representing magnetic field using surface harmonics
     """
 
-    def __init__(self, obj, Nc, boundary_condition='dirichlet',
-                 magnetic=False, solver_sparse=True):
+    def __init__(
+        self,
+        obj,
+        Nc,
+        boundary_condition="dirichlet",
+        magnetic=False,
+        solver_sparse=True,
+    ):
         """
         Parameters
             obj : Trimesh-object representing the boundary on which
@@ -44,37 +50,37 @@ class SuhBasis():
                 the basis corresponds to all vertices
               
         """
-        
+
         if boundary_condition in ("dirichlet", "neumann"):
             self.bc = boundary_condition
         else:
-            raise ValueError('boundary_conditions should e either dirichlet or neumann')
+            raise ValueError("boundary_conditions should e either dirichlet or neumann")
 
         if isinstance(obj, conductor.Conductor):
             self.conductor = obj
         elif isinstance(obj, trimesh.Trimesh):
-          # TODO defaults ok?
-          self.conductor = conductor.Conductor(mesh_obj=obj, resistance_full_rank=False)
+            # TODO defaults ok?
+            self.conductor = conductor.Conductor(
+                mesh_obj=obj, resistance_full_rank=False
+            )
         else:
-            raise TypeError('obj type should be either Trimesh or Conductor')
+            raise TypeError("obj type should be either Trimesh or Conductor")
         self.mesh = self.conductor.mesh
 
         self.Nc = Nc
         self.magnetic = magnetic
         self.solver_sparse = solver_sparse
-        
-        if self.bc == 'neumann':
-            self.conductor.set_basis('vertex')
+
+        if self.bc == "neumann":
+            self.conductor.set_basis("vertex")
         else:
-            self.conductor.set_basis('inner')
-            
+            self.conductor.set_basis("inner")
+
         self.inner_vertices = self.conductor.inner_vertices
         self.holes = self.conductor.holes
         self.inner2vert = self.conductor.inner2vert
-          
-        
-        self.calculate_basis()
 
+        self.calculate_basis()
 
     def calculate_basis(self, shiftinvert=True, v0=None):
         """ Calculate basis functions as eigenfunctions of the laplacian
@@ -82,36 +88,35 @@ class SuhBasis():
             shiftinvert: use shiftinvert mode to calculate eigenstuff faster
                         (experimental)
         """
-        print('Calculating surface harmonics expansion...')
-
+        print("Calculating surface harmonics expansion...")
 
         if not self.magnetic:
             L = self.conductor.laplacian
             M = self.conductor.mass
         else:
-          L = -self.conductor.resistance
-          M = self.conductor.inductance
-          
+            L = -self.conductor.resistance
+            M = self.conductor.inductance
+
         self.mass = M
 
         closed_mesh = self.conductor.mesh.is_watertight
-        
+
         if closed_mesh:
-            print('Closed mesh, leaving out the constant component')
+            print("Closed mesh, leaving out the constant component")
             N0 = 1
             N = self.Nc + 1
         else:
             N0 = 0
             N = self.Nc
-        
+
         if v0 is None:
-            v0 = np.ones(L.shape[1]) # avoid random basis for symmetric geometries
-            
-        if (not self.magnetic) and self.solver_sparse:         
-          if shiftinvert:
-              u, v = eigsh(-L, N, M, sigma=0, which='LM', v0 = v0)
-          else:
-              u, v = eigsh(-L, N, M, which='SA', v0 = v0)
+            v0 = np.ones(L.shape[1])  # avoid random basis for symmetric geometries
+
+        if (not self.magnetic) and self.solver_sparse:
+            if shiftinvert:
+                u, v = eigsh(-L, N, M, sigma=0, which="LM", v0=v0)
+            else:
+                u, v = eigsh(-L, N, M, which="SA", v0=v0)
         else:
             if not self.magnetic:
                 L = L.toarray()
@@ -157,12 +162,12 @@ class SuhBasis():
         x, res, rank, s = np.linalg.lstsq(A, b, rcond=None)
 
         if rank < self.Nc:
-            print('Matrix rank not full, result might be inaccurate')
-        return  x
+            print("Matrix rank not full, result might be inaccurate")
+        return x
 
-
-    def plot(self, Nfuncs, dist=0.5, Ncols=None, figure=None,
-             figsize=(800, 800), **kwargs):
+    def plot(
+        self, Nfuncs, dist=0.5, Ncols=None, figure=None, figsize=(800, 800), **kwargs
+    ):
         """ Plot basis functions on the mesh
 
             Nfuncs: int or array-like
@@ -188,8 +193,9 @@ class SuhBasis():
         """
 
         if figure is None:
-            figure = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                                 size=figsize)
+            figure = mlab.figure(
+                None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=figsize
+            )
 
         if isinstance(Nfuncs, type(int)):
             N = Nfuncs
@@ -199,10 +205,14 @@ class SuhBasis():
             N = len(indices)
 
         if Ncols is None:
-            Ncols = np.floor(np.sqrt(N)+1)
+            Ncols = np.floor(np.sqrt(N) + 1)
 
-        dx = (self.mesh.vertices[:, 0].max() - self.mesh.vertices[:, 0].min())*(1+dist)
-        dy = (self.mesh.vertices[:, 1].max() - self.mesh.vertices[:, 1].min())*(1+dist)
+        dx = (self.mesh.vertices[:, 0].max() - self.mesh.vertices[:, 0].min()) * (
+            1 + dist
+        )
+        dy = (self.mesh.vertices[:, 1].max() - self.mesh.vertices[:, 1].min()) * (
+            1 + dist
+        )
 
         i = 0
         j = 0
@@ -211,10 +221,10 @@ class SuhBasis():
             print(i, j)
 
             tmp_mesh = self.mesh.copy()
-            tmp_mesh.vertices[:, 0] += i*dx
-            tmp_mesh.vertices[:, 1] -= j*dy
+            tmp_mesh.vertices[:, 0] += i * dx
+            tmp_mesh.vertices[:, 1] -= j * dy
 
-            if self.bc == 'neumann':
+            if self.bc == "neumann":
                 scalars = self.basis[:, n]
             else:
                 scalars = self.inner2vert @ self.basis[:, n]
@@ -230,19 +240,20 @@ class SuhBasis():
         return s
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     """ 
     Simple testing script
     """
 
     # Create basis for a sphere (basis.eigenvals shere the same structure
     # as spherical harmonic eigenvalues)
-#    mesh = icosphere(4)
+    #    mesh = icosphere(4)
     import pkg_resources
-    #Load simple plane mesh that is centered on the origin
-    file_obj = pkg_resources.resource_filename('bfieldtools',
-                                               'example_meshes/closed_cylinder_remeshed.stl')
+
+    # Load simple plane mesh that is centered on the origin
+    file_obj = pkg_resources.resource_filename(
+        "bfieldtools", "example_meshes/closed_cylinder_remeshed.stl"
+    )
     mesh = trimesh.load(file_obj, process=True)
     basis = SuhBasis(mesh, 40)
 
@@ -274,4 +285,3 @@ if __name__ == '__main__':
 #
 #    mlab.figure()
 #    mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=basis.basis @ coeffs2)
-

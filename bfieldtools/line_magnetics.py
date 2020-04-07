@@ -1,7 +1,7 @@
-'''
+"""
 Functions for working with current line segments
 
-'''
+"""
 
 
 import numpy as np
@@ -52,11 +52,11 @@ def magnetic_field2(vertices, points):
         f = cross(a1, a2)
 
         # Vector lengths
-        d1 = np.sqrt(np.sum(a1**2, axis=0))
-        d2 = np.sqrt(np.sum(a2**2, axis=0))
+        d1 = np.sqrt(np.sum(a1 ** 2, axis=0))
+        d2 = np.sqrt(np.sum(a2 ** 2, axis=0))
 
         # Normalize direction field and divide by cylindrical distance
-        f *= (d1 + d2)/(d1*d2*(d1*d2 + np.sum(a1*a2, axis=0)))
+        f *= (d1 + d2) / (d1 * d2 * (d1 * d2 + np.sum(a1 * a2, axis=0)))
 
         field = field + f
 
@@ -86,7 +86,7 @@ def magnetic_field(vertices, points):
     for i in range(len(vertices) - 1):
         r1 = vertices[i]
         r2 = vertices[i + 1]
-        d = ((r2 - r1)/((r1 - r2)**2).sum()).reshape(3, 1)
+        d = ((r2 - r1) / ((r1 - r2) ** 2).sum()).reshape(3, 1)
 
         # Vectors between vertices and field points
         a1 = points.T - r1.reshape(3, 1)
@@ -96,22 +96,21 @@ def magnetic_field(vertices, points):
         f = cross(a1, d)
 
         # Sine factor
-        sinefactor = (d * a2).sum(axis=0) / np.sqrt((a2**2).sum(axis=0))
-        sinefactor = sinefactor - (d * a1).sum(axis=0) / np.sqrt((a1**2).sum(axis=0))
+        sinefactor = (d * a2).sum(axis=0) / np.sqrt((a2 ** 2).sum(axis=0))
+        sinefactor = sinefactor - (d * a1).sum(axis=0) / np.sqrt((a1 ** 2).sum(axis=0))
 
         # Normalize direction field and divide by cylindrical distance
-        s2 = (f**2).sum(axis=0)
-        s2[s2 == 0] = 1e-12 # Regularize for points directly at the
-                            # continuation of the line segment
-        f *= (sinefactor / s2)
+        s2 = (f ** 2).sum(axis=0)
+        s2[s2 == 0] = 1e-12  # Regularize for points directly at the
+        # continuation of the line segment
+        f *= sinefactor / s2
 
         field = field + f
 
     return field.T * 1e-7
 
 
-def vector_potential(vertices, points,
-                     reg=1e-12, symmetrize=True):
+def vector_potential(vertices, points, reg=1e-12, symmetrize=True):
     """ Compute vector potential of a segmented line currents.
         Based on straightforward integration of 1/r potential over a line
         i.e. the gamma0 integral
@@ -132,7 +131,7 @@ def vector_potential(vertices, points,
             Vector potential (Nloops, Npoints, 3)
 
     """
- 
+
     loops = np.array([np.arange(len(vertices))])
 
     loops2 = np.roll(loops, -1, 1)
@@ -147,22 +146,26 @@ def vector_potential(vertices, points,
 
     # Regularize s.t. neither the denominator or the numerator can be zero
     # Avoid numerical issues directly at the edge
-    res = np.log((rr[loops2] * ss[..., None] + dotprods2 + reg)
-                 / (rr[loops1] * ss[..., None] + dotprods1 + reg))
+    res = np.log(
+        (rr[loops2] * ss[..., None] + dotprods2 + reg)
+        / (rr[loops1] * ss[..., None] + dotprods1 + reg)
+    )
 
     # Symmetrize the result since on the negative extension of the edge
     # there's division of two small values resulting numerical instabilities
     # (also incompatible with adding the reg value)
     if symmetrize:
-        res2 = -np.log((rr[loops2] * ss[..., None] - dotprods2 + reg)
-                       / (rr[loops1] * ss[..., None] - dotprods1 + reg))
+        res2 = -np.log(
+            (rr[loops2] * ss[..., None] - dotprods2 + reg)
+            / (rr[loops1] * ss[..., None] - dotprods1 + reg)
+        )
         res = np.where(dotprods1 + dotprods2 > 0, res, res2)
 
     return 1e-7 * np.sum(res[..., None] * segments[..., None, :], axis=1)
 
 
 def scalar_potential(vertices, points):
-    '''
+    """
     Computes the scalar magnetic potential of a segmented current loop at given points.
     This is equal to the solid angle spanned by the loop (polygon), times a constant.
     The first and last vertices are connected to close the loop.
@@ -177,27 +180,27 @@ def scalar_potential(vertices, points):
     -------
     Scalar magnetic potential (Npoints, )
 
-    '''
+    """
 
     N_verts = len(vertices)
 
-    #VERTEX MASS CENTRE
+    # VERTEX MASS CENTRE
     mass_center = np.mean(vertices, axis=0)
 
     vertices = np.vstack((vertices, mass_center))
 
-    #CREATE TRIANGLE FAN
+    # CREATE TRIANGLE FAN
     faces = np.full(shape=(N_verts, 3), fill_value=np.nan, dtype=int)
 
     for i in range(N_verts):
-        faces[i] = np.array([i, (i+1)%N_verts, N_verts])
+        faces[i] = np.array([i, (i + 1) % N_verts, N_verts])
 
     R1 = vertices[faces]
     R2 = points
 
     RR = R2[:, None, None, :] - R1[None, :, :, :]
 
-    #COMPUTE SOLID ANGLE, DIVIDE BY 4*PI*mu0
+    # COMPUTE SOLID ANGLE, DIVIDE BY 4*PI*mu0
     return np.sum(omega(RR), axis=1) * 1e-7
 
 
@@ -238,7 +241,7 @@ def flux(vertices, loops, vertices_other, Nquad=2):
     sides = vertices_other[1:] - vertices_other[:-1]
     segments = (t[1:, None, None] - t[:-1, None, None]) * sides
 
-    t = 0.5 * (t[1:] + t[:-1]) # Nquad points on the segments
+    t = 0.5 * (t[1:] + t[:-1])  # Nquad points on the segments
 
     # Nquad, Nsegments, 3
     points = vertices_other[:-1] + t[:, None, None] * sides
@@ -258,7 +261,7 @@ def flux(vertices, loops, vertices_other, Nquad=2):
 
 
 #
-#if __name__ == "__main__":
+# if __name__ == "__main__":
 #    """
 #    Plot field of a circular current path
 #

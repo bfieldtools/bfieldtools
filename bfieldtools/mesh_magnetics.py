@@ -1,11 +1,12 @@
-'''
+"""
 Contains functions for calculating the coupling of surface current density in a
 triangle mesh to magnetic field as well as scalar and vector potentials.
 
-'''
+"""
 import time
 import numpy as np
-#from numba import jit
+
+# from numba import jit
 
 
 from .utils import get_quad_points
@@ -14,9 +15,8 @@ from .integrals import triangle_potential_dipole_linear, triangle_potential_unif
 from .integrals import triangle_potential_approx, potential_dipoles
 
 
-
 def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False):
-    '''
+    """
     Given 'mesh', computes the "C matrix" which gives the magnetic field at
     target points 'r' due to currents (stream function) on a surface mesh.
 
@@ -38,7 +38,7 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
         Coupling matrix corresponding to a mapping from a stream function
         on the mesh to B-field at the evaluation points
 
-    '''
+    """
 
     if analytic:
         return magnetic_field_coupling_analytic(mesh, r, Nchunks)
@@ -46,11 +46,16 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
     mu0 = 4 * np.pi * 1e-7
     coef = mu0 / (4 * np.pi)
 
-    print('Computing magnetic field coupling matrix, %d vertices by %d target points... '%
-          (len(mesh.vertices), len(r)), end='')
+    print(
+        "Computing magnetic field coupling matrix, %d vertices by %d target points... "
+        % (len(mesh.vertices), len(r)),
+        end="",
+    )
     start = time.time()
 
-    w_quad, r_quad = get_quad_points(mesh.vertices, mesh.faces, method='dunavant_0'+str(quad_degree))
+    w_quad, r_quad = get_quad_points(
+        mesh.vertices, mesh.faces, method="dunavant_0" + str(quad_degree)
+    )
 
     # Rotated gradients (currents)
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
@@ -62,7 +67,7 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
 
     if Nchunks is None:
         if r.shape[0] > 1000:
-            Nchunks = r.shape[0]//100
+            Nchunks = r.shape[0] // 100
         else:
             Nchunks = 1
 
@@ -71,10 +76,10 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
         RR = r_quad[None, :, :, :] - r[n::Nchunks, None, None, :]
 
         # RR/norm(RR)**3 "Gradient of Green's function"
-        g = - RR/((np.linalg.norm(RR, axis=-1)**3)[:, :, :, None])
+        g = -RR / ((np.linalg.norm(RR, axis=-1) ** 3)[:, :, :, None])
 
         # Sum over quad points and multiply by triangle area
-        g = (g*w_quad[:, None]).sum(axis=-2)
+        g = (g * w_quad[:, None]).sum(axis=-2)
         g *= mesh.area_faces[:, None]
 
         # Cross product RR/norm(RR)
@@ -82,18 +87,16 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
         C[n::Nchunks, :, 1] = g[:, :, 0] @ Gz - g[:, :, 2] @ Gx
         C[n::Nchunks, :, 2] = g[:, :, 1] @ Gx - g[:, :, 0] @ Gy
 
-
     duration = time.time() - start
-    print('took %.2f seconds.'%duration)
+    print("took %.2f seconds." % duration)
 
     C *= coef
-#    return np.moveaxis(C, 2, 1)
+    #    return np.moveaxis(C, 2, 1)
     return np.swapaxes(C, 2, 1)
 
 
-
 def magnetic_field_coupling_analytic_old(mesh, r, Nchunks=None):
-    '''
+    """
     DEPRECATED
     Given a mesh, computes the "C matrix" which gives the magnetic field at
     some target points due to currents (stream function) on a surface mesh.
@@ -113,21 +116,25 @@ def magnetic_field_coupling_analytic_old(mesh, r, Nchunks=None):
         on the mesh to B-field at the evaluation points
 
     DEPRECATED
-    '''
+    """
     from .integrals_old import omega, gamma0
+
     coef = 1e-7
 
-    print('Computing magnetic field coupling matrix analytically, %d vertices by %d target points... '%
-          (len(mesh.vertices), len(r)), end='')
+    print(
+        "Computing magnetic field coupling matrix analytically, %d vertices by %d target points... "
+        % (len(mesh.vertices), len(r)),
+        end="",
+    )
     start = time.time()
 
     if Nchunks is None:
         if r.shape[0] > 1000:
-            Nchunks = r.shape[0]//100
+            Nchunks = r.shape[0] // 100
         else:
             Nchunks = 1
 
-#    ta = mesh.area_faces
+    #    ta = mesh.area_faces
     tn = mesh.face_normals
 
     # Nfaces, 3, 3
@@ -136,7 +143,7 @@ def magnetic_field_coupling_analytic_old(mesh, r, Nchunks=None):
     coeffs = np.zeros((r.shape[0:1] + mesh.faces.shape[:-1] + (3,)))
     # Nfaces, Nedges, 3
     edges = np.roll(rfaces, 1, -2) - np.roll(rfaces, 2, -2)
-#    grad = np.cross(tn[:, None, :], edges, axis=-1)/(2*ta[:, None, None])
+    #    grad = np.cross(tn[:, None, :], edges, axis=-1)/(2*ta[:, None, None])
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=False)
     Rx, Ry, Rz = gradient_matrix(mesh, rotated=True)
     solid_angle = np.zeros((r.shape[0], rfaces.shape[0]))
@@ -144,35 +151,34 @@ def magnetic_field_coupling_analytic_old(mesh, r, Nchunks=None):
     for n in range(Nchunks):
         RRchunk = r[n::Nchunks, None, None, :] - rfaces[None, :, :, :]
         # Neval, Nfaces, Nedges
-#        result = -np.sum(np.sum(gamma0(RRchunk)[..., None]*edges,
-#                               axis=-2)[...,None, :]*edges, axis=-1)
-#        result *= 1/(2*ta[..., :, None])
+        #        result = -np.sum(np.sum(gamma0(RRchunk)[..., None]*edges,
+        #                               axis=-2)[...,None, :]*edges, axis=-1)
+        #        result *= 1/(2*ta[..., :, None])
         solid_angle[n::Nchunks] = omega(RRchunk)
-        coeffs[n::Nchunks] = -np.einsum('...i,...ik->...k', gamma0(RRchunk), edges)
+        coeffs[n::Nchunks] = -np.einsum("...i,...ik->...k", gamma0(RRchunk), edges)
 
-#    # Accumulate the elements
+    #    # Accumulate the elements
     C = np.zeros((3, r.shape[0], mesh.vertices.shape[0]))
-#    for ind_f, f in enumerate(mesh.faces):
-#        C[:, f, :] += coeffs[:, ind_f, :, None]*tn[ind_f]
-#        C[:, f, :] += -solid_angle[:, ind_f:ind_f+1, None]*grad[ind_f]
+    #    for ind_f, f in enumerate(mesh.faces):
+    #        C[:, f, :] += coeffs[:, ind_f, :, None]*tn[ind_f]
+    #        C[:, f, :] += -solid_angle[:, ind_f:ind_f+1, None]*grad[ind_f]
 
     G = (Gx, Gy, Gz)
     for i in range(3):
-        cc = coeffs*tn[:, i, None]
+        cc = coeffs * tn[:, i, None]
         C[i] += cc[:, :, 0] @ Rx + cc[:, :, 1] @ Ry + cc[:, :, 2] @ Rz
         C[i] += -solid_angle @ G[i]
 
     duration = time.time() - start
-    print('took %.2f seconds.'%duration)
+    print("took %.2f seconds." % duration)
 
     C *= coef
-#    return np.moveaxis(C, 0, 1)
+    #    return np.moveaxis(C, 0, 1)
     return np.swapaxes(C, 0, 1)
 
 
-
 def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
-    '''
+    """
     Given a mesh, computes the "C matrix" which gives the magnetic field at
     some target points due to currents (stream function) on a surface mesh
     using analytic formulas.
@@ -193,17 +199,21 @@ def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
         Coupling matrix corresponding to a mapping from a stream function
         on the mesh to B-field at the evaluation points
 
-    '''
+    """
     from .integrals import omega, gamma0
+
     coef = 1e-7
 
-    print('Computing magnetic field coupling matrix analytically, %d vertices by %d target points... '%
-          (len(mesh.vertices), len(r)), end='')
+    print(
+        "Computing magnetic field coupling matrix analytically, %d vertices by %d target points... "
+        % (len(mesh.vertices), len(r)),
+        end="",
+    )
     start = time.time()
 
     if Nchunks is None:
         if r.shape[0] > 1000:
-            Nchunks = r.shape[0]//100
+            Nchunks = r.shape[0] // 100
         else:
             Nchunks = 1
 
@@ -221,7 +231,7 @@ def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
     for n in range(Nchunks):
         RRchunk = r[n::Nchunks, None, None, :] - rfaces[None, :, :, :]
         # Neval, Nfaces, xyz
-        gamma_terms[n::Nchunks] = -np.einsum('nfe,fei->nfi', gamma0(RRchunk), edges)
+        gamma_terms[n::Nchunks] = -np.einsum("nfe,fei->nfi", gamma0(RRchunk), edges)
         omega_terms[n::Nchunks] = omega(RRchunk)
 
     # 3 (Nfaces, Nverts) sparse matrices
@@ -237,19 +247,19 @@ def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
             # Edge @ Rotated_gradient "==" c_coeff
             # Multiplying with R-matrices takes care of c_coeff calculation
             # and accumulation to right vertex
-            C[fcomp] += (tn[:, fcomp]*gamma_terms[:, :, gcomp]) @ R[gcomp]
+            C[fcomp] += (tn[:, fcomp] * gamma_terms[:, :, gcomp]) @ R[gcomp]
 
     duration = time.time() - start
-    print('took %.2f seconds.'%duration)
+    print("took %.2f seconds." % duration)
 
     C *= coef
-#    return np.moveaxis(C, 0, 1)
+    #    return np.moveaxis(C, 0, 1)
     return np.swapaxes(C, 0, 1)
 
 
-
-def scalar_potential_coupling(mesh, r, Nchunks=None, multiply_coeff=True,
-                              approx_far=False, margin=3):
+def scalar_potential_coupling(
+    mesh, r, Nchunks=None, multiply_coeff=True, approx_far=False, margin=3
+):
     """
     Coupling matrix corresponding to a mapping from a stream function
     to scalar potential using analytic integrals
@@ -278,8 +288,11 @@ def scalar_potential_coupling(mesh, r, Nchunks=None, multiply_coeff=True,
         on the mesh to scalar potential at the evaluation points
     """
 
-    print('Computing scalar potential coupling matrix, %d vertices by %d target points... '%
-          (len(mesh.vertices), len(r)), end='')
+    print(
+        "Computing scalar potential coupling matrix, %d vertices by %d target points... "
+        % (len(mesh.vertices), len(r)),
+        end="",
+    )
     start = time.time()
 
     # Source and eval locations
@@ -288,7 +301,7 @@ def scalar_potential_coupling(mesh, r, Nchunks=None, multiply_coeff=True,
 
     if Nchunks is None:
         if r.shape[0] > 1000:
-            Nchunks = r.shape[0]//100
+            Nchunks = r.shape[0] // 100
         else:
             Nchunks = 1
 
@@ -297,38 +310,39 @@ def scalar_potential_coupling(mesh, r, Nchunks=None, multiply_coeff=True,
     Uf = np.zeros((R2.shape[0], mesh.faces.shape[0], 3))
     for R2chunk in R2chunks:
         RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
-        i1 = i0+RRchunk.shape[0]
+        i1 = i0 + RRchunk.shape[0]
         if approx_far:
             near, far = _split_by_distance(mesh, RRchunk, margin)
-            Uf[i0:i1, near] = triangle_potential_dipole_linear(RRchunk[:, near],
-                                                               mesh.face_normals[near],
-                                                               mesh.area_faces[near])
-            Uf[i0:i1, far] = potential_dipoles(RRchunk[:, far],
-                                               mesh.face_normals[far],
-                                               mesh.area_faces[far])
+            Uf[i0:i1, near] = triangle_potential_dipole_linear(
+                RRchunk[:, near], mesh.face_normals[near], mesh.area_faces[near]
+            )
+            Uf[i0:i1, far] = potential_dipoles(
+                RRchunk[:, far], mesh.face_normals[far], mesh.area_faces[far]
+            )
         else:
-            Uf[i0:i1] = triangle_potential_dipole_linear(RRchunk, mesh.face_normals,
-                                                         mesh.area_faces)
+            Uf[i0:i1] = triangle_potential_dipole_linear(
+                RRchunk, mesh.face_normals, mesh.area_faces
+            )
         i0 = i1
 
-#     Accumulate the elements
+    #     Accumulate the elements
     Uv = np.zeros((R2.shape[0], mesh.vertices.shape[0]))
     for ind_f, f in enumerate(mesh.faces):
         Uv[:, f] += Uf[:, ind_f]
 
-
     duration = time.time() - start
-    print('took %.2f seconds.'%duration)
+    print("took %.2f seconds." % duration)
 
     if multiply_coeff:
         coeff = 1e-7  # mu_0/(4*pi)
     else:
         coeff = 1
-    return Uv*coeff
+    return Uv * coeff
 
 
-def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2,
-                              chunk_clusters=False):
+def vector_potential_coupling(
+    mesh, r, Nchunks=None, approx_far=True, margin=2, chunk_clusters=False
+):
     """
     Compute vector potential coupling matrices
     from linear stream functions using analytic integral
@@ -360,44 +374,48 @@ def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2,
     R1 = mesh.vertices[mesh.faces]
     R2 = r
 
-#    if Nchunks is None:
-#        if r.shape[0] > 1000:
-#            Nchunks = r.shape[0]//100
-#        else:
-#            Nchunks = 1
-#
-#    R2chunks = np.array_split(R2, Nchunks, axis=0)
+    #    if Nchunks is None:
+    #        if r.shape[0] > 1000:
+    #            Nchunks = r.shape[0]//100
+    #        else:
+    #            Nchunks = 1
+    #
+    #    R2chunks = np.array_split(R2, Nchunks, axis=0)
     R2chunks, ichunks = get_chunks(R2, Nchunks, chunk_clusters)
-    i0=0
+    i0 = 0
 
     Af = np.zeros((R2.shape[0], mesh.faces.shape[0]))
-    print('Computing 1/r-potential matrix')    
+    print("Computing 1/r-potential matrix")
 
     for ichunk, R2chunk in zip(ichunks, R2chunks):
-#        print('Computing chunk %d/%d'%(chunk_idx+1, Nchunks))
+        #        print('Computing chunk %d/%d'%(chunk_idx+1, Nchunks))
         RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
-        i1 = i0+RRchunk.shape[0]
+        i1 = i0 + RRchunk.shape[0]
         if approx_far:
-            RRchunk_centers = R2chunk[:,None,:] - mesh.triangles_center[None,:,:]
+            RRchunk_centers = R2chunk[:, None, :] - mesh.triangles_center[None, :, :]
             temp = np.zeros(RRchunk.shape[:2])
             near, far = _split_by_distance_centers(mesh, RRchunk_centers, margin)
-            temp[:,near] = triangle_potential_uniform(RRchunk[:, near], mesh.face_normals[near], False)
-            temp[:,far] = triangle_potential_approx(RRchunk_centers[:, far], mesh.area_faces[far], reg=0)
+            temp[:, near] = triangle_potential_uniform(
+                RRchunk[:, near], mesh.face_normals[near], False
+            )
+            temp[:, far] = triangle_potential_approx(
+                RRchunk_centers[:, far], mesh.area_faces[far], reg=0
+            )
             Af[ichunk] = temp
         else:
             Af[ichunk] = triangle_potential_uniform(RRchunk, mesh.face_normals, False)
-#        print((100*i1)//R2.shape[0], '% computed')
+        #        print((100*i1)//R2.shape[0], '% computed')
         i0 = i1
 
-    #Free some memory by deleting old variables
+    # Free some memory by deleting old variables
     del R1, R2, RRchunk, R2chunks, ichunks, temp
-    
+
     # Rotated gradients (currents)
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
     # Accumulate the elements
     Av = np.array([Af @ Gx, Af @ Gy, Af @ Gz])
 
-    return Av*coeff
+    return Av * coeff
 
 
 def get_chunks(r, Nchunks, clusters=True):
@@ -407,30 +425,31 @@ def get_chunks(r, Nchunks, clusters=True):
     """
     if Nchunks is None:
         if r.shape[0] > 1000:
-            Nchunks = r.shape[0]//100
+            Nchunks = r.shape[0] // 100
         else:
             Nchunks = 1
     if clusters:
         # Voronoi cells of random vertices
-        i_samples = np.random.randint(0,r.shape[0], Nchunks)
+        i_samples = np.random.randint(0, r.shape[0], Nchunks)
         dists = np.linalg.norm(r[:, None, :] - r[None, i_samples, :], axis=-1)
         labels = np.argmin(dists, axis=1)
         # indices as boolean arrays
         # Number of unique labels can be smaller than Nchunks if
         # there are vertices without any points in their cells
-        ichunks = [labels==label for label in np.unique(labels)]
+        ichunks = [labels == label for label in np.unique(labels)]
         rchunks = [r[mask] for mask in ichunks]
     else:
         # Chunk r by array split and get the corresponding indices as slices
         rchunks = np.array_split(r, Nchunks, axis=0)
-        lengths =  [len(ri) for ri in rchunks]
-        inds = np.cumsum([0]+lengths)
-        ichunks = [slice(inds[i],inds[i+1]) for i in range(len(lengths))]
-        
+        lengths = [len(ri) for ri in rchunks]
+        inds = np.cumsum([0] + lengths)
+        ichunks = [slice(inds[i], inds[i + 1]) for i in range(len(lengths))]
+
     return rchunks, ichunks
 
+
 def _split_by_distance_centers(mesh, RR, margin=3):
-    avg_sidelength = np.sqrt(4/np.sqrt(3)*np.mean(mesh.area_faces[::100]))
+    avg_sidelength = np.sqrt(4 / np.sqrt(3) * np.mean(mesh.area_faces[::100]))
 
     RRnorm = np.linalg.norm(RR, axis=-1)
     near = np.nonzero(np.min(RRnorm, axis=0) < avg_sidelength * margin)[0]
@@ -441,13 +460,13 @@ def _split_by_distance_centers(mesh, RR, margin=3):
 
 
 def _split_by_distance(mesh, RR, margin=3):
-    avg_sidelength = np.sqrt(4/np.sqrt(3)*np.mean(mesh.area_faces[::100]))
-#    np.mean(np.linalg.norm(np.diff(mesh.vertices[mesh.edges[::1000]], axis=1), axis=-1))
+    avg_sidelength = np.sqrt(4 / np.sqrt(3) * np.mean(mesh.area_faces[::100]))
+    #    np.mean(np.linalg.norm(np.diff(mesh.vertices[mesh.edges[::1000]], axis=1), axis=-1))
 
     RRnorm = np.linalg.norm(RR, axis=-1)
     near = np.nonzero(np.min(RRnorm, axis=(0, 2)) < avg_sidelength * margin)[0]
 
     far = np.setdiff1d(np.arange(0, len(mesh.faces)), near, assume_unique=True)
 
-#    print('near: %d, far: %d'%(len(near), len(far)))
+    #    print('near: %d, far: %d'%(len(near), len(far)))
     return near, far
