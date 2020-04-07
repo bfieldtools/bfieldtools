@@ -5,32 +5,19 @@ image:
 before_script:
    - Xvfb :99 -screen 0 800x800x8&
    - python setup.py install
+   - pip install black
    
 stages:
-  - test
+  - Static Analysis
+  - Testing
+
+black:
+  stage: Static Analysis
+  script:
+  - black --check .
 
 test:
-  stage: test
+  stage: Testing
   script:
     - pytest ./tests
     - pytest --cov=bfieldtools ./tests
-
-# staging:
-  # stage: deploy
-  # script:
-  # - apt-get update -qy
-  # - apt-get install -y ruby-dev
-  # - gem install dpl
-  # - dpl --provider=heroku --app=gitlab-ci-python-test-staging --api-key=$HEROKU_STAGING_API_KEY
-  # only:
-  # - master
-
-# production:
-  # stage: deploy
-  # script:
-  # - apt-get update -qy
-  # - apt-get install -y ruby-dev
-  # - gem install dpl
-  # - dpl --provider=heroku --app=gitlab-ci-python-test-prod --api-key=$HEROKU_PRODUCTION_API_KEY
-  # only:
-  # - tags
