@@ -94,7 +94,7 @@ def test_conductor_attributes():
     ind = c.inductance
     m_ind = c.mutual_inductance(c2)
 
-    c2.sph_couplings()
+    c2.sph_couplings
 
     # This should cause an error
     try:

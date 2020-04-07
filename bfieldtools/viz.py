@@ -75,7 +75,7 @@ def plot_3d_current_loops(
     if colors is None:
         colors = [(0.5, 0.5, 0.5)] * len(current_loops)
 
-    elif isinstance(colors, type(tuple)):
+    elif isinstance(colors, tuple):
         colors = [colors] * len(current_loops)
 
     elif colors == "auto":

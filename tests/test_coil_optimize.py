@@ -25,7 +25,11 @@ def test_coil_optimize():
                 abs_error=0.01,
             )
 
-            for objective in [(0, 1)]:  # , (1, 0), (0.5, 0.5)]:
+            for objective in [
+                "minimum_inductive_energy",
+                "minimum_resistive_energy",
+                (0.5, 0.5),
+            ]:
 
                 # For now, test with all solvers that can handle SOC problems
                 for solver in [
@@ -42,3 +46,26 @@ def test_coil_optimize():
             # tolerance is quite high, since some solvers give a bit differing results
             # in real life, let's not use those solvers.
             assert_allclose(results[-2], results[-1], rtol=2e-1)
+
+
+def test_standalone_functions():
+    """
+    Tests standalone functions in coil_optimize
+
+
+    Returns
+    -------
+    None.
+
+    """
+
+    P = 2 * np.array([[2, 0.5], [0.5, 1]])
+    q = np.array([1.0, 1.0])
+    G = np.array([[-1.0, 0.0], [0.0, -1.0]])
+    h = np.array([0.0, 0.0])
+    A = np.array([[1.0, 1.0], [1, 2]])
+    b = np.array([1.0, 0])
+
+    coil_optimize.cvxopt_solve_qp(P, q)
+    coil_optimize.cvxopt_solve_qp(P, q, G, h)
+    coil_optimize.cvxpy_solve_qp(P, G, h)

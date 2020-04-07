@@ -149,7 +149,7 @@ def optimize_streamfunctions(
     Returns
     -------
     s: vector
-        Vector with length len(`conductor.mesh.vertices`), containing the 
+        Vector with length len(`conductor.mesh.vertices`), containing the
         optimized current density values at each mesh vertex
     prob: CVXPY problem object
         CVXPY problem object containing data, formulation, solution, metric etc
@@ -285,7 +285,7 @@ def optimize_lsq(
 def _construct_constraints(conductor, bfield_specification):
     """
     Stacks together constraint and coupling matrices for stream function optimization
-    
+
     """
     # Initialize inequality constraint matrix and constraints
     constraint_matrix = np.zeros((0, conductor.basis.shape[1]))
@@ -353,7 +353,7 @@ def _construct_constraints(conductor, bfield_specification):
 
 def _construct_quadratic_objective(objective, conductor):
     """
-    
+
     """
     # Construct quadratic objective matrix
     if objective == (1, 0):
@@ -364,7 +364,7 @@ def _construct_quadratic_objective(objective, conductor):
 
         quadratic_matrix = conductor.resistance
 
-    elif isinstance(objective, type(tuple)):
+    elif isinstance(objective, tuple):
 
         L = conductor.inductance
 

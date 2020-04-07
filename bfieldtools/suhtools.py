@@ -44,11 +44,11 @@ class SuhBasis:
                   or Conductor object that wraps the mesh
             Nc : Number of components
             boundary_condition : str  "dirichlet" (default) or "neumann"
-                if zero-Dirichlet boundary conditions ("dirichlet") 
+                if zero-Dirichlet boundary conditions ("dirichlet")
                 are used the basis corresponds to inner_vertices
-                else with zero-Neumann condition ("neumann") 
+                else with zero-Neumann condition ("neumann")
                 the basis corresponds to all vertices
-              
+
         """
 
         if boundary_condition in ("dirichlet", "neumann"):
@@ -148,7 +148,7 @@ class SuhBasis:
 
                 Fields (3, N_points, self.Nc)
         """
-        B_coupling = magnetic_field_coupling(mesh, points)
+        B_coupling = self.conductor.B_coupling(points)
 
         return B_coupling @ self.basis
 
@@ -197,7 +197,7 @@ class SuhBasis:
                 None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=figsize
             )
 
-        if isinstance(Nfuncs, type(int)):
+        if isinstance(Nfuncs, int):
             N = Nfuncs
             indices = np.arange(Nfuncs)
         else:
@@ -241,7 +241,7 @@ class SuhBasis:
 
 
 if __name__ == "__main__":
-    """ 
+    """
     Simple testing script
     """
 
