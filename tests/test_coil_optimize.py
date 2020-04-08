@@ -19,8 +19,8 @@ def test_coil_optimize():
             c = _fake_conductor(mesh_name=test_mesh, basis_name=basis_name, N_suh=10)
 
             spec = dict(
-                coupling=c.B_coupling(np.array([[0, 0, 2]])),
-                target=np.array([[0, 0, 1]]),
+                coupling=c.B_coupling(np.array([[0, -0.1, 1], [0, 0, 1], [0, 0.1, 1]])),
+                target=np.array([[0, 0, 1], [0, 0, 1], [0, 0, 1]]),
                 abs_error=0.01,
             )
 
@@ -31,11 +31,13 @@ def test_coil_optimize():
             ]:
                 results = []
 
+                results.append(coil_optimize.optimize_lsq(c, [dict(spec)], reg=1e3))
+
                 # For now, test with all solvers that can handle SOC problems
                 for solver in [
                     i
                     for i in cvxpy.solvers.defines.INSTALLED_CONIC_SOLVERS
-                    if i != "GLPK" and i != "GLPK_MI"
+                    if i not in ("GLPK", "GLPK_MI", "SCS")
                 ]:
                     results.append(
                         coil_optimize.optimize_streamfunctions(
@@ -45,7 +47,12 @@ def test_coil_optimize():
                 if len(results) > 1:
                     # tolerance is quite high, since some solvers give a bit differing results
                     # in real life, let's not use those solvers.
-                    assert_allclose(results[-2], results[-1], rtol=2e-1)
+                    assert_allclose(
+                        results[-2],
+                        results[-1],
+                        rtol=5e-1,
+                        atol=0.001 * np.mean(np.abs(results[-2])),
+                    )
 
 
 def test_standalone_functions():
