@@ -259,14 +259,7 @@ def plot_cross_section(
 
 
 def plot_data_on_faces(
-    mesh,
-    data,
-    figure=None,
-    figsize=(800, 800),
-    cmap=None,
-    colorbar=False,
-    ncolors=356,
-    **kwargs
+    mesh, data, figure=None, figsize=(800, 800), colorbar=False, ncolors=256, **kwargs
 ):
     """ Plot any data determined on the faces of a mesh
 
@@ -279,7 +272,7 @@ def plot_data_on_faces(
             Optional, if passed will plot to existing figure
         figsize: (x, y) tuple
             Optional, if plotting to new figure specifies the size (in pixels)
-        cmap: str
+        colormap: str
             name of colormap to use for scalar data. If None (default), use viridis for
             all-positive/-negative data and RdBu otherwise
         colorbar: Boolean
@@ -298,11 +291,11 @@ def plot_data_on_faces(
         )
 
     # If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
-    if cmap is None:
+    if "colormap" not in kwargs:
         if np.all(data > 0) or np.all(data < 0):
-            cmap = "viridis"
+            kwargs["colormap"] = "viridis"
         else:
-            cmap = "RdBu"
+            kwargs["colormap"] = "RdBu"
 
     v = mesh.vertices
     f = mesh.faces
@@ -338,7 +331,7 @@ def plot_data_on_vertices(
     figure=None,
     figsize=(800, 800),
     colorbar=False,
-    ncolors=32,
+    ncolors=256,
     interpolate=True,
     cull_front=False,
     cull_back=False,
