@@ -13,12 +13,12 @@ def combine_meshes(meshes):
     """
     Combine two or more non-overlapping Trimesh meshes without any dependency
     requirements. For more demanding applications, use Trimesh boolean operations
-    
+
     Parameters
     ----------
     meshes: list or tuple
         Each element should be a Trimesh mesh
-    
+
     Returns
     -------
     combined_mesh: Trimesh mesh
@@ -154,58 +154,6 @@ def get_line_quad_points(line_vertices, method="midpoint", index=None):
         qp[i] = x[:, None] @ B / 2 + B / 2 + p0
 
     return w, qp
-
-
-@jit
-def assemble_matrix(tris, Nverts, triangle_data):
-    """ Optimized  assembly of finite element matrix for
-        precomputed triangle data
-
-        Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
-        for the nodes neighbouring the triangle
-    """
-    M = np.zeros((Nverts, Nverts))
-    for i in range(tris.shape[0]):  # Eval triangles
-        for j in range(tris.shape[0]):  # Source triangles
-            for k in range(tris.shape[1]):  # Eval triangle hats
-                for l in range(tris.shape[1]):  # Source triangle hats
-                    M[tris[i, k], tris[j, l]] += triangle_data[i, j, k, l]
-    return M.T
-
-
-@jit
-def assemble_matrix_chunk(tris, Nverts, triangle_data, n, Nchunks):
-    """ Optimized  assembly of finite element matrix for
-        precomputed triangle data. Version for computation in which eval points
-        are chunked smaller, less memory-intensive parts
-
-        Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
-        for the nodes neighbouring the triangle
-    """
-    M = np.zeros((Nverts, Nverts))
-    for i in range(triangle_data.shape[0]):  # Eval triangles
-        for j in range(triangle_data.shape[1]):  # Source triangles
-            for k in range(tris.shape[1]):  # Eval triangle hats
-                for l in range(tris.shape[1]):  # Source triangle hats
-                    M[tris[n::Nchunks][i, k], tris[j, l]] += triangle_data[i, j, k, l]
-    return M.T
-
-
-@jit
-def assemble_matrix2(tris1, tris2, Nverts1, Nverts2, triangle_data):
-    """ Optimized  assembly of finite element matrix for
-        precomputed triangle data for separate meshes 1 and 2
-
-        Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
-        for the nodes neighbouring the triangle
-    """
-    M = np.zeros((Nverts2, Nverts1))
-    for i in range(tris2.shape[0]):  # Eval triangles
-        for j in range(tris1.shape[0]):  # Source triangles
-            for k in range(tris2.shape[1]):  # Eval triangle hats
-                for l in range(tris1.shape[1]):  # Source triangle hats
-                    M[tris2[i, k], tris1[j, l]] += triangle_data[i, j, k, l]
-    return M.T
 
 
 @jit
@@ -448,7 +396,7 @@ def fix_normals(mesh, origin=np.array([0, 0, 0])):
 def load_example_mesh(mesh_name, process=True, **kwargs):
     """
     Convenience function used load example meshes included with the package
-    
+
     Parameters
     ----------
     mesh_name: string
@@ -457,7 +405,7 @@ def load_example_mesh(mesh_name, process=True, **kwargs):
         Whether trimesh should process the mesh on loading
     kwargs
         Passed to trimesh object creation
-    
+
     Returns
     -------
     Trimesh object
