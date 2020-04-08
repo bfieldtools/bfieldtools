@@ -261,32 +261,6 @@ def vert2inner(mesh, inner_vertices, holes):
     return v2d
 
 
-def fibonacci_sphere(samples=10, center=np.array([0, 0, 0]), radius=1, randomize=True):
-    """
-    Generates a set of points approximately evenly distributed on a sphere,
-    with adjustable center and radius. Uses spherical Fibonacci Lattice.
-    """
-
-    rnd = 1.0
-    if randomize:
-        rnd = np.random.random() * samples
-
-    points = np.zeros((samples, 3))
-    offset = 2.0 / samples
-    increment = np.pi * (3.0 - np.sqrt(5.0))
-
-    for i in range(samples):
-        points[i, 1] = ((i * offset) - 1) + (offset / 2)
-        r = np.sqrt(1 - pow(points[i, 1], 2))
-
-        phi = ((i + rnd) % samples) * increment
-
-        points[i, 0] = np.cos(phi) * r
-        points[i, 2] = np.sin(phi) * r
-
-    return radius * points + center
-
-
 def cylinder_points(
     radius=1,
     length=1,
