@@ -13,7 +13,6 @@ def test_coil_optimize():
     """
 
     for test_mesh in ["unit_sphere", "unit_disc", "plane_w_holes"]:
-        results = []
 
         for basis_name in ["suh"]:  # , 'inner', 'vertex']:
 
@@ -30,6 +29,7 @@ def test_coil_optimize():
                 "minimum_resistive_energy",
                 (0.5, 0.5),
             ]:
+                results = []
 
                 # For now, test with all solvers that can handle SOC problems
                 for solver in [
@@ -42,10 +42,10 @@ def test_coil_optimize():
                             c, [spec], objective, solver
                         )[0]
                     )
-        if len(results) > 1:
-            # tolerance is quite high, since some solvers give a bit differing results
-            # in real life, let's not use those solvers.
-            assert_allclose(results[-2], results[-1], rtol=2e-1)
+                if len(results) > 1:
+                    # tolerance is quite high, since some solvers give a bit differing results
+                    # in real life, let's not use those solvers.
+                    assert_allclose(results[-2], results[-1], rtol=2e-1)
 
 
 def test_standalone_functions():
