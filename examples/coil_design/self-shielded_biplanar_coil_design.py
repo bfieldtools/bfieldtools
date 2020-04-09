@@ -143,8 +143,8 @@ U2 = CU2 @ shieldcoil.s
 
 ##############################################################
 # Now, plot the field streamlines and scalar potential
-cc1 = scalar_contour(mesh1, mesh1.vertices[:, 2], contours=[-0.001])[0]
-cc2 = scalar_contour(mesh2, mesh2.vertices[:, 2], contours=[-0.001])[0]
+cc1 = scalar_contour(mesh1, mesh1.vertices[:, 2], contours=[-0.001])
+cc2 = scalar_contour(mesh2, mesh2.vertices[:, 2], contours=[-0.001])
 cx10 = cc1[0][:, 1]
 cy10 = cc1[0][:, 0]
 cx20 = cc2[0][:, 1]
@@ -190,10 +190,10 @@ plt.streamplot(
 
 # plt.plot(seed_points[0], seed_points[1], '*')
 
-plt.plot(cx10, cy10, linewidth=3.0, color="gray")
-plt.plot(cx20, cy20, linewidth=3.0, color="gray")
-plt.plot(cx11, cy11, linewidth=3.0, color="gray")
-plt.plot(cx21, cy21, linewidth=3.0, color="gray")
+for loop in cc1 + cc2:
+    plt.plot(loop[:, 1], loop[:, 0], "k", linewidth=4, alpha=1)
+    plt.plot(-loop[:, 1], -loop[:, 0], "k", linewidth=4, alpha=1)
+
 plt.axis("image")
 
 plt.xticks([])

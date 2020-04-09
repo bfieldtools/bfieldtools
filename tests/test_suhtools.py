@@ -21,4 +21,11 @@ def test_suhbasis():
 
                 suh.field(suh.basis[1], np.array([[0, 0, 1]]))
 
+    suh = suhtools.SuhBasis(mesh, Nc=10, boundary_condition="dirichlet", magnetic=True)
+
+    try:
+        suh = suhtools.SuhBasis(10, Nc=10)
+    except:
+        print("Caught test exception")
+
     suh.plot(Nfuncs=3)
