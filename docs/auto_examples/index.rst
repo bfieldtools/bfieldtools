@@ -127,26 +127,6 @@ Examples related to coil design.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing a field profile defined by spherical harmonics.">
-
-.. only:: html
-
- .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_spherical_harmonics_coil_design_thumb.png
-
-     :ref:`sphx_glr_auto_examples_coil_design_spherical_harmonics_coil_design.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/coil_design/spherical_harmonics_coil_design
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing homogeneous field in a target region between th...">
 
 .. only:: html
@@ -164,6 +144,26 @@ Examples related to coil design.
    :hidden:
 
    /auto_examples/coil_design/coil_with_holes
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example showing a basic biplanar coil producing a field profile defined by spherical harmonics.">
+
+.. only:: html
+
+ .. figure:: /auto_examples/coil_design/images/thumb/sphx_glr_spherical_harmonics_coil_design_thumb.png
+
+     :ref:`sphx_glr_auto_examples_coil_design_spherical_harmonics_coil_design.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/coil_design/spherical_harmonics_coil_design
 
 .. raw:: html
 
@@ -466,26 +466,6 @@ Example scripts validating the core functionality of `bfieldtools`
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Inductance computation time and memory benchmark">
-
-.. only:: html
-
- .. figure:: /auto_examples/validation/images/thumb/sphx_glr_computation_time_thumb.png
-
-     :ref:`sphx_glr_auto_examples_validation_computation_time.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/validation/computation_time
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="Analytic B-field computation">
 
 .. only:: html
@@ -543,6 +523,26 @@ Example scripts validating the core functionality of `bfieldtools`
    :hidden:
 
    /auto_examples/validation/one_element
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Inductance computation time and memory benchmark">
+
+.. only:: html
+
+ .. figure:: /auto_examples/validation/images/thumb/sphx_glr_computation_time_thumb.png
+
+     :ref:`sphx_glr_auto_examples_validation_computation_time.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/validation/computation_time
 
 .. raw:: html
 

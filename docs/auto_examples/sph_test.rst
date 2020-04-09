@@ -1,10 +1,12 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_sph_test.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_sph_test.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_sph_test.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_sph_test.py:
 
 
 Spherical harmonics test, remove?
@@ -43,6 +45,8 @@ Should this be left as an example?
     nans in sph component  6 :  0
     nans in sph component  7 :  0
 
+    <mayavi.modules.surface.Surface object at 0x0000025453408308>
+
 
 
 
@@ -53,9 +57,9 @@ Should this be left as an example?
 .. code-block:: default
 
     #
-    #import sys
-    #path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
-    #if path not in sys.path:
+    # import sys
+    # path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
+    # if path not in sys.path:
     #    sys.path.insert(0, path)
 
 
@@ -66,30 +70,34 @@ Should this be left as an example?
     from bfieldtools.sphtools import basis_fields, ylm, derxlm, sinxlm
 
     from trimesh.creation import icosphere
+
     mesh = icosphere(4, 1)
-    print('Positions of evaluation points')
+    print("Positions of evaluation points")
     print(mesh.vertices)
 
-    theta=np.linspace(1e-6, np.pi*0.999)
-    sp = sinxlm(1,-1, theta)
+    theta = np.linspace(1e-6, np.pi * 0.999)
+    sp = sinxlm(1, -1, theta)
     plt.plot(sp)
 
-    aa, bb= basis_fields(mesh.vertices, 2)
+    aa, bb = basis_fields(mesh.vertices, 2)
 
     for ii in range(aa.shape[1]):
-        print('nans in sph component ', ii, ': ', np.isnan(aa[:,ii,:]).sum())
+        print("nans in sph component ", ii, ": ", np.isnan(aa[:, ii, :]).sum())
 
     aa[np.isnan(aa)] = 100
 
     # Plot the first component
-    mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
-                         scalars=np.linalg.norm(aa[:,0,:], axis=0), colormap='RdBu')
+    mlab.triangular_mesh(
+        *mesh.vertices.T,
+        mesh.faces,
+        scalars=np.linalg.norm(aa[:, 0, :], axis=0),
+        colormap="RdBu"
+    )
+
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  7.691 seconds)
-
-**Estimated memory usage:**  129 MB
+   **Total running time of the script:** ( 0 minutes  9.302 seconds)
 
 
 .. _sphx_glr_download_auto_examples_sph_test.py:
@@ -102,13 +110,13 @@ Should this be left as an example?
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: sph_test.py <sph_test.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: sph_test.ipynb <sph_test.ipynb>`
 

@@ -10,8 +10,9 @@ from .utils import tri_normals_and_areas
 ############################################3
 # sph helper functions
 
-def cartesian2spherical(p,zaxis_approx=True):
-    '''
+
+def cartesian2spherical(p, zaxis_approx=True):
+    """
     Maps cartesian coordinates to spherical.
 
     Parameters
@@ -24,26 +25,26 @@ def cartesian2spherical(p,zaxis_approx=True):
     sp: Nx3 array
         spherical coordinates [r, theta, phi]
 
-    '''
+    """
 
-    r = np.sqrt(p[:, 0]**2+p[:, 1]**2+p[:, 2]**2)
-    theta = np.arctan2(np.sqrt(p[:, 0]**2+p[:, 1]**2),p[:, 2])
-    phi = np.arctan2(p[:, 1],p[:, 0])
+    r = np.sqrt(p[:, 0] ** 2 + p[:, 1] ** 2 + p[:, 2] ** 2)
+    theta = np.arctan2(np.sqrt(p[:, 0] ** 2 + p[:, 1] ** 2), p[:, 2])
+    phi = np.arctan2(p[:, 1], p[:, 0])
 
     sp = np.array((r, theta, phi)).T
 
     if zaxis_approx:
         eps = 1e-6
-        theta_mask_0 = np.abs(sp[:,1]) < eps
-        theta_mask_pi = np.abs(sp[:,1] - np.pi) < eps
-        sp[theta_mask_0,1] += eps
-        sp[theta_mask_pi,1] -= eps
-        
+        theta_mask_0 = np.abs(sp[:, 1]) < eps
+        theta_mask_pi = np.abs(sp[:, 1] - np.pi) < eps
+        sp[theta_mask_0, 1] += eps
+        sp[theta_mask_pi, 1] -= eps
+
     return sp
 
 
 def spherical2cartesian(sp):
-    '''
+    """
     Maps spherical coordinates to cartesian.
 
     Parameters
@@ -55,18 +56,18 @@ def spherical2cartesian(sp):
     -------
     p: Nx3 array
         cartesian croodinates
-    '''
+    """
 
-    X = sp[:,0] * np.sin(sp[:,1]) * np.cos(sp[:,2])
-    Y = sp[:,0] * np.sin(sp[:,1]) * np.sin(sp[:,2])
-    Z = sp[:,0] * np.cos(sp[:,1])
+    X = sp[:, 0] * np.sin(sp[:, 1]) * np.cos(sp[:, 2])
+    Y = sp[:, 0] * np.sin(sp[:, 1]) * np.sin(sp[:, 2])
+    Z = sp[:, 0] * np.cos(sp[:, 1])
 
-    p = np.array((X,Y,Z)).T
+    p = np.array((X, Y, Z)).T
     return p
 
 
 def Rotmatrix(sp):
-    '''
+    """
     Constructs rotation matrix from cartesian coordinates to spherical.
 
     Parameters
@@ -78,24 +79,24 @@ def Rotmatrix(sp):
     -------
     vmat: 3x3 array
         rotation matrix from cartesian to spherical.
-    '''
+    """
 
-    vmat = np.zeros((3,3))
-    vmat[0,0] = np.sin(sp[1])*np.cos(sp[2])
-    vmat[0,1] = np.sin(sp[1])*np.sin(sp[2])
-    vmat[0,2] = np.cos(sp[1])
-    vmat[1,0] = np.cos(sp[1])*np.cos(sp[2])
-    vmat[1,1] = np.cos(sp[1])*np.sin(sp[2])
-    vmat[1,2] = -1*np.sin(sp[1])
-    vmat[2,0] = -1*np.sin(sp[2])
-    vmat[2,1] = np.cos(sp[2])
-    vmat[2,2] = 0
+    vmat = np.zeros((3, 3))
+    vmat[0, 0] = np.sin(sp[1]) * np.cos(sp[2])
+    vmat[0, 1] = np.sin(sp[1]) * np.sin(sp[2])
+    vmat[0, 2] = np.cos(sp[1])
+    vmat[1, 0] = np.cos(sp[1]) * np.cos(sp[2])
+    vmat[1, 1] = np.cos(sp[1]) * np.sin(sp[2])
+    vmat[1, 2] = -1 * np.sin(sp[1])
+    vmat[2, 0] = -1 * np.sin(sp[2])
+    vmat[2, 1] = np.cos(sp[2])
+    vmat[2, 2] = 0
 
     return vmat
 
 
-def cartvec2sph(sp,vec):
-    '''
+def cartvec2sph(sp, vec):
+    """
     Transforms cartesian vector to spherical coordinates.
 
     Parameters
@@ -110,17 +111,17 @@ def cartvec2sph(sp,vec):
     svec: Nx3 array
         vector in spherical coordinates [e_r, e_theta, e_phi]
 
-    '''
+    """
 
     svec = np.zeros(vec.shape)
     for i in range(sp.shape[0]):
         vmat = Rotmatrix(sp[i])
-        svec[i] = vmat@vec[i]
+        svec[i] = vmat @ vec[i]
     return svec
 
 
-def sphvec2cart(sp,vec):
-    '''
+def sphvec2cart(sp, vec):
+    """
     Transforms cartesian vector to spherical coordinates.
 
     Parameters
@@ -135,18 +136,18 @@ def sphvec2cart(sp,vec):
     svec: Nx3 array
         vector in cartesian coordinates [e_x, e_y, e_z]
 
-    '''
+    """
 
     svec = np.zeros(vec.shape)
     for i in range(sp.shape[0]):
         vmat = Rotmatrix(sp[i])
-        svec[i] = np.transpose(vmat)@vec[i]
+        svec[i] = np.transpose(vmat) @ vec[i]
 
     return svec
 
 
-def lpmn_em(l,m,x):
-    '''
+def lpmn_em(l, m, x):
+    """
     Computes associated Legendre function (Plm) of the first kind of order m and degree l.
 
     Parameters
@@ -164,17 +165,17 @@ def lpmn_em(l,m,x):
     lp: Nx1 array
         Plm at `x`
 
-    '''
+    """
 
     lp = np.zeros(x.shape)
     for i in range(x.shape[0]):
-        a, b = lpmn(m,l,x[i])
-        lp[i] = a[np.abs(m),l]
+        a, b = lpmn(m, l, x[i])
+        lp[i] = a[np.abs(m), l]
     return lp
 
 
-def derlpmn_em(l,m,x):
-    '''
+def derlpmn_em(l, m, x):
+    """
     Computes derivative of associated Legendre function (Plm) of the first kind of order m and degree l
     with respect to the argument x.
 
@@ -192,17 +193,17 @@ def derlpmn_em(l,m,x):
     derlp: Nx1 array
         dPlm/dx at `x`
 
-    '''
+    """
 
     derlp = np.zeros(x.shape)
     for i in range(x.shape[0]):
-        a, b = lpmn(m,l,x[i])
-        derlp[i] = b[np.abs(m),l]
+        a, b = lpmn(m, l, x[i])
+        derlp[i] = b[np.abs(m), l]
     return derlp
 
 
 def xlm(l, m, theta):
-    '''
+    """
     Xlm-function used in the definition of spherical harmonics (Ylm).
     Follows notation of Plattner and Simons (2014);
     see Eqs. 1--3 in https://arxiv.org/pdf/1306.3201.pdf.
@@ -221,15 +222,17 @@ def xlm(l, m, theta):
     Xlm: Nx1 array
         Xlm at theta
 
-    '''
+    """
 
-    xlm = ((2*l+1)/(4*np.pi))**.5*(factorial(l-m)/factorial(l+m))**.5
-    xlm *= lpmn_em(l,m,np.cos(theta))
+    xlm = ((2 * l + 1) / (4 * np.pi)) ** 0.5 * (
+        factorial(l - m) / factorial(l + m)
+    ) ** 0.5
+    xlm *= lpmn_em(l, m, np.cos(theta))
     return xlm
 
 
 def ylm(l, m, theta, phi):
-    '''
+    """
     Real spherical harmonics as defined by Plattner and Simons (2014);
     see Eqs. 1--3 in https://arxiv.org/pdf/1306.3201.pdf.
 
@@ -249,20 +252,20 @@ def ylm(l, m, theta, phi):
     Ylm: Nx1 array
         Ylm at (theta,phi)
 
-    '''
+    """
 
     if m < 0:
-        ylm = np.sqrt(2)*xlm(l,m, theta)*np.cos(m*phi)
+        ylm = np.sqrt(2) * xlm(l, m, theta) * np.cos(m * phi)
     elif m == 0:
-        ylm = xlm(l,0,theta)
+        ylm = xlm(l, 0, theta)
     elif m > 0:
-        ylm = np.sqrt(2)*xlm(l,m, theta)*np.sin(m*phi)
+        ylm = np.sqrt(2) * xlm(l, m, theta) * np.sin(m * phi)
 
     return ylm
 
 
 def derxlm(l, m, theta):
-    '''
+    """
     Derivative of Xlm with respect to theta.
 
     Parameters
@@ -279,16 +282,20 @@ def derxlm(l, m, theta):
     derxlm: Nx1 array
         dXlm/dtheta at theta
 
-    '''
+    """
 
-    derxlm = ((2*l+1)/(4*np.pi))**.5*(factorial(l-m)/factorial(l+m))**.5
-    derxlm *= derlpmn_em(l,m,np.cos(theta))
-    derxlm *= -1*np.sin(theta) #this comes from dXlm(cos(theta))/dtheta = dXlm(cos(theta))/dcos(theta)*(-sin(theta))
+    derxlm = ((2 * l + 1) / (4 * np.pi)) ** 0.5 * (
+        factorial(l - m) / factorial(l + m)
+    ) ** 0.5
+    derxlm *= derlpmn_em(l, m, np.cos(theta))
+    derxlm *= -1 * np.sin(
+        theta
+    )  # this comes from dXlm(cos(theta))/dtheta = dXlm(cos(theta))/dcos(theta)*(-sin(theta))
     return derxlm
 
 
 def sinxlm(l, m, theta):
-    '''
+    """
     Computes m/(sin(theta))*Xlm.
 
     Parameters
@@ -305,13 +312,14 @@ def sinxlm(l, m, theta):
     sinxlm: Nx1 array
         m/(sin(theta))*Xlm at theta
 
-    '''
+    """
 
-    sinxlm = m/(np.sin(theta))*xlm(l,m, theta)
+    sinxlm = m / (np.sin(theta)) * xlm(l, m, theta)
     return sinxlm
 
+
 def dthylm(l, m, theta, phi):
-    '''
+    """
     Derivative of Ylm with respect to theta dYlm/dtheta.
 
     Parameters
@@ -330,19 +338,19 @@ def dthylm(l, m, theta, phi):
     dthylm: Nx1 array
         dYlm/dtheta at (theta, phi).
 
-    '''
+    """
 
     if m < 0:
-        dthylm = np.sqrt(2)*derxlm(l,m, theta)*np.cos(m*phi)
+        dthylm = np.sqrt(2) * derxlm(l, m, theta) * np.cos(m * phi)
     elif m == 0:
-        dthylm = derxlm(l,0,theta)
+        dthylm = derxlm(l, 0, theta)
     elif m > 0:
-        dthylm = np.sqrt(2)*derxlm(l,m, theta)*np.sin(m*phi)
+        dthylm = np.sqrt(2) * derxlm(l, m, theta) * np.sin(m * phi)
     return dthylm
 
 
 def dphiylm(l, m, theta, phi):
-    '''
+    """
     Derivative of Ylm with respect to phi dYlm/dphi.
 
     Parameters
@@ -361,19 +369,19 @@ def dphiylm(l, m, theta, phi):
     dphiylm: Nx1 array
         dYlm/dphi at (theta, phi).
 
-    '''
+    """
 
     if m < 0:
-        dphiylm = -np.sqrt(2)*np.sin(m*phi)*sinxlm(l,m,theta)
+        dphiylm = -np.sqrt(2) * np.sin(m * phi) * sinxlm(l, m, theta)
     elif m == 0:
         dphiylm = 0
     elif m > 0:
-        dphiylm = np.sqrt(2)*np.cos(m*phi)*sinxlm(l,m,theta)
+        dphiylm = np.sqrt(2) * np.cos(m * phi) * sinxlm(l, m, theta)
     return dphiylm
 
 
 def Plm(l, m, theta, phi):
-    '''
+    """
     Plm vector function (see Eq. 18 Plattner and Simons (2014)).
 
     Parameters
@@ -391,14 +399,15 @@ def Plm(l, m, theta, phi):
     Plm: Nx3 array
         Plm at (theta, phi).
 
-    '''
+    """
 
-    Plm = np.zeros((theta.shape[0],3))
-    Plm[:,0] = ylm(l,m,theta,phi)
+    Plm = np.zeros((theta.shape[0], 3))
+    Plm[:, 0] = ylm(l, m, theta, phi)
     return Plm
 
+
 def Blm(l, m, theta, phi):
-    '''
+    """
     Blm vector function (see Eq. 19 Plattner and Simons (2014)).
 
     Parameters
@@ -416,19 +425,20 @@ def Blm(l, m, theta, phi):
     Blm: Nx3 array
         Blm at (theta, phi).
 
-    '''
+    """
 
-    Blm = np.zeros((theta.shape[0],3))
+    Blm = np.zeros((theta.shape[0], 3))
 
-    Blm[:,1] = dthylm(l,m,theta,phi)
+    Blm[:, 1] = dthylm(l, m, theta, phi)
 
-    Blm[:,2] = dphiylm(l,m,theta,phi)
+    Blm[:, 2] = dphiylm(l, m, theta, phi)
 
-    Blm *= 1/np.sqrt(l*(l+1))
+    Blm *= 1 / np.sqrt(l * (l + 1))
     return Blm
 
-def Wlm(l,m,theta,phi):
-    '''
+
+def Wlm(l, m, theta, phi):
+    """
     Vector basis function (Wlm) for r**l component of the magnetic field.
     Normalization <Wlm,Psikn> = delta_lk,mn.
 
@@ -447,14 +457,15 @@ def Wlm(l,m,theta,phi):
     Wlm: Nx3 array
         Wlm at (theta, phi).
 
-    '''
+    """
 
-    Wlm = l*Plm(l,m,theta,phi) + np.sqrt(l*(l+1))*Blm(l,m,theta,phi)
-    Wlm *= 1/np.sqrt(2*l**2+l)
+    Wlm = l * Plm(l, m, theta, phi) + np.sqrt(l * (l + 1)) * Blm(l, m, theta, phi)
+    Wlm *= 1 / np.sqrt(2 * l ** 2 + l)
     return Wlm
 
-def Vlm(l,m,theta,phi):
-    '''
+
+def Vlm(l, m, theta, phi):
+    """
     Vector basis function (Vlm) for r**(-l) component of the magnetic field.
     Normalization <Vlm,Phikn> = delta_lk,mn.
 
@@ -474,18 +485,21 @@ def Vlm(l,m,theta,phi):
     Vlm: Nx3 array
         Vlm at (theta, phi).
 
-    '''
+    """
 
-    Vlm = -1*(l+1)*Plm(l,m,theta,phi) + np.sqrt(l*(l+1))*Blm(l,m,theta,phi)
-    Vlm *= 1/np.sqrt((l+1)*(2*l+1))
+    Vlm = -1 * (l + 1) * Plm(l, m, theta, phi) + np.sqrt(l * (l + 1)) * Blm(
+        l, m, theta, phi
+    )
+    Vlm *= 1 / np.sqrt((l + 1) * (2 * l + 1))
     return Vlm
 
 
 ############################################
 # Potential and field
 
+
 def potential(p, acoeffs, bcoeffs, lmax):
-    '''
+    """
     Computes magnetic scalar potential from the sph coefficients.
     Ignores the 'DC' component l=0.
 
@@ -505,22 +519,25 @@ def potential(p, acoeffs, bcoeffs, lmax):
     pot: Nx1 array
         magnetic scalar potential at p
 
-    '''
+    """
 
     pot = np.zeros(p.shape[0])
 
     sp = cartesian2spherical(p)
 
     lind = 0
-    for l in range(1,lmax+1):
-        for m in range(-1*l,l+1):
-            _ylm = ylm(l, m, sp[:,1], sp[:,2])
-            pot += (acoeffs[lind]*sp[:,0]**l + bcoeffs[lind]*sp[:,0]**(-1*l-1))*_ylm
+    for l in range(1, lmax + 1):
+        for m in range(-1 * l, l + 1):
+            _ylm = ylm(l, m, sp[:, 1], sp[:, 2])
+            pot += (
+                acoeffs[lind] * sp[:, 0] ** l + bcoeffs[lind] * sp[:, 0] ** (-1 * l - 1)
+            ) * _ylm
             lind += 1
     return pot
 
+
 def field(p, acoeffs, bcoeffs, lmax):
-    '''
+    """
     Computes magnetic field from the sph coefficients.
     Ignores the 'DC' component l=0.
 
@@ -540,30 +557,30 @@ def field(p, acoeffs, bcoeffs, lmax):
     field: Nx3 array
         magnetic field at p
 
-    '''
-    mu0=4*np.pi*1e-7
+    """
+    mu0 = 4 * np.pi * 1e-7
     B = np.zeros(p.shape)
 
     sp = cartesian2spherical(p)
 
     idx = 0
-    for l in range(1,lmax+1):
-        for m in range(-1*l,l+1):
-            _Wlm = Wlm(l,m, sp[:,1],sp[:,2])
-            _Wlm *= np.sqrt(2*l**2 + l)
-            _Wlm[:,0] *= sp[:,0]**(l-1)
-            _Wlm[:,1] *= sp[:,0]**(l-1)
-            _Wlm[:,2] *= sp[:,0]**(l-1)
-            _Wlm *= bcoeffs[idx] # Fixed a -> b
+    for l in range(1, lmax + 1):
+        for m in range(-1 * l, l + 1):
+            _Wlm = Wlm(l, m, sp[:, 1], sp[:, 2])
+            _Wlm *= np.sqrt(2 * l ** 2 + l)
+            _Wlm[:, 0] *= sp[:, 0] ** (l - 1)
+            _Wlm[:, 1] *= sp[:, 0] ** (l - 1)
+            _Wlm[:, 2] *= sp[:, 0] ** (l - 1)
+            _Wlm *= bcoeffs[idx]  # Fixed a -> b
             _Wlm = sphvec2cart(sp, _Wlm)
             B += _Wlm
 
-            _Vlm = Vlm(l,m, sp[:,1],sp[:,2])
-            _Vlm *= np.sqrt((2*l+1)*(l+1))
-            _Vlm[:,0] *= sp[:,0]**(-l-2)
-            _Vlm[:,1] *= sp[:,0]**(-l-2)
-            _Vlm[:,2] *= sp[:,0]**(-l-2)
-            _Vlm *= acoeffs[idx] # Fixed b -> a
+            _Vlm = Vlm(l, m, sp[:, 1], sp[:, 2])
+            _Vlm *= np.sqrt((2 * l + 1) * (l + 1))
+            _Vlm[:, 0] *= sp[:, 0] ** (-l - 2)
+            _Vlm[:, 1] *= sp[:, 0] ** (-l - 2)
+            _Vlm[:, 2] *= sp[:, 0] ** (-l - 2)
+            _Vlm *= acoeffs[idx]  # Fixed b -> a
             _Vlm = sphvec2cart(sp, _Vlm)
             B += _Vlm
 
@@ -571,8 +588,9 @@ def field(p, acoeffs, bcoeffs, lmax):
     B *= mu0
     return B
 
+
 def basis_fields(p, lmax):
-    '''
+    """
     Computes magnetic fields for each sph coefficient.
     Ignores the 'DC' component l=0. The fields are normalized
     over the unit sphere.
@@ -591,31 +609,31 @@ def basis_fields(p, lmax):
     B2: N_lmax x N x 3 array
         magnetic field at p for each beta_lm
 
-    '''
-    L = lmax*(lmax+2) # Fixed
+    """
+    L = lmax * (lmax + 2)  # Fixed
     B1 = np.zeros((L, p.shape[0], p.shape[1]))
     B2 = np.zeros((L, p.shape[0], p.shape[1]))
 
     sp = cartesian2spherical(p)
 
     idx = 0
-    for l in range(1,lmax+1):
-        for m in range(-1*l,l+1):
-            _Wlm = Wlm(l,m, sp[:,1],sp[:,2])
-#                Wlm *= np.sqrt(2*l**2 + l)
-            _Wlm[:,0] *= sp[:,0]**(l-1)
-            _Wlm[:,1] *= sp[:,0]**(l-1)
-            _Wlm[:,2] *= sp[:,0]**(l-1)
+    for l in range(1, lmax + 1):
+        for m in range(-1 * l, l + 1):
+            _Wlm = Wlm(l, m, sp[:, 1], sp[:, 2])
+            #                Wlm *= np.sqrt(2*l**2 + l)
+            _Wlm[:, 0] *= sp[:, 0] ** (l - 1)
+            _Wlm[:, 1] *= sp[:, 0] ** (l - 1)
+            _Wlm[:, 2] *= sp[:, 0] ** (l - 1)
             _Wlm = sphvec2cart(sp, _Wlm)
-            B2[idx] = _Wlm # r**l functions
+            B2[idx] = _Wlm  # r**l functions
 
-            _Vlm = Vlm(l,m, sp[:,1],sp[:,2])
-#                Vlm *= np.sqrt((2*l+1)*(l+1))
-            _Vlm[:,0] *= sp[:,0]**(-l-2)
-            _Vlm[:,1] *= sp[:,0]**(-l-2)
-            _Vlm[:,2] *= sp[:,0]**(-l-2)
+            _Vlm = Vlm(l, m, sp[:, 1], sp[:, 2])
+            #                Vlm *= np.sqrt((2*l+1)*(l+1))
+            _Vlm[:, 0] *= sp[:, 0] ** (-l - 2)
+            _Vlm[:, 1] *= sp[:, 0] ** (-l - 2)
+            _Vlm[:, 2] *= sp[:, 0] ** (-l - 2)
             _Vlm = sphvec2cart(sp, _Vlm)
-            B1[idx] = _Vlm # 1/r**l functions
+            B1[idx] = _Vlm  # 1/r**l functions
 
             idx += 1
 
@@ -629,8 +647,9 @@ def basis_fields(p, lmax):
 ###################################
 # sph class
 
+
 class sphbasis:
-    '''
+    """
     Class for constructing spherical harmonics (Ylms), their gradients
     and related magnetic field 'basis vectorfunctions'
     (Wlms for r**l components, Vlms for r**(-l) components).
@@ -655,9 +674,10 @@ class sphbasis:
         cartesian quadrature points
     sqp: Mx3 array
         spherical quadrature points
-    '''
+    """
+
     def __init__(self, Np):
-        '''
+        """
         Initialises the sphbasis object.
 
         Parameters
@@ -669,38 +689,37 @@ class sphbasis:
         -------
         self: sphbasis object
 
-        '''
+        """
 
-        theta = np.linspace(0.01, np.pi-0.01, Np)
-        phi = np.linspace(0, 2*np.pi, Np)
+        theta = np.linspace(0.01, np.pi - 0.01, Np)
+        phi = np.linspace(0, 2 * np.pi, Np)
         phi, theta = np.meshgrid(phi, theta)
         phi = phi.flatten()
         theta = theta.flatten()
 
-        self.sp = np.zeros((theta.shape[0],3))
+        self.sp = np.zeros((theta.shape[0], 3))
         self.sp[:, 0] = 1
         self.sp[:, 1] = theta
-        self.sp[:, 2]= phi
+        self.sp[:, 2] = phi
 
         self.p = spherical2cartesian(self.sp)
         self.Np = Np
 
         self.initqp()
 
-
     def initqp(self):
-        '''
+        """
         Initialises quadrature points on the sphere.
 
         Default points are McLaren(10) so that we avoid singularities.
-        '''
+        """
 
         self.qp = quadpy.sphere.mclaren_10()
         sp = cartesian2spherical(self.qp.points)
         self.sqp = sp
 
-    def innerproduct(self,fun1,fun2):
-        '''
+    def innerproduct(self, fun1, fun2):
+        """
         Inner product of vector functions fun1 and fun2.
         Defined as integration over a surface of unit sphere <C,D> = int C dot D dOmega.
         Quadrature rule defined in qp is used.
@@ -717,13 +736,13 @@ class sphbasis:
         dotp: int
             inner product of fun1 and fun2
 
-        '''
+        """
 
-        dotp = np.sum(self.qp.weights*np.sum(fun1*fun2,axis=1))*4*np.pi
+        dotp = np.sum(self.qp.weights * np.sum(fun1 * fun2, axis=1)) * 4 * np.pi
         return dotp
 
     def avsphspectra(self, fun, lmax):
-        '''
+        """
         Calculate the l,m-spectra (over r**l-terms) of vector function defined in quadrature points
         using the inner product.
 
@@ -739,23 +758,25 @@ class sphbasis:
         coeffs: lmax*(lmax+2)x1 arrays
             spectral coefficients
 
-        '''
+        """
 
         coeffs = []
 
-        for l in range(1,lmax+1):
-            for m in range(-1*l,l+1):
-                _Wlm = Wlm(l,m,self.sqp[:,1],self.sqp[:,2])
+        for l in range(1, lmax + 1):
+            for m in range(-1 * l, l + 1):
+                _Wlm = Wlm(l, m, self.sqp[:, 1], self.sqp[:, 2])
                 ctemp = self.innerproduct(fun, _Wlm)
-                ctemp /= (self.sqp[0,0]**(l-1)*np.sqrt(2*l**2 +l)) # we use this normalization
-#                ctemp /= (self.sqp[0,0]**(l-1))
+                ctemp /= self.sqp[0, 0] ** (l - 1) * np.sqrt(
+                    2 * l ** 2 + l
+                )  # we use this normalization
+                #                ctemp /= (self.sqp[0,0]**(l-1))
                 coeffs.append(ctemp)
 
         coeffs = np.array(coeffs)
         return coeffs
 
     def bvsphspectra(self, fun, lmax):
-        '''
+        """
         Calculate the l,m-spectra (over r**(-l)-terms) of vector function defined in quadrature points
         using the inner product.
 
@@ -771,16 +792,18 @@ class sphbasis:
         coeffs: lmax*(lmax+2)x1 arrays
             spectral coefficients
 
-        '''
+        """
 
         coeffs = []
 
-        for l in range(1,lmax+1):
-            for m in range(-1*l,l+1):
-                _Vlm = Vlm(l,m,self.sqp[:,1],self.sqp[:,2])
+        for l in range(1, lmax + 1):
+            for m in range(-1 * l, l + 1):
+                _Vlm = Vlm(l, m, self.sqp[:, 1], self.sqp[:, 2])
                 ctemp = self.innerproduct(fun, _Vlm)
-                ctemp /= (self.sqp[0,0]**(l-1)*np.sqrt((l+1)*(2*l+1))) # we use this normalization
-#                ctemp /= (self.sqp[0,0]**(l-1))
+                ctemp /= self.sqp[0, 0] ** (l - 1) * np.sqrt(
+                    (l + 1) * (2 * l + 1)
+                )  # we use this normalization
+                #                ctemp /= (self.sqp[0,0]**(l-1))
                 coeffs.append(ctemp)
 
         coeffs = np.array(coeffs)
@@ -788,7 +811,7 @@ class sphbasis:
 
 
 def fitSpectra(coords, Bmeas, lmax):
-    '''
+    """
     Fits spherical harmonics representation (r**l) to measured data.
 
     Parameters
@@ -810,51 +833,60 @@ def fitSpectra(coords, Bmeas, lmax):
     nrmse: float
         normalized rms error in percents between the data and fit
 
-    '''
+    """
 
     Nmeas = coords.shape[0]
-    A = np.zeros((3*Nmeas, lmax*(lmax+2))) #initialize the fitting matrix
+    A = np.zeros((3 * Nmeas, lmax * (lmax + 2)))  # initialize the fitting matrix
 
-    #loop over the components
+    # loop over the components
     for e in range(3):
-        p = coords[:,:,e]
+        p = coords[:, :, e]
         sp = cartesian2spherical(p)
 
         lind = 0
-        for l in range(1,lmax+1):
-            for m in range(-1*l,l+1):
-                _Wlm = Wlm(l,m, sp[:,1],sp[:,2])
-                _Wlm *= np.sqrt(2*l**2 + l)
-                _Wlm[:,0] *= sp[:,0]**(l-1)
-                _Wlm[:,1] *= sp[:,0]**(l-1)
-                _Wlm[:,2] *= sp[:,0]**(l-1)
+        for l in range(1, lmax + 1):
+            for m in range(-1 * l, l + 1):
+                _Wlm = Wlm(l, m, sp[:, 1], sp[:, 2])
+                _Wlm *= np.sqrt(2 * l ** 2 + l)
+                _Wlm[:, 0] *= sp[:, 0] ** (l - 1)
+                _Wlm[:, 1] *= sp[:, 0] ** (l - 1)
+                _Wlm[:, 2] *= sp[:, 0] ** (l - 1)
                 _Wlm = sphvec2cart(sp, _Wlm)
-                A[e*Nmeas:(e+1)*Nmeas, lind] = _Wlm[:,e]
+                A[e * Nmeas : (e + 1) * Nmeas, lind] = _Wlm[:, e]
                 lind += 1
-    print("Condition number = %f" % (np.linalg.cond(A))) #print the condition number of A
+    print(
+        "Condition number = %f" % (np.linalg.cond(A))
+    )  # print the condition number of A
 
-    coeffs = np.linalg.pinv(A)@Bmeas.T.flatten() #compute coefficients using pseudoinverse of A
+    coeffs = (
+        np.linalg.pinv(A) @ Bmeas.T.flatten()
+    )  # compute coefficients using pseudoinverse of A
 
-    #the following script calculates the normalized coefficients
-    #the coefficients are normalized so that squared norm of magnetic field integrates to 1 over the measurement volume
+    # the following script calculates the normalized coefficients
+    # the coefficients are normalized so that squared norm of magnetic field integrates to 1 over the measurement volume
     coeffs2 = np.zeros(coeffs.shape)
     lind = 0
-    Rmax = np.max(sp[:,0])
-    for l in range(1,lmax+1):
-        for m in range(-1*l,l+1):
-#               coeffs2[lind] = coeffs[lind]*np.sqrt(2*l**2 + l)
-            temp = (2*l**2 + l)*Rmax**(2*l-1)/(2*l-1)
-            coeffs2[lind] = coeffs[lind]**2*temp
+    Rmax = np.max(sp[:, 0])
+    for l in range(1, lmax + 1):
+        for m in range(-1 * l, l + 1):
+            #               coeffs2[lind] = coeffs[lind]*np.sqrt(2*l**2 + l)
+            temp = (2 * l ** 2 + l) * Rmax ** (2 * l - 1) / (2 * l - 1)
+            coeffs2[lind] = coeffs[lind] ** 2 * temp
             lind += 1
-    Breco = A@coeffs
+    Breco = A @ coeffs
 
-    nrmse = np.sqrt(np.mean((Bmeas.T.flatten()-Breco)**2))/np.max(np.abs(Bmeas.T.flatten()))*100
-    print("Normalized RMS error = %f%%" % (nrmse)) #print the normalized rms error
+    nrmse = (
+        np.sqrt(np.mean((Bmeas.T.flatten() - Breco) ** 2))
+        / np.max(np.abs(Bmeas.T.flatten()))
+        * 100
+    )
+    print("Normalized RMS error = %f%%" % (nrmse))  # print the normalized rms error
 
     return coeffs, coeffs2, nrmse
 
-def reconstructB(p, coeffs,lmax):
-    '''
+
+def reconstructB(p, coeffs, lmax):
+    """
     Reconstructs the magnetic field using the spherical harmonics coefficients.
 
     Parameters
@@ -871,18 +903,18 @@ def reconstructB(p, coeffs,lmax):
     B: Nx3 array
         reconstructed magnetic field at p
 
-    '''
+    """
 
     B = np.zeros(p.shape)
     sp = cartesian2spherical(p)
     idx = 0
-    for l in range(1,lmax+1):
-        for m in range(-1*l,l+1):
-            _Wlm = Wlm(l,m, sp[:,1],sp[:,2])
-            _Wlm *= np.sqrt(2*l**2 + l)
-            _Wlm[:,0] *= sp[:,0]**(l-1)
-            _Wlm[:,1] *= sp[:,0]**(l-1)
-            _Wlm[:,2] *= sp[:,0]**(l-1)
+    for l in range(1, lmax + 1):
+        for m in range(-1 * l, l + 1):
+            _Wlm = Wlm(l, m, sp[:, 1], sp[:, 2])
+            _Wlm *= np.sqrt(2 * l ** 2 + l)
+            _Wlm[:, 0] *= sp[:, 0] ** (l - 1)
+            _Wlm[:, 1] *= sp[:, 0] ** (l - 1)
+            _Wlm[:, 2] *= sp[:, 0] ** (l - 1)
             _Wlm *= coeffs[idx]
             _Wlm = sphvec2cart(sp, _Wlm)
             B += _Wlm
@@ -891,7 +923,7 @@ def reconstructB(p, coeffs,lmax):
 
 
 def plotYlms(sph, lmax, polar=False):
-    '''
+    """
     Plots real spherical harmonics up to lmax.
     Inspired by https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html.
 
@@ -902,42 +934,45 @@ def plotYlms(sph, lmax, polar=False):
         maximum degree l
     polar: boolean
         plot polar representation?
-    '''
+    """
 
-    theta = np.reshape(sph.sp[:,1], (sph.Np, sph.Np))
-    phi = np.reshape(sph.sp[:,2], (sph.Np, sph.Np))
+    theta = np.reshape(sph.sp[:, 1], (sph.Np, sph.Np))
+    phi = np.reshape(sph.sp[:, 2], (sph.Np, sph.Np))
     r = 0.4
-    x=r*np.sin(theta)*np.cos(phi)
-    y=r*np.sin(theta)*np.sin(phi)
-    z=r*np.cos(theta)
+    x = r * np.sin(theta) * np.cos(phi)
+    y = r * np.sin(theta) * np.sin(phi)
+    z = r * np.cos(theta)
 
     if polar:
-        for l in range(1, lmax+1):
+        for l in range(1, lmax + 1):
             for m in range(l):
-                _ylm = ylm(l,m,theta.flatten(),phi.flatten())
+                _ylm = ylm(l, m, theta.flatten(), phi.flatten())
                 _ylm = np.reshape(_ylm, (sph.Np, sph.Np))
 
-                mlab.mesh(x - m, y - l, z, scalars=_ylm, colormap='bwr')
+                mlab.mesh(x - m, y - l, z, scalars=_ylm, colormap="bwr")
                 _ylm /= _ylm.max()
-                mlab.mesh(_ylm * x - m, _ylm * y - l, _ylm * z + 1.3,
-                          scalars=np.abs(_ylm), colormap='Spectral')
+                mlab.mesh(
+                    _ylm * x - m,
+                    _ylm * y - l,
+                    _ylm * z + 1.3,
+                    scalars=np.abs(_ylm),
+                    colormap="Spectral",
+                )
 
         mlab.view(90, 70, 6.2, (-1.3, -2.9, 0.25))
     else:
-        for l in range(0, lmax+1):
-            for m in range(-l,l+1):
-                _ylm = ylm(l,m,theta.flatten(),phi.flatten())
+        for l in range(0, lmax + 1):
+            for m in range(-l, l + 1):
+                _ylm = ylm(l, m, theta.flatten(), phi.flatten())
                 _ylm = np.reshape(_ylm, (sph.Np, sph.Np))
 
-                mlab.mesh(x - m, y - l, z, scalars=_ylm, colormap='bwr')
+                mlab.mesh(x - m, y - l, z, scalars=_ylm, colormap="bwr")
 
-        mlab.view(0,180)
-
-
+        mlab.view(0, 180)
 
 
-def plotYlm(sph, l,m):
-    '''
+def plotYlm(sph, l, m):
+    """
     Plots real spherical harmonics of order m and degree l.
     Inspired by https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html
 
@@ -949,27 +984,32 @@ def plotYlm(sph, l,m):
     m: int
         order m
 
-    '''
+    """
 
-    theta = np.reshape(sph.sp[:,1], (sph.Np, sph.Np))
-    phi = np.reshape(sph.sp[:,2], (sph.Np, sph.Np))
+    theta = np.reshape(sph.sp[:, 1], (sph.Np, sph.Np))
+    phi = np.reshape(sph.sp[:, 2], (sph.Np, sph.Np))
     r = 0.6
-    x=r*np.sin(theta)*np.cos(phi)
-    y=r*np.sin(theta)*np.sin(phi)
-    z=r*np.cos(theta)
+    x = r * np.sin(theta) * np.cos(phi)
+    y = r * np.sin(theta) * np.sin(phi)
+    z = r * np.cos(theta)
 
-    _ylm = ylm(l,m,theta.flatten(),phi.flatten())
+    _ylm = ylm(l, m, theta.flatten(), phi.flatten())
     _ylm = np.reshape(_ylm, (sph.Np, sph.Np))
 
-    mlab.mesh(x - m, y - l, z, scalars=_ylm, colormap='bwr')
+    mlab.mesh(x - m, y - l, z, scalars=_ylm, colormap="bwr")
 
     _ylm /= _ylm.max()
-    mlab.mesh(_ylm * x - m, _ylm * y - l, _ylm * z + 1.3,
-              scalars=np.abs(_ylm), colormap='Spectral')
+    mlab.mesh(
+        _ylm * x - m,
+        _ylm * y - l,
+        _ylm * z + 1.3,
+        scalars=np.abs(_ylm),
+        colormap="Spectral",
+    )
 
 
-def plotWlm(sph,l, m):
-    '''
+def plotWlm(sph, l, m):
+    """
     Plots magnetic field basis function 'Wlm' (r**l) over a sphere.
 
     Parameters
@@ -984,17 +1024,19 @@ def plotWlm(sph,l, m):
     -------
     obj: mayavi object
 
-    '''
+    """
 
-    _Wlm = Wlm(l,m, sph.sp[:,1], sph.sp[:,2])
+    _Wlm = Wlm(l, m, sph.sp[:, 1], sph.sp[:, 2])
     _Wlm = sphvec2cart(sph.sp, _Wlm)
-    obj = mlab.quiver3d(sph.p[:,0],sph.p[:,1],sph.p[:,2],
-                        _Wlm[:,0], _Wlm[:,1], _Wlm[:,2])
+    obj = mlab.quiver3d(
+        sph.p[:, 0], sph.p[:, 1], sph.p[:, 2], _Wlm[:, 0], _Wlm[:, 1], _Wlm[:, 2]
+    )
     obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
     return obj
 
-def plotBWlm_volume(sph,l, m, lim, Np, offset):
-    '''
+
+def plotBWlm_volume(sph, l, m, lim, Np, offset):
+    """
     Plots magnetic field basis function 'Wlm' (r**l) over a 3D volume.
 
     Parameters
@@ -1015,29 +1057,31 @@ def plotBWlm_volume(sph,l, m, lim, Np, offset):
     -------
         obj: mayavi object
 
-    '''
+    """
 
-    x, y, z = np.meshgrid(np.linspace(-lim+offset[0],lim+offset[0],Np),np.linspace(-lim+offset[1],lim+offset[1],Np),np.linspace(-lim+offset[2],lim+offset[2],Np))
+    x, y, z = np.meshgrid(
+        np.linspace(-lim + offset[0], lim + offset[0], Np),
+        np.linspace(-lim + offset[1], lim + offset[1], Np),
+        np.linspace(-lim + offset[2], lim + offset[2], Np),
+    )
 
     p = np.array((x.flatten(), y.flatten(), z.flatten())).T
     sp = cartesian2spherical(p)
 
-    _Wlm = Wlm(l,m, sp[:,1], sp[:,2])
-    _Wlm *= np.sqrt(2*l**2 +l)
-    _Wlm[:,0] *= sp[:,0]**(l-1)
-    _Wlm[:,1] *= sp[:,0]**(l-1)
-    _Wlm[:,2] *= sp[:,0]**(l-1)
+    _Wlm = Wlm(l, m, sp[:, 1], sp[:, 2])
+    _Wlm *= np.sqrt(2 * l ** 2 + l)
+    _Wlm[:, 0] *= sp[:, 0] ** (l - 1)
+    _Wlm[:, 1] *= sp[:, 0] ** (l - 1)
+    _Wlm[:, 2] *= sp[:, 0] ** (l - 1)
 
     _Wlm = sphvec2cart(sp, _Wlm)
-    obj = mlab.quiver3d(p[:,0],p[:,1],p[:,2],
-                        _Wlm[:,0], _Wlm[:,1], _Wlm[:,2])
+    obj = mlab.quiver3d(p[:, 0], p[:, 1], p[:, 2], _Wlm[:, 0], _Wlm[:, 1], _Wlm[:, 2])
     obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
     return obj
 
 
-
-def plotVlm(sph,l, m):
-    '''
+def plotVlm(sph, l, m):
+    """
     Plots magnetic field basis function 'Vlm' (r**(-l)) over a sphere.
 
     Parameters
@@ -1052,17 +1096,19 @@ def plotVlm(sph,l, m):
     -------
     obj: mayavi object
 
-    '''
+    """
 
-    _Vlm = Vlm(l,m, sph.sp[:,1], sph.sp[:,2])
+    _Vlm = Vlm(l, m, sph.sp[:, 1], sph.sp[:, 2])
     _Vlm = sphvec2cart(sph.sp, _Vlm)
-    obj = mlab.quiver3d(sph.p[:,0],sph.p[:,1],sph.p[:,2],
-                        _Vlm[:,0], _Vlm[:,1], _Vlm[:,2])
+    obj = mlab.quiver3d(
+        sph.p[:, 0], sph.p[:, 1], sph.p[:, 2], _Vlm[:, 0], _Vlm[:, 1], _Vlm[:, 2]
+    )
     obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
     return obj
 
-def plotBVlm_volume(sph,l, m, lim, Np, offset):
-    '''
+
+def plotBVlm_volume(sph, l, m, lim, Np, offset):
+    """
     Plots magnetic field basis function 'Vlm' (r**(-l)) over a 3D volume.
 
     Parameters
@@ -1083,31 +1129,36 @@ def plotBVlm_volume(sph,l, m, lim, Np, offset):
     -------
     obj: mayavi object
 
-    '''
+    """
 
-    x, y, z = np.meshgrid(np.linspace(-lim+offset[0],lim+offset[0],Np),np.linspace(-lim+offset[1],lim+offset[1],Np),np.linspace(-lim+offset[2],lim+offset[2],Np))
+    x, y, z = np.meshgrid(
+        np.linspace(-lim + offset[0], lim + offset[0], Np),
+        np.linspace(-lim + offset[1], lim + offset[1], Np),
+        np.linspace(-lim + offset[2], lim + offset[2], Np),
+    )
 
     p = np.array((x.flatten(), y.flatten(), z.flatten())).T
     sp = cartesian2spherical(p)
 
-    _Vlm = Vlm(l,m, sp[:,1], sp[:,2])
-    _Vlm *= np.sqrt((l+1)*(2*l+1))
+    _Vlm = Vlm(l, m, sp[:, 1], sp[:, 2])
+    _Vlm *= np.sqrt((l + 1) * (2 * l + 1))
 
-    _Vlm[:,0] *= sp[:,0]**(-1*(l+2))
-    _Vlm[:,1] *= sp[:,0]**(-1*(l+2))
-    _Vlm[:,2] *= sp[:,0]**(-1*(l+2))
+    _Vlm[:, 0] *= sp[:, 0] ** (-1 * (l + 2))
+    _Vlm[:, 1] *= sp[:, 0] ** (-1 * (l + 2))
+    _Vlm[:, 2] *= sp[:, 0] ** (-1 * (l + 2))
 
     _Vlm = sphvec2cart(sp, _Vlm)
-    obj = mlab.quiver3d(p[:,0],p[:,1],p[:,2],
-                        _Vlm[:,0], _Vlm[:,1], _Vlm[:,2])
+    obj = mlab.quiver3d(p[:, 0], p[:, 1], p[:, 2], _Vlm[:, 0], _Vlm[:, 1], _Vlm[:, 2])
     obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
     return obj
+
 
 ##############################
 # Coupling between streamfunction on a mesh and the multipoles
 
+
 def compute_sphcoeffs_mesh(mesh, lmax):
-    '''
+    """
     Computes multipole moment (spherical harmonics coefficient) transformation
     from the mesh.
 
@@ -1124,56 +1175,61 @@ def compute_sphcoeffs_mesh(mesh, lmax):
     blm: (lmax*(lmax+2)xNvertices array
           transformation from the mesh to blm coefficients (r**(-l)-terms)
 
-    '''
+    """
 
-    Gx, Gy, Gz = gradient_matrix(mesh, rotated = True)
-#    Gx = Gx.toarray()
-#    Gy = Gy.toarray()
-#    Gz = Gz.toarray()
-#    G = np.array([Gx, Gy, Gz])
+    Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
+    #    Gx = Gx.toarray()
+    #    Gy = Gy.toarray()
+    #    Gz = Gz.toarray()
+    #    G = np.array([Gx, Gy, Gz])
 
-    tri_normals, tri_areas = tri_normals_and_areas(mesh.vertices,mesh.faces)
+    tri_normals, tri_areas = tri_normals_and_areas(mesh.vertices, mesh.faces)
 
-    centers = np.mean(mesh.vertices[mesh.faces],axis = 1)
+    centers = np.mean(mesh.vertices[mesh.faces], axis=1)
     centers_sp = cartesian2spherical(centers)
 
-    alm = np.zeros((lmax*(lmax+2),mesh.vertices.shape[0]))
-    blm = np.zeros((lmax*(lmax+2),mesh.vertices.shape[0]))
+    alm = np.zeros((lmax * (lmax + 2), mesh.vertices.shape[0]))
+    blm = np.zeros((lmax * (lmax + 2), mesh.vertices.shape[0]))
 
     idx = 0
-    for l in range(1,lmax+1):
-        for m in range(-1*l,l+1):
-            derylm = np.sqrt(l*(l+1))*Blm(l,m,centers_sp[:,1],centers_sp[:,2])
+    for l in range(1, lmax + 1):
+        for m in range(-1 * l, l + 1):
+            derylm = np.sqrt(l * (l + 1)) * Blm(
+                l, m, centers_sp[:, 1], centers_sp[:, 2]
+            )
             derylm = sphvec2cart(centers_sp, derylm)
             # FIX: gradient of Ylm has also 1/r multiplier
-            derylm /= centers_sp[:,0:1]
+            derylm /= centers_sp[:, 0:1]
 
             crossp = np.cross(centers, derylm)
-            alm_terms = crossp.T*(centers_sp[:,0]**l)*tri_areas
-            blm_terms = crossp.T*(centers_sp[:,0]**(-l-1))*tri_areas
-#            integral_alm = np.sum(G*alm_terms[:,:,None], axis=(0,1))
-#            integral_blm = np.sum(G*blm_terms[:,:,None], axis=(0,1))
+            alm_terms = crossp.T * (centers_sp[:, 0] ** l) * tri_areas
+            blm_terms = crossp.T * (centers_sp[:, 0] ** (-l - 1)) * tri_areas
+            #            integral_alm = np.sum(G*alm_terms[:,:,None], axis=(0,1))
+            #            integral_blm = np.sum(G*blm_terms[:,:,None], axis=(0,1))
 
-            integral_alm = alm_terms[0] @ Gx  + alm_terms[1] @ Gy  + alm_terms[2] @ Gz
-            integral_blm = blm_terms[0] @ Gx  + blm_terms[1] @ Gy  + blm_terms[2] @ Gz
+            integral_alm = alm_terms[0] @ Gx + alm_terms[1] @ Gy + alm_terms[2] @ Gz
+            integral_blm = blm_terms[0] @ Gx + blm_terms[1] @ Gy + blm_terms[2] @ Gz
 
             # FIX: l-coefficients here were swapped
-            blm[idx] = -1/((2*l+1)*l)*integral_blm # ADDED MINUS HERE (different from Nieminen 2011, Eq 5)
-            alm[idx] = -1/((2*l+1)*(l+1))*integral_alm # THIS SIGN SHOULD BE CHECKED TOO
-#            for i in range(mesh.vertices.shape[0]):
-#                G = np.zeros(crossp.shape)
-#                G[:,0] = Gx[:,i]
-#                G[:,1] = Gy[:,i]
-#                G[:,2] = Gz[:,i]
-#                dotp = np.sum(G*crossp,axis=1)
-#                integral_blm = np.sum(dotp*centers_sp[:,0]**l*tri_areas)
-#                blm[idx,i] = -1/((2*l+1)*(l+1))*integral_blm
-#
-#                integral_alm = np.sum(dotp*centers_sp[:,0]**(-l-1)*tri_areas)
-#                alm[idx,i] = 1/((2*l+1)*l)*integral_alm
+            blm[idx] = (
+                -1 / ((2 * l + 1) * l) * integral_blm
+            )  # ADDED MINUS HERE (different from Nieminen 2011, Eq 5)
+            alm[idx] = (
+                -1 / ((2 * l + 1) * (l + 1)) * integral_alm
+            )  # THIS SIGN SHOULD BE CHECKED TOO
+            #            for i in range(mesh.vertices.shape[0]):
+            #                G = np.zeros(crossp.shape)
+            #                G[:,0] = Gx[:,i]
+            #                G[:,1] = Gy[:,i]
+            #                G[:,2] = Gz[:,i]
+            #                dotp = np.sum(G*crossp,axis=1)
+            #                integral_blm = np.sum(dotp*centers_sp[:,0]**l*tri_areas)
+            #                blm[idx,i] = -1/((2*l+1)*(l+1))*integral_blm
+            #
+            #                integral_alm = np.sum(dotp*centers_sp[:,0]**(-l-1)*tri_areas)
+            #                alm[idx,i] = 1/((2*l+1)*l)*integral_alm
 
             idx += 1
         print("l = %d computed" % (l))
 
     return alm, blm
-

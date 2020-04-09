@@ -1,17 +1,18 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_gradient_example.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_gradient_example.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_gradient_example.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_gradient_example.py:
 
 
 Gradient computation example
 ============================
 
 Minimal example visualizing the gradient of a scalar function on a mesh
-
 
 
 .. code-block:: default
@@ -24,14 +25,15 @@ Minimal example visualizing the gradient of a scalar function on a mesh
     from bfieldtools.mesh_calculus import gradient
     import pkg_resources
 
-    #Load simple plane mesh that is centered on the origin
-    file_obj = file_obj=pkg_resources.resource_filename('bfieldtools',
-                        'example_meshes/10x10_plane_hires.obj')
+    # Load simple plane mesh that is centered on the origin
+    file_obj = file_obj = pkg_resources.resource_filename(
+        "bfieldtools", "example_meshes/10x10_plane_hires.obj"
+    )
     planemesh = trimesh.load(file_obj, process=False)
 
     # Generate a simple scalar function
     r = np.linalg.norm(planemesh.vertices, axis=1)
-    vals = np.exp(-0.5*(r/r.max()))
+    vals = np.exp(-0.5 * (r / r.max()))
 
     # triangle centers for plotting
     tri_centers = planemesh.vertices[planemesh.faces].mean(axis=1).T
@@ -40,17 +42,6 @@ Minimal example visualizing the gradient of a scalar function on a mesh
 
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    SVG path loading unavailable!
-    Traceback (most recent call last):
-      File "/u/76/zetterr1/unix/.local/lib/python3.6/site-packages/trimesh/path/exchange/svg_io.py", line 18, in <module>
-        from svg.path import parse_path
-    ModuleNotFoundError: No module named 'svg'
 
 
 
@@ -63,11 +54,10 @@ Calculate the gradient (e.g., flow from potential)
 
     # Plot function and its gradient as arrows
 
-    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                   size=(800, 800))
+    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
 
     mlab.triangular_mesh(*planemesh.vertices.T, planemesh.faces, scalars=vals)
-    mlab.quiver3d(*tri_centers, *g, colormap='viridis')
+    mlab.quiver3d(*tri_centers, *g, colormap="viridis")
 
 
 
@@ -75,6 +65,15 @@ Calculate the gradient (e.g., flow from potential)
 .. image:: /auto_examples/images/sphx_glr_gradient_example_001.png
     :class: sphx-glr-single-img
 
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <mayavi.modules.vectors.Vectors object at 0x000002545345CAF0>
 
 
 
@@ -86,11 +85,10 @@ The same but rotated (e.g. current density from a stream function)
     g = gradient(vals, planemesh, rotated=True)
 
     # Plot function and its gradient as arrows
-    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                   size=(800, 800))
+    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
 
     mlab.triangular_mesh(*planemesh.vertices.T, planemesh.faces, scalars=vals)
-    mlab.quiver3d(*tri_centers, *g, colormap='viridis')
+    mlab.quiver3d(*tri_centers, *g, colormap="viridis")
 
 
 
@@ -98,14 +96,21 @@ The same but rotated (e.g. current density from a stream function)
     :class: sphx-glr-single-img
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <mayavi.modules.vectors.Vectors object at 0x00000254536A33B8>
+
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.999 seconds)
-
-**Estimated memory usage:**  163 MB
+   **Total running time of the script:** ( 0 minutes  2.190 seconds)
 
 
 .. _sphx_glr_download_auto_examples_gradient_example.py:
@@ -118,13 +123,13 @@ The same but rotated (e.g. current density from a stream function)
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: gradient_example.py <gradient_example.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: gradient_example.ipynb <gradient_example.ipynb>`
 

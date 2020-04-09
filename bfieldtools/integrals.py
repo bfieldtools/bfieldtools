@@ -7,27 +7,31 @@ Analytic integral for vectorized field / potential computation
 import numpy as np
 from .mesh_calculus import gradient_matrix
 
+
 def determinant(a):
     """ Faster determinant for the two last dimensions of 'a'
     """
-    det = a[...,0,0]*(a[...,1,1]*a[...,2,2] - a[...,2,1]*a[...,1,2])
-    det += a[...,0,1]*(a[...,1,2]*a[...,2,0] - a[...,2,2]*a[...,1,0])
-    det += a[...,0,2]*(a[...,1,0]*a[...,2,1] - a[...,2,0]*a[...,1,1])
+    det = a[..., 0, 0] * (a[..., 1, 1] * a[..., 2, 2] - a[..., 2, 1] * a[..., 1, 2])
+    det += a[..., 0, 1] * (a[..., 1, 2] * a[..., 2, 0] - a[..., 2, 2] * a[..., 1, 0])
+    det += a[..., 0, 2] * (a[..., 1, 0] * a[..., 2, 1] - a[..., 2, 0] * a[..., 1, 1])
     return det
+
 
 def norm(vecs):
     """ Faster vector norm for the last dimension of 'vecs'
     """
-    return np.sqrt(np.einsum('...i,...i',vecs,vecs))
+    return np.sqrt(np.einsum("...i,...i", vecs, vecs))
+
 
 def cross(r1, r2):
     """ Cross product without overhead for the last dimensions of 'r1' and 'r2'
     """
     result = np.zeros(r1.shape)
-    result[...,0] = r1[...,1] * r2[...,2] - r1[...,2] * r2[...,1]
-    result[...,1] = r1[...,2] * r2[...,0] - r1[...,0] * r2[...,2]
-    result[...,2] = r1[...,0] * r2[...,1] - r1[...,1] * r2[...,0]
+    result[..., 0] = r1[..., 1] * r2[..., 2] - r1[..., 2] * r2[..., 1]
+    result[..., 1] = r1[..., 2] * r2[..., 0] - r1[..., 0] * r2[..., 2]
+    result[..., 2] = r1[..., 0] * r2[..., 1] - r1[..., 1] * r2[..., 0]
     return result
+
 
 def gamma0(R, reg=1e-13, symmetrize=True):
     """ 1/r integrals over the edges of a triangle called gamma_0
@@ -56,24 +60,25 @@ def gamma0(R, reg=1e-13, symmetrize=True):
 
     """
     edges = np.roll(R[0], 2, -2) - np.roll(R[0], 1, -2)
-    dotprods1 = np.einsum('...i,...i', np.roll(R, 1, -2), edges)
-    dotprods2 = np.einsum('...i,...i', np.roll(R, 2, -2), edges)
+    dotprods1 = np.einsum("...i,...i", np.roll(R, 1, -2), edges)
+    dotprods2 = np.einsum("...i,...i", np.roll(R, 2, -2), edges)
     en = norm(edges)
     del edges
     n = norm(R)
     # Regularize s.t. neither the denominator or the numerator can be zero
     # Avoid numerical issues directly at the edge
-    nn1 = np.roll(n, 1, -1)*en
-    nn2 = np.roll(n, 2, -1)*en
+    nn1 = np.roll(n, 1, -1) * en
+    nn2 = np.roll(n, 2, -1) * en
     res = np.log((nn1 + dotprods1 + reg) / (nn2 + dotprods2 + reg))
 
     # Symmetrize the result since on the negative extension of the edge
     # there's division of two small values resulting numerical instabilities
     # (also incompatible with adding the reg value)
     if symmetrize:
-        mask = ((np.abs(dotprods1 + nn1)) < 1e-12)*(dotprods1+dotprods2 < 0)
-        res[mask] = (-np.log((nn1[mask] - dotprods1[mask] + reg)
-                    / (nn2[mask] - dotprods2[mask] + reg)))
+        mask = ((np.abs(dotprods1 + nn1)) < 1e-12) * (dotprods1 + dotprods2 < 0)
+        res[mask] = -np.log(
+            (nn1[mask] - dotprods1[mask] + reg) / (nn2[mask] - dotprods2[mask] + reg)
+        )
 
     res /= en
     return -res
@@ -110,12 +115,12 @@ def omega(R):
     # Denominator
     denom = np.prod(d, axis=-1)
     for i in range(3):
-        j = (i+1) % 3
-        k = (i+2) % 3
-#        denom += np.sum(R[..., i, :]*R[..., j, :], axis=-1)*d[..., k]
-        denom += np.einsum('...i,...i,...', R[..., i, :], R[..., j, :], d[..., k])
+        j = (i + 1) % 3
+        k = (i + 2) % 3
+        #        denom += np.sum(R[..., i, :]*R[..., j, :], axis=-1)*d[..., k]
+        denom += np.einsum("...i,...i,...", R[..., i, :], R[..., j, :], d[..., k])
     # Solid angles
-    sa = -2*np.arctan2(stp, denom)
+    sa = -2 * np.arctan2(stp, denom)
     return sa
 
 
@@ -141,9 +146,10 @@ def x_distance(R, tn, ta=None):
     """
     edges = np.roll(R[0], 2, -2) - np.roll(R[0], 1, -2)
     if ta is not None:
-        edges /= 2*ta[:, None, None]
-    edges = - cross(edges, tn[:, None, :])
-    return np.einsum('...k,...k->...', np.roll(R, 1, -2),  edges)
+        edges /= 2 * ta[:, None, None]
+    edges = -cross(edges, tn[:, None, :])
+    return np.einsum("...k,...k->...", np.roll(R, 1, -2), edges)
+
 
 def x_distance2(mesh):
     """ Signed distances in the triangle planes from the opposite
@@ -167,7 +173,7 @@ def d_distance(R, tn):
 
             ndarray (..., Ntri, N_triverts (3)) of signed distances
     """
-    return np.einsum('...ki,ki->...k', np.take(R, 0, -2), tn)
+    return np.einsum("...ki,ki->...k", np.take(R, 0, -2), tn)
 
 
 def c_coeffs(R, ta):
@@ -186,7 +192,7 @@ def c_coeffs(R, ta):
             ndarray (..., Ntri, N_triverts (3))
     """
     edges = np.roll(R[0], 2, -2) - np.roll(R[0], 1, -2)
-    return np.einsum('...ik,...jk->...ij', edges, edges/(2*ta[:, None, None]))
+    return np.einsum("...ik,...jk->...ij", edges, edges / (2 * ta[:, None, None]))
 
 
 def triangle_potential_uniform(R, tn, planar=False):
@@ -221,11 +227,11 @@ def triangle_potential_uniform(R, tn, planar=False):
 
     """
     x = x_distance(R, tn, None)
-    result = np.einsum('...i,...i', gamma0(R), x)
+    result = np.einsum("...i,...i", gamma0(R), x)
     if not planar:
-        result += d_distance(R, tn)*omega(R)
+        result += d_distance(R, tn) * omega(R)
     else:
-        print('Assuming all points are in the same plane!')
+        print("Assuming all points are in the same plane!")
     return result
 
 
@@ -254,7 +260,7 @@ def triangle_potential_approx(Rcenters, ta, reg=1e-12):
             in each triangle (Ntri) in the displacement vectors R
 
     """
-    result = ta/(norm(Rcenters) + reg)
+    result = ta / (norm(Rcenters) + reg)
     return result
 
 
@@ -277,14 +283,15 @@ def potential_dipoles(R, face_normals, face_areas):
     nn = face_normals
     # Calculate quadrature points corresponding to linear shape functions (Ok?)
     weights = np.array([[0.5, 0.25, 0.25], [0.25, 0.5, 0.25], [0.25, 0.25, 0.5]])
-#    weights = np.eye(3)
-#    weights = np.ones((3,3))/3
+    #    weights = np.eye(3)
+    #    weights = np.ones((3,3))/3
     # Combine vertices for quadrature points
-    Rquad = np.einsum('...ij,ik->...kj', R, weights)
-    pot = np.einsum('ik, ...ijk->...ij', nn, Rquad)/(norm(Rquad)**3)
-    pot = pot*(face_areas[:, None]/3)
+    Rquad = np.einsum("...ij,ik->...kj", R, weights)
+    pot = np.einsum("ik, ...ijk->...ij", nn, Rquad) / (norm(Rquad) ** 3)
+    pot = pot * (face_areas[:, None] / 3)
 
     return pot
+
 
 def potential_vertex_dipoles(R, vertex_normals, vertex_areas):
     """ Approximate the potential of linearly varying dipole density by
@@ -303,10 +310,11 @@ def potential_vertex_dipoles(R, vertex_normals, vertex_areas):
         pot: (Neval, Ntri, Ntriverts)
     """
     nn = vertex_normals
-    pot = np.einsum('ik, lik->li', nn, R)/(norm(R)**3)
+    pot = np.einsum("ik, lik->li", nn, R) / (norm(R) ** 3)
     pot *= vertex_areas
 
     return pot
+
 
 def triangle_potential_dipole_linear(R, tn, ta):
     """ Potential of dipolar density with magnitude of a
@@ -339,10 +347,14 @@ def triangle_potential_dipole_linear(R, tn, ta):
 
     """
 
-    result = np.einsum('...i,...ij,...->...j', gamma0(R),
-                       c_coeffs(R, ta), d_distance(R, tn), optimize=True)
+    result = np.einsum(
+        "...i,...ij,...->...j",
+        gamma0(R),
+        c_coeffs(R, ta),
+        d_distance(R, tn),
+        optimize=True,
+    )
     x_dists = x_distance(R, tn, ta)
-    result -= x_dists*omega(R)[..., :, None]
+    result -= x_dists * omega(R)[..., :, None]
 
     return result
-

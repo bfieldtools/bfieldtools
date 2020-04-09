@@ -1,12 +1,12 @@
-'''
+"""
 Contains functions for computing thermal noise in conductive thin objects.
 
-'''
+"""
 
 import numpy as np
 from scipy.linalg import eigh
 from scipy.sparse.linalg import eigsh
-from scipy.linalg import eigh#, eigsh
+from scipy.linalg import eigh  # , eigsh
 from mayavi import mlab
 
 from .mesh_magnetics import magnetic_field_coupling
@@ -14,8 +14,11 @@ from .mesh_calculus import laplacian_matrix, mass_matrix
 from .mesh_properties import self_inductance_matrix, resistance_matrix
 from . import utils
 
-def compute_current_modes_ind_res(mesh, M, R, freqs, T, closed = True, Nmodes = None, return_eigenvals=False):
-    '''
+
+def compute_current_modes_ind_res(
+    mesh, M, R, freqs, T, closed=True, Nmodes=None, return_eigenvals=False
+):
+    """
     Parameters
     ----------
     mesh: Trimesh mesh object
@@ -42,71 +45,80 @@ def compute_current_modes_ind_res(mesh, M, R, freqs, T, closed = True, Nmodes = 
     u: Nmodes array
         The eigenvalues (the inverse circuit time constants)
 
-    '''
+    """
 
     kB = 1.38064852e-23
 
     boundary_verts, inner_verts = utils.find_mesh_boundaries(mesh)
-    
-    #Ensure that M is symmetric
-    M = 0.5*(M+M.T)
-    
-    R = R.toarray() #convert R to array
-    
-    #If mesh is closed, add 'deflation' to the matrices
+
+    # Ensure that M is symmetric
+    M = 0.5 * (M + M.T)
+
+    R = R.toarray()  # convert R to array
+
+    # If mesh is closed, add 'deflation' to the matrices
     if closed:
-        R += np.ones_like(R)*np.mean(np.diag(R))
-        M += np.ones_like(M)*np.mean(np.diag(M))
-        
-    #Compute the eigenmodes
+        R += np.ones_like(R) * np.mean(np.diag(R))
+        M += np.ones_like(M) * np.mean(np.diag(M))
+
+    # Compute the eigenmodes
     if Nmodes == None:
         u, v = eigh(R[inner_verts][:, inner_verts], M[inner_verts][:, inner_verts])
     else:
-        u, v = eigh(R[inner_verts][:, inner_verts], M[inner_verts][:, inner_verts], eigvals = (0, Nmodes))
+        u, v = eigh(
+            R[inner_verts][:, inner_verts],
+            M[inner_verts][:, inner_verts],
+            eigvals=(0, Nmodes),
+        )
 
-    
     Nfreqs = freqs.shape[0]
-    
-    #Scale the eigenmodes with the spectral density of the thermal noise current
-    vl = np.zeros((M.shape[0],v.shape[1],Nfreqs))
+
+    # Scale the eigenmodes with the spectral density of the thermal noise current
+    vl = np.zeros((M.shape[0], v.shape[1], Nfreqs))
 
     for i in range(v.shape[1]):
-        amp = 2*np.sqrt(kB*T/u[i])*np.sqrt(1/(1+(2*np.pi*freqs/u[i])**2))
-        vl[inner_verts, i,:] = ((np.zeros((Nfreqs,v.shape[0])) +  v[:, i]).T)*amp
+        amp = (
+            2
+            * np.sqrt(kB * T / u[i])
+            * np.sqrt(1 / (1 + (2 * np.pi * freqs / u[i]) ** 2))
+        )
+        vl[inner_verts, i, :] = ((np.zeros((Nfreqs, v.shape[0])) + v[:, i]).T) * amp
 
     if return_eigenvals:
         return vl, u
     else:
         return vl
 
-def noise_covar(mesh, B_coupling, vl, Nmodes = None):
+
+def noise_covar(mesh, B_coupling, vl, Nmodes=None):
     if Nmodes == None:
         Nmodes = vl.shape[1]
-    b = np.einsum('ihj,jlk->ilhk', B_coupling, vl[:,0:Nmodes])
-    Bcov = np.einsum('jihk,lihk->jlhk', b,b)
-
-    return Bcov
-
-def noise_var(mesh, B_coupling, vl, Nmodes = None):
-    if Nmodes == None:
-        Nmodes = vl.shape[1]
-    b = np.einsum('ihj,jlk->ilhk', B_coupling, vl[:,0:Nmodes])
-    Bcov = np.einsum('ijhk,ijhk->ihk', b,b)
+    b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes])
+    Bcov = np.einsum("jihk,lihk->jlhk", b, b)
 
     return Bcov
 
 
-def noise_covar_dir(mesh, B_coupling, vl, Nmodes = None):
+def noise_var(mesh, B_coupling, vl, Nmodes=None):
     if Nmodes == None:
         Nmodes = vl.shape[1]
-    b = np.einsum('ihj,jlk->ilhk', B_coupling, vl[:,0:Nmodes])
-    Bcov = np.einsum('ihjk,ihlk-> ijlk',b,b)
+    b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes])
+    Bcov = np.einsum("ijhk,ijhk->ihk", b, b)
+
+    return Bcov
+
+
+def noise_covar_dir(mesh, B_coupling, vl, Nmodes=None):
+    if Nmodes == None:
+        Nmodes = vl.shape[1]
+    b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes])
+    Bcov = np.einsum("ihjk,ihlk-> ijlk", b, b)
 
     return Bcov
 
 
 def compute_current_modes(mesh, boundaries=None, return_eigenvals=False):
-    '''
+    """
     Computes eddy-current modes for a mesh using surface laplacian.
     Uses Dirichlet boundary condition, i.e., stream function is zero at boundary:
     no current flow outside the surface.
@@ -126,8 +138,10 @@ def compute_current_modes(mesh, boundaries=None, return_eigenvals=False):
     vl: Nvertices x Nvertices array
         The normalized eddy-current modes vl[:,i]
 
-    '''
-    boundary_verts, inner_verts, boundary_tris, inner_tris = utils.find_mesh_boundaries(mesh.vertices, mesh.faces, mesh.edges)
+    """
+    boundary_verts, inner_verts, boundary_tris, inner_tris = utils.find_mesh_boundaries(
+        mesh.vertices, mesh.faces, mesh.edges
+    )
 
     if boundaries:
         L_holes = laplacian_matrix(mesh, None, inner_verts, boundaries)
@@ -135,16 +149,15 @@ def compute_current_modes(mesh, boundaries=None, return_eigenvals=False):
 
         u, v = eigh(-L_holes.todense(), M_holes.todense())
 
-
-        #Normalize the laplacien eigenvectors
+        # Normalize the laplacien eigenvectors
 
         for i in range(v.shape[1]):
-            v[:, i] = v[:, i]/np.sqrt(u[i])
+            v[:, i] = v[:, i] / np.sqrt(u[i])
 
-        #Assign values per vertex
+        # Assign values per vertex
         vl = np.zeros((mesh.vertices.shape[0], v.shape[1]))
 
-        vl[inner_verts] = v[:-len(boundaries)]
+        vl[inner_verts] = v[: -len(boundaries)]
 
         for b_idx, b in enumerate(boundaries):
             vl[b] = v[len(inner_verts) + b_idx]
@@ -153,12 +166,15 @@ def compute_current_modes(mesh, boundaries=None, return_eigenvals=False):
         L = laplacian_matrix(mesh)
         M = mass_matrix(mesh)
 
-        u, v = eigh(-L.todense()[inner_verts][:, inner_verts], M.todense()[inner_verts][:, inner_verts])
+        u, v = eigh(
+            -L.todense()[inner_verts][:, inner_verts],
+            M.todense()[inner_verts][:, inner_verts],
+        )
 
-        #Normalize the laplacien eigenvectors
+        # Normalize the laplacien eigenvectors
         vl = np.zeros(M.shape)
         for i in range(v.shape[1]):
-            vl[inner_verts, i] = v[:, i]/np.sqrt(u[i])
+            vl[inner_verts, i] = v[:, i] / np.sqrt(u[i])
 
     if return_eigenvals:
         return vl, u
@@ -166,10 +182,8 @@ def compute_current_modes(mesh, boundaries=None, return_eigenvals=False):
         return vl
 
 
-
-
-def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T, Nchunks = 1):
-    '''
+def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T, Nchunks=1):
+    """
     Computes the magnetic noise at DC due to thermal motion of charge carriers (Jonhson-Nyquist noise)
     in a relatively thin conductor.
 
@@ -192,9 +206,9 @@ def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T, Nchunks = 1):
     B: Nfieldpoints x 3components array
         magnetic RMS noise at DC
 
-    '''
+    """
 
-    kB = 1.38064852e-23 #Boltzmann constant
+    kB = 1.38064852e-23  # Boltzmann constant
 
     B_coupling = magnetic_field_coupling(mesh, fp, Nchunks)
 
@@ -202,14 +216,15 @@ def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T, Nchunks = 1):
     for i in range(vl.shape[1]):
         vec = vl[:, i] * np.sqrt(4 * kB * T * sigma * d)
 
-        B += (B_coupling @ vec)**2
+        B += (B_coupling @ vec) ** 2
 
-    B = np.sqrt(B) #RMS
+    B = np.sqrt(B)  # RMS
 
     return B
 
-def compute_dc_Bnoise_covar(mesh, vl, fp, sigma, d, T, Nchunks = 1):
-    '''
+
+def compute_dc_Bnoise_covar(mesh, vl, fp, sigma, d, T, Nchunks=1):
+    """
     Computes the magnetic noise covariance at DC due to thermal motion of charge carriers (Jonhson-Nyquist noise)
     in a relatively thin conductor.
 
@@ -232,13 +247,13 @@ def compute_dc_Bnoise_covar(mesh, vl, fp, sigma, d, T, Nchunks = 1):
     B: Nfieldpoints x Nfieldpoints x 3components array
         magnetic noise covariance at DC
 
-    '''
+    """
 
-    kB = 1.38064852e-23 #Boltzmann constant
+    kB = 1.38064852e-23  # Boltzmann constant
 
     B_coupling = magnetic_field_coupling(mesh, fp, Nchunks)
 
-    eps = 4*kB*T*sigma*d*np.eye(vl.shape[1])
+    eps = 4 * kB * T * sigma * d * np.eye(vl.shape[1])
 
     B = np.zeros((fp.shape[0], fp.shape[0], 3))
     for i in range(3):
@@ -248,7 +263,7 @@ def compute_dc_Bnoise_covar(mesh, vl, fp, sigma, d, T, Nchunks = 1):
 
 
 def integrate_Bnoise_covar(B_covar, weighting=None):
-    '''
+    """
     Computes the (quadrature) integrated noise over a volume spanned by the points in fp.
 
     Parameters
@@ -263,19 +278,19 @@ def integrate_Bnoise_covar(B_covar, weighting=None):
     Bnoise_integrated: float
         Integrated noise amplitude over the volume
 
-    '''
+    """
 
     if weighting is None:
-        weighting = np.ones((len(B_covar,)))/len(B_covar)
-        print('No weighting provided, assuming equal weighting')
+        weighting = np.ones((len(B_covar,))) / len(B_covar)
+        print("No weighting provided, assuming equal weighting")
 
     Bnoise_integrated = np.sum(np.outer(weighting, weighting) * B_covar)
 
-    return Bnoise_integrated**0.5
+    return Bnoise_integrated ** 0.5
 
 
-def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T, Nchunks = 1):
-    '''
+def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T, Nchunks=1):
+    """
     Computes the AC magnetic noise due to thermal motion of charge carriers (Jonhson-Nyquist noise)
     in a relatively thin conductor.
 
@@ -298,69 +313,70 @@ def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T, Nchunks = 1):
     B: Nfrequencies x Nfieldpoints x 3components array
         magnetic RMS noise across frequencies
 
-    '''
+    """
 
-    kB = 1.38064852e-23 #Boltzmann constant
+    kB = 1.38064852e-23  # Boltzmann constant
 
-    #Compute field
+    # Compute field
     B_coupling = magnetic_field_coupling(mesh, fp, Nchunks)
 
-    #Compute mutual inductance at "hat basis"
+    # Compute mutual inductance at "hat basis"
     Mind = self_inductance_matrix(mesh, Nchunks)
-    Mind = 0.5*(Mind+Mind.T) #I think that this enforces M to be symmetric
+    Mind = 0.5 * (Mind + Mind.T)  # I think that this enforces M to be symmetric
 
-    #Transform mutual inductance to eddy-current basis
-    Mind_lap = vl.T@Mind@vl
+    # Transform mutual inductance to eddy-current basis
+    Mind_lap = vl.T @ Mind @ vl
 
-    #Eigendecomposition of M
+    # Eigendecomposition of M
     um_t, vm_t = eigh(Mind_lap)
     um_t = np.flip(um_t)
     vm_t = np.flip(vm_t, axis=1)
 
-    #Let's take just the "99% variance" components to avoid numerical issues
+    # Let's take just the "99% variance" components to avoid numerical issues
     um = np.zeros(um_t.shape)
     vm = np.zeros(vm_t.shape)
 
-    csum = np.cumsum(um_t**2) / np.sum(um_t**2)
+    csum = np.cumsum(um_t ** 2) / np.sum(um_t ** 2)
     Ncomps = np.max(np.where(csum < 0.99))
 
     um[0:Ncomps] = um_t[0:Ncomps]
     vm[0:Ncomps, 0:Ncomps] = vm_t[0:Ncomps, 0:Ncomps]
 
-    #Compute B as a function of frequency
+    # Compute B as a function of frequency
     B = np.zeros((freqs.shape[0], fp.shape[0], fp.shape[1]))
 
     Rk = 1 / (sigma * d)
-    eps = np.sqrt(4*kB*T*Rk)*np.ones((vl.shape[0]))
+    eps = np.sqrt(4 * kB * T * Rk) * np.ones((vl.shape[0]))
 
     for j in range(freqs.shape[0]):
         f = freqs[j]
-        omega = 2*np.pi*f
+        omega = 2 * np.pi * f
 
-
-        Rt = Rk/(Rk**2 + omega**2*um**2)
+        Rt = Rk / (Rk ** 2 + omega ** 2 * um ** 2)
         Rt = np.diag(Rt)
 
-        Lt = um/(Rk**2 + omega**2*um**2)
+        Lt = um / (Rk ** 2 + omega ** 2 * um ** 2)
         Lt = np.diag(Lt)
 
-
-        currents = -1*(vm@Rt@vm.T@eps + 1j*omega*vm@Lt@vm.T@eps)
+        currents = -1 * (vm @ Rt @ vm.T @ eps + 1j * omega * vm @ Lt @ vm.T @ eps)
         currents = np.abs(currents)
 
         for i in range(vl.shape[0]):
             vec = currents[i] * vl[:, i]
-            B[j, :, 0] += (B_coupling[:, 0, :] @vec)**2
-            B[j, :, 1] += (B_coupling[:, 1, :] @ vec)**2
-            B[j, :, 2] += (B_coupling[:, 2, :] @ vec)**2
+            B[j, :, 0] += (B_coupling[:, 0, :] @ vec) ** 2
+            B[j, :, 1] += (B_coupling[:, 1, :] @ vec) ** 2
+            B[j, :, 2] += (B_coupling[:, 2, :] @ vec) ** 2
         print("Frequency %f computed" % (f))
 
-    B = np.sqrt(B) #RMS
+    B = np.sqrt(B)  # RMS
 
     return B
 
-def visualize_current_modes(mesh, vl, Nmodes, scale, contours=True, colormap='bwr', dist=0.5):
-    '''
+
+def visualize_current_modes(
+    mesh, vl, Nmodes, scale, contours=True, colormap="bwr", dist=0.5
+):
+    """
     Visualizes current modes up to Nmodes.
 
     Parameters
@@ -378,33 +394,34 @@ def visualize_current_modes(mesh, vl, Nmodes, scale, contours=True, colormap='bw
     colormap: string
         Which (matplotlib) colormap to use
 
-    '''
+    """
 
     N1 = np.floor(np.sqrt(Nmodes))
-    dx = (mesh.vertices[:,0].max() - mesh.vertices[:,0].min())*(1+dist)
-    dy = (mesh.vertices[:,1].max() - mesh.vertices[:,1].min())*(1+dist)
+    dx = (mesh.vertices[:, 0].max() - mesh.vertices[:, 0].min()) * (1 + dist)
+    dy = (mesh.vertices[:, 1].max() - mesh.vertices[:, 1].min()) * (1 + dist)
 
     i = 0
     j = 0
     for n in range(Nmodes):
-        print(i,j)
+        print(i, j)
         points = mesh.vertices.copy()
-        points[:,0] += i*dx
-        points[:,1] += j*dy
-        s = mlab.triangular_mesh(*points.T, mesh.faces,
-                             scalars=vl[:, n], colormap=colormap)
+        points[:, 0] += i * dx
+        points[:, 1] += j * dy
+        s = mlab.triangular_mesh(
+            *points.T, mesh.faces, scalars=vl[:, n], colormap=colormap
+        )
 
         limit = np.max(np.abs(vl[:, n]))
 
         s.module_manager.scalar_lut_manager.number_of_colors = 256
-        s.module_manager.scalar_lut_manager.data_range = np.array([-limit,limit])
+        s.module_manager.scalar_lut_manager.data_range = np.array([-limit, limit])
         s.actor.mapper.interpolate_scalars_before_mapping = True
         s.enable_contours = contours
 
-        if i<N1:
-            i+=1
+        if i < N1:
+            i += 1
         else:
-            j+=1
-            i=0
+            j += 1
+            i = 0
 
     return s

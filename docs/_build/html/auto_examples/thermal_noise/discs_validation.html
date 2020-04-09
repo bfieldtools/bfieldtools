@@ -106,18 +106,37 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-thermal-noise-discs-validation-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-thermal-noise-discs-validation-py"><span class="std std-ref">here</span></a>     to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="disc-validation">
 <span id="sphx-glr-auto-examples-thermal-noise-discs-validation-py"></span><h1>Disc validation<a class="headerlink" href="#disc-validation" title="Permalink to this headline">¶</a></h1>
 <p>This example validates the thermal noise computations against the analytical solution for a thin disc.</p>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>array([8.18720179e-15, 6.15787344e-15, 4.79918738e-15, 3.84517023e-15,
+       3.14973105e-15, 2.62721394e-15, 2.22470252e-15, 1.90807557e-15,
+       1.65453005e-15, 1.44835760e-15, 1.27845158e-15, 1.13677928e-15,
+       1.01741481e-15, 9.15909166e-16, 8.28869603e-16, 7.53672383e-16,
+       6.88262718e-16, 6.31012896e-16, 5.80620023e-16, 5.36031236e-16,
+       4.96388260e-16, 4.60985795e-16, 4.29239923e-16, 4.00663881e-16,
+       3.74849288e-16, 3.51451470e-16, 3.30177901e-16, 3.10779008e-16,
+       2.93040824e-16, 2.76779059e-16, 2.61834295e-16, 2.48068063e-16,
+       2.35359628e-16, 2.23603326e-16, 2.12706366e-16, 2.02586990e-16,
+       1.93172940e-16, 1.84400156e-16, 1.76211692e-16, 1.68556785e-16,
+       1.61390067e-16, 1.54670891e-16, 1.48362754e-16, 1.42432802e-16,
+       1.36851397e-16, 1.31591749e-16, 1.26629593e-16, 1.21942910e-16,
+       1.17511681e-16, 1.13317672e-16])
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<span class="n">kB</span> <span class="o">=</span> <span class="mf">1.38064852e-23</span> <span class="c1">#Boltzman constant</span>
-<span class="n">mu0</span> <span class="o">=</span> <span class="mi">4</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">1e-7</span>
-<span class="n">d</span> <span class="o">=</span> <span class="mf">100e-9</span> <span class="c1">#Film thickness in meters</span>
-<span class="n">T</span> <span class="o">=</span> <span class="mi">273</span><span class="o">+</span><span class="mi">160</span> <span class="c1">#Temperature in C</span>
+<span class="n">kB</span> <span class="o">=</span> <span class="mf">1.38064852e-23</span>  <span class="c1"># Boltzman constant</span>
+<span class="n">mu0</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1e-7</span>
+<span class="n">d</span> <span class="o">=</span> <span class="mf">100e-9</span>  <span class="c1"># Film thickness in meters</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mi">273</span> <span class="o">+</span> <span class="mi">160</span>  <span class="c1"># Temperature in C</span>
 
 
 <span class="n">r</span> <span class="o">=</span> <span class="mf">100e-6</span>
@@ -126,24 +145,24 @@
 
 
 <span class="k">def</span> <span class="nf">plat_sigma</span><span class="p">(</span><span class="n">T</span><span class="p">):</span>
-    <span class="n">ref_T</span> <span class="o">=</span> <span class="mi">293</span> <span class="c1">#K</span>
-    <span class="n">ref_rho</span> <span class="o">=</span> <span class="mf">1.06e-7</span> <span class="c1">#ohm*meter</span>
-    <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.00392</span> <span class="c1">#1/K</span>
+    <span class="n">ref_T</span> <span class="o">=</span> <span class="mi">293</span>  <span class="c1"># K</span>
+    <span class="n">ref_rho</span> <span class="o">=</span> <span class="mf">1.06e-7</span>  <span class="c1"># ohm*meter</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.00392</span>  <span class="c1"># 1/K</span>
 
     <span class="n">rho</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="p">(</span><span class="n">T</span> <span class="o">-</span> <span class="n">ref_T</span><span class="p">)</span> <span class="o">*</span> <span class="n">ref_rho</span> <span class="o">+</span> <span class="n">ref_rho</span>
 
-    <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="n">rho</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">rho</span>
 
-<span class="n">mu0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">plat_sigma</span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="o">*</span><span class="n">kB</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2048</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">mu0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">3</span> <span class="o">*</span> <span class="n">plat_sigma</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="o">*</span> <span class="n">kB</span> <span class="o">*</span> <span class="n">T</span> <span class="o">*</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2048</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">r</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">z</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.612 seconds)</p>
-<p><strong>Estimated memory usage:</strong>  9 MB</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.003 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-thermal-noise-discs-validation-py">
-<div class="sphx-glr-download docutils container">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/68cf5929a3b21e5336c43ee9a728aa08/discs_validation.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">discs_validation.py</span></code></a></p>
 </div>
-<div class="sphx-glr-download docutils container">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/4ba0b7b27237b7c3e20e4b7f18dc4adf/discs_validation.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">discs_validation.ipynb</span></code></a></p>
 </div>
 </div>
@@ -163,7 +182,7 @@
     </p>
     <p>
         &copy; Copyright 2019, bfieldtools developers.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.0.<br/>
     </p>
   </div>
 </footer>

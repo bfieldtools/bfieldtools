@@ -1,7 +1,7 @@
-'''
+"""
 Visualization functions tailored for bfieldtools.
 Mainly wrappers and convenience helpers around mayavi and matplotlib functions
-'''
+"""
 
 from mayavi import mlab
 import matplotlib.pyplot as plt
@@ -10,16 +10,18 @@ from matplotlib import colors as c
 import numpy as np
 
 
-def plot_mesh(mesh, cull_front=False, cull_back=False, figure=None, figsize=(800, 800), **kwargs):
-    '''
+def plot_mesh(
+    mesh, cull_front=False, cull_back=False, figure=None, figsize=(800, 800), **kwargs
+):
+    """
     Simply plot the mesh surface in mayavi.
 
-    '''
+    """
 
     if figure is None:
-        figure = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                             size=figsize)
-
+        figure = mlab.figure(
+            None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=figsize
+        )
 
     mesh = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, **kwargs)
 
@@ -30,10 +32,15 @@ def plot_mesh(mesh, cull_front=False, cull_back=False, figure=None, figsize=(800
     return mesh
 
 
-
-def plot_3d_current_loops(current_loops, colors=None, figure=None, figsize=(800, 800),
-                          tube_radius=0.05, origin=np.array([0, 0, 0])):
-    '''
+def plot_3d_current_loops(
+    current_loops,
+    colors="auto",
+    figure=None,
+    figsize=(800, 800),
+    tube_radius=0.05,
+    origin=np.array([0, 0, 0]),
+):
+    """
     Plot current loops (e.g. contour_polys given by scalar_contour()) in 3D using mayavi.
 
     Parameters
@@ -58,96 +65,119 @@ def plot_3d_current_loops(current_loops, colors=None, figure=None, figsize=(800,
     -------
     fig: mlab figure
 
-    '''
+    """
 
     if figure is None:
-        figure = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                             size=figsize)
+        figure = mlab.figure(
+            None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=figsize
+        )
 
     if colors is None:
         colors = [(0.5, 0.5, 0.5)] * len(current_loops)
 
-    elif isinstance(colors, type(tuple)):
+    elif isinstance(colors, tuple):
         colors = [colors] * len(current_loops)
 
-    elif colors == 'auto':
+    elif colors == "auto":
         colors = []
 
         palette = [(1, 0, 0), (0, 0, 1)]
         for loop_idx, loop in enumerate(current_loops):
 
-            #Compute each loop segment
-            segments = np.vstack((loop[1:, :] - loop[0:-1, :], 
-                                  loop[0, :] - loop[-1, :]))
+            # Compute each loop segment
+            segments = np.vstack(
+                (loop[1:, :] - loop[0:-1, :], loop[0, :] - loop[-1, :])
+            )
 
-            #Find mean normal vector following right-hand rule, in loop centre
+            # Find mean normal vector following right-hand rule, in loop centre
             centre_normal = np.mean(np.cross(segments, loop), axis=0)
             centre_normal /= np.linalg.norm(centre_normal, axis=-1)
 
-            #Check if normal "points in" or "out" (towards or away from origin)
+            # Check if normal "points in" or "out" (towards or away from origin)
             origin_vector = np.mean(loop, axis=0) - origin
 
-            colors.append(palette[int((np.sign(centre_normal @ origin_vector)+1)/2)])
-
+            colors.append(
+                palette[int((np.sign(centre_normal @ origin_vector) + 1) / 2)]
+            )
 
     for loop_idx, loop in enumerate(current_loops):
-        mlab.plot3d(*loop[list(range(len(loop))) + [0]].T,
-                    color=colors[loop_idx],
-                    tube_radius=tube_radius)
+        mlab.plot3d(
+            *loop[list(range(len(loop))) + [0]].T,
+            color=colors[loop_idx],
+            tube_radius=tube_radius
+        )
 
-        #Put two arrows on loop
+        # Put two arrows on loop
 
-        #First arrow on longest segment of loop
-        longest_idx = np.argmax(np.linalg.norm(np.vstack((loop[1:, :] - loop[0:-1, :],
-                                                          loop[0, :] - loop[-1, :])),
-                                               axis=-1))
+        # First arrow on longest segment of loop
+        longest_idx = np.argmax(
+            np.linalg.norm(
+                np.vstack((loop[1:, :] - loop[0:-1, :], loop[0, :] - loop[-1, :])),
+                axis=-1,
+            )
+        )
 
-        if longest_idx == len(loop)-1:
-            arrow1 = mlab.quiver3d(*loop[-1, :].T,
-                                   *(loop[0, :] - loop[-1, :]).T,
-                                   mode='cone', scale_mode='none',
-                                   scale_factor=0.5 * tube_radius/0.05,
-                                   color=colors[loop_idx])
+        if longest_idx == len(loop) - 1:
+            arrow1 = mlab.quiver3d(
+                *loop[-1, :].T,
+                *(loop[0, :] - loop[-1, :]).T,
+                mode="cone",
+                scale_mode="none",
+                scale_factor=0.5 * tube_radius / 0.05,
+                color=colors[loop_idx]
+            )
         else:
-            arrow1 = mlab.quiver3d(*loop[longest_idx+1, :].T,
-                                   *(loop[longest_idx+1, :] - loop[longest_idx, :]).T,
-                                   mode='cone', scale_mode='none',
-                                   scale_factor=0.5 * tube_radius/0.05,
-                                   color=colors[loop_idx])
+            arrow1 = mlab.quiver3d(
+                *loop[longest_idx + 1, :].T,
+                *(loop[longest_idx + 1, :] - loop[longest_idx, :]).T,
+                mode="cone",
+                scale_mode="none",
+                scale_factor=0.5 * tube_radius / 0.05,
+                color=colors[loop_idx]
+            )
 
-        arrow1.glyph.glyph_source.glyph_position = 'center'
+        arrow1.glyph.glyph_source.glyph_position = "center"
         arrow1.glyph.glyph_source.glyph_source.radius = 0.3
         arrow1.glyph.glyph_source.glyph_source.height = 0.5
 
-#        #Second arrow on the element "half away"
-#
-#        opposite_idx = int((longest_idx + len(loop)/2) % len(loop))
-#
-#        if opposite_idx == len(loop)-1:
-#            arrow1 = mlab.quiver3d(*loop[-1,:].T,
-#                      *(loop[0,:] - loop[-1,:]).T,
-#                      mode='cone', scale_mode='none',
-#                      scale_factor=0.5 * tube_radius/0.05,
-#                      color=colors[loop_idx])
-#        else:
-#            arrow2 = mlab.quiver3d(*loop[opposite_idx+1,:].T,
-#                      *(loop[opposite_idx+1,:] - loop[opposite_idx,:]).T,
-#                      mode='cone', scale_mode='none',
-#                      scale_factor=0.5 * tube_radius/0.05,
-#                      color=colors[loop_idx])
-#        arrow2.glyph.glyph_source.glyph_position = 'center'
-#        arrow2.glyph.glyph_source.glyph_source.radius = 0.3
-#        arrow2.glyph.glyph_source.glyph_source.height = 0.5
-
+    #        #Second arrow on the element "half away"
+    #
+    #        opposite_idx = int((longest_idx + len(loop)/2) % len(loop))
+    #
+    #        if opposite_idx == len(loop)-1:
+    #            arrow1 = mlab.quiver3d(*loop[-1,:].T,
+    #                      *(loop[0,:] - loop[-1,:]).T,
+    #                      mode='cone', scale_mode='none',
+    #                      scale_factor=0.5 * tube_radius/0.05,
+    #                      color=colors[loop_idx])
+    #        else:
+    #            arrow2 = mlab.quiver3d(*loop[opposite_idx+1,:].T,
+    #                      *(loop[opposite_idx+1,:] - loop[opposite_idx,:]).T,
+    #                      mode='cone', scale_mode='none',
+    #                      scale_factor=0.5 * tube_radius/0.05,
+    #                      color=colors[loop_idx])
+    #        arrow2.glyph.glyph_source.glyph_position = 'center'
+    #        arrow2.glyph.glyph_source.glyph_source.radius = 0.3
+    #        arrow2.glyph.glyph_source.glyph_source.height = 0.5
 
     figure.scene.isometric_view()
 
     return figure
 
 
-def plot_cross_section(X, Y, data, axes=None, cmap=None, colorbar=False, 
-                       contours=10, log=False, vmin=None, vmax=None):
-    '''
+def plot_cross_section(
+    X,
+    Y,
+    data,
+    axes=None,
+    cmap=None,
+    colorbar=False,
+    contours=10,
+    log=False,
+    vmin=None,
+    vmax=None,
+):
+    """
     Plot scalar data on a plane
 
     Parameters
@@ -176,18 +206,17 @@ def plot_cross_section(X, Y, data, axes=None, cmap=None, colorbar=False,
     Returns
     -------
     axes: matplotlib axes with plot
-    '''
-
+    """
 
     if axes is None:
         fig, axes = plt.subplots(1, 1)
 
-    #If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
+    # If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
     if cmap is None:
         if np.all(data > 0) or np.all(data < 0):
-            cmap = 'viridis'
+            cmap = "viridis"
         else:
-            cmap = 'RdBu'
+            cmap = "RdBu"
 
     if log:
         norm = c.LogNorm()
@@ -200,38 +229,39 @@ def plot_cross_section(X, Y, data, axes=None, cmap=None, colorbar=False,
     if vmax is None:
         vmax = np.max(data)
 
-    cont = axes.pcolormesh(X, Y,
-                           data,
-                           cmap=cmap,
-                           vmin=vmin,
-                           vmax=vmax,
-                           norm=norm,
-                           shading='gouraud')
-    
+    cont = axes.pcolormesh(
+        X, Y, data, cmap=cmap, vmin=vmin, vmax=vmax, norm=norm, shading="gouraud"
+    )
+
     if colorbar:
         plt.colorbar(cont)
-    
+
     if contours:
-        clines = axes.contour(X, Y,
-                              data,
-                              levels=contours,
-                              norm=norm,
-                              antialiased=True,
-                              colors=('k',),
-                              linewidths=(1,))
+        clines = axes.contour(
+            X,
+            Y,
+            data,
+            levels=contours,
+            norm=norm,
+            antialiased=True,
+            colors=("k",),
+            linewidths=(1,),
+        )
 
-        axes.clabel(clines, fmt='%2.2f', colors='w', fontsize=10)
+        axes.clabel(clines, fmt="%2.2f", colors="w", fontsize=10)
 
-    axes.set_xlabel('X')
-    axes.set_ylabel('Y')
+    axes.set_xlabel("X")
+    axes.set_ylabel("Y")
 
     axes.figure.tight_layout()
 
     return axes
 
 
-def plot_data_on_faces(mesh, data, figure=None, figsize=(800, 800), cmap=None, colorbar=False, ncolors=356, **kwargs):
-    ''' Plot any data determined on the faces of a mesh
+def plot_data_on_faces(
+    mesh, data, figure=None, figsize=(800, 800), colorbar=False, ncolors=256, **kwargs
+):
+    """ Plot any data determined on the faces of a mesh
 
         Parameters
         ----------
@@ -242,7 +272,7 @@ def plot_data_on_faces(mesh, data, figure=None, figsize=(800, 800), cmap=None, c
             Optional, if passed will plot to existing figure
         figsize: (x, y) tuple
             Optional, if plotting to new figure specifies the size (in pixels)
-        cmap: str
+        colormap: str
             name of colormap to use for scalar data. If None (default), use viridis for
             all-positive/-negative data and RdBu otherwise
         colorbar: Boolean
@@ -253,19 +283,19 @@ def plot_data_on_faces(mesh, data, figure=None, figsize=(800, 800), cmap=None, c
         Returns
         -------
         fig: mlab figure
-    '''
-
+    """
 
     if figure is None:
-        figure = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                             size=figsize)
+        figure = mlab.figure(
+            None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=figsize
+        )
 
-    #If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
-    if cmap is None:
+    # If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
+    if "colormap" not in kwargs:
         if np.all(data > 0) or np.all(data < 0):
-            cmap = 'viridis'
+            kwargs["colormap"] = "viridis"
         else:
-            cmap = 'RdBu'
+            kwargs["colormap"] = "RdBu"
 
     v = mesh.vertices
     f = mesh.faces
@@ -273,21 +303,21 @@ def plot_data_on_faces(mesh, data, figure=None, figsize=(800, 800), cmap=None, c
     s = mlab.pipeline.triangular_mesh_source(*v.T, f)
     s.mlab_source.dataset.cell_data.scalars = data
 
-    s.mlab_source.dataset.cell_data.scalars.name = 'Cell data'
+    s.mlab_source.dataset.cell_data.scalars.name = "Cell data"
 
     s.mlab_source.update()
-    s2 = mlab.pipeline.set_active_attribute(s, cell_scalars='Cell data')
+    s2 = mlab.pipeline.set_active_attribute(s, cell_scalars="Cell data")
     surf = mlab.pipeline.surface(s2, **kwargs)
-    
+
     if colorbar:
         mlab.colorbar(surf)
-    
-    lutmanager = surf.parent.scalar_lut_manager
-    lutmanager.lut_mode = cmap
 
-    if cmap == 'RdBu':
+    lutmanager = surf.parent.scalar_lut_manager
+    lutmanager.lut_mode = kwargs["colormap"]
+
+    if kwargs["colormap"] == "RdBu":
         rangemax = np.max(np.abs(data))
-        lutmanager.data_range = np.array([-rangemax*1.01, rangemax*1.01])
+        lutmanager.data_range = np.array([-rangemax * 1.01, rangemax * 1.01])
         lutmanager.use_default_range = False
 
     lutmanager.number_of_colors = ncolors
@@ -295,9 +325,20 @@ def plot_data_on_faces(mesh, data, figure=None, figsize=(800, 800), cmap=None, c
     return surf
 
 
-def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), colorbar=False, ncolors=32,
-                          interpolate=True, cull_front=False, cull_back=False, autoscale=False, **kwargs):
-    '''
+def plot_data_on_vertices(
+    mesh,
+    data,
+    figure=None,
+    figsize=(800, 800),
+    colorbar=False,
+    ncolors=256,
+    interpolate=True,
+    cull_front=False,
+    cull_back=False,
+    autoscale=False,
+    **kwargs
+):
+    """
     Plot scalar data defined on the vertices of a mesh.
 
     Parameters
@@ -324,19 +365,19 @@ def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), colorbar=
     -------
     fig: mlab figure
 
-    '''
+    """
 
     if figure is None:
-        figure = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                             size=figsize)
+        figure = mlab.figure(
+            None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=figsize
+        )
 
-    #If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
-    if 'colormap' not in kwargs:
+    # If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
+    if "colormap" not in kwargs:
         if np.all(data > 0) or np.all(data < 0):
-            kwargs['colormap'] = 'viridis'
+            kwargs["colormap"] = "viridis"
         else:
-            kwargs['colormap'] = 'RdBu'
-
+            kwargs["colormap"] = "RdBu"
 
     surf = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=data, **kwargs)
     surf.actor.property.frontface_culling = cull_front
@@ -350,9 +391,7 @@ def plot_data_on_vertices(mesh, data, figure=None, figsize=(800, 800), colorbar=
 
     if (np.all(data > 0) or np.all(data < 0)) and autoscale:
         rangemax = np.max(np.abs(data))
-        lutmanager.data_range = np.array([-rangemax*1.01, rangemax*1.01])
+        lutmanager.data_range = np.array([-rangemax * 1.01, rangemax * 1.01])
         lutmanager.use_default_range = False
 
     return surf
-
-

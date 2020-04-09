@@ -4,9 +4,9 @@ Spherical harmonics test, remove?
 Should this be left as an example?
 """
 #
-#import sys
-#path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
-#if path not in sys.path:
+# import sys
+# path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
+# if path not in sys.path:
 #    sys.path.insert(0, path)
 
 
@@ -17,21 +17,26 @@ from mayavi import mlab
 from bfieldtools.sphtools import basis_fields, ylm, derxlm, sinxlm
 
 from trimesh.creation import icosphere
+
 mesh = icosphere(4, 1)
-print('Positions of evaluation points')
+print("Positions of evaluation points")
 print(mesh.vertices)
 
-theta=np.linspace(1e-6, np.pi*0.999)
-sp = sinxlm(1,-1, theta)
+theta = np.linspace(1e-6, np.pi * 0.999)
+sp = sinxlm(1, -1, theta)
 plt.plot(sp)
 
-aa, bb= basis_fields(mesh.vertices, 2)
+aa, bb = basis_fields(mesh.vertices, 2)
 
 for ii in range(aa.shape[1]):
-    print('nans in sph component ', ii, ': ', np.isnan(aa[:,ii,:]).sum())
+    print("nans in sph component ", ii, ": ", np.isnan(aa[:, ii, :]).sum())
 
 aa[np.isnan(aa)] = 100
 
 # Plot the first component
-mlab.triangular_mesh(*mesh.vertices.T, mesh.faces,
-                     scalars=np.linalg.norm(aa[:,0,:], axis=0), colormap='RdBu')
+mlab.triangular_mesh(
+    *mesh.vertices.T,
+    mesh.faces,
+    scalars=np.linalg.norm(aa[:, 0, :], axis=0),
+    colormap="RdBu"
+)

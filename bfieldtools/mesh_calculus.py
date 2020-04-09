@@ -1,7 +1,7 @@
-'''
+"""
 Contains functions for computing vector calculus quantities on triangle surface meshes.
 These include the gradient, rotated gradient, divergence, curl, Laplacian and mass matrices.
-'''
+"""
 
 import numpy as np
 from scipy.sparse import csr_matrix, coo_matrix, spdiags, hstack, vstack
@@ -49,20 +49,24 @@ def laplacian_matrix(mesh, material_param=None, inner_vertices=None, holes=None)
     R = mesh.vertices[mesh.faces]  # Nt x 3 (corners) x 3 (xyz)
 
     # Edges opposite to the vertex
-    edges = np.roll(R, 1, -2) - np.roll(R, 2, -2) # Nt x 3 (edges) x 3 (x,y,z)
+    edges = np.roll(R, 1, -2) - np.roll(R, 2, -2)  # Nt x 3 (edges) x 3 (x,y,z)
 
     ii = []
     jj = []
     cot = []
     # Loop over edges in triangles
     for i in range(3):
-        i1 = (i+1) % 3
-        i2 = (i+2) % 3
+        i1 = (i + 1) % 3
+        i2 = (i + 2) % 3
         ii.append(mesh.faces[:, i1])
         jj.append(mesh.faces[:, i2])
-        c = -0.5*(edges[:, i1, :]*edges[:, i2, :]).sum(axis=-1)/(2*mesh.area_faces)
+        c = (
+            -0.5
+            * (edges[:, i1, :] * edges[:, i2, :]).sum(axis=-1)
+            / (2 * mesh.area_faces)
+        )
         # Append cot with cotangent terms multiplied by material parameter
-        cot.append(c*p)
+        cot.append(c * p)
 
     ii = np.ravel(ii)
     jj = np.ravel(jj)
@@ -74,22 +78,22 @@ def laplacian_matrix(mesh, material_param=None, inner_vertices=None, holes=None)
     L = L + L.T
     L = L - spdiags(L.sum(axis=0), 0, N, N)
 
-    #If inner_vertices are specified, return matrix only for those vertices
+    # If inner_vertices are specified, return matrix only for those vertices
     if inner_vertices is not None:
-        #If holes specified, add matrix entries corresponding to them
+        # If holes specified, add matrix entries corresponding to them
         if holes:
             L = _laplacian_matrix_w_holes(L, inner_vertices, holes)
         else:
             L = L[inner_vertices][:, inner_vertices]
-    #Catch if only holes specified, but not inner_vertices
+    # Catch if only holes specified, but not inner_vertices
     elif holes:
-        raise ValueError('You need to specify both inner_vertices and holes')
+        raise ValueError("You need to specify both inner_vertices and holes")
 
     return L
 
 
 def _laplacian_matrix_w_holes(L, inner_vertices, holes):
-    '''
+    """
     Computes Laplacian matrix with additional boundary constraint
     for inner boundaris: the transverse gradient at the inner holes is zero,
     i.e. the value on the hole boundary is constant
@@ -122,35 +126,35 @@ def _laplacian_matrix_w_holes(L, inner_vertices, holes):
         first N_inner_vertices elements correspond to inner mesh vertices,
         last N_holes elements correspond to the values at the holes
 
-    '''
+    """
 
-    Lb = [None]*len(holes)
+    Lb = [None] * len(holes)
 
-    #Start constructing the Laplacian matrix including the values at the inner holes
+    # Start constructing the Laplacian matrix including the values at the inner holes
     L_holes = L[inner_vertices, :][:, inner_vertices]
 
-    #Add columns
+    # Add columns
     for b_idx, b in enumerate(holes):
-        #Hole contribution in original Laplacian matrix
+        # Hole contribution in original Laplacian matrix
         Lb[b_idx] = coo_matrix(np.sum(L[b, :][:, inner_vertices], axis=0))
 
-        #Add on the values at the right-hand side of the matrix
+        # Add on the values at the right-hand side of the matrix
         L_holes = hstack((L_holes, Lb[b_idx].T))
 
-    #Add rows, including new diagonal
+    # Add rows, including new diagonal
     for b_idx, b in enumerate(holes):
-        #Construct the added-on diagonal part
+        # Construct the added-on diagonal part
         concat = np.zeros((len(holes), 1))
         concat[b_idx] = -np.sum(Lb[b_idx])
 
-        #Add on the values at the bottom of the matrix, including the diagonal part
+        # Add on the values at the bottom of the matrix, including the diagonal part
         L_holes = vstack((L_holes, hstack((Lb[b_idx], coo_matrix(concat.T)))))
 
     return L_holes.tocsr()
 
 
 def mass_matrix(mesh, lumped=False, inner_vertices=None, holes=None):
-    '''
+    """
     Computes mass matrix of mesh.
 
     Parameters
@@ -170,10 +174,11 @@ def mass_matrix(mesh, lumped=False, inner_vertices=None, holes=None):
     sparse csr_matrix of variable shape (see the description of laplacian_matrix)
         Mass matrix
 
-    '''
+    """
 
     if lumped:
         from .utils import dual_areas
+
         da = dual_areas(mesh.faces, mesh.area_faces)
         M = spdiags(da, 0, mesh.vertices.shape[0], mesh.vertices.shape[0]).tocsr()
     else:
@@ -184,11 +189,11 @@ def mass_matrix(mesh, lumped=False, inner_vertices=None, holes=None):
         area = []
         # Loop over edges in triangles
         for i in range(3):
-            i1 = (i+1) % 3
-            i2 = (i+2) % 3
+            i1 = (i + 1) % 3
+            i2 = (i + 2) % 3
             ii.append(mesh.faces[:, i1])
             jj.append(mesh.faces[:, i2])
-            area.append(mesh.area_faces/12)
+            area.append(mesh.area_faces / 12)
 
         ii = np.ravel(ii)
         jj = np.ravel(jj)
@@ -200,23 +205,23 @@ def mass_matrix(mesh, lumped=False, inner_vertices=None, holes=None):
         M = M + M.T
         M = M + spdiags(M.sum(axis=0), 0, N, N)
 
-    #If inner_vertices specified, return only values for inner_vertices
+    # If inner_vertices specified, return only values for inner_vertices
     if inner_vertices is not None:
-        #If holes are specifed, add corresponding values
+        # If holes are specifed, add corresponding values
         if holes:
             M = _mass_matrix_w_holes(M, inner_vertices, holes)
         else:
             M = M[inner_vertices, :][:, inner_vertices]
     elif holes:
-        raise ValueError('You need to specify both inner_vertices and holes')
+        raise ValueError("You need to specify both inner_vertices and holes")
 
     return M
 
 
 def _mass_matrix_w_holes(M, inner_vertices, holes):
-    '''
+    """
     Computes mass matrix of mesh with added holes (see laplacian_matrix_w_holes)
-    '''
+    """
 
     Minner = M[inner_vertices, :][:, inner_vertices]
     m = M.diagonal()
@@ -225,7 +230,9 @@ def _mass_matrix_w_holes(M, inner_vertices, holes):
     for b in holes:
         M_holes = np.concatenate((M_holes, np.array([np.sum(m[b])])))
 
-    M_holes = spdiags(M_holes, diags=0, m=M_holes.shape[0], n=M_holes.shape[0], format='csr')
+    M_holes = spdiags(
+        M_holes, diags=0, m=M_holes.shape[0], n=M_holes.shape[0], format="csr"
+    )
 
     return M_holes
 
@@ -251,21 +258,31 @@ def gradient_matrix(mesh, rotated=False):
     # Calculate edge vectors for each triangle
     edges = np.roll(R, 1, -2) - np.roll(R, 2, -2)  # Nt x 3 (edges) x 3 (x,y,z)
 
-
-    tri_data = edges/(2*mesh.area_faces[:, None, None])
+    tri_data = edges / (2 * mesh.area_faces[:, None, None])
     if not rotated:
         # Rotate 90 degrees CW to get the original gradient
         tri_data = np.cross(mesh.face_normals[:, None, :], tri_data, axis=-1)
 
     tri_data = tri_data.reshape(-1, 3).T
-    ii = np.array([[i]*3 for i in range(len(mesh.faces))]).ravel()  # [0,0,0,1,1,1,...]
+    ii = np.array(
+        [[i] * 3 for i in range(len(mesh.faces))]
+    ).ravel()  # [0,0,0,1,1,1,...]
     jj = mesh.faces.ravel()  # [t[0,0], t[0,1], t[0,2], t[1,0], t[1,1], t[1,2], ...]
-    Gx = csr_matrix((tri_data[0], (ii, jj)),
-                    shape=(mesh.faces.shape[0], mesh.vertices.shape[0]), dtype=float)
-    Gy = csr_matrix((tri_data[1], (ii, jj)),
-                    shape=(mesh.faces.shape[0], mesh.vertices.shape[0]), dtype=float)
-    Gz = csr_matrix((tri_data[2], (ii, jj)),
-                    shape=(mesh.faces.shape[0], mesh.vertices.shape[0]), dtype=float)
+    Gx = csr_matrix(
+        (tri_data[0], (ii, jj)),
+        shape=(mesh.faces.shape[0], mesh.vertices.shape[0]),
+        dtype=float,
+    )
+    Gy = csr_matrix(
+        (tri_data[1], (ii, jj)),
+        shape=(mesh.faces.shape[0], mesh.vertices.shape[0]),
+        dtype=float,
+    )
+    Gz = csr_matrix(
+        (tri_data[2], (ii, jj)),
+        shape=(mesh.faces.shape[0], mesh.vertices.shape[0]),
+        dtype=float,
+    )
     return Gx, Gy, Gz
 
 
@@ -290,6 +307,7 @@ def gradient(vals, mesh, rotated=False):
     Gx, Gy, Gz = gradient_matrix(mesh, rotated)
     return np.array([Gx @ vals, Gy @ vals, Gz @ vals])
 
+
 def divergence_matrix(mesh):
     """ Divergence of tangential vector field on mesh faces as a linear mapping
 
@@ -304,10 +322,12 @@ def divergence_matrix(mesh):
 
     """
     from .utils import tri_normals_and_areas
+
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=False)
     n, a = tri_normals_and_areas(mesh.vertices, mesh.faces)
     A = spdiags(a, 0, a.shape[0], a.shape[0])
-    return -Gx.T*A, -Gy.T*A, -Gz.T*A
+    return -Gx.T * A, -Gy.T * A, -Gz.T * A
+
 
 def curl_matrix(mesh):
     """ Adjoint curl of tangential vector field
@@ -323,10 +343,11 @@ def curl_matrix(mesh):
 
     """
     from .utils import tri_normals_and_areas
+
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
     n, a = tri_normals_and_areas(mesh.vertices, mesh.faces)
     A = spdiags(a, 0, a.shape[0], a.shape[0])
-    return -Gx.T*A, -Gy.T*A, -Gz.T*A
+    return -Gx.T * A, -Gy.T * A, -Gz.T * A
 
 
 def divergence(vecs, mesh):
@@ -347,6 +368,7 @@ def divergence(vecs, mesh):
     Dx, Dy, Dz = divergence_matrix(mesh)
     return Dx @ vecs[:, 0] + Dx @ vecs[:, 1] + Dx @ vecs[:, 2]
 
+
 def curl(vecs, mesh):
     """ Curl applied to tangential vector field
 
@@ -365,7 +387,7 @@ def curl(vecs, mesh):
     return Cx @ vecs[:, 0] + Cx @ vecs[:, 1] + Cx @ vecs[:, 2]
 
 
-#if __name__ == "__main__":
+# if __name__ == "__main__":
 #    import numpy as np
 #    from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix
 #    from bfieldtools.conductor import Conductor
@@ -386,4 +408,3 @@ def curl(vecs, mesh):
 #    L2 = Dx @ Gx + Dy @ Gy + Dz @ Gz
 #    Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
 #    L3 = Cx @ Gx + Cy @ Gy + Cz @ Gz
-    
