@@ -53,7 +53,7 @@ p_eval = np.array([X, Y, Z]).reshape(3, -1).T
 RR = p_eval[:, None, None, :] - p_tris[None, :, :, :]
 tn, ta = tri_normals_and_areas(points, tris)
 
-pot = triangle_potential_dipole_linear(RR, tn, ta, False)
+pot = triangle_potential_dipole_linear(RR, tn, ta)
 
 # Plot shapes
 f, ax = plt.subplots(1, 3)
@@ -69,7 +69,7 @@ for i in range(3):
 
 #########################################################
 #%% Test summation formula
-pot_sum = triangle_potential_dipole_linear(RR, tn, ta, False).sum(axis=-1)
+pot_sum = triangle_potential_dipole_linear(RR, tn, ta).sum(axis=-1)
 solid_angle = omega(RR)
 
 # Plot shapes
@@ -121,5 +121,5 @@ plt.figure()
 plt.semilogy(z, dip_potential(p_eval2, Rdip, m))
 # Plot sum of the linear dipoles
 RR = p_eval2[:, None, None, :] - p_tris[None, :, :, :]
-pot = triangle_potential_dipole_linear(RR, tn, ta, False)
+pot = triangle_potential_dipole_linear(RR, tn, ta)
 plt.semilogy(z, pot.sum(axis=-1)[:, 0])
