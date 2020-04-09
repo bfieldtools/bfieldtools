@@ -39,9 +39,8 @@ def gamma0(R, reg=1e-13, symmetrize=True):
         Parameters
         ----------
         R : ndarray (..., N_triverts, xyz)
-            displacement vectors (r-r') of Ntri triangles
-            and Neval evaluation points for the 3 vertices
-            of the triangles/triangle.
+            displacement vectors (r-r') between Neval evaluation points (r)
+            and the 3 vertices of the Ntri triangles/triangle.
         reg: float, a small value added to the arguments of the logarithm,
              regularizes the values very close to the line segments
         symmetrize: recalculates the result for by mirroring

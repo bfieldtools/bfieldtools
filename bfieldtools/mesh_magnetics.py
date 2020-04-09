@@ -9,10 +9,9 @@ import numpy as np
 
 
 from .utils import get_quad_points
-from .mesh_calculus import gradient_matrix
+from .mesh_calculus import gradient_matrix, mass_matrix
 from .integrals import triangle_potential_dipole_linear, triangle_potential_uniform
-from .integrals import triangle_potential_approx, potential_dipoles
-
+from .integrals import triangle_potential_approx, potential_dipoles, potential_vertex_dipoles
 
 
 def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False):
@@ -285,37 +284,57 @@ def scalar_potential_coupling(mesh, r, Nchunks=None, multiply_coeff=True,
     # Source and eval locations
     R1 = mesh.vertices[mesh.faces]
     R2 = r
+    
+    R2chunks, ichunks = get_chunks(R2, Nchunks, True)
 
-    if Nchunks is None:
-        if r.shape[0] > 1000:
-            Nchunks = r.shape[0]//100
-        else:
-            Nchunks = 1
-
-    R2chunks = np.array_split(R2, Nchunks, axis=0)
     i0 = 0
     Uf = np.zeros((R2.shape[0], mesh.faces.shape[0], 3))
-    for R2chunk in R2chunks:
+    far_chunks = []
+    for ichunk, R2chunk in zip(ichunks, R2chunks):
         RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
-        i1 = i0+RRchunk.shape[0]
+        RRchunk_verts = R2chunk[:, None, :] - mesh.vertices[None, :, :]
         if approx_far:
-            near, far = _split_by_distance(mesh, RRchunk, margin)
-            Uf[i0:i1, near] = triangle_potential_dipole_linear(RRchunk[:, near],
+            temp = np.zeros(RRchunk.shape[:3])
+            # near, far = _split_by_distance(mesh, RRchunk, margin)
+            near_v, far_v = _split_by_distance(mesh, RRchunk_verts, margin)
+            near = mesh.faces_sparse.T @ near_v
+            far_chunks.append(far_v)
+            # far = np.invert(near)
+            temp[:,near,:] = triangle_potential_dipole_linear(RRchunk[:, near],
                                                                mesh.face_normals[near],
                                                                mesh.area_faces[near])
-            Uf[i0:i1, far] = potential_dipoles(RRchunk[:, far],
-                                               mesh.face_normals[far],
-                                               mesh.area_faces[far])
+            # This far approximation does not speed up the computation much
+            # because the quadrature points are so many
+            # temp[:,far,:] = potential_dipoles(RRchunk[:, far],
+                                               # mesh.face_normals[far],
+                                               # mesh.area_faces[far])
+            Uf[ichunk] = temp
         else:
-            Uf[i0:i1] = triangle_potential_dipole_linear(RRchunk, mesh.face_normals,
+            Uf[ichunk] = triangle_potential_dipole_linear(RRchunk, mesh.face_normals,
                                                          mesh.area_faces)
-        i0 = i1
 
-#     Accumulate the elements
-    Uv = np.zeros((R2.shape[0], mesh.vertices.shape[0]))
-    for ind_f, f in enumerate(mesh.faces):
-        Uv[:, f] += Uf[:, ind_f]
-
+    #Sparse products are equivalent to this
+    # Uv = np.zeros((R2.shape[0], mesh.vertices.shape[0]))
+    # for ind_f, f in enumerate(mesh.faces):
+    #     Uv[:, f] += Uf[:, ind_f]
+    from scipy.sparse import csc_matrix
+    Nf = len(mesh.faces)
+    Nv = len(mesh.vertices)
+    M0 = csc_matrix((np.ones(Nf), (np.arange(Nf), mesh.faces[:,0])), (Nf,Nv))
+    M1 = csc_matrix((np.ones(Nf), (np.arange(Nf), mesh.faces[:,1])), (Nf,Nv))
+    M2 = csc_matrix((np.ones(Nf), (np.arange(Nf), mesh.faces[:,2])), (Nf,Nv))
+    Uv =  Uf[:, :, 0] @ M0 + Uf[:, :, 1] @ M1 + Uf[:, :, 2] @ M2
+    
+    # Calcuate far points by vertex based approximation
+    if approx_far:
+        areas = mass_matrix(mesh, lumped=True).diagonal()
+        for ichunk, R2chunk, far in zip(ichunks, R2chunks, far_chunks):
+            RRchunk_verts = R2chunk[:, None, :] - mesh.vertices[None, far, :]
+            mask = ichunk[:,None]*far
+            Uv[mask] = potential_vertex_dipoles(RRchunk_verts, 
+                                                mesh.vertex_normals[far],
+                                                areas[far]).ravel()
+                                                   
 
     duration = time.time() - start
     print('took %.2f seconds.'%duration)
@@ -360,13 +379,6 @@ def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2,
     R1 = mesh.vertices[mesh.faces]
     R2 = r
 
-#    if Nchunks is None:
-#        if r.shape[0] > 1000:
-#            Nchunks = r.shape[0]//100
-#        else:
-#            Nchunks = 1
-#
-#    R2chunks = np.array_split(R2, Nchunks, axis=0)
     R2chunks, ichunks = get_chunks(R2, Nchunks, chunk_clusters)
     i0=0
 
@@ -374,23 +386,19 @@ def vector_potential_coupling(mesh, r, Nchunks=None, approx_far=True, margin=2,
     print('Computing 1/r-potential matrix')    
 
     for ichunk, R2chunk in zip(ichunks, R2chunks):
-#        print('Computing chunk %d/%d'%(chunk_idx+1, Nchunks))
         RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
-        i1 = i0+RRchunk.shape[0]
         if approx_far:
             RRchunk_centers = R2chunk[:,None,:] - mesh.triangles_center[None,:,:]
             temp = np.zeros(RRchunk.shape[:2])
-            near, far = _split_by_distance_centers(mesh, RRchunk_centers, margin)
+            near, far = _split_by_distance(mesh, RRchunk_centers, margin)
             temp[:,near] = triangle_potential_uniform(RRchunk[:, near], mesh.face_normals[near], False)
             temp[:,far] = triangle_potential_approx(RRchunk_centers[:, far], mesh.area_faces[far], reg=0)
             Af[ichunk] = temp
         else:
             Af[ichunk] = triangle_potential_uniform(RRchunk, mesh.face_normals, False)
-#        print((100*i1)//R2.shape[0], '% computed')
-        i0 = i1
 
     #Free some memory by deleting old variables
-    del R1, R2, RRchunk, R2chunks, ichunks, temp
+    del R1, R2, RRchunk, R2chunks, ichunks
     
     # Rotated gradients (currents)
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
@@ -429,25 +437,26 @@ def get_chunks(r, Nchunks, clusters=True):
         
     return rchunks, ichunks
 
-def _split_by_distance_centers(mesh, RR, margin=3):
-    avg_sidelength = np.sqrt(4/np.sqrt(3)*np.mean(mesh.area_faces[::100]))
-
-    RRnorm = np.linalg.norm(RR, axis=-1)
-    near = np.nonzero(np.min(RRnorm, axis=0) < avg_sidelength * margin)[0]
-
-    far = np.setdiff1d(np.arange(0, len(mesh.faces)), near, assume_unique=True)
-
-    return near, far
-
-
 def _split_by_distance(mesh, RR, margin=3):
     avg_sidelength = np.sqrt(4/np.sqrt(3)*np.mean(mesh.area_faces[::100]))
-#    np.mean(np.linalg.norm(np.diff(mesh.vertices[mesh.edges[::1000]], axis=1), axis=-1))
 
     RRnorm = np.linalg.norm(RR, axis=-1)
-    near = np.nonzero(np.min(RRnorm, axis=(0, 2)) < avg_sidelength * margin)[0]
+    # near = np.nonzero(np.min(RRnorm, axis=0) < avg_sidelength * margin)[0]
+    # far = np.setdiff1d(np.arange(0, len(mesh.faces)), near, assume_unique=True)
+    near = np.min(RRnorm, axis=0) < avg_sidelength * margin
+    far = np.invert(near)
 
-    far = np.setdiff1d(np.arange(0, len(mesh.faces)), near, assume_unique=True)
-
-#    print('near: %d, far: %d'%(len(near), len(far)))
     return near, far
+
+
+# def _split_by_distance(mesh, RR, margin=3):
+#     avg_sidelength = np.sqrt(4/np.sqrt(3)*np.mean(mesh.area_faces[::100]))
+# #    np.mean(np.linalg.norm(np.diff(mesh.vertices[mesh.edges[::1000]], axis=1), axis=-1))
+
+#     RRnorm = np.linalg.norm(RR, axis=-1)
+#     near = np.nonzero(np.min(RRnorm, axis=(0, 2)) < avg_sidelength * margin)[0]
+
+#     far = np.setdiff1d(np.arange(0, len(mesh.faces)), near, assume_unique=True)
+
+# #    print('near: %d, far: %d'%(len(near), len(far)))
+#     return near, far
