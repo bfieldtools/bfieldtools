@@ -6,9 +6,6 @@ triangle mesh to magnetic field as well as scalar and vector potentials.
 import time
 import numpy as np
 
-# from numba import jit
-
-
 from .utils import get_quad_points
 from .mesh_calculus import gradient_matrix
 from .integrals import triangle_potential_dipole_linear, triangle_potential_uniform
@@ -419,8 +416,8 @@ def vector_potential_coupling(
 
 
 def get_chunks(r, Nchunks, clusters=True):
-    """ Chunk points in 'r' to Nchunks 
-    
+    """ Chunk points in 'r' to Nchunks
+
         r : ndarray (Npoints, 3)
     """
     if Nchunks is None:

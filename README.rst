@@ -37,7 +37,6 @@ Requires Python 3.5 or newer.
  - `Trimesh <https://github.com/mikedh/trimesh>`_
  - `CVXPY <https://cvxpy.org/>`_
  - `Quadpy>=0.13 <https://github.com/nschloe/quadpy/tree/master/quadpy>`_
- - `Numba <https://numba.pydata.org/>`_
  - `Matplotlib <https://matplotlib.org/>`_
  - `Mayavi <https://docs.enthought.com/mayavi/mayavi/>`_
 

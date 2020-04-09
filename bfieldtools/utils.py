@@ -4,7 +4,6 @@ This module contains miscellaneous utility functions used across bfieldtools.
 import os
 import numpy as np
 import quadpy
-from numba import jit
 import pkg_resources
 import trimesh
 
@@ -156,7 +155,6 @@ def get_line_quad_points(line_vertices, method="midpoint", index=None):
     return w, qp
 
 
-@jit
 def dual_areas(tris, ta):
     """ Calculate (dual) areas for each node in inds
 

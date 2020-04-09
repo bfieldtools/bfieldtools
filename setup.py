@@ -35,7 +35,6 @@ def main():
             "cvxopt",
             "cvxpy",
             "rtree",
-            "numba",
             "svg.path",
         ],
         packages=find_packages(),
