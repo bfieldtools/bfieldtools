@@ -133,7 +133,7 @@ def optimize_streamfunctions(
         abs_error: float or (N_r, 3)
         rel_error: float or (N_r, 3)
     objective: string or dict
-        if string, either 'minimum_inductive_energy' or 'minimum_resistive_energy'
+        if string, either 'minimum_inductive_energy' or 'minimum_ohmic_power'
         if tuple, should contain: (a, b), where a and b are floats describing the
         inductive and resitive weighting factors.
         The resistance matrix is scaled according to the largest singular value
@@ -158,7 +158,7 @@ def optimize_streamfunctions(
 
     if objective == "minimum_inductive_energy":
         objective = (1, 0)
-    elif objective == "minimum_resistive_energy":
+    elif objective == "minimum_ohmic_power":
         objective = (0, 1)
 
     quadratic_matrix = _construct_quadratic_objective(objective, conductor)
@@ -231,7 +231,7 @@ def optimize_lsq(
         abs_error: float or (N_r, 3)
         rel_error: float or (N_r, 3)
     objective: string or dict
-        if string, either 'minimum_inductive_energy' or 'minimum_resistive_energy'
+        if string, either 'minimum_inductive_energy' or 'minimum_ohmic_power'
         if tuple, should contain: (a, b), where a and b are floats describing the
         inductive and resitive weighting factors.
         The resistance matrix is scaled according to the largest singular value
@@ -249,7 +249,7 @@ def optimize_lsq(
 
     if objective == "minimum_inductive_energy":
         objective = (1, 0)
-    elif objective == "minimum_resistive_energy":
+    elif objective == "minimum_ohmic_power":
         objective = (0, 1)
 
     quadratic_matrix = _construct_quadratic_objective(objective, conductor)

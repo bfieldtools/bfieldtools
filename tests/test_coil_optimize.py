@@ -26,7 +26,7 @@ def test_coil_optimize():
 
             for objective in [
                 "minimum_inductive_energy",
-                "minimum_resistive_energy",
+                "minimum_ohmic_power",
                 (0.5, 0.5),
             ]:
                 results = []

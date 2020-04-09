@@ -126,7 +126,7 @@ import mosek
 coil.s, prob = optimize_streamfunctions(
     coil,
     [target_spec, stray_spec],
-    objective="minimum_resistive_energy",
+    objective="minimum_ohmic_power",
     solver="MOSEK",
     solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
 )
@@ -206,7 +206,7 @@ plt.tight_layout()
 from bfieldtools.coil_optimize import optimize_lsq
 
 coil.s2 = optimize_lsq(
-    coil, [target_spec, stray_spec], objective="minimum_resistive_energy", reg=1e6
+    coil, [target_spec, stray_spec], objective="minimum_ohmic_power", reg=1e6
 )
 
 
