@@ -155,10 +155,50 @@ def mutual_inductance_matrix(
 
 
 def triangle_self_coupling(mesh):
-    """ TODO: Self coupling can be integrated analytically
-        https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=475946
     """
-    pass
+    Self-coupling integrated analytically. Implemented based on
+    Poole, M.S., 2007. Improved equipment and techniques for dynamic shimming in high field MRI (Doctoral dissertation, University of Nottingham.). page 72.
+
+
+    Self-coupling can be integrated analytically using different notation
+    https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=475946
+    """
+
+    tri_points = mesh.vertices[mesh.faces]
+
+    r1 = tri_points[:, 0, :]
+    r2 = tri_points[:, 1, :]
+    r3 = tri_points[:, 2, :]
+
+    a = np.dot(r3 - r1, r3 - r1)
+    b = np.dot(r3 - r1, r3 - r2)
+    c = np.dot(r3 - r2, r3 - r2)
+
+    a = np.einsum("ij,ij->i", r3 - r1, r3 - r1)
+    b = np.einsum("ij,ij->i", r3 - r1, r3 - r2)
+    c = np.einsum("ij,ij->i", r3 - r2, r3 - r2)
+
+    sa = np.sqrt(a)
+    sc = np.sqrt(c)
+    ss = np.sqrt(a - 2 * b + c)
+    sac = np.sqrt(a * c)
+
+    integral = (1 * (4 * mesh.area_faces ** 2)) * (
+        1
+        / (6 * sa)
+        * np.log(((a - b + sa * ss) * (b + sac)) / ((-b + sac) * (-a + b + sa * ss)))
+        + 1
+        / (6 * sc)
+        * np.log(((b + sac) * (-b + c + sc * ss)) / ((b - c + sc * ss) * (-b + sac)))
+        + 1
+        / (6 * ss)
+        * np.log(
+            ((a - b + sa * ss) * (-b + c + sc * ss))
+            / ((b - c + sc * ss) * (-a + b + sa * ss))
+        )
+    )
+
+    return integral
 
 
 def mesh2line_mutual_inductance(mesh, line_vertices, quad_degree=3):
