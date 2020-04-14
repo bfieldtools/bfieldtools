@@ -54,8 +54,15 @@ class Conductor:
     using lazy properties.
 
     The mesh surface can consist of a single contiguous surface or several separate
-    surfaces within a single mesh object.
+    surfaces within a single mesh object. The Conductor object can handle data defined
+    on the mesh being represented in several different bases:
+     - inner (default)
+     - vertex:
+     - suh: surface harmonics basis. Order given by N_suh
 
+    The bases can include built-in boundary conditions for the data: inner and
+    suh bases assume dirichlet boundary condition (equal value within each boundary),
+    while vertex basis does not set a boundary condition.
     """
 
     def __init__(
@@ -99,7 +106,7 @@ class Conductor:
                 'mass_lumped':False,
                 'resistance_full_rank': True,
                 'inductance_nchunks':None,
-                'basis_name':'vertex' (other: suh, inner)
+                'basis_name':'inner' (other: suh, vertex)
                 'N_suh': 100
                 'N_sph': 5
                 'approx_far': True
@@ -264,7 +271,11 @@ class Conductor:
     @property
     def laplacian(self):
         """
-        property-decorated wrapper
+        Surface laplacian matrix, returned in appropiate basis.
+
+        For further information, see mesh_calculus.laplacian_matrix
+
+        property-decorated wrapper.
         """
         return self._laplacian()
 
@@ -280,7 +291,12 @@ class Conductor:
     @property
     def mass(self):
         """
-        property-decorated wrapper
+        Mass matrix, returned in appropiate basis.
+
+        For further information, see mesh_calculus.mass_matrix
+
+        property-decorated wrapper.
+
         """
         return self._mass()
 
@@ -296,14 +312,18 @@ class Conductor:
     @property
     def inductance(self):
         """
-        property-decorated wrapper
+        Self-inductance matrix, returned in appropiate basis.
+
+        For further information, see mesh_properties.self_inductance_matrix
+
+        property-decorated wrapper.
         """
         return self._inductance()
 
     @matrixwrapper
     def _inductance(self):
         """
-        Compute and return mutual inductance matrix.
+        Compute and return self-inductance matrix.
 
         """
 
@@ -325,7 +345,9 @@ class Conductor:
     @property
     def resistance(self):
         """
-        property-decorated wrapper
+        Resistance matrix. For further information, see mesh_properties.resistance_matrix
+
+        property-decorated wrapper.
         """
         return self._resistance()
 
@@ -347,7 +369,7 @@ class Conductor:
 
     def mutual_inductance(self, conductor_other, quad_degree=1, approx_far=True):
         """
-        Mutual inductance between this conductor and another
+        Mutual inductance between this Conductor object and another
 
         Parameters:
             conductor_other: Conductor object
@@ -371,6 +393,9 @@ class Conductor:
     @property
     def sph_couplings(self):
         """
+        Spherical harmonic mappings from a stream function defined on the
+        Conductor mesh.
+
         property-decorated wrapper
         """
         return self._sph_couplings()
@@ -408,7 +433,8 @@ class Conductor:
 
     def plot_mesh(self, cull_front=False, cull_back=False, **kwargs):
         """
-        Simply plot the mesh surface in mayavi.
+        Simply plot the mesh surface in mayavi. kwargs are passed to
+        viz.plot_mesh
 
         """
 
@@ -489,7 +515,7 @@ class CouplingMatrix:
         self.function = function
 
     def reset(self):
-        """ Reset the matrix and points
+        """ Reset the coupling matrix and points
         """
         self.points = np.array([])
         self.matrix = np.array([])
@@ -571,14 +597,14 @@ class CouplingMatrix:
 class StreamFunction(np.ndarray):
     """ Class for representing stream function(s) on a conductor
 
-        Handles the mapping between the inner (free) weights in the
-        stream function and the all vertices
+        Handles the mapping between different bases, e.g. inner vertices <->
+        all vertices <-> surface harmonics
 
         Parameters:
-            vals:
-                    array of shape (N,) or (N,M) where N corresponds to
-                    the number of inner vertices in the conductor or the
-                    the number of all vertices in the conductor.
+            vals: array of shape (N,) or (N,M)
+                where N corresponds to
+                the number of inner vertices in the conductor or the
+                the number of all vertices in the conductor.
 
                 Multiple (M) stream functions can be stored in the object
                 by specifying vals with shape (N,M)
@@ -692,7 +718,8 @@ class StreamFunction(np.ndarray):
 
     def discretize(self, N_contours=10, contours=None):
         """
-        Wrapper method for scalar_contour
+        Wrapper method for contour.scalar_contour, turns the piecewise linear
+        stream function into isolines/contours in the form of polylines.
 
         Parameters
         ----------

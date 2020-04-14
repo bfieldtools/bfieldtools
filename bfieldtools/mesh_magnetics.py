@@ -14,7 +14,6 @@ from .mesh_calculus import gradient_matrix, mass_matrix
 from .integrals import triangle_potential_dipole_linear, triangle_potential_uniform
 from .integrals import (
     triangle_potential_approx,
-    potential_dipoles,
     potential_vertex_dipoles,
 )
 
@@ -101,7 +100,7 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
 
 def magnetic_field_coupling_analytic_old(mesh, r, Nchunks=None):
     """
-    DEPRECATED
+    **DEPRECATED**
     Given a mesh, computes the "C matrix" which gives the magnetic field at
     some target points due to currents (stream function) on a surface mesh.
 
@@ -119,7 +118,7 @@ def magnetic_field_coupling_analytic_old(mesh, r, Nchunks=None):
         Coupling matrix corresponding to a mapping from a stream function
         on the mesh to B-field at the evaluation points
 
-    DEPRECATED
+    **DEPRECATED**
     """
     from .integrals_old import omega, gamma0
 
@@ -221,7 +220,6 @@ def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
         else:
             Nchunks = 1
 
-    ta = mesh.area_faces
     tn = mesh.face_normals
 
     # Nfaces, 3, 3
@@ -399,7 +397,6 @@ def vector_potential_coupling(
     R2 = r
 
     R2chunks, ichunks = get_chunks(R2, Nchunks, chunk_clusters)
-    i0 = 0
 
     Af = np.zeros((R2.shape[0], mesh.faces.shape[0]))
     print("Computing 1/r-potential matrix")
@@ -432,8 +429,8 @@ def vector_potential_coupling(
 
 
 def get_chunks(r, Nchunks, clusters=True):
-    """ Chunk points in 'r' to Nchunks 
-    
+    """ Chunk points in 'r' to Nchunks
+
         r : ndarray (Npoints, 3)
     """
     if Nchunks is None:

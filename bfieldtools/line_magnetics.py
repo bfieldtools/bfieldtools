@@ -1,5 +1,5 @@
 """
-Functions for working with current line segments
+Functions for working with current polylines
 
 """
 
@@ -19,10 +19,9 @@ def cross(r1, r2):
 
 
 def magnetic_field2(vertices, points):
-    """ Compute b field of a segmented line current.
-        See:
-        Compact expressions for the Biot–Savart fields of a filamentary segments
-        by Hanson & Hirshman
+    """ Compute B-field of a segmented line current.
+        See: Compact expressions for the Biot–Savart fields of a filamentary segments
+        by Hanson & Hirshman: https://doi.org/10.1063/1.1507589
 
 
         Parameters
@@ -64,13 +63,13 @@ def magnetic_field2(vertices, points):
 
 
 def magnetic_field(vertices, points):
-    """ Compute b field of a segmented line current.
-        This calculation is based on integration by Griffiths
-        on page 217 (3rd edition)
+    """ Compute B-field of a segmented line current.
+        This calculation is based on
+        Introduction to Electrodynamics (3rd Edition)
+        by Griffiths (page 217)
 
         Parameters
         ----------
-
         vertices: (N_line, 3) array
             Vertices of the line with N_line-1 segments
         points:   (N_points, 3) array
@@ -115,9 +114,8 @@ def vector_potential(vertices, points, reg=1e-12, symmetrize=True):
         Based on straightforward integration of 1/r potential over a line
         i.e. the gamma0 integral
 
-        See:
-            Compact expressions for the Biot–Savart fields of a filamentary segments
-            by Hanson & Hirshman
+        See: Compact expressions for the Biot–Savart fields of a filamentary segments
+        by Hanson & Hirshman: https://doi.org/10.1063/1.1507589
 
 
         Parameters
@@ -125,10 +123,12 @@ def vector_potential(vertices, points, reg=1e-12, symmetrize=True):
         vertices: (N_line, 3) array
             Vertices of the line with N_line-1 segments
         points: (N_points, 3) array
-            Magnetic field evaluation points
+            Evaluation points
+
         Returns
         -------
-            Vector potential (Nloops, Npoints, 3)
+        A: array (Npoints, 3)
+            Vector potential
 
     """
 
@@ -165,20 +165,22 @@ def vector_potential(vertices, points, reg=1e-12, symmetrize=True):
 
 
 def scalar_potential(vertices, points):
-    """
-    Computes the scalar magnetic potential of a segmented current loop at given points.
-    This is equal to the solid angle spanned by the loop (polygon), times a constant.
-    The first and last vertices are connected to close the loop.
-    Parameters
-    ----------
-    vertices: (N_line, 3) array
-        Vertices of the line with N_line-1 segments
-    points: (N_points, 3) array
-        Magnetic field evaluation points
+    """ Computes the scalar magnetic potential of a segmented current loop at given points.
+        This is equal to the solid angle spanned by the loop (polygon), times a constant.
+        The first and last vertices are connected to close the loop.
 
-    Returns
-    -------
-    Scalar magnetic potential (Npoints, )
+
+        Parameters
+        ----------
+        vertices: (N_line, 3) array
+            Vertices of the line with N_line-1 segments
+        points: (N_points, 3) array
+            Evaluation points
+
+        Returns
+        -------
+        U: array (Npoints, )
+            Scalar magnetic potential
 
     """
 
@@ -211,7 +213,7 @@ def flux(vertices, loops, vertices_other, Nquad=2):
 
         In other words, calculate mutual inductance of the current loops.
 
-        NOT SUITABLE for calculating the self-flux, i.e., self inductance
+        **NOT SUITABLE** for calculating the self-flux, i.e., self-inductance
 
         Parameters
         ----------
@@ -258,36 +260,3 @@ def flux(vertices, loops, vertices_other, Nquad=2):
     # segements (axis=2) and quadrature points on each segment (axis=1)
 
     return np.sum(a * segments, axis=(1, 2, 3))
-
-
-#
-# if __name__ == "__main__":
-#    """
-#    Plot field of a circular current path
-#
-#    """
-#    x = np.linspace(-1, 1, 200)
-#    Ntheta = 5
-#    theta = np.linspace(0, 2 * np.pi, Ntheta)
-#    vertices = np.zeros((Ntheta, 3), dtype=np.float64)
-#    vertices[:, 0] = np.cos(theta) * 0.1
-#    vertices[:, 1] = np.sin(theta) * 0.1
-#    vertices[:, 2] = 0.01
-#
-#    X, Y = np.meshgrid(x, x, indexing='ij')
-#
-#    points = np.zeros((3, X.size), dtype=np.float64)
-#    points[0] = X.flatten()
-#    points[1] = Y.flatten()
-#
-#    b1 = magnetic_field_current_loops(vertices, points.T, [np.arange(Ntheta)])[0]
-#
-#    from mayavi import mlab
-#    mlab.figure()
-#    q = mlab.quiver3d(*points, *b1.T)
-#    q.glyph.glyph_source.glyph_position = 'center'
-#
-#    loops = np.array([np.arange(len(vertices)-1), np.array([3, 2, 1, 0])])
-#    a1 = vector_potential(vertices, points.T, loops)[1]
-#    q = mlab.quiver3d(*points, *a1.T, colormap='viridis')
-#    q.glyph.glyph_source.glyph_position = 'center'

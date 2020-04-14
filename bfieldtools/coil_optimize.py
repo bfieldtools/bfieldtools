@@ -18,10 +18,37 @@ from .conductor import StreamFunction
 def cvxpy_solve_qp(P, G, h, solver=cp.MOSEK, tolerance=None):
     """
     Bare-bones quadratic programming solver function for CVXPY, minimizes
-    (1/2) * x' * P * x
+
+    .. math::
+        (1/2) \mathbf{x}^T  \mathbf{P}  \mathbf{x}
 
     subject to
-    G * x <= h
+
+    .. math::
+        \mathbf{G} \mathbf{x} \leq \mathbf{h}
+
+
+    Parameters
+    ----------
+
+    P: (N_x, N_x) array
+        Quadratic minimization matrix
+    G: (N_h, N_x) array
+        Linear inequality matrix
+    h: (N_h, ) array
+        Linear inequality constraint vector
+    solver: string or cvxpy solver
+        solver to use in CVXPY, can be passed as string or directly
+    tolerance: float or None (default)
+        Override default tolerance values
+
+    Returns
+    -------
+    x.value: (N_x, ) array
+        Optimized solution for x (if available)
+    prob: CVXPY problem
+        Problem object with optimization info
+
     """
 
     P = 0.5 * (P + P.T)
@@ -58,36 +85,51 @@ def cvxpy_solve_qp(P, G, h, solver=cp.MOSEK, tolerance=None):
     return x.value, prob
 
 
-def cvxopt_solve_qp(
-    P, q, G=None, h=None, A=None, b=None, sw=None, reg=None, tolerance=1e-7
-):
+def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7, **kwargs):
     """
-    Use cvxopt to minimize
-    (1/2) * x' * P * x + q' * x
+    Use cvxopt (without CVXPY wrapper) to minimize
+
+    .. math::
+        (1/2) \mathbf{x}^T  \mathbf{P}  \mathbf{x} + \mathbf{q}^T \mathbf{x}
 
     subject to
-    G * x <= h
+
+    .. math::
+        \mathbf{G} \mathbf{x} \leq \mathbf{h}
 
     and
-    A * x = b
+
+    .. math::
+        \mathbf{A} \mathbf{x} = \mathbf{b}
+
+    Parameters
+    ----------
+
+    P: (N_x, N_x) array
+        Quadratic minimization matrix
+    q: (N_x, ) array
+        Linear penalty term vector
+    G: (N_h, N_x) array
+        Linear inequality matrix
+    h: (N_h, ) array
+        Linear inequality constraint vector
+    A: (N_b, N_x) array
+        Linear equality matrix
+    b: (N_b, ) array
+        Linear equality constraint vector
+    **kwargs
+        Use to pass cvxopt solver options, such as tolerance
+
+    Returns
+    -------
+    x: (N_x, ) array
+        Optimized solution for x (if available)
+    sol: CVXOPT solution
+        Solution object with optimization info
 
     """
 
     P = 0.5 * (P + P.T)  # make sure P is symmetric
-
-    if sw is not None:
-        n, m = P.shape[0], G.shape[0]
-
-        E, Z = np.eye(m), np.zeros((m, n))
-
-        P = np.vstack([np.hstack([P, Z.T]), np.hstack([Z, reg * np.eye(m)])])
-        q = np.hstack([q, -sw * np.ones(m)])
-
-        G = np.hstack([Z, E])
-        h = np.zeros(m)
-
-        A = np.hstack([G, -E])
-        b = h
 
     args = [matrix(P), matrix(q)]
     if G is not None:
@@ -95,13 +137,8 @@ def cvxopt_solve_qp(
         if A is not None:
             args.extend([matrix(A), matrix(b)])
 
-    #    #For now, use rough tolerance setting, i.e. just set all arguments to be the same
-    cvxopt.solvers.options["abstol"] = tolerance
-    cvxopt.solvers.options["feastol"] = tolerance * 1e3
-    cvxopt.solvers.options["reltol"] = tolerance
-
-    # cvxopt.solvers.options['maxiters'] = 1000
-    # cvxopt.solvers.options['kktreg'] = 1e-8
+    for key, val in kwargs:
+        cvxopt.solver.options[key] = val
 
     sol = cvxopt.solvers.qp(*args)
     if "optimal" not in sol["status"]:
@@ -121,19 +158,17 @@ def optimize_streamfunctions(
     Quadratic optimization of coil stream function according to a specified objective,
     while keeping specified target field at target points within given constraints.
 
+    Utilizes CVXPY and a numerical iterative solver.
+
     Parameters
     ----------
     conductor: Conductor object
         Contains Trimesh mesh as well as physical properties, e.g. inductance
     bfield_specification: list
-        List in which element is a dictionary containing a field specification.
-        Each dict contains:
-        coupling: Coupling matrix (N_r, N_verts, 3)
-        target: (N_r, 3)
-        abs_error: float or (N_r, 3)
-        rel_error: float or (N_r, 3)
+        List in which element is a dictionary containing a coil specification.
+        See notes for specification syntax.
     objective: string or dict
-        if string, either 'minimum_inductive_energy' or 'minimum_ohmic_power'
+        if string, either *'minimum_inductive_energy'* or *'minimum_ohmic_power'*
         if tuple, should contain: (a, b), where a and b are floats describing the
         inductive and resitive weighting factors.
         The resistance matrix is scaled according to the largest singular value
@@ -143,7 +178,7 @@ def optimize_streamfunctions(
     solver_opt: dict
         dict containing solver options CVXPY will pass to the solver
     problem: CVXPY problem object
-        If passed, will use already existing problem (MUST BE SAME DIMENSIONS) to
+        If passed, will use already existing problem (**MUST BE SAME DIMENSIONS**) to
         skip DCP processing/reformulation time.
 
     Returns
@@ -153,6 +188,16 @@ def optimize_streamfunctions(
         optimized current density values at each mesh vertex
     prob: CVXPY problem object
         CVXPY problem object containing data, formulation, solution, metric etc
+
+    Notes
+    -----
+
+    Each specification is a dict, which contains
+     - coupling: Coupling matrix (N_r, N_verts, 3)
+     - target: (N_r, 3)
+     - abs_error: float or (N_r, 3)
+     - rel_error: float or (N_r, 3)
+    Either abs_error, rel_error or both must be present.
 
     """
 
@@ -224,14 +269,9 @@ def optimize_lsq(
     conductor: Conductor object
         Contains Trimesh mesh as well as physical properties, e.g. inductance
     bfield_specification: list
-        List in which element is a dictionary containing a field specification.
-        Each dict contains:
-        coupling: Coupling matrix (N_r, N_verts, 3)
-        target: (N_r, 3)
-        abs_error: float or (N_r, 3)
-        rel_error: float or (N_r, 3)
+        List in which element is a dictionary containing a coil specification.
     objective: string or dict
-        if string, either 'minimum_inductive_energy' or 'minimum_ohmic_power'
+        if string, either *'minimum_inductive_energy'* or *'minimum_ohmic_power'*
         if tuple, should contain: (a, b), where a and b are floats describing the
         inductive and resitive weighting factors.
         The resistance matrix is scaled according to the largest singular value
@@ -239,12 +279,28 @@ def optimize_lsq(
     reg: float
         Regularization/tradeoff parameter (lambda). A larger lambda leads to
         more emphasis on the specification, at the cost of the quadratic objective.
-        The lambda value is relative to the maximum singular value
-        of C.T @ C @ v[:,i] = w[i] @ Q @ v[:,i]
+        The lambda value is relative to the maximum singular value w
+        of the eigenvalue equation
+
+        .. math::
+            \mathbf{C}^T \mathbf{C}  \mathbf{v}[:,i] = \mathbf{w}[i]  \mathbf{Q} \mathbf{v}[:,i]
+
+        where C is the constraint matrix and Q is the quadratic objective matrix.
     Returns
     -------
     S: StreamFunction
         Optimization solution
+
+    Notes
+    -----
+
+    Each specification is a dict, which contains
+     - coupling: Coupling matrix (N_r, N_verts, 3)
+     - target: (N_r, 3)
+
+    **NOTE** The following spec parameters are ignored:
+     - abs_error: float or (N_r, 3)
+     - rel_error: float or (N_r, 3)
     """
 
     if objective == "minimum_inductive_energy":

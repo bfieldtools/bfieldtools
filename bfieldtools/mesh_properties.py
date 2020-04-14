@@ -17,7 +17,7 @@ def resistance_matrix(mesh, sheet_resistance):
         ----------
         mesh: Trimesh mesh object
         sheet_resistance: (N_faces) array or scalar
-                            "1/sigma*d" constant resistance for each face (or all faces if scalar)
+            "1/(sigma*d)", constant resistance for each face (or all faces if scalar)
         Returns
         -------
         R: (Nvertices x Nvertices) array
