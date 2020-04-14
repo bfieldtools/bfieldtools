@@ -30,7 +30,8 @@ Integrals testing
 
 
 
-%% Test potential shape slightly above the surface
+Test potential shape slightly above the surface
+########################################################
 
 
 .. code-block:: default
@@ -64,6 +65,9 @@ Integrals testing
 
 
 
+Linear dipole density
+########################################################
+
 
 .. code-block:: default
 
@@ -81,7 +85,7 @@ Integrals testing
 
     RR = mesh2.vertices[:, None, None, :] - mesh.vertices[None, mesh.faces]
     p1 = t1(RR, mesh.face_normals, mesh.area_faces, planar=False)
-    p2 = t2(RR, mesh.face_normals, mesh.area_faces, planar=False)
+    p2 = t2(RR, mesh.face_normals, mesh.area_faces)
 
     assert np.allclose(p1, p2)
 
@@ -107,20 +111,33 @@ Integrals testing
 
 
 
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /auto_examples/validation/images/sphx_glr_test_integrals_001.png
+            :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /auto_examples/validation/images/sphx_glr_test_integrals_002.png
+            :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /auto_examples/validation/images/sphx_glr_test_integrals_003.png
+            :class: sphx-glr-multi-img
+
+
 .. rst-class:: sphx-glr-script-out
 
+ Out:
 
-.. code-block:: pytb
+ .. code-block:: none
 
-    Traceback (most recent call last):
-      File "D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py", line 460, in _memory_usage
-        out = func()
-      File "D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py", line 442, in __call__
-        exec(self.code, self.fake_main.__dict__)
-      File "C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\validation\test_integrals.py", line 53, in <module>
-        p2 = t2(RR, mesh.face_normals, mesh.area_faces, planar=False)
-    TypeError: triangle_potential_dipole_linear() got an unexpected keyword argument 'planar'
 
+    <mayavi.core.lut_manager.LUTManager object at 0x000001F8015E2E08>
 
 
 
@@ -146,6 +163,27 @@ Integrals testing
 
 
 
+.. image:: /auto_examples/validation/images/sphx_glr_test_integrals_004.png
+    :class: sphx-glr-single-img
+
+.. image:: /auto_examples/validation/images/sphx_glr_test_integrals_005.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <mayavi.modules.vectors.Vectors object at 0x000001F80588BEB8>
+
+
+
+Plot x_i
+
+
 .. code-block:: default
 
 
@@ -166,6 +204,24 @@ Integrals testing
     mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
 
 
+
+
+.. image:: /auto_examples/validation/images/sphx_glr_test_integrals_006.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <mayavi.modules.vectors.Vectors object at 0x000001F870784200>
+
+
+
+Uniform charge density
 
 
 .. code-block:: default
@@ -194,6 +250,32 @@ Integrals testing
 
 
 
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /auto_examples/validation/images/sphx_glr_test_integrals_007.png
+            :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /auto_examples/validation/images/sphx_glr_test_integrals_008.png
+            :class: sphx-glr-multi-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <mayavi.modules.vectors.Vectors object at 0x000001F8709FCE60>
+
+
+
+
 .. code-block:: default
 
     from bfieldtools.integrals import d_distance
@@ -215,6 +297,23 @@ Integrals testing
 
 
 
+
+.. image:: /auto_examples/validation/images/sphx_glr_test_integrals_009.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <mayavi.modules.vectors.Vectors object at 0x000001F80082C2B0>
+
+
+
+
 .. code-block:: default
 
     from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic_old
@@ -230,6 +329,26 @@ Integrals testing
     mlab.quiver3d(*mesh2.vertices.T, *b2[:, :, 0].T)
 
 
+
+
+.. image:: /auto_examples/validation/images/sphx_glr_test_integrals_010.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Computing magnetic field coupling matrix analytically, 7 vertices by 16641 target points... took 0.13 seconds.
+    Computing magnetic field coupling matrix analytically, 7 vertices by 16641 target points... took 0.12 seconds.
+
+    <mayavi.modules.vectors.Vectors object at 0x000001F8015CD468>
+
+
+
+Gammma
 
 
 .. code-block:: default
@@ -257,9 +376,36 @@ Integrals testing
     plt.plot(p2[:, 0, :])
 
 
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /auto_examples/validation/images/sphx_glr_test_integrals_011.png
+            :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /auto_examples/validation/images/sphx_glr_test_integrals_012.png
+            :class: sphx-glr-multi-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    [<matplotlib.lines.Line2D object at 0x000001F8015AA6D8>, <matplotlib.lines.Line2D object at 0x000001F8015AA780>, <matplotlib.lines.Line2D object at 0x000001F8015AAE10>]
+
+
+
+
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.157 seconds)
+   **Total running time of the script:** ( 0 minutes  10.906 seconds)
 
 
 .. _sphx_glr_download_auto_examples_validation_test_integrals.py:

@@ -456,7 +456,7 @@ Unit disc, AC mode
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 19 minutes  14.276 seconds)
+   **Total running time of the script:** ( 24 minutes  13.396 seconds)
 
 
 .. _sphx_glr_download_auto_examples_thermal_noise_thermal_noise_simulation.py:

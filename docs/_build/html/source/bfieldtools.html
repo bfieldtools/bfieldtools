@@ -14,6 +14,7 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/doctools.js"></script>
     <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -110,7 +111,7 @@
 </div>
 <div class="section" id="module-bfieldtools.line_magnetics">
 <span id="bfieldtools-line-magnetics-module"></span><h2>bfieldtools.line_magnetics module<a class="headerlink" href="#module-bfieldtools.line_magnetics" title="Permalink to this headline">¶</a></h2>
-<p>Functions for working with current line segments</p>
+<p>Functions for working with current polylines</p>
 <dl class="py function">
 <dt id="bfieldtools.line_magnetics.cross">
 <code class="sig-prename descclassname">bfieldtools.line_magnetics.</code><code class="sig-name descname">cross</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r1</span></em>, <em class="sig-param"><span class="n">r2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.cross" title="Permalink to this definition">¶</a></dt>
@@ -124,7 +125,7 @@
 (vertices, loops) on a another closed loop of segmented current
 (vertices_other). The other loop is numerically integrated.</p>
 <p>In other words, calculate mutual inductance of the current loops.</p>
-<p>NOT SUITABLE for calculating the self-flux, i.e., self inductance</p>
+<p><strong>NOT SUITABLE</strong> for calculating the self-flux, i.e., self-inductance</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -151,9 +152,10 @@ defined as loops = np.array([[0,1,2,3]])</p>
 <dl class="py function">
 <dt id="bfieldtools.line_magnetics.magnetic_field">
 <code class="sig-prename descclassname">bfieldtools.line_magnetics.</code><code class="sig-name descname">magnetic_field</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vertices</span></em>, <em class="sig-param"><span class="n">points</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.magnetic_field" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute b field of a segmented line current.
-This calculation is based on integration by Griffiths
-on page 217 (3rd edition)</p>
+<dd><p>Compute B-field of a segmented line current.
+This calculation is based on
+Introduction to Electrodynamics (3rd Edition)
+by Griffiths (page 217)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -175,10 +177,9 @@ on page 217 (3rd edition)</p>
 <dl class="py function">
 <dt id="bfieldtools.line_magnetics.magnetic_field2">
 <code class="sig-prename descclassname">bfieldtools.line_magnetics.</code><code class="sig-name descname">magnetic_field2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vertices</span></em>, <em class="sig-param"><span class="n">points</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.magnetic_field2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute b field of a segmented line current.
-See:
-Compact expressions for the Biot–Savart fields of a filamentary segments
-by Hanson &amp; Hirshman</p>
+<dd><p>Compute B-field of a segmented line current.
+See: Compact expressions for the Biot–Savart fields of a filamentary segments
+by Hanson &amp; Hirshman: <a class="reference external" href="https://doi.org/10.1063/1.1507589">https://doi.org/10.1063/1.1507589</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -202,21 +203,20 @@ by Hanson &amp; Hirshman</p>
 <code class="sig-prename descclassname">bfieldtools.line_magnetics.</code><code class="sig-name descname">scalar_potential</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vertices</span></em>, <em class="sig-param"><span class="n">points</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.line_magnetics.scalar_potential" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the scalar magnetic potential of a segmented current loop at given points.
 This is equal to the solid angle spanned by the loop (polygon), times a constant.
-The first and last vertices are connected to close the loop.
-Parameters
-———-
-vertices: (N_line, 3) array</p>
-<blockquote>
-<div><p>Vertices of the line with N_line-1 segments</p>
-</div></blockquote>
-<dl class="simple">
-<dt>points: (N_points, 3) array</dt><dd><p>Magnetic field evaluation points</p>
+The first and last vertices are connected to close the loop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>vertices: (N_line, 3) array</strong></dt><dd><p>Vertices of the line with N_line-1 segments</p>
+</dd>
+<dt><strong>points: (N_points, 3) array</strong></dt><dd><p>Evaluation points</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><dl class="simple">
-<dt>Scalar magnetic potential (Npoints, )</dt><dd></dd>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>U: array (Npoints, )</dt><dd><p>Scalar magnetic potential</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -228,20 +228,20 @@ vertices: (N_line, 3) array</p>
 <dd><p>Compute vector potential of a segmented line currents.
 Based on straightforward integration of 1/r potential over a line
 i.e. the gamma0 integral</p>
-<dl class="simple">
-<dt>See:</dt><dd><p>Compact expressions for the Biot–Savart fields of a filamentary segments
-by Hanson &amp; Hirshman</p>
-</dd>
-</dl>
+<p>See: Compact expressions for the Biot–Savart fields of a filamentary segments
+by Hanson &amp; Hirshman: <a class="reference external" href="https://doi.org/10.1063/1.1507589">https://doi.org/10.1063/1.1507589</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>vertices: (N_line, 3) array</strong></dt><dd><p>Vertices of the line with N_line-1 segments</p>
 </dd>
-<dt><strong>points: (N_points, 3) array</strong></dt><dd><p>Magnetic field evaluation points</p>
+<dt><strong>points: (N_points, 3) array</strong></dt><dd><p>Evaluation points</p>
 </dd>
-<dt><strong>Returns</strong></dt><dd></dd>
-<dt><strong>——-</strong></dt><dd><p>Vector potential (Nloops, Npoints, 3)</p>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>A: array (Npoints, 3)</dt><dd><p>Vector potential</p>
 </dd>
 </dl>
 </dd>
@@ -255,40 +255,92 @@ by Hanson &amp; Hirshman</p>
 using either a numerical solver or regularized least squares</p>
 <dl class="py function">
 <dt id="bfieldtools.coil_optimize.cvxopt_solve_qp">
-<code class="sig-prename descclassname">bfieldtools.coil_optimize.</code><code class="sig-name descname">cvxopt_solve_qp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">P</span></em>, <em class="sig-param"><span class="n">q</span></em>, <em class="sig-param"><span class="n">G</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">h</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">A</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">b</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sw</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">reg</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tolerance</span><span class="o">=</span><span class="default_value">1e-07</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.cvxopt_solve_qp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use cvxopt to minimize
-(1/2) * x’ * P * x + q’ * x</p>
-<p>subject to
-G * x &lt;= h</p>
-<p>and
-A * x = b</p>
+<code class="sig-prename descclassname">bfieldtools.coil_optimize.</code><code class="sig-name descname">cvxopt_solve_qp</code><span class="sig-paren">(</span><em class="sig-param">P</em>, <em class="sig-param">q</em>, <em class="sig-param">G=None</em>, <em class="sig-param">h=None</em>, <em class="sig-param">A=None</em>, <em class="sig-param">b=None</em>, <em class="sig-param">tolerance=1e-07</em>, <em class="sig-param">\*\*kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.cvxopt_solve_qp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use cvxopt (without CVXPY wrapper) to minimize</p>
+<div class="math notranslate nohighlight">
+\[(1/2) \mathbf{x}^T  \mathbf{P}  \mathbf{x} + \mathbf{q}^T \mathbf{x}\]</div>
+<p>subject to</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{G} \mathbf{x} \leq \mathbf{h}\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{A} \mathbf{x} = \mathbf{b}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>P: (N_x, N_x) array</strong></dt><dd><p>Quadratic minimization matrix</p>
+</dd>
+<dt><strong>q: (N_x, ) array</strong></dt><dd><p>Linear penalty term vector</p>
+</dd>
+<dt><strong>G: (N_h, N_x) array</strong></dt><dd><p>Linear inequality matrix</p>
+</dd>
+<dt><strong>h: (N_h, ) array</strong></dt><dd><p>Linear inequality constraint vector</p>
+</dd>
+<dt><strong>A: (N_b, N_x) array</strong></dt><dd><p>Linear equality matrix</p>
+</dd>
+<dt><strong>b: (N_b, ) array</strong></dt><dd><p>Linear equality constraint vector</p>
+</dd>
+<dt><strong>**kwargs</strong></dt><dd><p>Use to pass cvxopt solver options, such as tolerance</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>x: (N_x, ) array</dt><dd><p>Optimized solution for x (if available)</p>
+</dd>
+<dt>sol: CVXOPT solution</dt><dd><p>Solution object with optimization info</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="bfieldtools.coil_optimize.cvxpy_solve_qp">
 <code class="sig-prename descclassname">bfieldtools.coil_optimize.</code><code class="sig-name descname">cvxpy_solve_qp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">P</span></em>, <em class="sig-param"><span class="n">G</span></em>, <em class="sig-param"><span class="n">h</span></em>, <em class="sig-param"><span class="n">solver</span><span class="o">=</span><span class="default_value">'MOSEK'</span></em>, <em class="sig-param"><span class="n">tolerance</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.cvxpy_solve_qp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bare-bones quadratic programming solver function for CVXPY, minimizes
-(1/2) * x’ * P * x</p>
-<p>subject to
-G * x &lt;= h</p>
+<dd><p>Bare-bones quadratic programming solver function for CVXPY, minimizes</p>
+<div class="math notranslate nohighlight">
+\[(1/2) \mathbf{x}^T  \mathbf{P}  \mathbf{x}\]</div>
+<p>subject to</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{G} \mathbf{x} \leq \mathbf{h}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>P: (N_x, N_x) array</strong></dt><dd><p>Quadratic minimization matrix</p>
+</dd>
+<dt><strong>G: (N_h, N_x) array</strong></dt><dd><p>Linear inequality matrix</p>
+</dd>
+<dt><strong>h: (N_h, ) array</strong></dt><dd><p>Linear inequality constraint vector</p>
+</dd>
+<dt><strong>solver: string or cvxpy solver</strong></dt><dd><p>solver to use in CVXPY, can be passed as string or directly</p>
+</dd>
+<dt><strong>tolerance: float or None (default)</strong></dt><dd><p>Override default tolerance values</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>x.value: (N_x, ) array</dt><dd><p>Optimized solution for x (if available)</p>
+</dd>
+<dt>prob: CVXPY problem</dt><dd><p>Problem object with optimization info</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="bfieldtools.coil_optimize.optimize_lsq">
 <code class="sig-prename descclassname">bfieldtools.coil_optimize.</code><code class="sig-name descname">optimize_lsq</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">conductor</span></em>, <em class="sig-param"><span class="n">bfield_specification</span></em>, <em class="sig-param"><span class="n">reg</span><span class="o">=</span><span class="default_value">1000.0</span></em>, <em class="sig-param"><span class="n">objective</span><span class="o">=</span><span class="default_value">'minimum_inductive_energy'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.optimize_lsq" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
+<dd class="field-odd"><dl>
 <dt><strong>conductor: Conductor object</strong></dt><dd><p>Contains Trimesh mesh as well as physical properties, e.g. inductance</p>
 </dd>
-<dt><strong>bfield_specification: list</strong></dt><dd><p>List in which element is a dictionary containing a field specification.
-Each dict contains:
-coupling: Coupling matrix (N_r, N_verts, 3)
-target: (N_r, 3)
-abs_error: float or (N_r, 3)
-rel_error: float or (N_r, 3)</p>
+<dt><strong>bfield_specification: list</strong></dt><dd><p>List in which element is a dictionary containing a coil specification.</p>
 </dd>
-<dt><strong>objective: string or dict</strong></dt><dd><p>if string, either ‘minimum_inductive_energy’ or ‘minimum_resistive_energy’
+<dt><strong>objective: string or dict</strong></dt><dd><p>if string, either <em>‘minimum_inductive_energy’</em> or <em>‘minimum_ohmic_power’</em>
 if tuple, should contain: (a, b), where a and b are floats describing the
 inductive and resitive weighting factors.
 The resistance matrix is scaled according to the largest singular value
@@ -296,14 +348,30 @@ of the inductance matrix for consistent behavior across meshes.</p>
 </dd>
 <dt><strong>reg: float</strong></dt><dd><p>Regularization/tradeoff parameter (lambda). A larger lambda leads to
 more emphasis on the specification, at the cost of the quadratic objective.
-The lambda value is relative to the maximum singular value
-of C.T &#64; C &#64; v[:,i] = w[i] &#64; Q &#64; v[:,i]</p>
+The lambda value is relative to the maximum singular value w
+of the eigenvalue equation</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{C}^T \mathbf{C}  \mathbf{v}[:,i] = \mathbf{w}[i]  \mathbf{Q} \mathbf{v}[:,i]\]</div>
+<p>where C is the constraint matrix and Q is the quadratic objective matrix.</p>
 </dd>
 <dt><strong>Returns</strong></dt><dd></dd>
 <dt><strong>——-</strong></dt><dd></dd>
 <dt><strong>S: StreamFunction</strong></dt><dd><p>Optimization solution</p>
 </dd>
 </dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>Each specification is a dict, which contains</dt><dd><ul class="simple">
+<li><p>coupling: Coupling matrix (N_r, N_verts, 3)</p></li>
+<li><p>target: (N_r, 3)</p></li>
+</ul>
+</dd>
+<dt><strong>NOTE</strong> The following spec parameters are ignored:</dt><dd><ul class="simple">
+<li><p>abs_error: float or (N_r, 3)</p></li>
+<li><p>rel_error: float or (N_r, 3)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -313,19 +381,16 @@ of C.T &#64; C &#64; v[:,i] = w[i] &#64; Q &#64; v[:,i]</p>
 <code class="sig-prename descclassname">bfieldtools.coil_optimize.</code><code class="sig-name descname">optimize_streamfunctions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">conductor</span></em>, <em class="sig-param"><span class="n">bfield_specification</span></em>, <em class="sig-param"><span class="n">objective</span><span class="o">=</span><span class="default_value">'minimum_inductive_energy'</span></em>, <em class="sig-param"><span class="n">solver</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">solver_opts</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">problem</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.coil_optimize.optimize_streamfunctions" title="Permalink to this definition">¶</a></dt>
 <dd><p>Quadratic optimization of coil stream function according to a specified objective,
 while keeping specified target field at target points within given constraints.</p>
+<p>Utilizes CVXPY and a numerical iterative solver.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>conductor: Conductor object</strong></dt><dd><p>Contains Trimesh mesh as well as physical properties, e.g. inductance</p>
 </dd>
-<dt><strong>bfield_specification: list</strong></dt><dd><p>List in which element is a dictionary containing a field specification.
-Each dict contains:
-coupling: Coupling matrix (N_r, N_verts, 3)
-target: (N_r, 3)
-abs_error: float or (N_r, 3)
-rel_error: float or (N_r, 3)</p>
+<dt><strong>bfield_specification: list</strong></dt><dd><p>List in which element is a dictionary containing a coil specification.
+See notes for specification syntax.</p>
 </dd>
-<dt><strong>objective: string or dict</strong></dt><dd><p>if string, either ‘minimum_inductive_energy’ or ‘minimum_resistive_energy’
+<dt><strong>objective: string or dict</strong></dt><dd><p>if string, either <em>‘minimum_inductive_energy’</em> or <em>‘minimum_ohmic_power’</em>
 if tuple, should contain: (a, b), where a and b are floats describing the
 inductive and resitive weighting factors.
 The resistance matrix is scaled according to the largest singular value
@@ -335,14 +400,14 @@ of the inductance matrix for consistent behavior across meshes.</p>
 </dd>
 <dt><strong>solver_opt: dict</strong></dt><dd><p>dict containing solver options CVXPY will pass to the solver</p>
 </dd>
-<dt><strong>problem: CVXPY problem object</strong></dt><dd><p>If passed, will use already existing problem (MUST BE SAME DIMENSIONS) to
+<dt><strong>problem: CVXPY problem object</strong></dt><dd><p>If passed, will use already existing problem (<strong>MUST BE SAME DIMENSIONS</strong>) to
 skip DCP processing/reformulation time.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>s: vector</dt><dd><p>Vector with length len(<cite>conductor.mesh.vertices</cite>), containing the 
+<dt>s: vector</dt><dd><p>Vector with length len(<cite>conductor.mesh.vertices</cite>), containing the
 optimized current density values at each mesh vertex</p>
 </dd>
 <dt>prob: CVXPY problem object</dt><dd><p>CVXPY problem object containing data, formulation, solution, metric etc</p>
@@ -350,6 +415,17 @@ optimized current density values at each mesh vertex</p>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>Each specification is a dict, which contains</dt><dd><ul class="simple">
+<li><p>coupling: Coupling matrix (N_r, N_verts, 3)</p></li>
+<li><p>target: (N_r, 3)</p></li>
+<li><p>abs_error: float or (N_r, 3)</p></li>
+<li><p>rel_error: float or (N_r, 3)</p></li>
+</ul>
+</dd>
+</dl>
+<p>Either abs_error, rel_error or both must be present.</p>
 </dd></dl>
 
 </div>
@@ -767,8 +843,262 @@ on the mesh to vector potential at the evaluation points</p>
 </dd></dl>
 
 </div>
-<div class="section" id="bfieldtools-mesh-class-module">
-<h2>bfieldtools.mesh_class module<a class="headerlink" href="#bfieldtools-mesh-class-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-bfieldtools.conductor">
+<span id="bfieldtools-conductor-module"></span><h2>bfieldtools.conductor module<a class="headerlink" href="#module-bfieldtools.conductor" title="Permalink to this headline">¶</a></h2>
+<p>Contains a class used for wrapping a mesh (in the form of a Trimesh object) together with
+some convenient functions and properties.</p>
+<dl class="py class">
+<dt id="bfieldtools.conductor.Conductor">
+<em class="property">class </em><code class="sig-prename descclassname">bfieldtools.conductor.</code><code class="sig-name descname">Conductor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">verts</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tris</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mesh_file</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mesh_obj</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">process</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">fix_normals</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">resistivity</span><span class="o">=</span><span class="default_value">1.6799999999999998e-08</span></em>, <em class="sig-param"><span class="n">thickness</span><span class="o">=</span><span class="default_value">0.0001</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.conductor.Conductor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class that is used for surface mesh field calculations, e.g. coil design.
+Computation functions are typically external functions that are called
+using lazy properties.</p>
+<p>The mesh surface can consist of a single contiguous surface or several separate
+surfaces within a single mesh object. The Conductor object can handle data defined
+on the mesh being represented in several different bases:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>inner (default)</p></li>
+<li><p>vertex:</p></li>
+<li><p>suh: surface harmonics basis. Order given by N_suh</p></li>
+</ul>
+</div></blockquote>
+<p>The bases can include built-in boundary conditions for the data: inner and
+suh bases assume dirichlet boundary condition (equal value within each boundary),
+while vertex basis does not set a boundary condition.</p>
+<dl class="py method">
+<dt id="bfieldtools.conductor.Conductor.inductance">
+<em class="property">property </em><code class="sig-name descname">inductance</code><a class="headerlink" href="#bfieldtools.conductor.Conductor.inductance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Self-inductance matrix, returned in appropiate basis.</p>
+<p>For further information, see mesh_properties.self_inductance_matrix</p>
+<p>property-decorated wrapper.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bfieldtools.conductor.Conductor.laplacian">
+<em class="property">property </em><code class="sig-name descname">laplacian</code><a class="headerlink" href="#bfieldtools.conductor.Conductor.laplacian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Surface laplacian matrix, returned in appropiate basis.</p>
+<p>For further information, see mesh_calculus.laplacian_matrix</p>
+<p>property-decorated wrapper.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bfieldtools.conductor.Conductor.mass">
+<em class="property">property </em><code class="sig-name descname">mass</code><a class="headerlink" href="#bfieldtools.conductor.Conductor.mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mass matrix, returned in appropiate basis.</p>
+<p>For further information, see mesh_calculus.mass_matrix</p>
+<p>property-decorated wrapper.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bfieldtools.conductor.Conductor.mutual_inductance">
+<code class="sig-name descname">mutual_inductance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">conductor_other</span></em>, <em class="sig-param"><span class="n">quad_degree</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">approx_far</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.conductor.Conductor.mutual_inductance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mutual inductance between this Conductor object and another</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>conductor_other: Conductor object</p>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>M: mutual inductance matrix M(self, other) in</dt><dd><p>in the bases specified in the conductor object</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bfieldtools.conductor.Conductor.plot_mesh">
+<code class="sig-name descname">plot_mesh</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">cull_front=False</em>, <em class="sig-param">cull_back=False</em>, <em class="sig-param">\*\*kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.conductor.Conductor.plot_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply plot the mesh surface in mayavi. kwargs are passed to
+viz.plot_mesh</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bfieldtools.conductor.Conductor.resistance">
+<em class="property">property </em><code class="sig-name descname">resistance</code><a class="headerlink" href="#bfieldtools.conductor.Conductor.resistance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resistance matrix. For further information, see mesh_properties.resistance_matrix</p>
+<p>property-decorated wrapper.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bfieldtools.conductor.Conductor.save_pickle">
+<code class="sig-name descname">save_pickle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">target_file</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.conductor.Conductor.save_pickle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the Conductor object using a pickled Python file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>target_file: str</strong></dt><dd><p>File name or file object to save to</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bfieldtools.conductor.Conductor.set_basis">
+<code class="sig-name descname">set_basis</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">basis_name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.conductor.Conductor.set_basis" title="Permalink to this definition">¶</a></dt>
+<dd><p>The data is stored in vertex basis i.e. every
+element corresponds to one vertex. The basis matrix changes basis
+of the operators so that a coefficient vector in the desired
+basis can be multiplied directly with the operator</p>
+<p>basis_names : str ‘vertex’, ‘inner’ or ‘suh’</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bfieldtools.conductor.Conductor.set_holes">
+<code class="sig-name descname">set_holes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">outer_boundaries</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.conductor.Conductor.set_holes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set indices of holes to self.holes</p>
+<dl class="simple">
+<dt>outer_boundaries: int or array_like, indices of outer boundaries in</dt><dd><p>self.boundaries. One boundary index per mesh component.
+If None, outer_boundaries are set the longest
+boundary in each mesh component</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bfieldtools.conductor.Conductor.sph_couplings">
+<em class="property">property </em><code class="sig-name descname">sph_couplings</code><a class="headerlink" href="#bfieldtools.conductor.Conductor.sph_couplings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spherical harmonic mappings from a stream function defined on the
+Conductor mesh.</p>
+<p>property-decorated wrapper</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bfieldtools.conductor.CouplingMatrix">
+<em class="property">class </em><code class="sig-prename descclassname">bfieldtools.conductor.</code><code class="sig-name descname">CouplingMatrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span></em>, <em class="sig-param"><span class="n">function</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.conductor.CouplingMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>General-use class that contains a data array (a coupling matrix)
+and a bookkeeping list of computed points.</p>
+<p>When called, returns the coupling matrix for queried points.
+If some output has already been computed, use pre-computed values instead
+and only compute missing parts.</p>
+<dl class="py method">
+<dt id="bfieldtools.conductor.CouplingMatrix.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.conductor.CouplingMatrix.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset the coupling matrix and points</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="bfieldtools.conductor.StreamFunction">
+<em class="property">class </em><code class="sig-prename descclassname">bfieldtools.conductor.</code><code class="sig-name descname">StreamFunction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_array</span></em>, <em class="sig-param"><span class="n">conductor</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.conductor.StreamFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
+<p>Class for representing stream function(s) on a conductor</p>
+<p>Handles the mapping between different bases, e.g. inner vertices &lt;-&gt;
+all vertices &lt;-&gt; surface harmonics</p>
+<dl>
+<dt>Parameters:</dt><dd><dl>
+<dt>vals: array of shape (N,) or (N,M)</dt><dd><p>where N corresponds to
+the number of inner vertices in the conductor or the
+the number of all vertices in the conductor.</p>
+<p>Multiple (M) stream functions can be stored in the object
+by specifying vals with shape (N,M)</p>
+</dd>
+<dt>conductor:</dt><dd><p>Conductor object</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="bfieldtools.conductor.StreamFunction.discretize">
+<code class="sig-name descname">discretize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">N_contours</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">contours</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.conductor.StreamFunction.discretize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper method for contour.scalar_contour, turns the piecewise linear
+stream function into isolines/contours in the form of polylines.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>N_contours: int</strong></dt><dd><p>Number of contours to generate</p>
+</dd>
+<dt><strong>contours: array-like</strong></dt><dd><p>Optional argument for manual input of contour levels. Overrides <cite>N_contours</cite></p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>contour_polys: list</dt><dd><p>list with length <cite>N_contours</cite>. Each list element is anumpy array containing the
+coordinats of each polygon vertex.</p>
+</dd>
+<dt>contour_values: array-like</dt><dd><p>Vector containing the scalar function value for each contour line</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bfieldtools.conductor.StreamFunction.inner">
+<em class="property">property </em><code class="sig-name descname">inner</code><a class="headerlink" href="#bfieldtools.conductor.StreamFunction.inner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the stream function in inner basis</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bfieldtools.conductor.StreamFunction.magnetic_energy">
+<em class="property">property </em><code class="sig-name descname">magnetic_energy</code><a class="headerlink" href="#bfieldtools.conductor.StreamFunction.magnetic_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stream-function magnetic energy</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bfieldtools.conductor.StreamFunction.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">background=True</em>, <em class="sig-param">contours=False</em>, <em class="sig-param">\*\*kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.conductor.StreamFunction.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the stream function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bfieldtools.conductor.StreamFunction.power">
+<em class="property">property </em><code class="sig-name descname">power</code><a class="headerlink" href="#bfieldtools.conductor.StreamFunction.power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stream-function resistive power</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="bfieldtools.conductor.StreamFunction.vert">
+<em class="property">property </em><code class="sig-name descname">vert</code><a class="headerlink" href="#bfieldtools.conductor.StreamFunction.vert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the stream function in vertex basis</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="bfieldtools.conductor.load_pickle">
+<code class="sig-prename descclassname">bfieldtools.conductor.</code><code class="sig-name descname">load_pickle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target_file</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.conductor.load_pickle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load pickled Conductor object from file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>target_file: str</strong></dt><dd><p>File name or file object to load from</p>
+</dd>
+<dt><strong>Returns</strong></dt><dd></dd>
+<dt><strong>——-</strong></dt><dd></dd>
+<dt><strong>obj: loaded Conductor object</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="bfieldtools.conductor.matrixwrapper">
+<code class="sig-prename descclassname">bfieldtools.conductor.</code><code class="sig-name descname">matrixwrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.conductor.matrixwrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for lazy computation of Conductor matrices with basis change</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="bfieldtools.conductor.save_pickle">
+<code class="sig-prename descclassname">bfieldtools.conductor.</code><code class="sig-name descname">save_pickle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">target_file</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.conductor.save_pickle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the Conductor object using a pickled Python file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>obj: object to save to file</strong></dt><dd></dd>
+<dt><strong>target_file: str</strong></dt><dd><p>file name or file object to save to</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="section" id="module-bfieldtools.mesh_properties">
 <span id="bfieldtools-mesh-inductance-module"></span><h2>bfieldtools.mesh_inductance module<a class="headerlink" href="#module-bfieldtools.mesh_properties" title="Permalink to this headline">¶</a></h2>
@@ -875,7 +1205,9 @@ far from the source triangles using a simple quadrature
 <dl class="py function">
 <dt id="bfieldtools.mesh_properties.triangle_self_coupling">
 <code class="sig-prename descclassname">bfieldtools.mesh_properties.</code><code class="sig-name descname">triangle_self_coupling</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mesh</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.mesh_properties.triangle_self_coupling" title="Permalink to this definition">¶</a></dt>
-<dd><p>TODO: Self coupling can be integrated analytically
+<dd><p>Self-coupling integrated analytically. Implemented based on
+Poole, M.S., 2007. Improved equipment and techniques for dynamic shimming in high field MRI (Doctoral dissertation, University of Nottingham.). page 72.</p>
+<p>Self-coupling can be integrated analytically using different notation
 <a class="reference external" href="https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&amp;arnumber=475946">https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&amp;arnumber=475946</a></p>
 </dd></dl>
 
@@ -1895,34 +2227,6 @@ in a relatively thin conductor.</p>
 <span id="bfieldtools-utils-module"></span><h2>bfieldtools.utils module<a class="headerlink" href="#module-bfieldtools.utils" title="Permalink to this headline">¶</a></h2>
 <p>This module contains miscellaneous utility functions used across bfieldtools.</p>
 <dl class="py function">
-<dt id="bfieldtools.utils.assemble_matrix">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tris</span></em>, <em class="sig-param"><span class="n">Nverts</span></em>, <em class="sig-param"><span class="n">triangle_data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Optimized  assembly of finite element matrix for
-precomputed triangle data</p>
-<p>Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
-for the nodes neighbouring the triangle</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="bfieldtools.utils.assemble_matrix2">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tris1</span></em>, <em class="sig-param"><span class="n">tris2</span></em>, <em class="sig-param"><span class="n">Nverts1</span></em>, <em class="sig-param"><span class="n">Nverts2</span></em>, <em class="sig-param"><span class="n">triangle_data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Optimized  assembly of finite element matrix for
-precomputed triangle data for separate meshes 1 and 2</p>
-<p>Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
-for the nodes neighbouring the triangle</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="bfieldtools.utils.assemble_matrix_chunk">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">assemble_matrix_chunk</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tris</span></em>, <em class="sig-param"><span class="n">Nverts</span></em>, <em class="sig-param"><span class="n">triangle_data</span></em>, <em class="sig-param"><span class="n">n</span></em>, <em class="sig-param"><span class="n">Nchunks</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.assemble_matrix_chunk" title="Permalink to this definition">¶</a></dt>
-<dd><p>Optimized  assembly of finite element matrix for
-precomputed triangle data. Version for computation in which eval points
-are chunked smaller, less memory-intensive parts</p>
-<p>Sums the triangle_data [Ntris (1), Ntris (2), 3 (nodes 1),3 (nodes 2)]
-for the nodes neighbouring the triangle</p>
-</dd></dl>
-
-<dl class="py function">
 <dt id="bfieldtools.utils.combine_meshes">
 <code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">combine_meshes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">meshes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.combine_meshes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Combine two or more non-overlapping Trimesh meshes without any dependency
@@ -1953,13 +2257,6 @@ requirements. For more demanding applications, use Trimesh boolean operations</p
 <code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">dual_areas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tris</span></em>, <em class="sig-param"><span class="n">ta</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.dual_areas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate (dual) areas for each node in inds</p>
 <p>Dual area == area summed over the neighbouring triangles divided by 3</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="bfieldtools.utils.fibonacci_sphere">
-<code class="sig-prename descclassname">bfieldtools.utils.</code><code class="sig-name descname">fibonacci_sphere</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">samples</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">center</span><span class="o">=</span><span class="default_value">array([0, 0, 0])</span></em>, <em class="sig-param"><span class="n">radius</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">randomize</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfieldtools.utils.fibonacci_sphere" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates a set of points approximately evenly distributed on a sphere,
-with adjustable center and radius. Uses spherical Fibonacci Lattice.</p>
 </dd></dl>
 
 <dl class="py function">

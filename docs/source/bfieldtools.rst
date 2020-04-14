@@ -44,10 +44,10 @@ bfieldtools.mesh\_magnetics module
    :undoc-members:
    :show-inheritance:
 
-bfieldtools.mesh\_class module
+bfieldtools.conductor module
 ------------------------------
 
-.. automodule:: bfieldtools.mesh_class
+.. automodule:: bfieldtools.conductor
    :members:
    :undoc-members:
    :show-inheritance:

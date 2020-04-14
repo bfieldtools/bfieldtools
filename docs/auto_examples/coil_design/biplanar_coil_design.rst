@@ -171,8 +171,8 @@ Create bfield specifications used when optimizing the coil geometry
 
  .. code-block:: none
 
-    Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.49 seconds.
-    Computing magnetic field coupling matrix, 3184 vertices by 642 target points... took 1.39 seconds.
+    Computing magnetic field coupling matrix, 3184 vertices by 160 target points... took 0.43 seconds.
+    Computing magnetic field coupling matrix, 3184 vertices by 642 target points... took 1.05 seconds.
 
 
 
@@ -187,7 +187,7 @@ Create bfield specifications used when optimizing the coil geometry
     coil.s, prob = optimize_streamfunctions(
         coil,
         [target_spec, stray_spec],
-        objective="minimum_resistive_energy",
+        objective="minimum_ohmic_power",
         solver="MOSEK",
         solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
     )
@@ -234,35 +234,35 @@ Create bfield specifications used when optimizing the coil geometry
     Optimizer  - solved problem         : the dual        
     Optimizer  - Constraints            : 101
     Optimizer  - Cones                  : 1
-    Optimizer  - Scalar variables       : 2658              conic                  : 102             
+    Optimizer  - Scalar variables       : 2656              conic                  : 102             
     Optimizer  - Semi-definite variables: 0                 scalarized             : 0               
-    Factor     - setup time             : 0.00              dense det. time        : 0.00            
-    Factor     - ML order time          : 0.00              GP order time          : 0.00            
+    Factor     - setup time             : 0.02              dense det. time        : 0.00            
+    Factor     - ML order time          : 0.02              GP order time          : 0.00            
     Factor     - nonzeros before factor : 5151              after factor           : 5151            
     Factor     - dense dim.             : 0                 flops                  : 2.30e+07        
     ITE PFEAS    DFEAS    GFEAS    PRSTATUS   POBJ              DOBJ              MU       TIME  
-    0   4.1e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  0.17  
-    1   2.6e+01  6.2e-01  1.4e+00  -8.43e-01  2.665622659e-01   -2.305386822e-01  6.2e-01  0.19  
-    2   2.0e+01  5.0e-01  1.2e+00  -6.52e-01  2.191811599e+00   1.910077170e+00   5.0e-01  0.20  
-    3   1.7e+01  4.2e-01  1.0e+00  -5.44e-01  3.049328725e+00   2.925144517e+00   4.2e-01  0.20  
-    4   1.3e+01  3.1e-01  7.8e-01  -4.48e-01  2.291429567e+01   2.301379071e+01   3.1e-01  0.22  
-    5   8.1e+00  2.0e-01  4.9e-01  -2.78e-01  2.959015499e+01   2.994627144e+01   2.0e-01  0.22  
-    6   2.4e+00  5.8e-02  1.2e-01  -1.41e-02  1.261983515e+02   1.267221746e+02   5.8e-02  0.23  
-    7   1.4e+00  3.5e-02  5.8e-02  6.28e-01   1.361429722e+02   1.364920363e+02   3.5e-02  0.23  
-    8   9.3e-02  2.3e-03  7.1e-04  7.99e-01   1.416693566e+02   1.416693036e+02   2.3e-03  0.25  
-    9   1.3e-02  3.2e-04  5.7e-05  1.11e+00   1.378750954e+02   1.378798143e+02   3.2e-04  0.27  
-    10  1.7e-03  4.2e-05  2.7e-06  1.01e+00   1.378719812e+02   1.378726019e+02   4.2e-05  0.27  
-    11  5.7e-04  1.4e-05  5.3e-07  1.00e+00   1.378973025e+02   1.378975158e+02   1.4e-05  0.28  
-    12  2.3e-05  5.7e-07  4.3e-09  1.00e+00   1.379185766e+02   1.379185855e+02   5.7e-07  0.30  
-    13  2.8e-09  6.3e-11  3.0e-14  1.00e+00   1.379196428e+02   1.379196428e+02   1.7e-11  0.31  
-    Optimizer terminated. Time: 0.33    
+    0   4.1e+01  1.0e+00  2.0e+00  0.00e+00   0.000000000e+00   -1.000000000e+00  1.0e+00  0.14  
+    1   2.6e+01  6.2e-01  1.4e+00  -8.43e-01  2.670767975e-01   -2.285424783e-01  6.2e-01  0.17  
+    2   2.0e+01  5.0e-01  1.2e+00  -6.52e-01  2.188349770e+00   1.907813660e+00   5.0e-01  0.17  
+    3   1.7e+01  4.2e-01  1.0e+00  -5.44e-01  3.043996689e+00   2.920989509e+00   4.2e-01  0.19  
+    4   1.3e+01  3.1e-01  7.8e-01  -4.47e-01  2.285032126e+01   2.295022421e+01   3.1e-01  0.19  
+    5   8.1e+00  2.0e-01  4.9e-01  -2.78e-01  2.949699638e+01   2.985358179e+01   2.0e-01  0.19  
+    6   2.4e+00  5.8e-02  1.2e-01  -1.40e-02  1.261054629e+02   1.266295077e+02   5.8e-02  0.20  
+    7   1.4e+00  3.5e-02  5.8e-02  6.28e-01   1.360679095e+02   1.364171142e+02   3.5e-02  0.20  
+    8   9.2e-02  2.3e-03  7.0e-04  7.99e-01   1.416771383e+02   1.416770659e+02   2.3e-03  0.22  
+    9   1.3e-02  3.2e-04  5.7e-05  1.11e+00   1.378788703e+02   1.378835790e+02   3.2e-04  0.22  
+    10  1.7e-03  4.1e-05  2.7e-06  1.01e+00   1.378721123e+02   1.378727323e+02   4.1e-05  0.23  
+    11  5.9e-04  1.4e-05  5.4e-07  1.00e+00   1.378971033e+02   1.378973210e+02   1.4e-05  0.23  
+    12  2.6e-05  6.3e-07  5.1e-09  1.00e+00   1.379184591e+02   1.379184689e+02   6.3e-07  0.25  
+    13  1.0e-09  3.6e-11  2.1e-14  1.00e+00   1.379196428e+02   1.379196428e+02   2.4e-11  0.25  
+    Optimizer terminated. Time: 0.27    
 
 
     Interior-point solution summary
       Problem status  : PRIMAL_AND_DUAL_FEASIBLE
       Solution status : OPTIMAL
-      Primal.  obj: 1.3791964279e+02    nrm: 3e+02    Viol.  con: 9e-11    var: 0e+00    cones: 0e+00  
-      Dual.    obj: 1.3791964280e+02    nrm: 7e+03    Viol.  con: 3e-07    var: 3e-10    cones: 0e+00  
+      Primal.  obj: 1.3791964278e+02    nrm: 3e+02    Viol.  con: 1e-10    var: 0e+00    cones: 0e+00  
+      Dual.    obj: 1.3791964278e+02    nrm: 7e+03    Viol.  con: 4e-07    var: 2e-10    cones: 0e+00  
 
 
 
@@ -301,7 +301,7 @@ Plot coil windings and target points
  .. code-block:: none
 
 
-    <mayavi.modules.vectors.Vectors object at 0x0000025404E692B0>
+    <mayavi.modules.vectors.Vectors object at 0x000001F8016662B0>
 
 
 
@@ -378,7 +378,7 @@ Lets also do the same coil optimization using regularized least-squares
     from bfieldtools.coil_optimize import optimize_lsq
 
     coil.s2 = optimize_lsq(
-        coil, [target_spec, stray_spec], objective="minimum_resistive_energy", reg=1e6
+        coil, [target_spec, stray_spec], objective="minimum_ohmic_power", reg=1e6
     )
 
 
@@ -431,7 +431,7 @@ Plot coil windings and target points
  .. code-block:: none
 
 
-    <mayavi.modules.vectors.Vectors object at 0x0000025400440D58>
+    <mayavi.modules.vectors.Vectors object at 0x000001F805924D58>
 
 
 
@@ -499,7 +499,7 @@ Plot cross-section of magnetic field and magnetic potential of the discretized l
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 5 minutes  17.338 seconds)
+   **Total running time of the script:** ( 4 minutes  59.377 seconds)
 
 
 .. _sphx_glr_download_auto_examples_coil_design_biplanar_coil_design.py:

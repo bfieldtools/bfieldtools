@@ -14,6 +14,7 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -118,7 +119,8 @@
 <span class="kn">from</span> <span class="nn">mayavi</span> <span class="kn">import</span> <span class="n">mlab</span>
 </pre></div>
 </div>
-<p>%% Test potential shape slightly above the surface</p>
+<div class="section" id="test-potential-shape-slightly-above-the-surface">
+<h2>Test potential shape slightly above the surface<a class="headerlink" href="#test-potential-shape-slightly-above-the-surface" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">6</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">6</span><span class="p">)</span>
 <span class="n">points</span> <span class="o">=</span> <span class="p">(</span>
@@ -142,6 +144,9 @@
 <span class="n">scalars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="linear-dipole-density">
+<h2>Linear dipole density<a class="headerlink" href="#linear-dipole-density" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sign ok</span>
 <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span> <span class="o">*</span> <span class="mi">2</span>
 <span class="c1"># points = np.roll(points, 2, 1)</span>
@@ -155,7 +160,7 @@
 
 <span class="n">RR</span> <span class="o">=</span> <span class="n">mesh2</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">]</span>
 <span class="n">p1</span> <span class="o">=</span> <span class="n">t1</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">face_normals</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">area_faces</span><span class="p">,</span> <span class="n">planar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">p2</span> <span class="o">=</span> <span class="n">t2</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">face_normals</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">area_faces</span><span class="p">,</span> <span class="n">planar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">p2</span> <span class="o">=</span> <span class="n">t2</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">face_normals</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">area_faces</span><span class="p">)</span>
 
 <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">)</span>
 
@@ -179,14 +184,16 @@
 <span class="n">mlab</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-pytb notranslate"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
-  File <span class="nb">&quot;D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py&quot;</span>, line <span class="m">460</span>, in <span class="n">_memory_usage</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
-  File <span class="nb">&quot;D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py&quot;</span>, line <span class="m">442</span>, in <span class="n">__call__</span>
-    <span class="n">exec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fake_main</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
-  File <span class="nb">&quot;C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\validation\test_integrals.py&quot;</span>, line <span class="m">53</span>, in <span class="n">&lt;module&gt;</span>
-    <span class="n">p2</span> <span class="o">=</span> <span class="n">t2</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">face_normals</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">area_faces</span><span class="p">,</span> <span class="n">planar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="gr">TypeError</span>: <span class="n">triangle_potential_dipole_linear() got an unexpected keyword argument &#39;planar&#39;</span>
+<ul class="sphx-glr-horizontal">
+<li><img alt="../../_images/sphx_glr_test_integrals_001.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_test_integrals_001.png" />
+</li>
+<li><img alt="../../_images/sphx_glr_test_integrals_002.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_test_integrals_002.png" />
+</li>
+<li><img alt="../../_images/sphx_glr_test_integrals_003.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_test_integrals_003.png" />
+</li>
+</ul>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;mayavi.core.lut_manager.LUTManager object at 0x000001F8015E2E08&gt;
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
@@ -206,6 +213,13 @@
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">triangles_center</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">face_normals</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
+<img alt="../../_images/sphx_glr_test_integrals_004.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_test_integrals_004.png" />
+<img alt="../../_images/sphx_glr_test_integrals_005.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_test_integrals_005.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;mayavi.modules.vectors.Vectors object at 0x000001F80588BEB8&gt;
+</pre></div>
+</div>
+<p>Plot x_i</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bfieldtools.integrals</span> <span class="kn">import</span> <span class="n">x_distance</span>
 
 <span class="n">RR</span> <span class="o">=</span> <span class="n">mesh2</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">]</span>
@@ -223,6 +237,12 @@
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">triangles_center</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">face_normals</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
+<img alt="../../_images/sphx_glr_test_integrals_006.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_test_integrals_006.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;mayavi.modules.vectors.Vectors object at 0x000001F870784200&gt;
+</pre></div>
+</div>
+<p>Uniform charge density</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bfieldtools.integrals_old</span> <span class="kn">import</span> <span class="n">triangle_potential_uniform</span> <span class="k">as</span> <span class="n">u1</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.integrals</span> <span class="kn">import</span> <span class="n">triangle_potential_uniform</span> <span class="k">as</span> <span class="n">u2</span>
 
@@ -245,6 +265,16 @@
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">triangles_center</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">face_normals</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
+<ul class="sphx-glr-horizontal">
+<li><img alt="../../_images/sphx_glr_test_integrals_007.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_test_integrals_007.png" />
+</li>
+<li><img alt="../../_images/sphx_glr_test_integrals_008.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_test_integrals_008.png" />
+</li>
+</ul>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;mayavi.modules.vectors.Vectors object at 0x000001F8709FCE60&gt;
+</pre></div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bfieldtools.integrals</span> <span class="kn">import</span> <span class="n">d_distance</span>
 
 <span class="n">RR</span> <span class="o">=</span> <span class="n">mesh2</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">mesh</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">mesh</span><span class="o">.</span><span class="n">faces</span><span class="p">]</span>
@@ -263,6 +293,11 @@
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">triangles_center</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">mesh</span><span class="o">.</span><span class="n">face_normals</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
+<img alt="../../_images/sphx_glr_test_integrals_009.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_test_integrals_009.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;mayavi.modules.vectors.Vectors object at 0x000001F80082C2B0&gt;
+</pre></div>
+</div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="kn">import</span> <span class="n">magnetic_field_coupling_analytic_old</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.mesh_magnetics</span> <span class="kn">import</span> <span class="n">magnetic_field_coupling_analytic</span>
 
@@ -276,6 +311,15 @@
 <span class="n">mlab</span><span class="o">.</span><span class="n">quiver3d</span><span class="p">(</span><span class="o">*</span><span class="n">mesh2</span><span class="o">.</span><span class="n">vertices</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="o">*</span><span class="n">b2</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 </pre></div>
 </div>
+<img alt="../../_images/sphx_glr_test_integrals_010.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_test_integrals_010.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix analytically, 7 vertices by 16641 target points... took 0.13 seconds.
+Computing magnetic field coupling matrix analytically, 7 vertices by 16641 target points... took 0.12 seconds.
+
+&lt;mayavi.modules.vectors.Vectors object at 0x000001F8015CD468&gt;
+</pre></div>
+</div>
+<p>Gammma</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bfieldtools.integrals_old</span> <span class="kn">import</span> <span class="n">gamma0</span> <span class="k">as</span> <span class="n">g1</span>
 <span class="kn">from</span> <span class="nn">bfieldtools.integrals</span> <span class="kn">import</span> <span class="n">gamma0</span> <span class="k">as</span> <span class="n">g2</span>
 
@@ -299,7 +343,17 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">p2</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.157 seconds)</p>
+<ul class="sphx-glr-horizontal">
+<li><img alt="../../_images/sphx_glr_test_integrals_011.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_test_integrals_011.png" />
+</li>
+<li><img alt="../../_images/sphx_glr_test_integrals_012.png" class="sphx-glr-multi-img" src="../../_images/sphx_glr_test_integrals_012.png" />
+</li>
+</ul>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D object at 0x000001F8015AA6D8&gt;, &lt;matplotlib.lines.Line2D object at 0x000001F8015AA780&gt;, &lt;matplotlib.lines.Line2D object at 0x000001F8015AAE10&gt;]
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  10.906 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-validation-test-integrals-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/e92af867c4075c64ac11f36f71eee18d/test_integrals.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">test_integrals.py</span></code></a></p>
@@ -309,6 +363,7 @@
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
 </div>
 
 

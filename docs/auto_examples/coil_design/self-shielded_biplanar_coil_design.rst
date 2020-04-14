@@ -113,7 +113,7 @@ Plot geometry
  .. code-block:: none
 
 
-    <mayavi.modules.surface.Surface object at 0x0000025401D1BAF0>
+    <mayavi.modules.surface.Surface object at 0x000001F8704DEE08>
 
 
 
@@ -148,17 +148,17 @@ Compute inductances and coupling
     Computing the inductance matrix...
     Computing self-inductance matrix using rough quadrature (degree=2).              For higher accuracy, set quad_degree to 4 or more.
     Estimating 34964 MiB required for 3184 by 3184 vertices...
-    Computing inductance matrix in 100 chunks (8092 MiB memory free),                  when approx_far=True using more chunks is faster...
+    Computing inductance matrix in 160 chunks (4626 MiB memory free),                  when approx_far=True using more chunks is faster...
     Computing 1/r-potential matrix
-    Inductance matrix computation took 34.54 seconds.
+    Inductance matrix computation took 34.99 seconds.
     Computing the inductance matrix...
     Computing self-inductance matrix using rough quadrature (degree=2).              For higher accuracy, set quad_degree to 4 or more.
     Estimating 34964 MiB required for 3184 by 3184 vertices...
-    Computing inductance matrix in 100 chunks (7886 MiB memory free),                  when approx_far=True using more chunks is faster...
+    Computing inductance matrix in 160 chunks (4701 MiB memory free),                  when approx_far=True using more chunks is faster...
     Computing 1/r-potential matrix
-    Inductance matrix computation took 33.04 seconds.
+    Inductance matrix computation took 33.60 seconds.
     Estimating 34964 MiB required for 3184 by 3184 vertices...
-    Computing inductance matrix in 100 chunks (8396 MiB memory free),                  when approx_far=True using more chunks is faster...
+    Computing inductance matrix in 160 chunks (4562 MiB memory free),                  when approx_far=True using more chunks is faster...
     Computing 1/r-potential matrix
     Computing coupling matrices
     l = 1 computed
@@ -263,10 +263,10 @@ Specify spherical harmonic and calculate corresponding shielded field
 
  .. code-block:: none
 
-    Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 43.51 seconds.
-    Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 33.61 seconds.
-    Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 171.69 seconds.
-    Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 186.10 seconds.
+    Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 35.48 seconds.
+    Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 36.20 seconds.
+    Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 155.16 seconds.
+    Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 141.31 seconds.
 
 
 
@@ -276,8 +276,8 @@ Now, plot the field streamlines and scalar potential
 
 .. code-block:: default
 
-    cc1 = scalar_contour(mesh1, mesh1.vertices[:, 2], contours=[-0.001])[0]
-    cc2 = scalar_contour(mesh2, mesh2.vertices[:, 2], contours=[-0.001])[0]
+    cc1 = scalar_contour(mesh1, mesh1.vertices[:, 2], contours=[-0.001])
+    cc2 = scalar_contour(mesh2, mesh2.vertices[:, 2], contours=[-0.001])
     cx10 = cc1[0][:, 1]
     cy10 = cc1[0][:, 0]
     cx20 = cc2[0][:, 1]
@@ -323,10 +323,10 @@ Now, plot the field streamlines and scalar potential
 
     # plt.plot(seed_points[0], seed_points[1], '*')
 
-    plt.plot(cx10, cy10, linewidth=3.0, color="gray")
-    plt.plot(cx20, cy20, linewidth=3.0, color="gray")
-    plt.plot(cx11, cy11, linewidth=3.0, color="gray")
-    plt.plot(cx21, cy21, linewidth=3.0, color="gray")
+    for loop in cc1 + cc2:
+        plt.plot(loop[:, 1], loop[:, 0], "k", linewidth=4, alpha=1)
+        plt.plot(-loop[:, 1], -loop[:, 0], "k", linewidth=4, alpha=1)
+
     plt.axis("image")
 
     plt.xticks([])
@@ -335,20 +335,19 @@ Now, plot the field streamlines and scalar potential
 
 
 
+
+.. image:: /auto_examples/coil_design/images/sphx_glr_self-shielded_biplanar_coil_design_002.png
+    :class: sphx-glr-single-img
+
+
 .. rst-class:: sphx-glr-script-out
 
+ Out:
 
-.. code-block:: pytb
+ .. code-block:: none
 
-    Traceback (most recent call last):
-      File "D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py", line 460, in _memory_usage
-        out = func()
-      File "D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py", line 442, in __call__
-        exec(self.code, self.fake_main.__dict__)
-      File "C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\coil_design\self-shielded_biplanar_coil_design.py", line 148, in <module>
-        cx10 = cc1[0][:, 1]
-    IndexError: too many indices for array
 
+    ([], <a list of 0 Text major ticklabel objects>)
 
 
 
@@ -364,9 +363,26 @@ Do a quick 3D plot
     shieldcoil.s.plot(figure=f, contours=20)
 
 
+
+.. image:: /auto_examples/coil_design/images/sphx_glr_self-shielded_biplanar_coil_design_003.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    <mayavi.modules.surface.Surface object at 0x000001F80053E8E0>
+
+
+
+
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 9 minutes  32.982 seconds)
+   **Total running time of the script:** ( 8 minutes  53.307 seconds)
 
 
 .. _sphx_glr_download_auto_examples_coil_design_self-shielded_biplanar_coil_design.py:

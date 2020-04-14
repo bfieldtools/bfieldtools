@@ -99,7 +99,7 @@ Visualize the geometry.
  .. code-block:: none
 
 
-    <mayavi.modules.surface.Surface object at 0x0000025402536048>
+    <mayavi.modules.surface.Surface object at 0x000001F805911F68>
 
 
 
@@ -265,7 +265,7 @@ Plot the noise level at horizontal planes at different distance.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.043 seconds)
+   **Total running time of the script:** ( 0 minutes  0.970 seconds)
 
 
 .. _sphx_glr_download_auto_examples_thermal_noise_thermal_noise_platinum_heater.py:

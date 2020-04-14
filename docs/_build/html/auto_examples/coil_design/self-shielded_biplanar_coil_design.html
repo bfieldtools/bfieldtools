@@ -14,6 +14,7 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -180,7 +181,7 @@ and the geometry.</p>
 </div>
 <img alt="../../_images/sphx_glr_self-shielded_biplanar_coil_design_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_self-shielded_biplanar_coil_design_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;mayavi.modules.surface.Surface object at 0x0000025401D1BAF0&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;mayavi.modules.surface.Surface object at 0x000001F8704DEE08&gt;
 </pre></div>
 </div>
 <p>Compute inductances and coupling</p>
@@ -200,17 +201,17 @@ and the geometry.</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing the inductance matrix...
 Computing self-inductance matrix using rough quadrature (degree=2).              For higher accuracy, set quad_degree to 4 or more.
 Estimating 34964 MiB required for 3184 by 3184 vertices...
-Computing inductance matrix in 100 chunks (8092 MiB memory free),                  when approx_far=True using more chunks is faster...
+Computing inductance matrix in 160 chunks (4626 MiB memory free),                  when approx_far=True using more chunks is faster...
 Computing 1/r-potential matrix
-Inductance matrix computation took 34.54 seconds.
+Inductance matrix computation took 34.99 seconds.
 Computing the inductance matrix...
 Computing self-inductance matrix using rough quadrature (degree=2).              For higher accuracy, set quad_degree to 4 or more.
 Estimating 34964 MiB required for 3184 by 3184 vertices...
-Computing inductance matrix in 100 chunks (7886 MiB memory free),                  when approx_far=True using more chunks is faster...
+Computing inductance matrix in 160 chunks (4701 MiB memory free),                  when approx_far=True using more chunks is faster...
 Computing 1/r-potential matrix
-Inductance matrix computation took 33.04 seconds.
+Inductance matrix computation took 33.60 seconds.
 Estimating 34964 MiB required for 3184 by 3184 vertices...
-Computing inductance matrix in 100 chunks (8396 MiB memory free),                  when approx_far=True using more chunks is faster...
+Computing inductance matrix in 160 chunks (4562 MiB memory free),                  when approx_far=True using more chunks is faster...
 Computing 1/r-potential matrix
 Computing coupling matrices
 l = 1 computed
@@ -278,15 +279,15 @@ l = 4 computed
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 43.51 seconds.
-Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 33.61 seconds.
-Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 171.69 seconds.
-Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 186.10 seconds.
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 35.48 seconds.
+Computing magnetic field coupling matrix, 3184 vertices by 22500 target points... took 36.20 seconds.
+Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 155.16 seconds.
+Computing scalar potential coupling matrix, 3184 vertices by 22500 target points... took 141.31 seconds.
 </pre></div>
 </div>
 <p>Now, plot the field streamlines and scalar potential</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cc1</span> <span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">mesh1</span><span class="p">,</span> <span class="n">mesh1</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">contours</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">0.001</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">cc2</span> <span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">mesh2</span><span class="p">,</span> <span class="n">mesh2</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">contours</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">0.001</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cc1</span> <span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">mesh1</span><span class="p">,</span> <span class="n">mesh1</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">contours</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">0.001</span><span class="p">])</span>
+<span class="n">cc2</span> <span class="o">=</span> <span class="n">scalar_contour</span><span class="p">(</span><span class="n">mesh2</span><span class="p">,</span> <span class="n">mesh2</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">contours</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">0.001</span><span class="p">])</span>
 <span class="n">cx10</span> <span class="o">=</span> <span class="n">cc1</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
 <span class="n">cy10</span> <span class="o">=</span> <span class="n">cc1</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">]</span>
 <span class="n">cx20</span> <span class="o">=</span> <span class="n">cc2</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
@@ -332,24 +333,19 @@ Computing scalar potential coupling matrix, 3184 vertices by 22500 target points
 
 <span class="c1"># plt.plot(seed_points[0], seed_points[1], &#39;*&#39;)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cx10</span><span class="p">,</span> <span class="n">cy10</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cx20</span><span class="p">,</span> <span class="n">cy20</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cx11</span><span class="p">,</span> <span class="n">cy11</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cx21</span><span class="p">,</span> <span class="n">cy21</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">loop</span> <span class="ow">in</span> <span class="n">cc1</span> <span class="o">+</span> <span class="n">cc2</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">loop</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">loop</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">-</span><span class="n">loop</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">loop</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;image&quot;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">([])</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-pytb notranslate"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
-  File <span class="nb">&quot;D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py&quot;</span>, line <span class="m">460</span>, in <span class="n">_memory_usage</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
-  File <span class="nb">&quot;D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py&quot;</span>, line <span class="m">442</span>, in <span class="n">__call__</span>
-    <span class="n">exec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fake_main</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
-  File <span class="nb">&quot;C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\coil_design\self-shielded_biplanar_coil_design.py&quot;</span>, line <span class="m">148</span>, in <span class="n">&lt;module&gt;</span>
-    <span class="n">cx10</span> <span class="o">=</span> <span class="n">cc1</span><span class="p">[</span><span class="mi">0</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
-<span class="gr">IndexError</span>: <span class="n">too many indices for array</span>
+<img alt="../../_images/sphx_glr_self-shielded_biplanar_coil_design_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_self-shielded_biplanar_coil_design_002.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>([], &lt;a list of 0 Text major ticklabel objects&gt;)
 </pre></div>
 </div>
 <p>Do a quick 3D plot</p>
@@ -359,7 +355,12 @@ Computing scalar potential coupling matrix, 3184 vertices by 22500 target points
 <span class="n">shieldcoil</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">contours</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 9 minutes  32.982 seconds)</p>
+<img alt="../../_images/sphx_glr_self-shielded_biplanar_coil_design_003.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_self-shielded_biplanar_coil_design_003.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;mayavi.modules.surface.Surface object at 0x000001F80053E8E0&gt;
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 8 minutes  53.307 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-coil-design-self-shielded-biplanar-coil-design-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/ecab8a3ca4d24f36a46aaa6a390571c8/self-shielded_biplanar_coil_design.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">self-shielded_biplanar_coil_design.py</span></code></a></p>

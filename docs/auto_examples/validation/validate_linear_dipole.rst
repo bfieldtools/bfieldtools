@@ -74,7 +74,7 @@ For the math see:
     RR = p_eval[:, None, None, :] - p_tris[None, :, :, :]
     tn, ta = tri_normals_and_areas(points, tris)
 
-    pot = triangle_potential_dipole_linear(RR, tn, ta, False)
+    pot = triangle_potential_dipole_linear(RR, tn, ta)
 
     # Plot shapes
     f, ax = plt.subplots(1, 3)
@@ -90,19 +90,10 @@ For the math see:
 
 
 
-.. rst-class:: sphx-glr-script-out
 
+.. image:: /auto_examples/validation/images/sphx_glr_validate_linear_dipole_001.png
+    :class: sphx-glr-single-img
 
-.. code-block:: pytb
-
-    Traceback (most recent call last):
-      File "D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py", line 460, in _memory_usage
-        out = func()
-      File "D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py", line 442, in __call__
-        exec(self.code, self.fake_main.__dict__)
-      File "C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\validation\validate_linear_dipole.py", line 56, in <module>
-        pot = triangle_potential_dipole_linear(RR, tn, ta, False)
-    TypeError: triangle_potential_dipole_linear() takes 3 positional arguments but 4 were given
 
 
 
@@ -112,7 +103,7 @@ For the math see:
 
 .. code-block:: default
 
-    pot_sum = triangle_potential_dipole_linear(RR, tn, ta, False).sum(axis=-1)
+    pot_sum = triangle_potential_dipole_linear(RR, tn, ta).sum(axis=-1)
     solid_angle = omega(RR)
 
     # Plot shapes
@@ -136,6 +127,15 @@ For the math see:
     plt.axis("image")
 
     plt.tight_layout()
+
+
+
+
+
+.. image:: /auto_examples/validation/images/sphx_glr_validate_linear_dipole_002.png
+    :class: sphx-glr-single-img
+
+
 
 
 
@@ -168,13 +168,30 @@ For the math see:
     plt.semilogy(z, dip_potential(p_eval2, Rdip, m))
     # Plot sum of the linear dipoles
     RR = p_eval2[:, None, None, :] - p_tris[None, :, :, :]
-    pot = triangle_potential_dipole_linear(RR, tn, ta, False)
+    pot = triangle_potential_dipole_linear(RR, tn, ta)
     plt.semilogy(z, pot.sum(axis=-1)[:, 0])
+
+
+
+.. image:: /auto_examples/validation/images/sphx_glr_validate_linear_dipole_003.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    [<matplotlib.lines.Line2D object at 0x000001F803E03588>]
+
+
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.008 seconds)
+   **Total running time of the script:** ( 0 minutes  0.618 seconds)
 
 
 .. _sphx_glr_download_auto_examples_validation_validate_linear_dipole.py:

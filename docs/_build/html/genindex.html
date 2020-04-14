@@ -15,6 +15,7 @@
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
@@ -131,14 +132,6 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/bfieldtools.html#bfieldtools.utils.assemble_matrix">assemble_matrix() (in module bfieldtools.utils)</a>
-</li>
-      <li><a href="source/bfieldtools.html#bfieldtools.utils.assemble_matrix2">assemble_matrix2() (in module bfieldtools.utils)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/bfieldtools.html#bfieldtools.utils.assemble_matrix_chunk">assemble_matrix_chunk() (in module bfieldtools.utils)</a>
-</li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.sphbasis.avsphspectra">avsphspectra() (bfieldtools.sphtools.sphbasis method)</a>
 </li>
   </ul></td>
@@ -154,6 +147,13 @@
 
       <ul>
         <li><a href="source/bfieldtools.html#module-bfieldtools.coil_optimize">module</a>
+</li>
+      </ul></li>
+      <li>
+    bfieldtools.conductor
+
+      <ul>
+        <li><a href="source/bfieldtools.html#module-bfieldtools.conductor">module</a>
 </li>
       </ul></li>
       <li>
@@ -177,6 +177,8 @@
         <li><a href="source/bfieldtools.html#module-bfieldtools.mesh_calculus">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     bfieldtools.mesh_magnetics
 
@@ -184,8 +186,6 @@
         <li><a href="source/bfieldtools.html#module-bfieldtools.mesh_magnetics">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     bfieldtools.mesh_properties
 
@@ -238,11 +238,15 @@
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.thermal_noise.compute_dc_Bnoise">compute_dc_Bnoise() (in module bfieldtools.thermal_noise)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/bfieldtools.html#bfieldtools.thermal_noise.compute_dc_Bnoise_covar">compute_dc_Bnoise_covar() (in module bfieldtools.thermal_noise)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.compute_sphcoeffs_mesh">compute_sphcoeffs_mesh() (in module bfieldtools.sphtools)</a>
+</li>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.Conductor">Conductor (class in bfieldtools.conductor)</a>
+</li>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.CouplingMatrix">CouplingMatrix (class in bfieldtools.conductor)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.line_magnetics.cross">cross() (in module bfieldtools.line_magnetics)</a>
 </li>
@@ -266,6 +270,8 @@
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.derxlm">derxlm() (in module bfieldtools.sphtools)</a>
 </li>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.StreamFunction.discretize">discretize() (bfieldtools.conductor.StreamFunction method)</a>
+</li>
       <li><a href="source/bfieldtools.html#bfieldtools.mesh_calculus.divergence">divergence() (in module bfieldtools.mesh_calculus)</a>
 </li>
   </ul></td>
@@ -284,8 +290,6 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/bfieldtools.html#bfieldtools.utils.fibonacci_sphere">fibonacci_sphere() (in module bfieldtools.utils)</a>
-</li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.field">field() (in module bfieldtools.sphtools)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.utils.find_mesh_boundaries">find_mesh_boundaries() (in module bfieldtools.utils)</a>
@@ -322,12 +326,16 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.Conductor.inductance">inductance() (bfieldtools.conductor.Conductor property)</a>
+</li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.sphbasis.initqp">initqp() (bfieldtools.sphtools.sphbasis method)</a>
 </li>
-      <li><a href="source/bfieldtools.html#bfieldtools.utils.inner2vert">inner2vert() (in module bfieldtools.utils)</a>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.StreamFunction.inner">inner() (bfieldtools.conductor.StreamFunction property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/bfieldtools.html#bfieldtools.utils.inner2vert">inner2vert() (in module bfieldtools.utils)</a>
+</li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.sphbasis.innerproduct">innerproduct() (bfieldtools.sphtools.sphbasis method)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.thermal_noise.integrate_Bnoise_covar">integrate_Bnoise_covar() (in module bfieldtools.thermal_noise)</a>
@@ -338,11 +346,15 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.Conductor.laplacian">laplacian() (bfieldtools.conductor.Conductor property)</a>
+</li>
       <li><a href="source/bfieldtools.html#bfieldtools.mesh_calculus.laplacian_matrix">laplacian_matrix() (in module bfieldtools.mesh_calculus)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/bfieldtools.html#bfieldtools.utils.load_example_mesh">load_example_mesh() (in module bfieldtools.utils)</a>
+</li>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.load_pickle">load_pickle() (in module bfieldtools.conductor)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.lpmn_em">lpmn_em() (in module bfieldtools.sphtools)</a>
 </li>
@@ -352,6 +364,8 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.StreamFunction.magnetic_energy">magnetic_energy() (bfieldtools.conductor.StreamFunction property)</a>
+</li>
       <li><a href="source/bfieldtools.html#bfieldtools.line_magnetics.magnetic_field">magnetic_field() (in module bfieldtools.line_magnetics)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.line_magnetics.magnetic_field2">magnetic_field2() (in module bfieldtools.line_magnetics)</a>
@@ -362,7 +376,11 @@
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.mesh_magnetics.magnetic_field_coupling_analytic_old">magnetic_field_coupling_analytic_old() (in module bfieldtools.mesh_magnetics)</a>
 </li>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.Conductor.mass">mass() (bfieldtools.conductor.Conductor property)</a>
+</li>
       <li><a href="source/bfieldtools.html#bfieldtools.mesh_calculus.mass_matrix">mass_matrix() (in module bfieldtools.mesh_calculus)</a>
+</li>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.matrixwrapper">matrixwrapper() (in module bfieldtools.conductor)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.mesh_properties.mesh2line_mutual_inductance">mesh2line_mutual_inductance() (in module bfieldtools.mesh_properties)</a>
 </li>
@@ -371,6 +389,8 @@
 
       <ul>
         <li><a href="source/bfieldtools.html#module-bfieldtools.coil_optimize">bfieldtools.coil_optimize</a>
+</li>
+        <li><a href="source/bfieldtools.html#module-bfieldtools.conductor">bfieldtools.conductor</a>
 </li>
         <li><a href="source/bfieldtools.html#module-bfieldtools.contour">bfieldtools.contour</a>
 </li>
@@ -391,6 +411,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.Conductor.mutual_inductance">mutual_inductance() (bfieldtools.conductor.Conductor method)</a>
+</li>
       <li><a href="source/bfieldtools.html#bfieldtools.mesh_properties.mutual_inductance_matrix">mutual_inductance_matrix() (in module bfieldtools.mesh_properties)</a>
 </li>
   </ul></td>
@@ -427,14 +449,18 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.Plm">Plm() (in module bfieldtools.sphtools)</a>
 </li>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.StreamFunction.plot">plot() (bfieldtools.conductor.StreamFunction method)</a>
+</li>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.Conductor.plot_mesh">plot_mesh() (bfieldtools.conductor.Conductor method)</a>
+</li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.plotBVlm_volume">plotBVlm_volume() (in module bfieldtools.sphtools)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.plotBWlm_volume">plotBWlm_volume() (in module bfieldtools.sphtools)</a>
 </li>
-      <li><a href="source/bfieldtools.html#bfieldtools.sphtools.plotVlm">plotVlm() (in module bfieldtools.sphtools)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/bfieldtools.html#bfieldtools.sphtools.plotVlm">plotVlm() (in module bfieldtools.sphtools)</a>
+</li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.plotWlm">plotWlm() (in module bfieldtools.sphtools)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.plotYlm">plotYlm() (in module bfieldtools.sphtools)</a>
@@ -442,6 +468,8 @@
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.plotYlms">plotYlms() (in module bfieldtools.sphtools)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.potential">potential() (in module bfieldtools.sphtools)</a>
+</li>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.StreamFunction.power">power() (bfieldtools.conductor.StreamFunction property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -451,8 +479,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.reconstructB">reconstructB() (in module bfieldtools.sphtools)</a>
 </li>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.CouplingMatrix.reset">reset() (bfieldtools.conductor.CouplingMatrix method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.Conductor.resistance">resistance() (bfieldtools.conductor.Conductor property)</a>
+</li>
       <li><a href="source/bfieldtools.html#bfieldtools.mesh_properties.resistance_matrix">resistance_matrix() (in module bfieldtools.mesh_properties)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.Rotmatrix">Rotmatrix() (in module bfieldtools.sphtools)</a>
@@ -463,6 +495,12 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.Conductor.save_pickle">save_pickle() (bfieldtools.conductor.Conductor method)</a>
+
+      <ul>
+        <li><a href="source/bfieldtools.html#bfieldtools.conductor.save_pickle">(in module bfieldtools.conductor)</a>
+</li>
+      </ul></li>
       <li><a href="source/bfieldtools.html#bfieldtools.contour.scalar_contour">scalar_contour() (in module bfieldtools.contour)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.line_magnetics.scalar_potential">scalar_potential() (in module bfieldtools.line_magnetics)</a>
@@ -471,17 +509,25 @@
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.mesh_properties.self_inductance_matrix">self_inductance_matrix() (in module bfieldtools.mesh_properties)</a>
 </li>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.Conductor.set_basis">set_basis() (bfieldtools.conductor.Conductor method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.Conductor.set_holes">set_holes() (bfieldtools.conductor.Conductor method)</a>
+</li>
       <li><a href="source/bfieldtools.html#bfieldtools.contour.simplify_contour">simplify_contour() (in module bfieldtools.contour)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.sinxlm">sinxlm() (in module bfieldtools.sphtools)</a>
+</li>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.Conductor.sph_couplings">sph_couplings() (bfieldtools.conductor.Conductor property)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.sphbasis">sphbasis (class in bfieldtools.sphtools)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.spherical2cartesian">spherical2cartesian() (in module bfieldtools.sphtools)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.sphtools.sphvec2cart">sphvec2cart() (in module bfieldtools.sphtools)</a>
+</li>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.StreamFunction">StreamFunction (class in bfieldtools.conductor)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -504,6 +550,8 @@
       <li><a href="source/bfieldtools.html#bfieldtools.line_magnetics.vector_potential">vector_potential() (in module bfieldtools.line_magnetics)</a>
 </li>
       <li><a href="source/bfieldtools.html#bfieldtools.mesh_magnetics.vector_potential_coupling">vector_potential_coupling() (in module bfieldtools.mesh_magnetics)</a>
+</li>
+      <li><a href="source/bfieldtools.html#bfieldtools.conductor.StreamFunction.vert">vert() (bfieldtools.conductor.StreamFunction property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>

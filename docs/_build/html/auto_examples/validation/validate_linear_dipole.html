@@ -14,6 +14,7 @@
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -160,7 +161,7 @@ p_tris = points[tris]</p>
 <span class="n">RR</span> <span class="o">=</span> <span class="n">p_eval</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">p_tris</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
 <span class="n">tn</span><span class="p">,</span> <span class="n">ta</span> <span class="o">=</span> <span class="n">tri_normals_and_areas</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">tris</span><span class="p">)</span>
 
-<span class="n">pot</span> <span class="o">=</span> <span class="n">triangle_potential_dipole_linear</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">tn</span><span class="p">,</span> <span class="n">ta</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">pot</span> <span class="o">=</span> <span class="n">triangle_potential_dipole_linear</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">tn</span><span class="p">,</span> <span class="n">ta</span><span class="p">)</span>
 
 <span class="c1"># Plot shapes</span>
 <span class="n">f</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
@@ -175,18 +176,9 @@ p_tris = points[tris]</p>
         <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="sphx-glr-script-out highlight-pytb notranslate"><div class="highlight"><pre><span></span><span class="gt">Traceback (most recent call last):</span>
-  File <span class="nb">&quot;D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py&quot;</span>, line <span class="m">460</span>, in <span class="n">_memory_usage</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="n">func</span><span class="p">()</span>
-  File <span class="nb">&quot;D:\Anaconda3\lib\site-packages\sphinx_gallery\gen_rst.py&quot;</span>, line <span class="m">442</span>, in <span class="n">__call__</span>
-    <span class="n">exec</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fake_main</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
-  File <span class="nb">&quot;C:\Users\Rasmus Zetter\Documents\Aalto\bfieldtools\examples\validation\validate_linear_dipole.py&quot;</span>, line <span class="m">56</span>, in <span class="n">&lt;module&gt;</span>
-    <span class="n">pot</span> <span class="o">=</span> <span class="n">triangle_potential_dipole_linear</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">tn</span><span class="p">,</span> <span class="n">ta</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-<span class="gr">TypeError</span>: <span class="n">triangle_potential_dipole_linear() takes 3 positional arguments but 4 were given</span>
-</pre></div>
-</div>
+<img alt="../../_images/sphx_glr_validate_linear_dipole_001.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_linear_dipole_001.png" />
 <p>%% Test summation formula</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pot_sum</span> <span class="o">=</span> <span class="n">triangle_potential_dipole_linear</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">tn</span><span class="p">,</span> <span class="n">ta</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pot_sum</span> <span class="o">=</span> <span class="n">triangle_potential_dipole_linear</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">tn</span><span class="p">,</span> <span class="n">ta</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">solid_angle</span> <span class="o">=</span> <span class="n">omega</span><span class="p">(</span><span class="n">RR</span><span class="p">)</span>
 
 <span class="c1"># Plot shapes</span>
@@ -212,6 +204,7 @@ p_tris = points[tris]</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </pre></div>
 </div>
+<img alt="../../_images/sphx_glr_validate_linear_dipole_002.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_linear_dipole_002.png" />
 <p>%% Test asymptotic behavour</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">dip_potential</span><span class="p">(</span><span class="n">Reval</span><span class="p">,</span> <span class="n">Rdip</span><span class="p">,</span> <span class="n">moment</span><span class="p">):</span>
     <span class="n">R</span> <span class="o">=</span> <span class="n">Reval</span> <span class="o">-</span> <span class="n">Rdip</span>
@@ -237,11 +230,16 @@ p_tris = points[tris]</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">dip_potential</span><span class="p">(</span><span class="n">p_eval2</span><span class="p">,</span> <span class="n">Rdip</span><span class="p">,</span> <span class="n">m</span><span class="p">))</span>
 <span class="c1"># Plot sum of the linear dipoles</span>
 <span class="n">RR</span> <span class="o">=</span> <span class="n">p_eval2</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">p_tris</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
-<span class="n">pot</span> <span class="o">=</span> <span class="n">triangle_potential_dipole_linear</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">tn</span><span class="p">,</span> <span class="n">ta</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">pot</span> <span class="o">=</span> <span class="n">triangle_potential_dipole_linear</span><span class="p">(</span><span class="n">RR</span><span class="p">,</span> <span class="n">tn</span><span class="p">,</span> <span class="n">ta</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">pot</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.008 seconds)</p>
+<img alt="../../_images/sphx_glr_validate_linear_dipole_003.png" class="sphx-glr-single-img" src="../../_images/sphx_glr_validate_linear_dipole_003.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[&lt;matplotlib.lines.Line2D object at 0x000001F803E03588&gt;]
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.618 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-validation-validate-linear-dipole-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../../_downloads/ae029a1534bb25c9909d2c33ffaf46da/validate_linear_dipole.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">validate_linear_dipole.py</span></code></a></p>
