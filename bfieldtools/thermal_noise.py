@@ -15,7 +15,7 @@ from .mesh_properties import self_inductance_matrix, resistance_matrix
 from . import utils
 
 
-def compute_current_modes_ind_res(
+def compute_AC_current_modes(
     mesh, M, R, freqs, T, closed=True, Nmodes=None, return_eigenvals=False
 ):
     """
@@ -90,31 +90,68 @@ def compute_current_modes_ind_res(
         return vl
 
 
-def noise_covar(mesh, B_coupling, vl, Nmodes=None):
+def compute_DC_current_modes(
+    mesh, R, T, closed=True, Nmodes=None, return_eigenvals=False
+):
+    """
+    Parameters
+    ----------
+    mesh: Trimesh mesh object
+        The surface mesh
+    R: (Nvertices x Nvertices) array
+        The resistance matrix of `mesh`
+    T: float
+        Temperature in Kelvins
+    closed: boolean
+        Is the mesh closed (True) or not (False)
+    Nmodes: int
+        How many modes are computed? If None, all Nvertices modes are computed
+    return_eigenvals: boolean
+        Return also the eigenvalues (the inverse circuit time constants)?
+
+    Returns
+    -------
+    vl: (Nvertices x Nmodes x Nfreqs) array
+        The spectral eddy-current modes
+    u: Nmodes array
+        The eigenvalues (the inverse circuit time constants)
+
+    """
+
+    kB = 1.38064852e-23
+
+    boundary_verts, inner_verts = utils.find_mesh_boundaries(mesh)
+
+    R = R.toarray()  # convert R to array
+
+    # If mesh is closed, add 'deflation' to the matrices
+    if closed:
+        R += np.ones_like(R) * np.mean(np.diag(R))
+
+    M = mass_matrix(mesh)
+    # Compute the eigenmodes
     if Nmodes == None:
-        Nmodes = vl.shape[1]
-    b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes])
-    Bcov = np.einsum("jihk,lihk->jlhk", b, b)
+        u, v = eigh(
+            R[inner_verts][:, inner_verts], M.todense()[inner_verts][:, inner_verts]
+        )
+    else:
+        u, v = eigh(
+            R[inner_verts][:, inner_verts],
+            M.todense()[inner_verts][:, inner_verts],
+            eigvals=(0, Nmodes),
+        )
 
-    return Bcov
+    # Scale the eigenmodes with the spectral density of the thermal noise current
+    vl = np.zeros((M.shape[0], v.shape[1]))
 
+    for i in range(v.shape[1]):
+        amp = 2 * np.sqrt(kB * T / u[i])
+        vl[inner_verts, i] = v[:, i] * amp
 
-def noise_var(mesh, B_coupling, vl, Nmodes=None):
-    if Nmodes == None:
-        Nmodes = vl.shape[1]
-    b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes])
-    Bcov = np.einsum("ijhk,ijhk->ihk", b, b)
-
-    return Bcov
-
-
-def noise_covar_dir(mesh, B_coupling, vl, Nmodes=None):
-    if Nmodes == None:
-        Nmodes = vl.shape[1]
-    b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes])
-    Bcov = np.einsum("ihjk,ihlk-> ijlk", b, b)
-
-    return Bcov
+    if return_eigenvals:
+        return vl, u
+    else:
+        return vl
 
 
 def compute_current_modes(mesh, boundaries=None, return_eigenvals=False):
@@ -182,195 +219,46 @@ def compute_current_modes(mesh, boundaries=None, return_eigenvals=False):
         return vl
 
 
-def compute_dc_Bnoise(mesh, vl, fp, sigma, d, T, Nchunks=1):
-    """
-    Computes the magnetic noise at DC due to thermal motion of charge carriers (Jonhson-Nyquist noise)
-    in a relatively thin conductor.
+def noise_covar(mesh, B_coupling, vl, Nmodes=None):
+    if Nmodes == None:
+        Nmodes = vl.shape[1]
 
-    Parameters
-    ----------
-    mesh: Trimesh mesh object - the surface mesh
-    vl: Nvertices x Nvertices array
-        The normalized eddy-current modes vl[:,i]
-    fp: Nfieldpoints x 3 array
-        Coordinates of the fieldpoints
-    sigma: float
-        Conductivity of the surface
-    d: float
-        Thickness of the surface
-    T: float
-        Temperature of the surface
+    if vl.ndim == 2:
+        b = np.einsum("ihj,jl->ilh", B_coupling, vl[:, 0:Nmodes])
+        Bcov = np.einsum("jih,lih->jlh", b, b)
+    else:
+        b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes])
+        Bcov = np.einsum("jihk,lihk->jlhk", b, b)
 
-    Returns
-    -------
-    B: Nfieldpoints x 3components array
-        magnetic RMS noise at DC
-
-    """
-
-    kB = 1.38064852e-23  # Boltzmann constant
-
-    B_coupling = magnetic_field_coupling(mesh, fp, Nchunks)
-
-    B = np.zeros(fp.shape)
-    for i in range(vl.shape[1]):
-        vec = vl[:, i] * np.sqrt(4 * kB * T * sigma * d)
-
-        B += (B_coupling @ vec) ** 2
-
-    B = np.sqrt(B)  # RMS
-
-    return B
+    return Bcov
 
 
-def compute_dc_Bnoise_covar(mesh, vl, fp, sigma, d, T, Nchunks=1):
-    """
-    Computes the magnetic noise covariance at DC due to thermal motion of charge carriers (Jonhson-Nyquist noise)
-    in a relatively thin conductor.
+def noise_var(mesh, B_coupling, vl, Nmodes=None):
+    if Nmodes == None:
+        Nmodes = vl.shape[1]
 
-    Parameters
-    ----------
-    mesh: Trimesh mesh object - the surface mesh
-    vl: Nvertices x Nvertices array
-        The normalized eddy-current modes vl[:,i]
-    fp: Nfieldpoints x 3 array
-        Coordinates of the fieldpoints
-    sigma: float
-        Conductivity of the surface
-    d: float
-        Thickness of the surface
-    T: float
-        Temperature of the surface
+    if vl.ndim == 2:
+        b = np.einsum("ihj,jl->ilh", B_coupling, vl[:, 0:Nmodes])
+        Bcov = np.einsum("ijh,ijh->ih", b, b)
+    else:
+        b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes])
+        Bcov = np.einsum("ijhk,ijhk->ihk", b, b)
 
-    Returns
-    -------
-    B: Nfieldpoints x Nfieldpoints x 3components array
-        magnetic noise covariance at DC
-
-    """
-
-    kB = 1.38064852e-23  # Boltzmann constant
-
-    B_coupling = magnetic_field_coupling(mesh, fp, Nchunks)
-
-    eps = 4 * kB * T * sigma * d * np.eye(vl.shape[1])
-
-    B = np.zeros((fp.shape[0], fp.shape[0], 3))
-    for i in range(3):
-        B[:, :, i] = B_coupling[:, i, :] @ vl @ eps @ (vl.T) @ (B_coupling[:, i, :].T)
-
-    return B
+    return Bcov
 
 
-def integrate_Bnoise_covar(B_covar, weighting=None):
-    """
-    Computes the (quadrature) integrated noise over a volume spanned by the points in fp.
+def noise_covar_dir(mesh, B_coupling, vl, Nmodes=None):
+    if Nmodes == None:
+        Nmodes = vl.shape[1]
 
-    Parameters
-    ----------
-    B_covar: (N_p, N_p, 3) array
-        One vector component of the covariance matrix computed by compute_dc_Bnoise_covar
-    weighting: (N_p,) array
-        Weighting factors for each point in the volume. If None (default), use equal weighting.
+    if vl.ndim == 2:
+        b = np.einsum("ihj,jl->ilh", B_coupling, vl[:, 0:Nmodes])
+        Bcov = np.einsum("ihj,ihl-> ijl", b, b)
+    else:
+        b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes])
+        Bcov = np.einsum("ihjk,ihlk-> ijlk", b, b)
 
-    Returns
-    -------
-    Bnoise_integrated: float
-        Integrated noise amplitude over the volume
-
-    """
-
-    if weighting is None:
-        weighting = np.ones((len(B_covar,))) / len(B_covar)
-        print("No weighting provided, assuming equal weighting")
-
-    Bnoise_integrated = np.sum(np.outer(weighting, weighting) * B_covar)
-
-    return Bnoise_integrated ** 0.5
-
-
-def compute_ac_Bnoise(mesh, vl, fp, freqs, sigma, d, T, Nchunks=1):
-    """
-    Computes the AC magnetic noise due to thermal motion of charge carriers (Jonhson-Nyquist noise)
-    in a relatively thin conductor.
-
-    Parameters
-    ----------
-    mesh: Trimesh mesh object - the surface mesh
-    vl: Nvertices x Nvertices array
-        The normalized eddy-current modes vl[:,i]
-    fp: Nfieldpoints x 3 array
-        Coordinates of the fieldpoints
-    sigma: float
-        Conductivity of the surface
-    d: float
-        Thickness of the surface
-    T: float
-        Temperature of the surface
-
-    Returns
-    -------
-    B: Nfrequencies x Nfieldpoints x 3components array
-        magnetic RMS noise across frequencies
-
-    """
-
-    kB = 1.38064852e-23  # Boltzmann constant
-
-    # Compute field
-    B_coupling = magnetic_field_coupling(mesh, fp, Nchunks)
-
-    # Compute mutual inductance at "hat basis"
-    Mind = self_inductance_matrix(mesh, Nchunks)
-    Mind = 0.5 * (Mind + Mind.T)  # I think that this enforces M to be symmetric
-
-    # Transform mutual inductance to eddy-current basis
-    Mind_lap = vl.T @ Mind @ vl
-
-    # Eigendecomposition of M
-    um_t, vm_t = eigh(Mind_lap)
-    um_t = np.flip(um_t)
-    vm_t = np.flip(vm_t, axis=1)
-
-    # Let's take just the "99% variance" components to avoid numerical issues
-    um = np.zeros(um_t.shape)
-    vm = np.zeros(vm_t.shape)
-
-    csum = np.cumsum(um_t ** 2) / np.sum(um_t ** 2)
-    Ncomps = np.max(np.where(csum < 0.99))
-
-    um[0:Ncomps] = um_t[0:Ncomps]
-    vm[0:Ncomps, 0:Ncomps] = vm_t[0:Ncomps, 0:Ncomps]
-
-    # Compute B as a function of frequency
-    B = np.zeros((freqs.shape[0], fp.shape[0], fp.shape[1]))
-
-    Rk = 1 / (sigma * d)
-    eps = np.sqrt(4 * kB * T * Rk) * np.ones((vl.shape[0]))
-
-    for j in range(freqs.shape[0]):
-        f = freqs[j]
-        omega = 2 * np.pi * f
-
-        Rt = Rk / (Rk ** 2 + omega ** 2 * um ** 2)
-        Rt = np.diag(Rt)
-
-        Lt = um / (Rk ** 2 + omega ** 2 * um ** 2)
-        Lt = np.diag(Lt)
-
-        currents = -1 * (vm @ Rt @ vm.T @ eps + 1j * omega * vm @ Lt @ vm.T @ eps)
-        currents = np.abs(currents)
-
-        for i in range(vl.shape[0]):
-            vec = currents[i] * vl[:, i]
-            B[j, :, 0] += (B_coupling[:, 0, :] @ vec) ** 2
-            B[j, :, 1] += (B_coupling[:, 1, :] @ vec) ** 2
-            B[j, :, 2] += (B_coupling[:, 2, :] @ vec) ** 2
-        print("Frequency %f computed" % (f))
-
-    B = np.sqrt(B)  # RMS
-
-    return B
+    return Bcov
 
 
 def visualize_current_modes(
