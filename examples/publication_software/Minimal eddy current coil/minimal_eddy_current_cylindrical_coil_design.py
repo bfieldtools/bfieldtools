@@ -404,7 +404,7 @@ if PLOT and SAVE_FIGURES:
         time * 1e3,
         np.mean(np.linalg.norm(B_t, axis=1), axis=0).T,
         "k-",
-        label="Minimized",
+        label="Constrained",
         linewidth=1.5,
     )
     # ax[0].set_title('Eddy currents minimized')
