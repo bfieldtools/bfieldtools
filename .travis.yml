@@ -21,7 +21,7 @@ before_install:
  - pip install pytest
 
 install:
-  - python setup.py install
+  - pip install .
 
 script:
   - pytest ./tests
