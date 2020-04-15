@@ -22,9 +22,10 @@ jobs:
         python-version: 3.7
     - name: Install dependencies
       run: |
-        /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1400x900x24 -ac +extension GLX +render -noreset;
+        sudo apt-get install -y xvfb
+        Xvfb :99 -screen 0 800x800x8&
         python -m pip install --upgrade pip
-        pip install vtk
+        pip install vtk xvfbwrapper
         pip install -r requirements.txt
     - name: Check code style with Black
       run: |
