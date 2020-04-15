@@ -1,10 +1,14 @@
 os: linux
+dist: bionic
 language: python
 python:
   - "3.7"
 cache:
   pip: true
-dist: bionic
+addons:
+  apt:
+    packages:
+      - libxkbcommon-x11-0
 services:
   - xvfb
  
