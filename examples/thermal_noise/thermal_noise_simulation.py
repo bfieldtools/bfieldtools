@@ -17,7 +17,8 @@ from mayavi import mlab
 
 from bfieldtools.mesh_properties import self_inductance_matrix, resistance_matrix
 from bfieldtools.thermal_noise import (
-    compute_current_modes_ind_res,
+    compute_AC_current_modes,
+    compute_DC_current_modes,
     noise_covar,
     noise_var,
     visualize_current_modes,
@@ -141,18 +142,30 @@ mesh = trimesh.load(
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 
-vl = compute_current_modes(mesh)
+freqs = np.array((0,))
+
+S = np.ones(mesh.triangles_center.shape[0]) * sigma
+sheet_resistance = 1 / (d * S)
+
+# Compute the resistance and inductance matrices
+R = resistance_matrix(mesh, sheet_resistance=sheet_resistance)
+M = self_inductance_matrix(mesh, Nchunks=Nchunks, quad_degree=quad_degree)
+
+# vl = compute_AC_current_modes(mesh, M, R, freqs, T, closed=False)
+vl = compute_DC_current_modes(mesh, R, T, closed=False)
+
 
 scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
 
-visualize_current_modes(mesh, vl, 42, 5, contours=False)
+# visualize_current_modes(mesh, vl[:,:,0], 42, 5, contours=False)
 
 Np = 30
 
 z = np.linspace(0.1, 1, Np)
 fp = np.array((np.zeros(z.shape), np.zeros(z.shape), z)).T
 
-B = compute_dc_Bnoise(mesh, vl, fp, sigma, d, T)
+B_coupling = magnetic_field_coupling(mesh, fp, analytic=True)
+B = np.sqrt(noise_var(mesh, B_coupling, vl))
 
 r = 1
 Ban = (
