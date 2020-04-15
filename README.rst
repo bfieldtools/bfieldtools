@@ -1,18 +1,12 @@
 .. -*- mode: rst -*-
-
-
-  
   
 .. image:: logo/logo_simple_w_name.svg
   :width: 800
   :alt: *bfieldtools logo and title*
-  
-|
-.. image:: https://version.aalto.fi/gitlab/makinea1/bfieldtools/badges/master/pipeline.svg
-  :alt: pipeline status
-  
-.. image:: https://version.aalto.fi/gitlab/makinea1/bfieldtools/badges/master/coverage.svg
-  :alt: coverage report
+
+.. image:: https://travis-ci.com/bfieldtools-team/bfieldtools.svg?token=zziPTxRYBYdrsGqgmpjH&branch=master
+    :target: https://travis-ci.com/bfieldtools-team/bfieldtools
+
   
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
   :alt: code style: black
@@ -30,7 +24,7 @@ The toolbox currently includes tools for
 Dependencies
 ^^^^^^^^^^^^
 
-Requires Python 3.5 or newer.
+Requires Python 3.7 or newer.
 
  - `Numpy <https://www.numpy.org/>`_
  - `Scipy <https://www.scipy.org/>`_
