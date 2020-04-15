@@ -26,7 +26,7 @@ def main():
         description="Magnetic field modelling tools",
         long_description=codecs.open("README.rst", encoding="utf8").read(),
         use_scm_version=True,
-        setup_requires=['setuptools_scm'],
+        setup_requires=["setuptools_scm"],
         install_requires=requirements,
         packages=find_packages(),
         include_package_data=True,
