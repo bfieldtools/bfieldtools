@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
 import sys
 import codecs
-import numpy
 
 # First, prevent accidental upload to PyPI
 def forbid_publish():
@@ -19,26 +18,17 @@ def main():
 
     forbid_publish()
 
+    with open("requirements.txt") as f:
+        requirements = f.read().splitlines()
+
     setup(
         name="bfieldtools",
         description="Magnetic field modelling tools",
         long_description=codecs.open("README.rst", encoding="utf8").read(),
         version_format="{tag}.dev{commitcount}+{gitsha}",
         setup_requires=["setuptools-git-version"],
-        install_requires=[
-            "numpy",
-            "scipy",
-            "matplotlib",
-            "mayavi",
-            "quadpy>=0.13",
-            "trimesh",
-            "cvxopt",
-            "cvxpy",
-            "rtree",
-            "svg.path",
-        ],
+        install_requires=requirements,
         packages=find_packages(),
-        include_dirs=[numpy.get_include()],
         include_package_data=True,
         package_data={"bfieldtools": ["example_meshes/*"]},
         classifiers=[

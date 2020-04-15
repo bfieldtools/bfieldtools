@@ -1,0 +1,12 @@
+numpy
+scipy
+matplotlib
+pyqt5<5.14
+pyqt5-sip
+mayavi
+quadpy>=0.13
+cvxpy
+cvxopt
+trimesh
+shapely
+psutil
