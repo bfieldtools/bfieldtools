@@ -12,7 +12,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-xenial
 
     steps:
     - uses: actions/checkout@v2
@@ -21,12 +21,11 @@ jobs:
       with:
         python-version: 3.7
     - name: Install dependencies
-      uses: GabrielBB/xvfb-action@v1.0
-      with:
-        run: |
-          python -m pip install --upgrade pip
-          pip install vtk xvfbwrapper
-          pip install -r requirements.txt
+      run: |
+        Xvfb :99 -screen 0 1400x900x24&
+        python -m pip install --upgrade pip
+        pip install vtk xvfbwrapper
+        pip install -r requirements.txt
     - name: Check code style with Black
       run: |
         pip install black
