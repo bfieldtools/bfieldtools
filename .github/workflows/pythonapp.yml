@@ -22,6 +22,7 @@ jobs:
         python-version: 3.7
     - name: Install dependencies
       run: |
+        /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1400x900x24 -ac +extension GLX +render -noreset;
         python -m pip install --upgrade pip
         pip install vtk
         pip install -r requirements.txt
@@ -38,6 +39,6 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest, headless X server
       run: |
-        /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1400x900x24 -ac +extension GLX +render -noreset;
+    
         pip install pytest
         pytest ./tests
