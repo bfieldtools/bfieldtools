@@ -10,6 +10,8 @@ from . import suhtools
 from . import thermal_noise
 from . import utils
 
+from .version import __version__
+
 __all__ = [
     "line_magnetics",
     "line_path",

@@ -25,7 +25,10 @@ def main():
         name="bfieldtools",
         description="Magnetic field modelling tools",
         long_description=codecs.open("README.rst", encoding="utf8").read(),
-        use_scm_version=True,
+        use_scm_version={
+            "write_to": "bfieldtools/version.py",
+            "write_to_template": '__version__ = "{version}"',
+        },
         setup_requires=["setuptools_scm"],
         install_requires=requirements,
         packages=find_packages(),
