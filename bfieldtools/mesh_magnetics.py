@@ -362,6 +362,38 @@ def scalar_potential_coupling(
     return Uv * coeff
 
 
+def _triangle_coupling(
+    mesh, r, Nchunks=None, approx_far=True, margin=2, chunk_clusters=False
+):
+
+    # Source and eval locations
+    R1 = mesh.vertices[mesh.faces]
+    R2 = r
+
+    R2chunks, ichunks = get_chunks(R2, Nchunks, chunk_clusters)
+
+    M = np.zeros((R2.shape[0], mesh.faces.shape[0]))
+    print("Computing triangle-coupling matrix")
+
+    for ichunk, R2chunk in zip(ichunks, R2chunks):
+        RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
+        if approx_far:
+            RRchunk_centers = R2chunk[:, None, :] - mesh.triangles_center[None, :, :]
+            temp = np.zeros(RRchunk.shape[:2])
+            near, far = _split_by_distance(mesh, RRchunk_centers, margin)
+            temp[:, near] = triangle_potential_uniform(
+                RRchunk[:, near], mesh.face_normals[near], False
+            )
+            temp[:, far] = triangle_potential_approx(
+                RRchunk_centers[:, far], mesh.area_faces[far], reg=0
+            )
+            M[ichunk] = temp
+        else:
+            M[ichunk] = triangle_potential_uniform(RRchunk, mesh.face_normals, False)
+
+    return M
+
+
 def vector_potential_coupling(
     mesh, r, Nchunks=None, approx_far=True, margin=2, chunk_clusters=False
 ):
@@ -392,33 +424,7 @@ def vector_potential_coupling(
 
     coeff = 1e-7  # mu_0/(4*pi)
 
-    # Source and eval locations
-    R1 = mesh.vertices[mesh.faces]
-    R2 = r
-
-    R2chunks, ichunks = get_chunks(R2, Nchunks, chunk_clusters)
-
-    Af = np.zeros((R2.shape[0], mesh.faces.shape[0]))
-    print("Computing 1/r-potential matrix")
-
-    for ichunk, R2chunk in zip(ichunks, R2chunks):
-        RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
-        if approx_far:
-            RRchunk_centers = R2chunk[:, None, :] - mesh.triangles_center[None, :, :]
-            temp = np.zeros(RRchunk.shape[:2])
-            near, far = _split_by_distance(mesh, RRchunk_centers, margin)
-            temp[:, near] = triangle_potential_uniform(
-                RRchunk[:, near], mesh.face_normals[near], False
-            )
-            temp[:, far] = triangle_potential_approx(
-                RRchunk_centers[:, far], mesh.area_faces[far], reg=0
-            )
-            Af[ichunk] = temp
-        else:
-            Af[ichunk] = triangle_potential_uniform(RRchunk, mesh.face_normals, False)
-
-    # Free some memory by deleting old variables
-    del R1, R2, RRchunk, R2chunks, ichunks
+    Af = _triangle_coupling(mesh, r, Nchunks, approx_far, margin, chunk_clusters)
 
     # Rotated gradients (currents)
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
