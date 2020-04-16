@@ -34,5 +34,5 @@ script:
   - pytest ./tests
   - pytest --cov-report=xml --cov=bfieldtools ./tests
   
-after_success:
+after_script:
   - codecov
