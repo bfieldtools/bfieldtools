@@ -9,9 +9,6 @@ addons:
   apt:
     packages:
       - libxkbcommon-x11-0
-env:
-    global: CODECOV_TOKEN=bf010c97-e435-4ce8-a1c7-9001f1b63d35
-    
 services:
   - xvfb
  
