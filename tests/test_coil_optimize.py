@@ -59,11 +59,6 @@ def test_standalone_functions():
     """
     Tests standalone functions in coil_optimize
 
-
-    Returns
-    -------
-    None.
-
     """
 
     P = 2 * np.array([[2, 0.5], [0.5, 1]])
@@ -75,4 +70,4 @@ def test_standalone_functions():
 
     coil_optimize.cvxopt_solve_qp(P, q)
     coil_optimize.cvxopt_solve_qp(P, q, G, h)
-    coil_optimize.cvxpy_solve_qp(P, G, h)
+    coil_optimize.cvxpy_solve_qp(P, G, h, solver="CVXOPT")

@@ -28,10 +28,7 @@ mesh = trimesh.load(
     pkg_resources.resource_filename("bfieldtools", "example_meshes/10x10_plane.obj")
 )
 
-
-boundary_verts, inner_verts, boundary_tris, inner_tris = utils.find_mesh_boundaries(
-    mesh.vertices, mesh.faces, mesh.edges
-)
+boundaries, inner_verts = utils.find_mesh_boundaries(mesh)
 
 L = laplacian_matrix(mesh)
 M = mass_matrix(mesh)

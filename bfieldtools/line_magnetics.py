@@ -18,7 +18,7 @@ def cross(r1, r2):
     return result
 
 
-def magnetic_field2(vertices, points):
+def magnetic_field(vertices, points):
     """ Compute B-field of a segmented line current.
         See: Compact expressions for the Biot–Savart fields of a filamentary segments
         by Hanson & Hirshman: https://doi.org/10.1063/1.1507589
@@ -56,53 +56,6 @@ def magnetic_field2(vertices, points):
 
         # Normalize direction field and divide by cylindrical distance
         f *= (d1 + d2) / (d1 * d2 * (d1 * d2 + np.sum(a1 * a2, axis=0)))
-
-        field = field + f
-
-    return field.T * 1e-7
-
-
-def magnetic_field(vertices, points):
-    """ Compute B-field of a segmented line current.
-        This calculation is based on
-        Introduction to Electrodynamics (3rd Edition)
-        by Griffiths (page 217)
-
-        Parameters
-        ----------
-        vertices: (N_line, 3) array
-            Vertices of the line with N_line-1 segments
-        points:   (N_points, 3) array
-            Magnetic field evaluation points
-
-        Returns
-        -------
-        bfield: (N_points, 3) array
-            Magnetic field at evaluation points
-
-    """
-    field = np.zeros(points.T.shape)
-    for i in range(len(vertices) - 1):
-        r1 = vertices[i]
-        r2 = vertices[i + 1]
-        d = ((r2 - r1) / ((r1 - r2) ** 2).sum()).reshape(3, 1)
-
-        # Vectors between vertices and field points
-        a1 = points.T - r1.reshape(3, 1)
-        a2 = points.T - r2.reshape(3, 1)
-
-        # Direction of the field
-        f = cross(a1, d)
-
-        # Sine factor
-        sinefactor = (d * a2).sum(axis=0) / np.sqrt((a2 ** 2).sum(axis=0))
-        sinefactor = sinefactor - (d * a1).sum(axis=0) / np.sqrt((a1 ** 2).sum(axis=0))
-
-        # Normalize direction field and divide by cylindrical distance
-        s2 = (f ** 2).sum(axis=0)
-        s2[s2 == 0] = 1e-12  # Regularize for points directly at the
-        # continuation of the line segment
-        f *= sinefactor / s2
 
         field = field + f
 

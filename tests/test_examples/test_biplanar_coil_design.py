@@ -1,1 +1,0 @@
-../../examples/coil_design/biplanar_coil_design.py

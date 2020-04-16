@@ -7,7 +7,7 @@ region between the two coil planes.
 
 """
 PLOT = True
-SAVE_FIGURES = False
+SAVE_FIGURES = True
 
 
 import numpy as np
@@ -121,9 +121,7 @@ if PLOT:
 
     if SAVE_FIGURES:
         mlab.savefig(
-            "/l/bfieldtools/examples/publication_software/Biplanar coil/biplanar_geometry.png",
-            figure=f,
-            magnification=4,
+            "./biplanar_geometry.png", figure=f, magnification=4,
         )
         mlab.close()
 
@@ -177,17 +175,15 @@ if PLOT:
 
     plot_3d_current_loops(loops, colors="auto", figure=f)
 
-    B_target = coil.B_coupling(target_points) @ coil.s
+    # B_target = coil.B_coupling(target_points) @ coil.s
 
-    mlab.quiver3d(*target_points.T, *B_target.T, mode="arrow", scale_factor=1)
+    # mlab.quiver3d(*target_points.T, *B_target.T, mode="arrow", scale_factor=1)
 
     f.scene.isometric_view()
     #    f.scene.camera.zoom(0.95)
     if SAVE_FIGURES:
         mlab.savefig(
-            "/l/bfieldtools/examples/publication_software/Biplanar coil/biplanar_loops.png",
-            figure=f,
-            magnification=4,
+            "./biplanar_loops.png", figure=f, magnification=4,
         )
 
         mlab.close()
@@ -210,9 +206,7 @@ if PLOT:
 
     if SAVE_FIGURES:
         mlab.savefig(
-            "/l/bfieldtools/examples/publication_software/Biplanar coil/biplanar_streamfunction.png",
-            figure=f,
-            magnification=4,
+            "./biplanar_streamfunction.png", figure=f, magnification=4,
         )
 
         mlab.close()
