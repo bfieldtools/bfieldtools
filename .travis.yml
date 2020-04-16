@@ -11,10 +11,7 @@ addons:
       - libxkbcommon-x11-0
 services:
   - xvfb
-  
- env:
-  - CODECOV_TOKEN="bf010c97-e435-4ce8-a1c7-9001f1b63d35"
- 
+
 before_install:
  - python -m pip install --upgrade pip
  - pip install vtk xvfbwrapper
