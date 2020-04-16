@@ -32,6 +32,3 @@ install:
 script:
   - pytest ./tests
   - pytest --cov=bfieldtools ./tests
-  
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
