@@ -9,6 +9,9 @@ addons:
   apt:
     packages:
       - libxkbcommon-x11-0
+env:
+    global: CODECOV_TOKEN=bf010c97-e435-4ce8-a1c7-9001f1b63d35
+    
 services:
   - xvfb
  
@@ -25,10 +28,14 @@ before_install:
  # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
  #- flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
  - pip install --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
+ - pip install codecov
 
 install:
   - python setup.py install
 
 script:
   - pytest ./tests
-  - pytest --cov=bfieldtools ./tests
+  - pytest --cov-report=xml --cov=bfieldtools ./tests
+  
+after_success:
+  - codecov
