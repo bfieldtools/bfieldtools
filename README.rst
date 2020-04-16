@@ -18,11 +18,11 @@ bfieldtools is a set of tools for magnetic field modelling with emphasis on magn
 
 The toolbox currently includes tools for
  - Mesh operators (matrices) for mutual inductance, laplacian/resistance and gradient
- - Magnetic field of current density on a mesh.
+ - Magnetic field as well as scalar and vector potentials of current density on a mesh.
  - Coil design 
  - Thermal noise simulation 
  - Spherical harmonics representation of data.
- - Magnetic field of wire segments
+ - Magnetic fieldd as well as scalar and vector potentials of polyline currents
 
 
 Dependencies
