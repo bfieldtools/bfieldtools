@@ -66,9 +66,10 @@ for i in range(Np):
 
     # Compute the resistance and inductance matrices
     R = resistance_matrix(mesh, sheet_resistance=sheet_resistance)
-    M = self_inductance_matrix(mesh, Nchunks=Nchunks, quad_degree=quad_degree)
+    # M = self_inductance_matrix(mesh, Nchunks=Nchunks, quad_degree=quad_degree)
 
-    vl = compute_current_modes_ind_res(mesh, M, R, freqs, T, closed=True)
+    # vl = compute_current_modes_ind_res(mesh, M, R, freqs, T, closed=True)
+    vl = compute_DC_current_modes(mesh, R, T, closed=True)
 
     #    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
     #               size=(800, 800))
@@ -78,7 +79,8 @@ for i in range(Np):
 
     Btemp = noise_var(mesh, B_coupling, vl)
     #    Btemp = compute_dc_Bnoise(mesh,vl,fp,sigma,d,T)
-    B[i] = Btemp[:, :, 0]
+    # B[i] = Btemp[:, :, 0]
+    B[i] = Btemp
 
 scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
 s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
@@ -307,14 +309,14 @@ sheet_resistance = 1 / (d * S)
 R = resistance_matrix(mesh, sheet_resistance=sheet_resistance)
 M = self_inductance_matrix(mesh, Nchunks=Nchunks, quad_degree=quad_degree)
 
-vl = compute_current_modes_ind_res(mesh, M, R, freqs, T, closed=False)
+vl = compute_AC_current_modes(mesh, M, R, freqs, T, closed=False)
 
 #
 # fp = np.zeros((1,3))
 # fp[0,2] = 0.1
 
-Np = 20
-z = np.linspace(0.05, 0.2, Np)
+Np = 50
+z = np.linspace(0.05, 1, Np)
 fp = np.array((np.zeros(z.shape), np.zeros(z.shape), z)).T
 
 B_coupling = magnetic_field_coupling(mesh, fp, analytic=True)
@@ -335,10 +337,13 @@ plt.xlabel("Frequency (Hz)")
 plt.ylabel(r"$B_z$ noise (fT/rHz)")
 plt.tight_layout()
 
+f_interp = np.linspace(0, 1200, 1200)
+
 cutf = np.zeros(Np)
 for i in range(Np):
-    idx = np.max(np.where(Bf[i, 2, :] >= 1 / np.sqrt(2) * Bf[i, 2, 0]))
-    cutf[i] = freqs[idx]
+    Btemp = np.interp(f_interp, freqs, Bf[i, 2, :])
+    idx = np.max(np.where(Btemp >= 1 / np.sqrt(2) * Btemp[0]))
+    cutf[i] = f_interp[idx]
 
 cutf_an = 1 / (4 * mu0 * sigma * d * z)
 
