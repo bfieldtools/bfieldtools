@@ -30,6 +30,7 @@ M5 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=5)
 M6 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=6)
 M7 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=7)
 
+plt.figure()
 for m in (M5, M6, M7):
     plt.plot(np.diag(m))
 

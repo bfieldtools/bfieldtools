@@ -18,6 +18,7 @@ def resistance_matrix(mesh, sheet_resistance):
         mesh: Trimesh mesh object
         sheet_resistance: (N_faces) array or scalar
             "1/(sigma*d)", constant resistance for each face (or all faces if scalar)
+
         Returns
         -------
         R: (Nvertices x Nvertices) array
@@ -45,6 +46,7 @@ def self_inductance_matrix_old(
             (see integrals.triangle_potential_approx)
         margin: float
             Cut-off distance for "far" points measured in mean triangle side length
+
         Returns
         -------
         M: (Nvertices x Nvertices) array
@@ -253,10 +255,16 @@ def _estimate_nchunks(mesh1, mesh2, approx_far):
 def triangle_self_coupling(mesh):
     """
     Self-coupling integrated analytically. Implemented based on
-    Poole, M.S., 2007. Improved equipment and techniques for dynamic shimming in high field MRI 
-    (Doctoral dissertation, University of Nottingham.). page 72.
-    Original formula can be found in
     https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=475946
+
+    Parameters
+    ----------
+    mesh: Trimesh mesh object
+
+    Returns
+    -------
+    self_coupling: array (N_triangles, )
+        triangle self-coupling
     """
 
     tri_points = mesh.vertices[mesh.faces]
@@ -278,7 +286,7 @@ def triangle_self_coupling(mesh):
     ss = np.sqrt(a - 2 * b + c)
     sac = np.sqrt(a * c)
 
-    integral = (1 * (4 * mesh.area_faces ** 2)) * (
+    self_coupling = (1 * (4 * mesh.area_faces ** 2)) * (
         1
         / (6 * sa)
         * np.log(((a - b + sa * ss) * (b + sac)) / ((-b + sac) * (-a + b + sa * ss)))
@@ -293,7 +301,7 @@ def triangle_self_coupling(mesh):
         )
     )
 
-    return integral
+    return self_coupling
 
 
 def triangle_self_coupling_compact(mesh):

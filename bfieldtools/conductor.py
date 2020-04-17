@@ -479,6 +479,7 @@ def load_pickle(target_file):
     -----------
     target_file: str
         File name or file object to load from
+
     Returns
     -------
     obj: loaded Conductor object

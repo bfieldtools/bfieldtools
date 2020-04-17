@@ -13,7 +13,17 @@ from . import utils
 try:
     from .version import __version__
 except ModuleNotFoundError:
-    "Version information not found (package is not installed)"
+    try:
+        print("version.py not present, did you install the package?")
+        print("Attempting to get version through pkg_resources")
+        from pkg_resources import get_distribution
+
+        __version__ = get_distribution("bfieldtools").version
+    except ModuleNotFoundError:
+        print("pkg_resources not found, I'm giving up")
+        print("Setting version to 'unknown'")
+        __version__ = "unknown"
+
 
 __all__ = [
     "line_magnetics",

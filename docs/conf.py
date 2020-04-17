@@ -112,6 +112,12 @@ autodoc_mock_imports = [
     "psutil",
 ]
 
+
+# Autodoc config
+
+# Concatenate class docstring and __init__
+autoclass_content = "both"
+
 # Configure sphinx-gallery
 
 scrapers = ("matplotlib",)

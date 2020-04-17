@@ -394,6 +394,7 @@ def Plm(l, m, theta, phi):
         evaluation points, theta at spherical coordinates
     phi: Nx1 array
         evaluation points, phi at spherical coordinates
+
     Returns
     -------
     Plm: Nx3 array
@@ -420,6 +421,7 @@ def Blm(l, m, theta, phi):
         evaluation points, theta at spherical coordinates
     phi: Nx1 array
         evaluation points, phi at spherical coordinates
+
     Returns
     -------
     Blm: Nx3 array
@@ -452,6 +454,7 @@ def Wlm(l, m, theta, phi):
         evaluation points, theta at spherical coordinates
     phi: Nx1 array
         evaluation points, phi at spherical coordinates
+
     Returns
     -------
     Wlm: Nx3 array
@@ -931,6 +934,7 @@ def plotYlms(sph, lmax, polar=False):
     ----------
     sph: spherical harmonics analysis object
     lmax: int
+
         maximum degree l
     polar: boolean
         plot polar representation?
@@ -1151,10 +1155,6 @@ def plotBVlm_volume(sph, l, m, lim, Np, offset):
     obj = mlab.quiver3d(p[:, 0], p[:, 1], p[:, 2], _Vlm[:, 0], _Vlm[:, 1], _Vlm[:, 2])
     obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
     return obj
-
-
-##############################
-# Coupling between streamfunction on a mesh and the multipoles
 
 
 def compute_sphcoeffs_mesh(mesh, lmax):
