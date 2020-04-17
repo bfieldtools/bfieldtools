@@ -12,6 +12,10 @@ set BUILDDIR=_build
 
 if "%1" == "" goto help
 
+if "%1" == "html" goto html
+
+if "%1" == "html-noplot" goto html-noplot
+
 %SPHINXBUILD% >NUL 2>NUL
 if errorlevel 9009 (
 	echo.
@@ -24,8 +28,12 @@ if errorlevel 9009 (
 	echo.http://sphinx-doc.org/
 	exit /b 1
 )
+:html
+%SPHINXBUILD% -b html %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+goto end
 
-%SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+:html-noplot
+%SPHINXBUILD% -D plot_gallery=0 -b html %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 goto end
 
 :help

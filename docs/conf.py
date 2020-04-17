@@ -22,8 +22,9 @@ project = "bfieldtools"
 copyright = "2019, bfieldtools developers"
 author = "bfieldtools developers"
 
-# The full version, including alpha/beta/rc tags
-release = "0.1"
+from pkg_resources import get_distribution
+
+release = get_distribution(project).version
 
 
 # -- General configuration ---------------------------------------------------
@@ -117,6 +118,8 @@ autodoc_mock_imports = [
 
 # Concatenate class docstring and __init__
 autoclass_content = "both"
+# Order by source order, not alphabetical
+autodoc_member_order = "bysource"
 
 # Configure sphinx-gallery
 
@@ -182,9 +185,9 @@ html_theme_options = {
     "bootstrap_version": "3",  # default
     "navbar_links": [
         ("Overview", "overview"),
-        ("Installation", "installation"),
+        ("Install", "installation"),
         ("Literature", "literature"),
-        ("Example gallery", "auto_examples/index"),
+        ("Examples", "auto_examples/index"),
         ("API Reference", "source/modules"),
     ],
 }
