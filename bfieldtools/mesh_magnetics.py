@@ -382,6 +382,10 @@ def vector_potential_coupling(
         (see integrals.triangle_potential_approx)
     margin: float
         Cut-off distance for "far" points measured in mean triangle side length.
+    chunk_clusters: Boolean (False)
+        If True, split into chunks based on Voronoi cells. Otherwise use vertex
+        indexes for chunking. Only useful when using approx_far.
+
 
     Returns
     -------

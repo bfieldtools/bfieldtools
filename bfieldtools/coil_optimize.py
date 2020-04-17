@@ -286,6 +286,7 @@ def optimize_lsq(
             \mathbf{C}^T \mathbf{C}  \mathbf{v}[:,i] = \mathbf{w}[i]  \mathbf{Q} \mathbf{v}[:,i]
 
         where C is the constraint matrix and Q is the quadratic objective matrix.
+
     Returns
     -------
     S: StreamFunction
