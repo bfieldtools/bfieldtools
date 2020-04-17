@@ -363,8 +363,34 @@ def scalar_potential_coupling(
 
 
 def _triangle_coupling(
-    mesh, r, Nchunks=None, approx_far=True, margin=2, chunk_clusters=False
+    mesh, r, Nchunks=None, approx_far=True, margin=2, chunk_clusters=False, planar=False
 ):
+    """
+
+    Parameters
+    ----------
+    mesh: Trimesh mesh object
+        mesh describing the geometry of the field source
+    r: ndarray (Np, 3)
+        evaluation points
+    Nchunks: int
+        number of chunks used in the calculation for saving memory
+    approx_far : boolean
+        speed up the calculation by approxmating far points. The default is True.
+    margin : boolean, optional
+        defintion of far points in average triangle sidelength. The default is 2.
+    chunk_clusters : boolean, optional
+        make chunks clusters, may speed up the calculation. The default is False.
+    planar : boolean, optional
+        Prapagated to triangle_potential_uniform. For planar meshes
+        the calculation can be speeded up. The default is False.
+
+    Returns
+    -------
+    M : TYPE
+        DESCRIPTION.
+
+    """
 
     # Source and eval locations
     R1 = mesh.vertices[mesh.faces]
@@ -375,6 +401,9 @@ def _triangle_coupling(
     M = np.zeros((R2.shape[0], mesh.faces.shape[0]))
     print("Computing triangle-coupling matrix")
 
+    if planar:
+        print("Assuming the mesh is planar (if not, set planar=False)")
+
     for ichunk, R2chunk in zip(ichunks, R2chunks):
         RRchunk = R2chunk[:, None, None, :] - R1[None, :, :, :]
         if approx_far:
@@ -382,14 +411,14 @@ def _triangle_coupling(
             temp = np.zeros(RRchunk.shape[:2])
             near, far = _split_by_distance(mesh, RRchunk_centers, margin)
             temp[:, near] = triangle_potential_uniform(
-                RRchunk[:, near], mesh.face_normals[near], False
+                RRchunk[:, near], mesh.face_normals[near], planar
             )
             temp[:, far] = triangle_potential_approx(
                 RRchunk_centers[:, far], mesh.area_faces[far], reg=0
             )
             M[ichunk] = temp
         else:
-            M[ichunk] = triangle_potential_uniform(RRchunk, mesh.face_normals, False)
+            M[ichunk] = triangle_potential_uniform(RRchunk, mesh.face_normals, planar)
 
     return M
 

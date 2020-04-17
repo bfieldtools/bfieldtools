@@ -55,13 +55,37 @@ approx_pot_fv = (
     approx_pot_f[:, :, 0] @ M0 + approx_pot_f[:, :, 1] @ M1 + approx_pot_f[:, :, 2] @ M2
 )
 
-RE_fv = np.abs((approx_pot_fv - exact_pot_v) / exact_pot_v) * 100
-RE_v = np.abs((approx_pot_v - exact_pot_v) / exact_pot_v) * 100
+mask = np.linalg.norm(mesh.vertices, axis=1) < 0.9
+mask[5:] = False
+RE_fv = (
+    np.abs((approx_pot_fv[:, mask] - exact_pot_v[:, mask]) / exact_pot_v[1, mask]) * 100
+)
+RE_v = (
+    np.abs((approx_pot_v[:, mask] - exact_pot_v[:, mask]) / exact_pot_v[1, mask]) * 100
+)
+
+plt.semilogy(z, approx_pot_fv[:, mask], "--", label="potential_dipoles")
+plt.gca().set_prop_cycle(None)
+plt.semilogy(z, approx_pot_v[:, mask], "-.", label="potential_vertex_dipoles")
+plt.gca().set_prop_cycle(None)
+plt.semilogy(z, exact_pot_v[:, mask], label="exact_vertex_dipoles")
+plt.ylabel("Potential")
+plt.xlabel("Distance")
 
 
-plt.semilogy(z, RE_fv.max(axis=1), label="potential_dipoles")
-plt.semilogy(z, RE_v.max(axis=1), label="potential_vertex_dipoles")
-plt.legend()
+plt.figure()
+plt.semilogy(z, (approx_pot_fv - exact_pot_v)[:, mask], "--", label="potential_dipoles")
+plt.gca().set_prop_cycle(None)
+plt.semilogy(
+    z, (approx_pot_v - exact_pot_v)[:, mask], "-.", label="potential_vertex_dipoles"
+)
+plt.ylabel("Error")
+plt.xlabel("Distance")
 
-plt.ylabel("Maximum relative error (%)")
+
+plt.figure()
+plt.semilogy(z, RE_fv, "--", label="potential_dipoles")
+plt.gca().set_prop_cycle(None)
+plt.semilogy(z, RE_v, "-.", label="potential_vertex_dipoles")
+plt.ylabel("Relative error (%)")
 plt.xlabel("Distance")

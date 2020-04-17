@@ -15,35 +15,36 @@ import pkg_resources
 import sys
 import matplotlib.pyplot as plt
 
-# Load simple plane mesh that is centered on the origin
-file_obj = pkg_resources.resource_filename(
-    "bfieldtools", "example_meshes/10x10_plane.obj"
-)
-coilmesh = trimesh.load(file_obj, process=False)
+from bfieldtools.utils import load_example_mesh
 
-from bfieldtools.mesh_properties import self_inductance_matrix, self_inductance_matrix2
+coilmesh = load_example_mesh("10x10_plane")
+
+from bfieldtools.mesh_properties import self_inductance_matrix, mutual_inductance_matrix
 
 # M0 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=0)
 # M1 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=1)
 # M2 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=2)
 # M3 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=3)
 # M4 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=4)
-M5 = self_inductance_matrix(coilmesh, quad_degree=5)
-M6 = self_inductance_matrix(coilmesh, quad_degree=6)
-# M7 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=7)
+M5 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=5)
+M6 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=6)
+M7 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=7)
 
-for m in (M5, M6):
+for m in (M5, M6, M7):
     plt.plot(np.diag(m))
 
 
-# MM1 = self_inductance_matrix2(coilmesh, quad_degree=1)
-MM2 = self_inductance_matrix2(coilmesh, quad_degree=2)
-MM3 = self_inductance_matrix2(coilmesh, quad_degree=3)
-MM4 = self_inductance_matrix2(coilmesh, quad_degree=4)
-MM5 = self_inductance_matrix2(coilmesh, quad_degree=5)
-MM6 = self_inductance_matrix2(coilmesh, quad_degree=6)
+# MM1 = self_inductance_matrix(coilmesh, quad_degree=1)
+# MM2 = self_inductance_matrix(coilmesh, quad_degree=2)
+# MM3 = self_inductance_matrix(coilmesh, quad_degree=3)
+# MM4 = self_inductance_matrix(coilmesh, quad_degree=4)
+MM5 = self_inductance_matrix(coilmesh, quad_degree=5, analytic_self_coupling=True)
+MM6 = self_inductance_matrix(coilmesh, quad_degree=6, analytic_self_coupling=True)
+MM7 = self_inductance_matrix(coilmesh, quad_degree=7, analytic_self_coupling=True)
 
-for m in (MM2, MM3, MM4, MM5, MM6):
+
+plt.gca().set_prop_cycle(None)
+for m in (MM5, MM6, MM7):
     plt.plot(np.diag(m), "--")
 
 

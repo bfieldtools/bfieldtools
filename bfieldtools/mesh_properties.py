@@ -26,7 +26,7 @@ def resistance_matrix(mesh, sheet_resistance):
     return -laplacian_matrix(mesh, sheet_resistance)
 
 
-def self_inductance_matrix(
+def self_inductance_matrix_old(
     mesh, Nchunks=None, quad_degree=2, approx_far=True, margin=2, chunk_clusters=False,
 ):
     """ Calculate a self inductance matrix for hat basis functions
@@ -67,8 +67,15 @@ def self_inductance_matrix(
     )
 
 
-def self_inductance_matrix2(
-    mesh, Nchunks=None, quad_degree=2, approx_far=True, margin=2, chunk_clusters=False,
+def self_inductance_matrix(
+    mesh,
+    Nchunks=None,
+    quad_degree=2,
+    approx_far=True,
+    margin=2,
+    chunk_clusters=False,
+    planar=False,
+    analytic_self_coupling=True,
 ):
     """ Calculate a self inductance matrix for hat basis functions
         (stream functions) in the triangular mesh described by
@@ -88,6 +95,12 @@ def self_inductance_matrix2(
             (see integrals.triangle_potential_approx)
         margin: float
             Cut-off distance for "far" points measured in mean triangle side length
+        planar: boolean
+            This option is propagated to _triangle_coupling
+            for planar meshes the analytic calculations can be made faster
+        analytic_self_coupling: boolean
+            If True: the diagonal elements obtained from _triangle_coupling are 
+            replaced with an analytic calculation
         Returns
         -------
         M: (Nvertices x Nvertices) array
@@ -114,7 +127,13 @@ def self_inductance_matrix2(
     Nt = len(mesh.faces)
     Nv = len(mesh.vertices)
     C = _triangle_coupling(
-        mesh, quadpoints.reshape(-1, 3), Nchunks, approx_far, margin, chunk_clusters
+        mesh,
+        quadpoints.reshape(-1, 3),
+        Nchunks,
+        approx_far,
+        margin,
+        chunk_clusters,
+        planar,
     ).reshape(Nt, Nw, Nt)
 
     # Integrate over the triangles
@@ -122,8 +141,9 @@ def self_inductance_matrix2(
     C *= mesh.area_faces[:, None]
     # Symmetrize
     C = 0.5 * (C + C.T)
-    # Replace diagonal with the analytic version
-    C[np.diag_indices(C.shape[0])] = triangle_self_coupling(mesh)
+    if analytic_self_coupling:
+        # Replace diagonal with the analytic version
+        C[np.diag_indices(C.shape[0])] = triangle_self_coupling(mesh)
 
     # Rotated gradients (currents)
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)

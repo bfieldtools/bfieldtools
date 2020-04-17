@@ -230,8 +230,6 @@ def triangle_potential_uniform(R, tn, planar=False):
     result = np.einsum("...i,...i", gamma0(R), x)
     if not planar:
         result += d_distance(R, tn) * omega(R)
-    else:
-        print("Assuming all points are in the same plane!")
     return result
 
 

@@ -10,7 +10,10 @@ from . import suhtools
 from . import thermal_noise
 from . import utils
 
-from .version import __version__
+try:
+    from .version import __version__
+except ModuleNotFoundError:
+    "Version information not found (package is not installed)"
 
 __all__ = [
     "line_magnetics",
