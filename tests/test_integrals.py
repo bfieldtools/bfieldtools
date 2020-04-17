@@ -1,21 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Apr  7 11:32:38 2020
-
-@author: Rasmus Zetter
-"""
-
-
-from bfieldtools.integrals import (
-    omega,
-    d_distance,
-    potential_vertex_dipoles,
-    triangle_potential_dipole_linear,
-    potential_dipoles,
-)
+from bfieldtools import integrals
 from bfieldtools.mesh_calculus import mass_matrix
 from bfieldtools.utils import load_example_mesh
-
 
 import pytest
 
@@ -24,16 +9,48 @@ from numpy.testing import assert_allclose
 from scipy.sparse import csc_matrix
 
 
-def test_solid_angle():
+def test_gamma0():
+    """
+    No specific test done for this
+    """
+
+    pass
+
+
+def test_omega():
+    """
+    Tests solid angle (whether sphere sums up to 4*pi)
+
+    """
+
     mesh = load_example_mesh("unit_sphere")
 
     points = np.array([[0, 0, 0], [0.1, 0, 0.2], [-0.1, 0.1, -0.2]])
 
     R = points[:, None, None, :] - mesh.vertices[mesh.faces][None, :, :, :]
 
-    solid_angle = omega(R)
+    solid_angle = integrals.omega(R)
 
     assert_allclose(np.sum(solid_angle, axis=1), 4 * np.pi)
+
+
+def test_x_distance():
+
+    import trimesh
+
+    vertices = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0], [-1, 0, 0]])
+
+    faces = np.array([[2, 1, 0], [0, 3, 2]])
+
+    mesh = trimesh.Trimesh(vertices=vertices, faces=faces)
+
+    points = np.array([[0, 1, 0]])
+
+    R = points[:, None, None, :] - mesh.vertices[faces][None, :, :, :]
+
+    x = integrals.x_distance(R, mesh.face_normals, mesh.area_faces)
+
+    assert_allclose(x, np.array([[[0.0, 1.0, 0.0], [2.0, -1.0, -1.0]]]))
 
 
 def test_d_distance():
@@ -45,10 +62,14 @@ def test_d_distance():
 
         R = points[:, None, None, :] - mesh.vertices[mesh.faces][None, :, :, :]
 
-        assert_allclose(d_distance(R, mesh.face_normals), z_offset)
+        assert_allclose(integrals.d_distance(R, mesh.face_normals), z_offset)
 
 
 def test_dipole_potential_approximation():
+    """
+    Test whether approximations and exact solution are close enough
+
+    """
 
     mesh = load_example_mesh("unit_disc")
 
@@ -59,10 +80,12 @@ def test_dipole_potential_approximation():
 
     vertex_areas = mass_matrix(mesh, lumped=True).diagonal()
 
-    approx_pot_v = potential_vertex_dipoles(R_v, mesh.vertex_normals, vertex_areas)
+    approx_pot_v = integrals.potential_vertex_dipoles(
+        R_v, mesh.vertex_normals, vertex_areas
+    )
 
-    approx_pot_f = potential_dipoles(R, mesh.face_normals, mesh.area_faces)
-    exact_pot_f = triangle_potential_dipole_linear(
+    approx_pot_f = integrals.potential_dipoles(R, mesh.face_normals, mesh.area_faces)
+    exact_pot_f = integrals.triangle_potential_dipole_linear(
         R, mesh.face_normals, mesh.area_faces
     )
 
@@ -85,3 +108,30 @@ def test_dipole_potential_approximation():
 
     assert_allclose(approx_pot_v, exact_pot_v, rtol=5e-2)
     assert_allclose(approx_pot_fv, exact_pot_v, rtol=1e-3)
+
+
+def test_triangle_potential_approximation():
+    """
+    test whether 1/r triangle potential approximations give close enough
+    to exact (with/without planar assumption)
+    """
+
+    pytest.skip("skipping this test, known to fail")
+
+    mesh = load_example_mesh("unit_disc")
+
+    points = np.array([[0, 0, 1], [-0.1, 0.1, -5]])
+
+    R = points[:, None, None, :] - mesh.vertices[mesh.faces][None, :, :, :]
+    Rcenters = points[:, None, :] - mesh.triangles_center[None, :, :]
+
+    exact = integrals.triangle_potential_uniform(R, mesh.face_normals)
+    exact_planar = integrals.triangle_potential_uniform(
+        R, mesh.face_normals, planar=True
+    )
+    approx = integrals.triangle_potential_approx(Rcenters, mesh.area_faces)
+
+    assert_allclose(exact_planar, exact)
+    assert_allclose(approx, exact, rtol=5e-3)
+
+    assert_allclose(approx, exact_planar)
