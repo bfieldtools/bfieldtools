@@ -116,8 +116,6 @@ def test_triangle_potential_approximation():
     to exact (with/without planar assumption)
     """
 
-    pytest.skip("skipping this test, known to fail")
-
     mesh = load_example_mesh("unit_disc")
 
     points = np.array([[0, 0, 1], [-0.1, 0.1, -5]])
@@ -126,12 +124,16 @@ def test_triangle_potential_approximation():
     Rcenters = points[:, None, :] - mesh.triangles_center[None, :, :]
 
     exact = integrals.triangle_potential_uniform(R, mesh.face_normals)
+    approx = integrals.triangle_potential_approx(Rcenters, mesh.area_faces)
+
+    assert_allclose(approx, exact, rtol=5e-3)
+
+    points = np.array([[0, 0, 0], [-0.1, 0.1, 0]])
+    R = points[:, None, None, :] - mesh.vertices[mesh.faces][None, :, :, :]
+
+    exact = integrals.triangle_potential_uniform(R, mesh.face_normals)
     exact_planar = integrals.triangle_potential_uniform(
         R, mesh.face_normals, planar=True
     )
-    approx = integrals.triangle_potential_approx(Rcenters, mesh.area_faces)
 
     assert_allclose(exact_planar, exact)
-    assert_allclose(approx, exact, rtol=5e-3)
-
-    assert_allclose(approx, exact_planar)
