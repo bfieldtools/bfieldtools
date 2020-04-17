@@ -9,6 +9,8 @@ from . import sphtools
 from . import suhtools
 from . import thermal_noise
 from . import utils
+from . import integrals
+from . import legacy
 
 try:
     from .version import __version__
@@ -37,4 +39,5 @@ __all__ = [
     "suhtools",
     "thermal_noise",
     "utils",
-]  # , 'validation']
+    "integrals",
+]

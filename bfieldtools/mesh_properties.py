@@ -27,48 +27,6 @@ def resistance_matrix(mesh, sheet_resistance):
     return -laplacian_matrix(mesh, sheet_resistance)
 
 
-def self_inductance_matrix_old(
-    mesh, Nchunks=None, quad_degree=2, approx_far=True, margin=2, chunk_clusters=False,
-):
-    """ Calculate a self inductance matrix for hat basis functions
-        (stream functions) in the triangular mesh described by
-
-        Parameters
-        ----------
-        mesh: Trimesh mesh object
-        Nchunks: int
-            Number of serial chunks to divide the computation into
-        quad_degree: int >= 1
-            Quadrature degree (Dunavant scheme) to use. Self-inductance requires higher degree than mutual inductance
-        approx_far: Boolean (True)
-            If True, use approximate calculation for triangles that
-            far from the source triangles using a simple quadrature
-            (see integrals.triangle_potential_approx)
-        margin: float
-            Cut-off distance for "far" points measured in mean triangle side length
-
-        Returns
-        -------
-        M: (Nvertices x Nvertices) array
-            Self.inductance matrix of `mesh`
-    """
-    if quad_degree <= 2:
-        print(
-            "Computing self-inductance matrix using rough quadrature (degree=%d).\
-              For higher accuracy, set quad_degree to 4 or more."
-            % quad_degree
-        )
-
-    return mutual_inductance_matrix(
-        mesh,
-        mesh,
-        Nchunks=Nchunks,
-        quad_degree=quad_degree,
-        approx_far=approx_far,
-        margin=margin,
-    )
-
-
 def self_inductance_matrix(
     mesh,
     Nchunks=None,
@@ -81,7 +39,7 @@ def self_inductance_matrix(
 ):
     """ Calculate a self inductance matrix for hat basis functions
         (stream functions) in the triangular mesh described by
-        
+
         self-coupling terms are calculated anaytically
 
         Parameters
@@ -101,7 +59,7 @@ def self_inductance_matrix(
             This option is propagated to _triangle_coupling
             for planar meshes the analytic calculations can be made faster
         analytic_self_coupling: boolean
-            If True: the diagonal elements obtained from _triangle_coupling are 
+            If True: the diagonal elements obtained from _triangle_coupling are
             replaced with an analytic calculation
         Returns
         -------
@@ -310,8 +268,8 @@ def triangle_self_coupling_compact(mesh):
     on some simplifications in the calculation presented in
 
 
-    Poole, M.S., 2007. Improved equipment and techniques for dynamic 
-    shimming in high field MRI 
+    Poole, M.S., 2007. Improved equipment and techniques for dynamic
+    shimming in high field MRI
     (Doctoral dissertation, University of Nottingham.). page 72.
     https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=475946
     """
