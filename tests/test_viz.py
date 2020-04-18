@@ -78,6 +78,7 @@ def test_plot_3d_current_loops():
 
     viz.plot_3d_current_loops(loops, tube_radius=0.01, colors=None)
     viz.plot_3d_current_loops(loops, tube_radius=0.01, colors=(1, 0, 0))
+    viz.plot_3d_current_loops(loops, tube_radius=0.01, colors=[(1, 0, 0)] * 2)
 
     # Longest segment is the one closing the loop
     x = np.cos(np.linspace(0, 2 * np.pi))[:-1]
@@ -85,3 +86,14 @@ def test_plot_3d_current_loops():
     z = np.zeros_like(y)
     loops = [np.array([x, y, z]).T, 2 * np.array([x, y, z]).T]
     viz.plot_3d_current_loops(loops, tube_radius=0.01)
+
+
+@pytest.mark.xfail
+def test_plot_3d_current_loops_fail():
+
+    x = np.cos(np.linspace(0, 2 * np.pi))
+    y = np.sin(np.linspace(0, 2 * np.pi))
+    z = np.zeros_like(y)
+    loops = [np.array([x, y, z]).T, 2 * np.array([x, y, z]).T]
+
+    viz.plot_3d_current_loops(loops, tube_radius=0.01, colors="boop")

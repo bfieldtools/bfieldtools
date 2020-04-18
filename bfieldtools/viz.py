@@ -78,6 +78,9 @@ def plot_3d_current_loops(
     elif isinstance(colors, tuple):
         colors = [colors] * len(current_loops)
 
+    elif isinstance(colors, list):
+        assert len(colors) == len(current_loops)
+
     elif colors == "auto":
         colors = []
 
@@ -99,6 +102,8 @@ def plot_3d_current_loops(
             colors.append(
                 palette[int((np.sign(centre_normal @ origin_vector) + 1) / 2)]
             )
+    else:
+        raise ValueError("Invalid parameter for colors")
 
     for loop_idx, loop in enumerate(current_loops):
         mlab.plot3d(
