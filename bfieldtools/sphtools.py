@@ -19,6 +19,8 @@ def cartesian2spherical(p, zaxis_approx=True):
     ----------
     p: Nx3 array
         cartesian coordinates
+    zaxis_approx: Boolean (True)
+        If True, apply regularization that avoids singularity on z-axis
 
     Returns
     -------
