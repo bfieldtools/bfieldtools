@@ -212,58 +212,6 @@ def _estimate_nchunks(mesh1, mesh2, approx_far):
 
 def triangle_self_coupling(mesh):
     """
-    Self-coupling integrated analytically. Implemented based on
-    https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=475946
-
-    Parameters
-    ----------
-    mesh: Trimesh mesh object
-
-    Returns
-    -------
-    self_coupling: array (N_triangles, )
-        triangle self-coupling
-    """
-
-    tri_points = mesh.vertices[mesh.faces]
-
-    r1 = tri_points[:, 0, :]
-    r2 = tri_points[:, 1, :]
-    r3 = tri_points[:, 2, :]
-
-    # a = np.dot(r3 - r1, r3 - r1)
-    # b = np.dot(r3 - r1, r3 - r2)
-    # c = np.dot(r3 - r2, r3 - r2)
-
-    a = np.einsum("ij,ij->i", r3 - r1, r3 - r1)
-    b = np.einsum("ij,ij->i", r3 - r1, r3 - r2)
-    c = np.einsum("ij,ij->i", r3 - r2, r3 - r2)
-
-    sa = np.sqrt(a)
-    sc = np.sqrt(c)
-    ss = np.sqrt(a - 2 * b + c)
-    sac = np.sqrt(a * c)
-
-    self_coupling = (1 * (4 * mesh.area_faces ** 2)) * (
-        1
-        / (6 * sa)
-        * np.log(((a - b + sa * ss) * (b + sac)) / ((-b + sac) * (-a + b + sa * ss)))
-        + 1
-        / (6 * sc)
-        * np.log(((b + sac) * (-b + c + sc * ss)) / ((b - c + sc * ss) * (-b + sac)))
-        + 1
-        / (6 * ss)
-        * np.log(
-            ((a - b + sa * ss) * (-b + c + sc * ss))
-            / ((b - c + sc * ss) * (-a + b + sa * ss))
-        )
-    )
-
-    return self_coupling
-
-
-def triangle_self_coupling_compact(mesh):
-    """
     Self-coupling integrated analytically. Re-implemented based
     on some simplifications in the calculation presented in
 
