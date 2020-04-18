@@ -58,3 +58,7 @@ def test_line_path_functionality():
     B = slp.magnetic_field(mesh.vertices + np.array([0, 0, 1]))
     A = slp.vector_potential(mesh.vertices + np.array([0, 0, 1]))
     U = slp.scalar_potential(mesh.vertices + np.array([0, 0, 1]))
+
+    mesh.vertices += np.array([[0, 0, 1]])
+
+    M = slp.mesh_mutual_inductance(mesh)

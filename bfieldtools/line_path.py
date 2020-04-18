@@ -10,6 +10,7 @@ from trimesh.path.entities import Line
 
 from .viz import plot_3d_current_loops
 from .contour import scalar_contour, simplify_contour
+from .mesh_properties import mesh2line_mutual_inductance
 from . import line_magnetics
 
 
@@ -24,11 +25,11 @@ class LinePath(Path3D):
         """
         Init with inheritance. First priority is given to passed loops parameter,
         if not present will compute loops from mesh and scalars.
-        
+
         Parameters
         ----------
         loops: list of array-like (x, 3)
-            Each list element corresponds to a Polyline (current loop), with the 
+            Each list element corresponds to a Polyline (current loop), with the
             last element being connected to the first
         mesh: Trimesh mesh object
             mesh geometry
@@ -66,7 +67,7 @@ class LinePath(Path3D):
             Minimum angle. Edges with smaller angle differences are merged.
         smooth: bool
             If True, apply smoothing to the polygon shapes.
-        
+
         Returns
         -------
         simplified_linepath: LinePath
@@ -83,12 +84,12 @@ class LinePath(Path3D):
     def plot_loops(self, **kwargs):
         """
         Plots loops in 3D using mayavi, see viz.plot_3d_current_loops for more details
-        
+
         Parameters
         ----------
         colors: str
-        
-        
+
+
         """
 
         if "tube_radius" not in kwargs:
@@ -102,19 +103,19 @@ class LinePath(Path3D):
     def magnetic_field(self, points, separate_loops=False):
         """
         Compute magnetic field in some point due to a unit current in the loops
-        
+
         Parameters
         ----------
         points: array (N_p, 3)
-        
+
         separate_loops: Boolean
             	If True, don't combine contributions of separate loops
-        
+
         Returns
         -------
-        
+
         Bfield: array (N_p, 3) or array (N_loops, N_p, 3)
-        
+
         """
         Bfield = np.zeros((len(self.entities), len(points), 3))
         for ii, loop in enumerate(self.entities):
@@ -130,17 +131,17 @@ class LinePath(Path3D):
     def vector_potential(self, points, separate_loops=False, **kwargs):
         """
         Compute magnetic vector potential in some point due to a unit current in the loops
-        
+
         Parameters
         ----------
         points: array (N_p, 3)
-        
+
         separate_loops: Boolean
             	If True, don't combine contributions of separate loops
-        
+
         Returns
         -------
-        
+
         Aield: array (N_p, 3) or array (N_loops, N_p, 3)
         """
 
@@ -158,17 +159,17 @@ class LinePath(Path3D):
     def scalar_potential(self, points, separate_loops=False, **kwargs):
         """
         Compute magnetic scalar potential in some point due to a unit current in the loops
-        
+
         Parameters
         ----------
         points: array (N_p, 3)
-        
+
         separate_loops: Boolean
             	If True, don't combine contributions of separate loops
-        
+
         Returns
         -------
-        
+
         Ufield: array (N_p,) or array (N_loops, N_p)
         """
 
@@ -182,3 +183,35 @@ class LinePath(Path3D):
             Ufield = np.sum(Ufield, axis=0)
 
         return Ufield
+
+    def mesh_mutual_inductance(self, mesh, separate_loops=False, **kwargs):
+        """
+        Computes the mutual inductance between the polyline loops and a conductor
+        mesh.
+
+        Parameters
+        ----------
+        mesh : Trimesh mesh object
+            Mesh with N_verts vertices.
+        separate_loops : Boolean, optional
+            If True, return the inductance separately for each loop. The default is False.
+        **kwargs : dict
+            Passed to mesh_properties.mesh2line_mutual_inductance
+
+        Returns
+        -------
+        M: array
+            If separate loops, shape (N_loops, N_verts). Otherwise (N_verts,).
+
+        """
+        M = np.zeros((len(self.entities), len(mesh.vertices)))
+
+        for ii, loop in enumerate(self.entities):
+            M[ii] = mesh2line_mutual_inductance(
+                mesh, self.vertices[loop.points], **kwargs
+            )
+
+        if not separate_loops:
+            M = np.sum(M, axis=0)
+
+        return M
