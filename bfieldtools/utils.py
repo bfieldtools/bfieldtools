@@ -50,7 +50,7 @@ def tri_normals_and_areas(r, tri):
     return n, a
 
 
-def get_quad_points(verts, tris, method="sevenpoint", index=None):
+def get_quad_points(verts, tris, method="seven_point", index=None):
     """ Get quad points and weights from quadrature rules implemented in
         quadpy
 
@@ -130,7 +130,9 @@ def get_line_quad_points(line_vertices, method="midpoint", index=None):
                 raise error
     else:
         raise ValueError(
-            "method: " + method + " not in the available list of methods: " + methods
+            "method: "
+            + method
+            + " not in the available list of methods (check quadpy.line_segment.__all__)"
         )
 
     x = rule.points
