@@ -616,7 +616,7 @@ def basis_fields(p, lmax, normalize=False, multiply_mu0=True):
     -------
     B1: N x 3 x N_lmax array
         magnetic field at p for each alpha_lm
-    B2: N x 3 N_lmax array
+    B2: N x 3 x N_lmax array
         magnetic field at p for each beta_lm
 
     """
@@ -631,7 +631,7 @@ def basis_fields(p, lmax, normalize=False, multiply_mu0=True):
         for m in range(-1 * l, l + 1):
             _Wlm = Wlm(l, m, sp[:, 1], sp[:, 2])
             if not normalize:
-                Wlm *= np.sqrt(2 * l ** 2 + l)
+                _Wlm *= np.sqrt(2 * l ** 2 + l)
             _Wlm[:, 0] *= sp[:, 0] ** (l - 1)
             _Wlm[:, 1] *= sp[:, 0] ** (l - 1)
             _Wlm[:, 2] *= sp[:, 0] ** (l - 1)
@@ -640,7 +640,7 @@ def basis_fields(p, lmax, normalize=False, multiply_mu0=True):
 
             _Vlm = Vlm(l, m, sp[:, 1], sp[:, 2])
             if not normalize:
-                Vlm *= np.sqrt((2 * l + 1) * (l + 1))
+                _Vlm *= np.sqrt((2 * l + 1) * (l + 1))
             _Vlm[:, 0] *= sp[:, 0] ** (-l - 2)
             _Vlm[:, 1] *= sp[:, 0] ** (-l - 2)
             _Vlm[:, 2] *= sp[:, 0] ** (-l - 2)

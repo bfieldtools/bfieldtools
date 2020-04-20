@@ -163,8 +163,8 @@ def test_field():
 
     basis = sphtools.basis_fields(p, lmax)
 
-    B_b = np.einsum("ijk,j->ki", basis[0], acoeffs) + np.einsum(
-        "ijk,j->ki", basis[1], bcoeffs
+    B_b = np.einsum("ijk,k->ij", basis[0], acoeffs) + np.einsum(
+        "ijk,k->kij", basis[1], bcoeffs
     )
 
     # Skip until bug solved
