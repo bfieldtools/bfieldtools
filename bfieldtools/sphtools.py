@@ -594,11 +594,10 @@ def field(p, acoeffs, bcoeffs, lmax):
     return B
 
 
-def basis_fields(p, lmax):
+def basis_fields(p, lmax, normalize=False, multiply_mu0=True):
     """
     Computes magnetic fields for each sph coefficient.
-    Ignores the 'DC' component l=0. The fields are normalized
-    over the unit sphere.
+    Ignores the 'DC' component l=0.
 
     Parameters
     ----------
@@ -606,12 +605,18 @@ def basis_fields(p, lmax):
         coordinates in which the field is computed
     lmax: int
         maximum degree l which is used in computing
-
+    normalize: boolean (optional)
+         if True: the fields are normalized w.r.t integration over
+         the unit sphere. Otherwise, the fields correspond to normalized
+         potential. The default is false.
+    multiply_mu0: boolean (optional)
+        multiply by mu_0 to obtain units of Tesla. The default is True
+        
     Returns
     -------
-    B1: N_lmax x N x 3 array
+    B1: N x 3 x N_lmax array
         magnetic field at p for each alpha_lm
-    B2: N_lmax x N x 3 array
+    B2: N x 3 N_lmax array
         magnetic field at p for each beta_lm
 
     """
@@ -625,7 +630,8 @@ def basis_fields(p, lmax):
     for l in range(1, lmax + 1):
         for m in range(-1 * l, l + 1):
             _Wlm = Wlm(l, m, sp[:, 1], sp[:, 2])
-            #                Wlm *= np.sqrt(2*l**2 + l)
+            if not normalize:
+                Wlm *= np.sqrt(2 * l ** 2 + l)
             _Wlm[:, 0] *= sp[:, 0] ** (l - 1)
             _Wlm[:, 1] *= sp[:, 0] ** (l - 1)
             _Wlm[:, 2] *= sp[:, 0] ** (l - 1)
@@ -633,7 +639,8 @@ def basis_fields(p, lmax):
             B2[idx] = _Wlm  # r**l functions
 
             _Vlm = Vlm(l, m, sp[:, 1], sp[:, 2])
-            #                Vlm *= np.sqrt((2*l+1)*(l+1))
+            if not normalize:
+                Vlm *= np.sqrt((2 * l + 1) * (l + 1))
             _Vlm[:, 0] *= sp[:, 0] ** (-l - 2)
             _Vlm[:, 1] *= sp[:, 0] ** (-l - 2)
             _Vlm[:, 2] *= sp[:, 0] ** (-l - 2)
@@ -642,11 +649,15 @@ def basis_fields(p, lmax):
 
             idx += 1
 
-    # FIX, should be handled earlier maybe?s
+    # FIX, should be handled earlier maybe
     B1[np.isinf(B1)] = 0
     B2[np.isinf(B2)] = 0
 
-    return np.moveaxis(B1, 2, 0), np.moveaxis(B2, 2, 0)
+    if multiply_mu0:
+        B1 *= 1e-7 * 4 * np.pi
+        B2 *= 1e-7 * 4 * np.pi
+
+    return np.moveaxis(B1, 0, 2), np.moveaxis(B2, 0, 2)
 
 
 ###################################
