@@ -1,7 +1,7 @@
 Install
 ============
 
-bfieldtools is a pure Python package, and depends on several other Python packages. bfieldtools requires Python version 3.7 or higher.  
+bfieldtools is a pure Python package, and depends on several other Python packages. bfieldtools requires Python version 3.7 or higher.
 
 
 Using conda
@@ -15,7 +15,7 @@ We strongly recommend the Anaconda_ distribution of Python, which comes with mor
 
 .. code-block:: bash
 
-    WIP
+    conda install -c conda-forge bfieldtools
 
 
 Using pip

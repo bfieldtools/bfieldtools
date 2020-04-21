@@ -21,7 +21,10 @@ from . import conductor
 
 
 class SuhBasis:
-    """ Class for representing magnetic field using surface harmonics
+    """
+
+    Class for representing magnetic field using surface harmonics
+
     """
 
     def __init__(
@@ -34,16 +37,16 @@ class SuhBasis:
     ):
         """
         Parameters
-            obj : Trimesh-object representing the boundary on which
-                        current density is specified
-                  or Conductor object that wraps the mesh
-            Nc : Number of components
-            boundary_condition : str  "dirichlet" (default) or "neumann"
-                if zero-Dirichlet boundary conditions ("dirichlet")
-                are used the basis corresponds to inner_vertices
-                else with zero-Neumann condition ("neumann")
-                the basis corresponds to all vertices
-
+        ----------
+        obj : Trimesh-object
+            Represents the boundary on which current density is specified
+            or Conductor object that wraps the mesh
+        Nc : Number of components
+        boundary_condition : str  "dirichlet" (default) or "neumann"
+            if zero-Dirichlet boundary conditions ("dirichlet")
+            are used the basis corresponds to inner_vertices
+            else with zero-Neumann condition ("neumann")
+            the basis corresponds to all vertices
         """
 
         if boundary_condition in ("dirichlet", "neumann"):

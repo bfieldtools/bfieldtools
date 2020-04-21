@@ -18,7 +18,7 @@ Documentation
    
    auto_examples/index
    
-   source/modules
+   api_reference
 
 
 Indices and tables

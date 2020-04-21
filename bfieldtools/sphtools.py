@@ -24,6 +24,7 @@ def cartesian2spherical(p, zaxis_approx=True):
 
     Returns
     -------
+
     sp: Nx3 array
         spherical coordinates [r, theta, phi]
 
@@ -611,7 +612,7 @@ def basis_fields(p, lmax, normalize=False, multiply_mu0=True):
          potential. The default is false.
     multiply_mu0: boolean (optional)
         multiply by mu_0 to obtain units of Tesla. The default is True
-        
+
     Returns
     -------
     B1: N x 3 x N_lmax array
@@ -938,7 +939,7 @@ def reconstruct_B(p, coeffs, lmax):
     return B
 
 
-def plot_ylms(sph, lmax, polar=False):
+def plotYlms(sph, lmax, polar=False):
     """
     Plots real spherical harmonics up to lmax.
     Inspired by https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html.
