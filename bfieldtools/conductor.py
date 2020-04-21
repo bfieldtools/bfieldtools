@@ -14,7 +14,7 @@ from scipy.sparse import issparse
 
 from . import utils
 from .mesh_calculus import laplacian_matrix, mass_matrix
-from .mesh_properties import (
+from .mesh_impedance import (
     self_inductance_matrix,
     resistance_matrix,
     mutual_inductance_matrix,
@@ -314,7 +314,7 @@ class Conductor:
         """
         Self-inductance matrix, returned in appropiate basis.
 
-        For further information, see mesh_properties.self_inductance_matrix
+        For further information, see mesh_impedance.self_inductance_matrix
 
         property-decorated wrapper.
         """
@@ -345,7 +345,7 @@ class Conductor:
     @property
     def resistance(self):
         """
-        Resistance matrix. For further information, see mesh_properties.resistance_matrix
+        Resistance matrix. For further information, see mesh_impedance.resistance_matrix
 
         property-decorated wrapper.
         """

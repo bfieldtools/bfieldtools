@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-Created on Mon Apr  6 12:52:32 2020
 
-@author: Rasmus Zetter
 """
 import numpy as np
 from trimesh.path import Path3D
@@ -10,7 +7,7 @@ from trimesh.path.entities import Line
 
 from .viz import plot_3d_current_loops
 from .contour import scalar_contour, simplify_contour
-from .mesh_properties import mesh2line_mutual_inductance
+from .mesh_impedance import mesh2line_mutual_inductance
 from . import line_magnetics
 
 
@@ -196,7 +193,7 @@ class LinePath(Path3D):
         separate_loops : Boolean, optional
             If True, return the inductance separately for each loop. The default is False.
         **kwargs : dict
-            Passed to mesh_properties.mesh2line_mutual_inductance
+            Passed to mesh_impedance.mesh2line_mutual_inductance
 
         Returns
         -------

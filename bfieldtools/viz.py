@@ -14,7 +14,25 @@ def plot_mesh(
     mesh, cull_front=False, cull_back=False, figure=None, figsize=(800, 800), **kwargs
 ):
     """
-    Simply plot the mesh surface in mayavi.
+    Plot the mesh surface in mayavi.
+
+    Parameters
+    ----------
+    mesh: Trimesh mesh object
+        mesh to be plotted
+    cull_front: Boolean (False)
+        If True, cull front of mesh
+    cull_back: Boolean (False)
+        If True, cull back of mesh
+    figure: mayavi figure or None
+        If passed, plot to existing figure
+    figsize: tuple (x, y)
+        Figure size (if figure is None)
+
+    Returns
+    -------
+    figure: mayavi figure
+        Contains the plotted mesh
 
     """
 
@@ -23,13 +41,13 @@ def plot_mesh(
             None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=figsize
         )
 
-    mesh = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, **kwargs)
+    meshviz = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, **kwargs)
 
-    mesh.actor.mapper.scalar_visibility = False
+    meshviz.actor.mapper.scalar_visibility = False
 
-    mesh.actor.property.frontface_culling = cull_front
-    mesh.actor.property.backface_culling = cull_back
-    return mesh
+    meshviz.actor.property.frontface_culling = cull_front
+    meshviz.actor.property.backface_culling = cull_back
+    return figure
 
 
 def plot_3d_current_loops(
@@ -61,6 +79,7 @@ def plot_3d_current_loops(
         Optional, if passed will plot to existing figure
     figsize: (x, y) tuple
         Optional, if plotting to new figure specifies the size (in pixels)
+
     Returns
     -------
     fig: mlab figure
@@ -366,6 +385,7 @@ def plot_data_on_vertices(
         If True, interpolate scalar data for smoother look
     opacity: float
         Opacity of rendered mesh
+
     Returns
     -------
     fig: mlab figure

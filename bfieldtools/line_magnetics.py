@@ -1,5 +1,5 @@
 """
-Functions for working with current polylines
+Functions for working with current polylines, e.g. for calculating the magnetic field and potentials as well as the inductance
 
 """
 

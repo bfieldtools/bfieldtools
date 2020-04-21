@@ -664,7 +664,7 @@ def basis_fields(p, lmax, normalize=False, multiply_mu0=True):
 # sph class
 
 
-class sphbasis:
+class SphBasis:
     """
     Class for constructing spherical harmonics (Ylms), their gradients
     and related magnetic field 'basis vectorfunctions'
@@ -826,7 +826,7 @@ class sphbasis:
         return coeffs
 
 
-def fitSpectra(coords, Bmeas, lmax):
+def fit_spectra(coords, Bmeas, lmax):
     """
     Fits spherical harmonics representation (r**l) to measured data.
 
@@ -901,7 +901,7 @@ def fitSpectra(coords, Bmeas, lmax):
     return coeffs, coeffs2, nrmse
 
 
-def reconstructB(p, coeffs, lmax):
+def reconstruct_B(p, coeffs, lmax):
     """
     Reconstructs the magnetic field using the spherical harmonics coefficients.
 
@@ -938,7 +938,7 @@ def reconstructB(p, coeffs, lmax):
     return B
 
 
-def plotYlms(sph, lmax, polar=False):
+def plot_ylms(sph, lmax, polar=False):
     """
     Plots real spherical harmonics up to lmax.
     Inspired by https://docs.enthought.com/mayavi/mayavi/auto/example_spherical_harmonics.html.

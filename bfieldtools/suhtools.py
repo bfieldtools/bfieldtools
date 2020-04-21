@@ -1,11 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Tue Oct 15 15:02:30 2019
 
-@author: makinea1
-
-Class for calculating the surface harmonic representation of
+Tools for calculating the surface harmonic representation of
 the magnetic field. Surface harmonics can represent
 of any stream function as a series.
 

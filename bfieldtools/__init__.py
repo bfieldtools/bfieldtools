@@ -1,5 +1,5 @@
 from . import conductor
-from . import mesh_properties
+from . import mesh_impedance
 from . import mesh_magnetics
 from . import mesh_calculus
 from . import line_magnetics
@@ -34,7 +34,7 @@ __all__ = [
     "mesh_calculus",
     "mesh_magnetics",
     "conductor",
-    "mesh_properties",
+    "mesh_impedance",
     "sphtools",
     "suhtools",
     "thermal_noise",

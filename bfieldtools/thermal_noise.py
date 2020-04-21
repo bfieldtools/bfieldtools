@@ -11,7 +11,7 @@ from mayavi import mlab
 
 from .mesh_magnetics import magnetic_field_coupling
 from .mesh_calculus import laplacian_matrix, mass_matrix
-from .mesh_properties import self_inductance_matrix, resistance_matrix
+from .mesh_impedance import self_inductance_matrix, resistance_matrix
 from . import utils
 
 

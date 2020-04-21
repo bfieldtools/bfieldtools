@@ -19,7 +19,7 @@ from bfieldtools.utils import load_example_mesh
 
 coilmesh = load_example_mesh("10x10_plane")
 
-from bfieldtools.mesh_properties import self_inductance_matrix, mutual_inductance_matrix
+from bfieldtools.mesh_impedance import self_inductance_matrix, mutual_inductance_matrix
 
 # M0 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=0)
 # M1 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=1)
@@ -49,7 +49,7 @@ for m in (MM5, MM6, MM7):
     plt.plot(np.diag(m), "--")
 
 
-from bfieldtools.mesh_properties import (
+from bfieldtools.mesh_impedance import (
     triangle_self_coupling,
     triangle_self_coupling_compact,
 )

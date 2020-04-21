@@ -1,7 +1,6 @@
 """
 
-This module includes functions for creating contours (isolines) of a scalar function
-defined on a triangle mesh surface. Also contains functions for modifying the generated contours.
+Functions for creating contours (isolines) of a scalar function defined on a triangle mesh surface. Also contains functions for modifying the generated contours.
 
 """
 

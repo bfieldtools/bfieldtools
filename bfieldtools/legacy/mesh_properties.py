@@ -1,4 +1,4 @@
-from ..mesh_properties import mutual_inductance_matrix
+from ..mesh_impedance import mutual_inductance_matrix
 
 import numpy as np
 

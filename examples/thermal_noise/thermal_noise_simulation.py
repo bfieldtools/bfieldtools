@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import trimesh
 from mayavi import mlab
 
-from bfieldtools.mesh_properties import self_inductance_matrix, resistance_matrix
+from bfieldtools.mesh_impedance import self_inductance_matrix, resistance_matrix
 from bfieldtools.thermal_noise import (
     compute_AC_current_modes,
     compute_DC_current_modes,

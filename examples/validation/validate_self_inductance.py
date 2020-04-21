@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Apr 20 09:52:45 2020
-
-@author: Antti
+Self-inductance computation validation
+======================================
 
 Study the eigenvalue spectrum of discretize self-inductance operator
 of a spherical mesh. Compare the spectrum to analytical solution
 """
 
 import numpy as np
-from bfieldtools.mesh_properties import self_inductance_matrix, mutual_inductance_matrix
+from bfieldtools.mesh_impedance import self_inductance_matrix, mutual_inductance_matrix
 from bfieldtools.mesh_calculus import mass_matrix
 from bfieldtools.utils import load_example_mesh
 from scipy.linalg import eigh
@@ -35,10 +34,10 @@ for q in range(4):
 
 
 #%%
-""" 
+"""
  Spherical harmonics are the eigenfunctions of self-inductance operator
  The correct eigenvalues derived using Taulu 2005 Eqs. (22, 23, A1, A5, A6)
- By considering the normal component of the magnetic field produced by 
+ By considering the normal component of the magnetic field produced by
  a single Y_lm. The result is
  e = mu_0*(l*(l+1)/(2*l+1))/R
 """

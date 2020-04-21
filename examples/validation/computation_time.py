@@ -39,7 +39,7 @@ Nc = 50
 d = 1
 
 
-from bfieldtools.mesh_properties import self_inductance_matrix
+from bfieldtools.mesh_impedance import self_inductance_matrix
 import time
 
 N_vertices = []

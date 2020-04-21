@@ -155,8 +155,7 @@ def optimize_streamfunctions(
     problem=None,
 ):
     """
-    Quadratic optimization of coil stream function according to a specified objective,
-    while keeping specified target field at target points within given constraints.
+    Quadratic optimization of coil stream function according to a specified objective.
 
     Utilizes CVXPY and a numerical iterative solver.
 
@@ -264,6 +263,8 @@ def optimize_lsq(
     conductor, bfield_specification, reg=1e3, objective="minimum_inductive_energy"
 ):
     """
+    Optimization of coil stream function according to a specified objective using least-squares.
+    
     Parameters
     ----------
     conductor: Conductor object

@@ -274,26 +274,3 @@ def curl(vecs, mesh):
     """
     Cx, Cy, Cz = curl_matrix(mesh)
     return Cx @ vecs[:, 0] + Cx @ vecs[:, 1] + Cx @ vecs[:, 2]
-
-
-# if __name__ == "__main__":
-#    import numpy as np
-#    from bfieldtools.laplacian_mesh import laplacian_matrix, mass_matrix
-#    from bfieldtools.conductor import Conductor
-#    import trimesh
-#    import pkg_resources
-#
-#    #Load simple plane mesh that is centered on the origin
-#    file_obj = pkg_resources.resource_filename('bfieldtools',
-#                        'example_meshes/10x10_plane.obj')
-#    mesh = trimesh.load(file_obj, process=True)
-#    coil = Conductor(mesh_obj = mesh)
-#
-#    # All three Laplacians should be the same
-#    L = laplacian_matrix(mesh)
-#    Dx, Dy, Dz = divergence_matrix(mesh)
-#    Cx, Cy, Cz = adjoint_curl_matrix(mesh)
-#    Gx, Gy, Gz = gradient_matrix(mesh, rotated=False)
-#    L2 = Dx @ Gx + Dy @ Gy + Dz @ Gz
-#    Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
-#    L3 = Cx @ Gx + Cy @ Gy + Cz @ Gz
