@@ -5,7 +5,7 @@ API Reference
 
 
 :mod:`bfieldtools` -- Main package
-***********************************
+----------------------------------
 
 .. contents::
    :local:
@@ -18,7 +18,7 @@ API Reference
    :no-inherited-members:
 
 Surface mesh field calculations
-========================================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :py:mod:`bfieldtools.conductor`:
 
@@ -39,7 +39,7 @@ Surface mesh field calculations
    
  
 Convex optimization of stream functions
-========================================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :py:mod:`bfieldtools.coil_optimize`:
 
@@ -60,7 +60,7 @@ Convex optimization of stream functions
 
 
 Mesh impedance
-===============
+~~~~~~~~~~~~~~~
 
 :py:mod:`bfieldtools.mesh_impedance`:
 
@@ -82,7 +82,7 @@ Mesh impedance
    
    
 Surface mesh calculus
-========================
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 :py:mod:`bfieldtools.mesh_calculus`:
 
@@ -109,7 +109,7 @@ Surface mesh calculus
 
 
 Stream function magnetic couplings
-========================================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :py:mod:`bfieldtools.mesh_magnetics`:
 
@@ -129,7 +129,7 @@ Stream function magnetic couplings
 
 
 Analytical integrals for fields and potentials
-========================================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :py:mod:`bfieldtools.integrals`:
 
@@ -152,7 +152,7 @@ Analytical integrals for fields and potentials
 
 
 Scalar function contouring
-============================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :py:mod:`bfieldtools.contour`:
 
@@ -170,7 +170,7 @@ Scalar function contouring
    
    
 Line currents
-============================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :py:mod:`bfieldtools.line_path`:
 
@@ -195,7 +195,7 @@ Line currents
    :toctree: generated/
    
 Spherical harmonics
-===================
+~~~~~~~~~~~~~~~~~~~
 
 
 :py:mod:`bfieldtools.sphtools`:
@@ -240,7 +240,7 @@ Spherical harmonics
 	
 	
 Surface harmonics
-=================
+~~~~~~~~~~~~~~~~~
 
 
 :py:mod:`bfieldtools.suhtools`:
@@ -253,9 +253,31 @@ Surface harmonics
    :toctree: generated/
    
    SuhBasis
+   
+   
+Thermal noise
+~~~~~~~~~~~~~~~~~
 
+
+:py:mod:`bfieldtools.thermal_noise`:
+
+.. automodule:: bfieldtools.thermal_noise
+   :no-members:
+   :no-inherited-members:
+
+.. autosummary::
+   :toctree: generated/
+   
+   compute_DC_current_modes
+   compute_AC_current_modes
+   noise_covar
+   noise_var
+   noise_covar_dir
+   visualize_current_modes
+   
+   
 Visualization and plotting
-============================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :py:mod:`bfieldtools.viz`:
 
@@ -277,7 +299,7 @@ Visualization and plotting
    plot_data_on_faces
    
 Utilities
-============================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :py:mod:`bfieldtools.utils`:
 

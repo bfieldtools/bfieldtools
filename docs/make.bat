@@ -29,11 +29,11 @@ if errorlevel 9009 (
 	exit /b 1
 )
 :html
-%SPHINXBUILD% -b html %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+%SPHINXBUILD% -b html %SOURCEDIR% %BUILDDIR%/html %SPHINXOPTS% %O%
 goto end
 
 :html-noplot
-%SPHINXBUILD% -D plot_gallery=0 -b html %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+%SPHINXBUILD% -D plot_gallery=0 -b html %SOURCEDIR% %BUILDDIR%/html %SPHINXOPTS% %O%
 goto end
 
 :help

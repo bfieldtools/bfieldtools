@@ -11,6 +11,14 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import sys
+
+sys.path.insert(0, os.path.abspath(".."))
+
+
+# -- Project information -----------------------------------------------------
+
+import os
 import os.path as op
 import sys
 
@@ -21,18 +29,13 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
-project = u"bfieldtools"
+project = "bfieldtools"
 td = date.today()
-copyright = u"2019-%s, bfieldtools developers. Last updated on %s" % (
+copyright = "2019-%s, bfieldtools developers. Last updated on %s" % (
     td.year,
     td.isoformat(),
 )
 
-
-from pkg_resources import get_distribution
-
-version = get_distribution(project).version
-release = version
 
 # -- General configuration ---------------------------------------------------
 
@@ -91,8 +94,8 @@ register_plugin("pybtex.style.formatting", "mystyle", MyStyle)
 
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
     "sphinx.ext.coverage",
+    "sphinx.ext.autosummary",
     "numpydoc",
     "sphinx.ext.intersphinx",
     "sphinx_gallery.gen_gallery",
@@ -100,23 +103,13 @@ extensions = [
     "sphinxcontrib.bibtex",
 ]
 
-autosummary_generate = True
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
-
-autodoc_default_options = {"inherited-members": None}
-
-# The suffix of source filenames.
-source_suffix = ".rst"
-
-# The master toctree document.
-master_doc = "index"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["_includes", "_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # External imports
 autodoc_mock_imports = [
@@ -131,21 +124,12 @@ autodoc_mock_imports = [
     "psutil",
 ]
 
-
 # Autodoc config
 
 # Concatenate class docstring and __init__
 autoclass_content = "both"
 # Order by source order, not alphabetical
 autodoc_member_order = "bysource"
-
-
-# If true, '()' will be appended to :func: etc. cross-reference text.
-# add_function_parentheses = True
-
-# If true, the current module name will be prepended to all description
-# unit titles (such as .. function::).
-add_module_names = False
 
 # Configure sphinx-gallery
 
@@ -165,7 +149,6 @@ else:
     scrapers += ("mayavi",)
 
 sphinx_gallery_conf = {
-    "doc_module": ("bfieldtools",),
     "examples_dirs": "../examples",  # path to your example scripts
     "gallery_dirs": "auto_examples",  # path where to save gallery generated examples
     "filename_pattern": ".py",  # which examples are executed for plots etc
@@ -193,7 +176,7 @@ intersphinx_mapping = {
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
 }
 
-numpydoc_show_class_members = True
+numpydoc_show_class_members = False
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -241,40 +224,44 @@ html_favicon = "_static/favicon.ico"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-# html_logo = "_static/logo_simple.svg"
-
+html_logo = "_static/logo_simple.png"
+html_logo = "_static/logo_simple.png"
 
 # If true, links to the reST sources are added to the pages.
 html_show_sourcelink = True
+html_copy_source = False
 
 
-# def append_attr_meth_examples(app, what, name, obj, options, lines):
-# """Append SG examples backreferences to method and attr docstrings."""
-# # NumpyDoc nicely embeds method and attribute docstrings for us, but it
-# # does not respect the autodoc templates that would otherwise insert
-# # the .. include:: lines, so we need to do it.
-# # Eventually this could perhaps live in SG.
-# if what in ("attribute", "method"):
-# size = os.path.getsize(
-# op.join(op.dirname(__file__), "generated", "%s.examples" % (name,))
-# )
-# if size > 0:
-# lines += """
-# .. rubric:: Examples using ``{0}``:
-
-# .. include:: {1}.examples
-# :start-line: 5
-
-# .. raw:: html
-
-# <div style="clear:both"></div>
-# """.format(
-# name.split(".")[-1], name
-# ).split(
-# "\n"
-# )
+# autosummary_generate = True
 
 
-# def setup(app):
-# """Set up the Sphinx app."""
-# app.connect("autodoc-process-docstring", append_attr_meth_examples)
+def append_attr_meth_examples(app, what, name, obj, options, lines):
+    """Append SG examples backreferences to method and attr docstrings."""
+    # NumpyDoc nicely embeds method and attribute docstrings for us, but it
+    # does not respect the autodoc templates that would otherwise insert
+    # the .. include:: lines, so we need to do it.
+    # Eventually this could perhaps live in SG.
+    if what in ("attribute", "method"):
+        size = os.path.getsize(
+            op.join(op.dirname(__file__), "generated", "%s.examples" % (name,))
+        )
+        if size > 0:
+            lines += """
+            .. rubric:: Examples using ``{0}``:
+
+            .. include:: {1}.examples
+            :start-line: 5
+
+            .. raw:: html
+
+            <div style="clear:both"></div>
+            """.format(
+                name.split(".")[-1], name
+            ).split(
+                "\n"
+            )
+
+
+def setup(app):
+    """Set up the Sphinx app."""
+    app.connect("autodoc-process-docstring", append_attr_meth_examples)
