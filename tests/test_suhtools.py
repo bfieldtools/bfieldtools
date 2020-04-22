@@ -22,7 +22,8 @@ def test_suhbasis():
 
                 suh.plot(Nfuncs=3)
 
-    suh = suhtools.SuhBasis(mesh, Nc=10, boundary_condition="dirichlet", magnetic=True)
+    suh = suhtools.SuhBasis(mesh, Nc=10, boundary_condition="dirichlet", magnetic="DC")
+    suh = suhtools.SuhBasis(mesh, Nc=10, boundary_condition="dirichlet", magnetic="AC")
 
     try:
         suh = suhtools.SuhBasis(10, Nc=10)

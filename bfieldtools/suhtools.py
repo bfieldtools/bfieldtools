@@ -30,7 +30,7 @@ class SuhBasis:
     def __init__(
         self,
         obj,
-        Nc,
+        Nc=None,
         boundary_condition="dirichlet",
         magnetic=False,
         solver_sparse=True,
@@ -38,15 +38,22 @@ class SuhBasis:
         """
         Parameters
         ----------
-        obj : Trimesh-object
+        obj : Trimesh-object or Conductor-object
             Represents the boundary on which current density is specified
             or Conductor object that wraps the mesh
         Nc : Number of components
+            If None (default), compute all components.
         boundary_condition : str  "dirichlet" (default) or "neumann"
             if zero-Dirichlet boundary conditions ("dirichlet")
             are used the basis corresponds to inner_vertices
             else with zero-Neumann condition ("neumann")
             the basis corresponds to all vertices
+        magnetic: False or 'DC' or 'AC'
+            Determines eigenvalue equation. If False, use laplacian and mass matrix.
+            If 'DC', use resistance and mass matrices. If 'AC', use resistance and inductance matrices.
+        solver_sparse: Boolean (True)
+            If True, use solver from scipy.sparse.linalg rather than scipy.linalg
+
         """
 
         if boundary_condition in ("dirichlet", "neumann"):
@@ -65,7 +72,6 @@ class SuhBasis:
             raise TypeError("obj type should be either Trimesh or Conductor")
         self.mesh = self.conductor.mesh
 
-        self.Nc = Nc
         self.magnetic = magnetic
         self.solver_sparse = solver_sparse
 
@@ -73,6 +79,14 @@ class SuhBasis:
             self.conductor.set_basis("vertex")
         else:
             self.conductor.set_basis("inner")
+
+        if Nc is None:
+            self.Nc = (
+                self.conductor.basis.shape[1] - 1
+            )  # Not sure this -1 is globally OK
+            print("No component count given, computing all components.")
+        else:
+            self.Nc = Nc
 
         self.inner_vertices = self.conductor.inner_vertices
         self.holes = self.conductor.holes
@@ -91,11 +105,14 @@ class SuhBasis:
         if not self.magnetic:
             L = self.conductor.laplacian
             M = self.conductor.mass
-        else:
+        elif self.magnetic == "AC":
             L = -self.conductor.resistance
             M = self.conductor.inductance
-
-        self.mass = M
+        elif self.magnetic == "DC":
+            L = -self.conductor.resistance
+            M = self.conductor.mass
+        else:
+            raise ValueError("Parameter 'magnetic' must be False, 'DC', or 'AC'.")
 
         closed_mesh = self.conductor.mesh.is_watertight
 
@@ -116,9 +133,9 @@ class SuhBasis:
             else:
                 u, v = eigsh(-L, N, M, which="SA", v0=v0)
         else:
-            if not self.magnetic:
-                L = L.toarray()
+            if self.magnetic == "DC":
                 M = M.toarray()
+
             u, v = eigh(-L, M, eigvals=(0, N))
 
         # The first function is constant and does not yield any field

@@ -69,7 +69,7 @@ for i in range(Np):
     # M = self_inductance_matrix(mesh, Nchunks=Nchunks, quad_degree=quad_degree)
 
     # vl = compute_current_modes_ind_res(mesh, M, R, freqs, T, closed=True)
-    vl = compute_DC_current_modes(mesh, R, T, closed=True)
+    vl = compute_DC_current_modes(mesh, T, closed=True)
 
     #    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
     #               size=(800, 800))
