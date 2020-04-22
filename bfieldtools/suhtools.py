@@ -34,6 +34,7 @@ class SuhBasis:
         boundary_condition="dirichlet",
         magnetic=False,
         solver_sparse=True,
+        **kwargs
     ):
         """
         Parameters
@@ -53,6 +54,8 @@ class SuhBasis:
             If 'DC', use resistance and mass matrices. If 'AC', use resistance and inductance matrices.
         solver_sparse: Boolean (True)
             If True, use solver from scipy.sparse.linalg rather than scipy.linalg
+        kwargs: dict
+            Passed to Conductor creation if a Trimesh object is passed as 'obj'
 
         """
 
@@ -66,7 +69,7 @@ class SuhBasis:
         elif isinstance(obj, trimesh.Trimesh):
             # TODO defaults ok?
             self.conductor = conductor.Conductor(
-                mesh_obj=obj, resistance_full_rank=False
+                mesh_obj=obj, resistance_full_rank=False, **kwargs
             )
         else:
             raise TypeError("obj type should be either Trimesh or Conductor")

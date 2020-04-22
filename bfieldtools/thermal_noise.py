@@ -17,7 +17,14 @@ from . import utils
 
 
 def compute_AC_current_modes(
-    obj, freqs, T, closed=True, Nmodes=None, return_eigenvals=False
+    obj,
+    freqs,
+    resistivity,
+    thickness,
+    T,
+    closed=True,
+    Nmodes=None,
+    return_eigenvals=False,
 ):
     """
     Parameters
@@ -47,7 +54,9 @@ def compute_AC_current_modes(
 
     kB = 1.38064852e-23
 
-    suh = SuhBasis(obj, Nc=Nmodes, magnetic="AC")
+    suh = SuhBasis(
+        obj, Nc=Nmodes, magnetic="AC", resistivity=resistivity, thickness=thickness
+    )
 
     v = suh.basis
     u = suh.eigenvals
@@ -73,7 +82,9 @@ def compute_AC_current_modes(
         return vl
 
 
-def compute_DC_current_modes(obj, T, closed=True, Nmodes=None, return_eigenvals=False):
+def compute_DC_current_modes(
+    obj, resistivity, thickness, T, closed=True, Nmodes=None, return_eigenvals=False
+):
     """
     Parameters
     ----------
@@ -100,7 +111,9 @@ def compute_DC_current_modes(obj, T, closed=True, Nmodes=None, return_eigenvals=
 
     kB = 1.38064852e-23
 
-    suh = SuhBasis(obj, Nc=Nmodes, magnetic="DC")
+    suh = SuhBasis(
+        obj, Nc=Nmodes, magnetic="DC", resistivity=resistivity, thickness=thickness
+    )
 
     v = suh.basis
     u = suh.eigenvals
