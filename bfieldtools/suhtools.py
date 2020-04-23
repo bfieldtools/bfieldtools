@@ -82,12 +82,16 @@ class SuhBasis:
         else:
             self.conductor.set_basis("inner")
 
+        if self.mesh.is_watertight or self.bc == "neumann":
+            self._max_Nc = self.conductor.basis.shape[1] - 1
+        else:
+            self._max_Nc = self.conductor.basis.shape[1]
+
         if Nc is None:
-            if self.mesh.is_watertight:
-                self.Nc = self.conductor.basis.shape[1] - 2
-            else:
-                self.Nc = self.conductor.basis.shape[1] - 1
             print("No component count given, computing all components.")
+            self.Nc = self._max_Nc
+        elif Nc > self._max_Nc:
+            raise ValueError("Mesh supports up to %d components" % self._max_Nc)
         else:
             self.Nc = Nc
 
@@ -98,10 +102,18 @@ class SuhBasis:
         self.calculate_basis()
 
     def calculate_basis(self, shiftinvert=True, v0=None):
-        """ Calculate basis functions as eigenfunctions of the laplacian
-
-            shiftinvert: use shiftinvert mode to calculate eigenstuff faster
-                        (experimental)
+        """ Calculate basis functions as eigenfunctions of matrices
+        specified by the 'magnetic' parameter
+        
+        Parameters
+        ----------
+        shiftinvert: Boolean (True)
+            use shiftinvert mode to calculate eigenstuff faster (experimental)
+        v0: array (b, b)
+            Intial value matrix for eigenvalue decomposition algorithm. Shape depends on BC: if neumann b=self.conductor.basis.shape[0],
+            if dirichlet b=self.conductor.basis.shape[1]
+                        
+                    
         """
         print("Calculating surface harmonics expansion...")
 
@@ -117,18 +129,18 @@ class SuhBasis:
         else:
             raise ValueError("Parameter 'magnetic' must be False, 'DC', or 'AC'.")
 
-        if self.conductor.mesh.is_watertight:
-            print("Closed mesh, leaving out the constant component")
+        if self.mesh.is_watertight or self.bc == "neumann":
+            print("Closed mesh or Neumann BC, leaving out the constant component")
             N0 = 1
-            N = self.Nc + 1
+            N = self.Nc
 
             # # If mesh is closed, add 'deflation' to the matrices
-            if self.magnetic == "AC":
+            if self.mesh.is_watertight and self.magnetic == "AC":
                 M += np.ones(M.shape) * np.mean(np.diag(M))
 
         else:
             N0 = 0
-            N = self.Nc
+            N = self.Nc - 1
 
         # Make sure that matrices are symmetric, positive definite
         L = 0.5 * (L + L.T)
