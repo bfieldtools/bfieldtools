@@ -25,6 +25,12 @@ def test_suhbasis():
     suh = suhtools.SuhBasis(mesh, Nc=10, boundary_condition="dirichlet", magnetic="DC")
     suh = suhtools.SuhBasis(mesh, Nc=10, boundary_condition="dirichlet", magnetic="AC")
 
+    suh = suhtools.SuhBasis(mesh, boundary_condition="dirichlet", magnetic="DC")
+    suh = suhtools.SuhBasis(mesh, boundary_condition="dirichlet", magnetic="AC")
+    suh = suhtools.SuhBasis(mesh, boundary_condition="dirichlet", magnetic=False)
+
+    suh.calculate_basis(shiftinvert=False)
+
     try:
         suh = suhtools.SuhBasis(10, Nc=10)
     except:
@@ -36,7 +42,26 @@ def test_suhbasis():
     suh.plot(Nfuncs=4, Ncols=2, figure=f)
 
 
+def test_suhbasis_closed():
+    import trimesh
+
+    # Low-res ico-sphere, but need to copy since Trimesh primitives are protected
+    mesh = trimesh.primitives.Sphere(subdivisions=2)
+    mesh = trimesh.Trimesh(mesh.vertices, mesh.faces)
+
+    for obj in [mesh, _fake_conductor(mesh_name="unit_sphere")]:
+        for mag in [False, "DC", "AC"]:
+            suh = suhtools.SuhBasis(obj, Nc=10, magnetic=mag)
+            suh = suhtools.SuhBasis(obj, magnetic=mag)
+
+
 @pytest.mark.xfail
 def test_suhbasis_fail():
     mesh = load_example_mesh("unit_disc")
     suh = suhtools.SuhBasis(mesh, Nc=10, boundary_condition="foo")
+
+
+@pytest.mark.xfail
+def test_suhbasis_fail2():
+    mesh = load_example_mesh("unit_disc")
+    suh = suhtools.SuhBasis(mesh, Nc=10, magnetic="foo")

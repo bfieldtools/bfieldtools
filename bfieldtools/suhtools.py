@@ -50,7 +50,7 @@ class SuhBasis:
             else with zero-Neumann condition ("neumann")
             the basis corresponds to all vertices
         magnetic: False or 'DC' or 'AC'
-            Determines eigenvalue equation. If False, use laplacian and mass matrix.
+            Determines eigenvalue equation. If False, use laplacian and mass matrices.
             If 'DC', use resistance and mass matrices. If 'AC', use resistance and inductance matrices.
         solver_sparse: Boolean (True)
             If True, use solver from scipy.sparse.linalg rather than scipy.linalg
@@ -67,9 +67,8 @@ class SuhBasis:
         if isinstance(obj, conductor.Conductor):
             self.conductor = obj
         elif isinstance(obj, trimesh.Trimesh):
-            # TODO defaults ok?
             self.conductor = conductor.Conductor(
-                mesh_obj=obj, resistance_full_rank=False, **kwargs
+                mesh_obj=obj, resistance_full_rank=True, **kwargs
             )
         else:
             raise TypeError("obj type should be either Trimesh or Conductor")
@@ -84,9 +83,10 @@ class SuhBasis:
             self.conductor.set_basis("inner")
 
         if Nc is None:
-            self.Nc = (
-                self.conductor.basis.shape[1] - 1
-            )  # Not sure this -1 is globally OK
+            if self.mesh.is_watertight:
+                self.Nc = self.conductor.basis.shape[1] - 2
+            else:
+                self.Nc = self.conductor.basis.shape[1] - 1
             print("No component count given, computing all components.")
         else:
             self.Nc = Nc
@@ -117,15 +117,22 @@ class SuhBasis:
         else:
             raise ValueError("Parameter 'magnetic' must be False, 'DC', or 'AC'.")
 
-        closed_mesh = self.conductor.mesh.is_watertight
-
-        if closed_mesh:
+        if self.conductor.mesh.is_watertight:
             print("Closed mesh, leaving out the constant component")
             N0 = 1
             N = self.Nc + 1
+
+            # # If mesh is closed, add 'deflation' to the matrices
+            if self.magnetic == "AC":
+                M += np.ones(M.shape) * np.mean(np.diag(M))
+
         else:
             N0 = 0
             N = self.Nc
+
+        # Make sure that matrices are symmetric, positive definite
+        L = 0.5 * (L + L.T)
+        M = 0.5 * (M + M.T)
 
         if v0 is None:
             v0 = np.ones(L.shape[1])  # avoid random basis for symmetric geometries

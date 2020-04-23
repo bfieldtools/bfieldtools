@@ -6,17 +6,12 @@ Minimal example
 import numpy as np
 import matplotlib.pyplot as plt
 import trimesh
-from mayavi import mlab
 
-from bfieldtools.mesh_impedance import self_inductance_matrix, resistance_matrix
+
 from bfieldtools.thermal_noise import (
     compute_AC_current_modes,
     compute_DC_current_modes,
-    noise_covar,
-    noise_var,
-    visualize_current_modes,
 )
-from bfieldtools.mesh_magnetics import magnetic_field_coupling
 
 import pkg_resources
 
@@ -38,7 +33,7 @@ quad_degree = 2
 
 
 mesh = trimesh.load(
-    pkg_resources.resource_filename("bfieldtools", "example_meshes/unit_disc.stl")
+    pkg_resources.resource_filename("bfieldtools", "example_meshes/unit_sphere.stl")
 )
 
 
@@ -46,3 +41,25 @@ freqs = np.array((0,))
 
 vl = compute_DC_current_modes(mesh, T=T, resistivity=1e-7, thickness=1e-3)
 vl = compute_AC_current_modes(mesh, freqs, T=T, resistivity=1e-7, thickness=1e-3)
+
+
+mesh = trimesh.load(
+    pkg_resources.resource_filename("bfieldtools", "example_meshes/unit_disc.stl")
+)
+
+
+freqs = np.array((0,))
+
+vl_open = compute_DC_current_modes(mesh, T=T, resistivity=1e-7, thickness=1e-3)
+vl_open = compute_AC_current_modes(mesh, freqs, T=T, resistivity=1e-7, thickness=1e-3)
+
+
+mesh = trimesh.load(
+    pkg_resources.resource_filename("bfieldtools", "example_meshes/plane_w_holes.stl")
+)
+
+
+freqs = np.array((0,))
+
+vl_openh = compute_DC_current_modes(mesh, T=T, resistivity=1e-7, thickness=1e-3)
+vl_openh = compute_AC_current_modes(mesh, freqs, T=T, resistivity=1e-7, thickness=1e-3)

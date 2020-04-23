@@ -72,8 +72,8 @@ def compute_AC_current_modes(
             * np.sqrt(kB * T / u[i])
             * np.sqrt(1 / (1 + (2 * np.pi * freqs / u[i]) ** 2))
         )
-        vl[suh.inner_vertices, i, :] = (
-            (np.zeros((Nfreqs, v.shape[0])) + v[:, i]).T
+        vl[:, i, :] = (
+            (np.zeros((Nfreqs, vl.shape[0])) + suh.conductor.inner2vert @ v[:, i]).T
         ) * amp
 
     if return_eigenvals:
@@ -123,7 +123,7 @@ def compute_DC_current_modes(
 
     for i in range(v.shape[1]):
         amp = 2 * np.sqrt(kB * T / u[i])
-        vl[suh.inner_vertices, i] = v[:, i] * amp
+        vl[:, i] = suh.conductor.inner2vert @ v[:, i] * amp
 
     if return_eigenvals:
         return vl, u
