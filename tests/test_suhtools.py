@@ -17,13 +17,17 @@ def test_suhbasis():
         for mag in [False]:
             for bc in ["neumann", "dirichlet"]:
                 suh = suhtools.SuhBasis(obj, Nc=10, boundary_condition=bc, magnetic=mag)
+                assert suh.basis.shape[1] == 10
 
                 suh.field(suh.basis[1], np.array([[0, 0, 1]]))
 
                 suh.plot(Nfuncs=3)
 
     suh = suhtools.SuhBasis(mesh, Nc=10, boundary_condition="dirichlet", magnetic="DC")
+    assert suh.basis.shape[1] == 10
+
     suh = suhtools.SuhBasis(mesh, Nc=10, boundary_condition="dirichlet", magnetic="AC")
+    assert suh.basis.shape[1] == 10
 
     suh = suhtools.SuhBasis(mesh, boundary_condition="dirichlet", magnetic="DC")
     suh = suhtools.SuhBasis(mesh, boundary_condition="dirichlet", magnetic="AC")
@@ -33,6 +37,7 @@ def test_suhbasis():
 
     try:
         suh = suhtools.SuhBasis(10, Nc=10)
+        assert suh.basis.shape[1] == 10
     except:
         print("Caught test exception")
 
@@ -49,12 +54,16 @@ def test_suhbasis_closed():
     mesh = trimesh.primitives.Sphere(subdivisions=1)
     mesh = trimesh.Trimesh(mesh.vertices, mesh.faces)
 
-    for obj in [mesh, _fake_conductor(mesh_name="unit_sphere")]:
-        for mag in [False, "DC", "AC"]:
-            suh = suhtools.SuhBasis(obj, Nc=10, magnetic=mag)
-            suh = suhtools.SuhBasis(obj, magnetic=mag)
+    for mag in [False, "DC", "AC"]:
+        suh = suhtools.SuhBasis(mesh, Nc=10, magnetic=mag)
+        assert suh.basis.shape[1] == 10
 
-    suh = suhtools.SuhBasis(obj, Nc=161, magnetic=mag)
+        suh = suhtools.SuhBasis(mesh, magnetic=mag)
+        assert suh.basis.shape[1] == suh.Nc
+
+    suh = suhtools.SuhBasis(mesh, Nc=41, magnetic=mag)
+    assert suh.basis.shape[1] == 40
+    assert suh.basis.shape[1] == suh.Nc
 
 
 @pytest.mark.xfail

@@ -131,38 +131,63 @@ class SuhBasis:
 
         if self.mesh.is_watertight or self.bc == "neumann":
             print("Closed mesh or Neumann BC, leaving out the constant component")
-            N0 = 1
-            N = self.Nc
 
-            # # If mesh is closed, add 'deflation' to the matrices
+            N0 = 1
+
+            N = np.min((self.Nc + 1, self._max_Nc))
+
+            # adjust self.Nc so that is corresponds to suh.basis.shape[1]
+            if N == self._max_Nc:
+                self.Nc -= 1
+
+            # If mesh is closed, add 'deflation' to the matrices
+            # L matrix deflation is already provided by Conductor(resistance_full_rank=True)
             if self.mesh.is_watertight and self.magnetic == "AC":
                 M += np.ones(M.shape) * np.mean(np.diag(M))
 
         else:
             N0 = 0
-            N = self.Nc - 1
+            N = self.Nc
 
         # Make sure that matrices are symmetric, positive definite
         L = 0.5 * (L + L.T)
         M = 0.5 * (M + M.T)
 
+        print(self._max_Nc)
+        print(self.Nc)
+        print((N0, N))
+
         if v0 is None:
             v0 = np.ones(L.shape[1])  # avoid random basis for symmetric geometries
 
-        if (not self.magnetic) and self.solver_sparse:
+        # Use sparse solver if possible
+        # 1. matrices have to be sparse (i.e. magnetic=False)
+        # 2. solver_sparse = True
+        # 3. the sparse solver cannot find all eigenvalues, so Nc < max_Nc
+        if (not self.magnetic) and self.solver_sparse and (self.Nc < self._max_Nc):
+
             if shiftinvert:
                 u, v = eigsh(-L, N, M, sigma=0, which="LM", v0=v0)
             else:
                 u, v = eigsh(-L, N, M, which="SA", v0=v0)
+
+            self.basis = v[:, N0:]
+            self.eigenvals = u[N0:]
+
         else:
-            if self.magnetic == "DC":
+            if not self.magnetic:
+                L = L.toarray()
                 M = M.toarray()
 
-            u, v = eigh(-L, M, eigvals=(0, N))
+                u, v = eigh(-L, M, eigvals=(0, N - 1))
+            else:
+                if self.magnetic == "DC":
+                    M = M.toarray()
 
-        # The first function is constant and does not yield any field
-        self.basis = v[:, N0:]
-        self.eigenvals = u[N0:]
+                u, v = eigh(-L, M, eigvals=(0, N - 1))
+
+            self.basis = v[:, N0:]
+            self.eigenvals = u[N0:]
 
     def field(self, coeffs, points):
         """ Calculate field at points
