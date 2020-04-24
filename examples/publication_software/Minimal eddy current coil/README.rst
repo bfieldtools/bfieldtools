@@ -1,0 +1,3 @@
+Minimal eddy current coil
+=============================
+
