@@ -1,19 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Mon Oct 21 09:25:44 2019
-
-@author: makinea1
-
-Calculate and plot field of a closed shielded current
+Design a field of a closed enclosed in a volume
+================================================
 """
-
-import sys
-
-path = "/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools"
-if path in sys.path:
-    sys.path.insert(0, path)
-
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -33,6 +21,7 @@ from bfieldtools.viz import plot_3d_current_loops
 from bfieldtools.sphtools import compute_sphcoeffs_mesh
 from bfieldtools.suhtools import SuhBasis
 from bfieldtools import sphtools
+from bfieldtools.utils import load_example_mesh
 
 # domain = 'sphere'
 # domain = 'cube'
@@ -62,23 +51,7 @@ elif domain == "combined":
     from trimesh.creation import icosphere
 
     mesh1 = icosphere(4, 0.65)
-    # https://graphics.stanford.edu/~mdfisher/Data/Meshes/bunny.obj
-    #    mesh1 = trimesh.load(file_obj=pkg_resources.resource_filename('bfieldtools',
-    #                                                                 'example_meshes/bunny_repaired.obj'), process=True)
-    #    # Bunny not still watertight, this fixes it
-    #    trimesh.repair.fill_holes(mesh1)
-    #
-    #    mesh1.vertices -= mesh1.vertices.mean(axis=0)
-    #    mesh1.vertices *= 7
-    #    mesh1 = trimesh.smoothing.filter_laplacian(mesh1, iterations=1)
-    #    mesh1.vertices[:,:2] = mesh1.vertices[:,:2] @ np.array([[0,-1],[1,0]])
-
-    mesh2 = trimesh.load(
-        file_obj=pkg_resources.resource_filename(
-            "bfieldtools", "example_meshes/cube_fillet.stl"
-        ),
-        process=True,
-    )
+    mesh2 = load_example_mesh("cube_fillet")
     mesh2.vertices -= mesh2.vertices.mean(axis=0)
     mesh2.vertices *= 0.15
 #    mesh2 = mesh2.subdivide()
@@ -107,8 +80,6 @@ M21 = mutual_inductance_matrix(mesh2, mesh1)
 
 M = np.block([[M11, M21.T], [M21, M22]])
 
-# F1 = (np.moveaxis(sphtools.basis_fields(mesh1.vertices, 3)[1],0,2)*mesh1.vertex_normals).sum(axis=-1)
-# F2 = (sb.basis_fields(mesh2.vertices, 3)[0]*mesh2.vertex_normals).sum(axis=-1)
 
 x = y = np.linspace(-0.85, 0.85, 100)
 X, Y = np.meshgrid(x, y, indexing="ij")
@@ -125,10 +96,7 @@ CU2 = compute_U(mesh2, points)
 #%%
 # suh = SuhBasis(mesh1, 100)
 
-#%% Specify spherical harmonic and calculate corresponding shielded field
-# b1 = mesh1.vertices[:,1]
-# b2 = mesh1.vertices[:,1]**2 - mesh1.vertices[:,0]**2
-# b1 = suh.basis @ (suh.basis.T @ suh.mass @ mesh1.vertex_normals[:,0])
+#%% Specify (spherical harmonic) field and calculate corresponding shielded field
 b1 = mesh1.vertex_normals[:, 0]
 b2 = (
     mesh1.vertex_normals[:, 0] * mesh1.vertices[:, 0]

@@ -1,19 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Mon Oct 21 09:25:44 2019
-
-@author: makinea1
-
-Calculate and plot field of a closed shielded current
+Example of designing biplanar 
+==========================================
 """
-
-import sys
-
-path = "/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools"
-if path not in sys.path:
-    sys.path.insert(0, path)
-
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,22 +11,15 @@ import trimesh
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
+from bfieldtools.utils import load_example_mesh
 
-
-import pkg_resources
 
 # Set unit, e.g. meter or millimeter.
 # This doesn't matter, the problem is scale-invariant
 scaling_factor = 0.1
 
 # Load simple plane mesh that is centered on the origin
-planemesh = trimesh.load(
-    file_obj=pkg_resources.resource_filename(
-        "bfieldtools", "example_meshes/10x10_plane_hires.obj"
-    ),
-    process=False,
-)
-
+planemesh = load_example_mesh("10x10_plane_hires")
 planemesh.apply_scale(scaling_factor)
 
 # Specify coil plane geometry
