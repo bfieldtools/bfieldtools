@@ -1,6 +1,7 @@
 """
 Field of a Helmholtz coils pair 
-------------------------------------------------------------------------------
+==========================================================
+
 Example on how to compute the magnetic field from current line segments forming a Helmholtz coil pair.
 
 Visualization of the 3D field using Mayavi

@@ -1,6 +1,6 @@
 """
 Test diagonal of inductance matrix
-----------------------------------------
+===================================================
 
 Use different number of quadrature points and two different implementations
 """

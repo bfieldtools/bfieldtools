@@ -1,6 +1,6 @@
 """
-Validate calculation bfield calculatio from line segments
-------------------------------------------------------------------------------
+Validate calculation bfield calculation from line segments
+=================================================================
 """
 
 import numpy as np

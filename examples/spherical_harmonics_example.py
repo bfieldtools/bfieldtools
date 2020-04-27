@@ -1,6 +1,6 @@
 """
 Example of spherical harmonics tools and visualization
-----------------------------------------------------------------
+============================================================
 """
 
 import numpy as np
