@@ -1,18 +1,20 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Tue Jan 21 16:37:17 2020
+Figure 2: Surface harmonics modes
+==================================
 
-@author: Rasmus Zetter
+First 15 surface harmonics of a triangle mesh. The index (and spatial frequency) increases from left to right, row by row. The hole and outer boundary have zero tangential derivative. The mesh discretization is shown in the magnified inset to the right.
+
 """
 from bfieldtools.mesh_conductor import MeshConductor
 
-# from bfieldtools.suhtools import SuhBasis
 import numpy as np
+
+SAVE = False
+SAVE_DIR = "./Surface harmonics/"
 
 
 c = MeshConductor(
-    mesh_file="./arbitrary_surface2.stl",
+    mesh_file=SAVE_DIR + "arbitrary_surface.stl",
     process=True,
     basis_name="suh",
     N_suh=15,
@@ -71,11 +73,12 @@ for n in range(c.basis.shape[1]):
 f.scene.camera.zoom(1.2)
 # f.scene.camera.roll(270)
 
-mlab.savefig(
-    "./surface_harmonics.png", figure=f, magnification=4,
-)
+if SAVE:
+    mlab.savefig(
+        SAVE_DIR + "surface_harmonics.png", figure=f, magnification=4,
+    )
 
-mlab.close()
+    mlab.close()
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(750, 600))
 
@@ -88,6 +91,8 @@ f.scene.camera.zoom(1.5)
 f.scene.z_plus_view()
 # f.scene.camera.roll(270)
 
-mlab.savefig(
-    "./suhmesh.png", figure=f, magnification=6,
-)
+if SAVE:
+    mlab.savefig(
+        SAVE_DIR + "suhmesh.png", figure=f, magnification=6,
+    )
+    mlab.close()

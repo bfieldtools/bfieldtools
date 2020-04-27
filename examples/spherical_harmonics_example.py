@@ -84,19 +84,19 @@ pot = np.reshape(pot, x.shape)
 mlab.figure()
 mlab.mesh(x[:, :, 0], y[:, :, 0], z[:, :, 0], scalars=pot[:, :, 0], colormap="Spectral")
 
-#%% Fit spectrum to random data
-coords = np.zeros((p.shape[0], p.shape[1], 3))
-coords[:, :, 0] = p
-coords[:, :, 1] = p
-coords[:, :, 2] = p
+# #%% Fit spectrum to random data
+# coords = np.zeros((p.shape[0], p.shape[1], 3))
+# coords[:, :, 0] = p
+# coords[:, :, 1] = p
+# coords[:, :, 2] = p
 
-B = np.zeros((coords.shape[0], coords.shape[1]))
-B[:, 2] = p[:, 0] / np.max(p[:, 0])
-B[:, 1] = 0.3
-B += 0.4 * np.random.randn(B.shape[0], B.shape[1])
+# B = np.zeros((coords.shape[0], coords.shape[1]))
+# B[:, 2] = p[:, 0] / np.max(p[:, 0])
+# B[:, 1] = 0.3
+# B += 0.4 * np.random.randn(B.shape[0], B.shape[1])
 
-lmax = 5
-coeffs, coeffs2, mse = sphtools.fit_spectra(coords, B, lmax)
+# lmax = 5
+# coeffs, coeffs2, mse = sphtools.fit_spectra(coords, B, lmax)
 
-plt.figure()
-plt.semilogy(coeffs ** 2, ".")
+# plt.figure()
+# plt.semilogy(coeffs ** 2, ".")

@@ -48,7 +48,7 @@ mesh2 = trimesh.Trimesh(points, tris)
 for ii in range(7):
     mesh2 = mesh2.subdivide()
 
-from bfieldtools.integrals_old import triangle_potential_dipole_linear as t1
+from bfieldtools.legacy.integrals import triangle_potential_dipole_linear as t1
 from bfieldtools.integrals import triangle_potential_dipole_linear as t2
 
 RR = mesh2.vertices[:, None, None, :] - mesh.vertices[None, mesh.faces]
@@ -80,7 +80,7 @@ mlab.colorbar()
 #
 points = np.zeros((100, 3))
 points[:, 2] = np.linspace(-1, 1, 100)
-from bfieldtools.integrals_old import omega as omega1
+from bfieldtools.legacy.integrals import omega as omega1
 from bfieldtools.integrals import omega as omega2
 
 RR = points[:, None, None, :] - mesh.vertices[None, mesh.faces]
@@ -115,7 +115,7 @@ mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
 
 #########################################################
 # Uniform charge density
-from bfieldtools.integrals_old import triangle_potential_uniform as u1
+from bfieldtools.legacy.integrals import triangle_potential_uniform as u1
 from bfieldtools.integrals import triangle_potential_uniform as u2
 
 RR = mesh2.vertices[:, None, None, :] - mesh.vertices[None, mesh.faces]
@@ -157,7 +157,9 @@ mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
 
 #########################################################
 #
-from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic_old
+from bfieldtools.legacy.mesh_magnetics import (
+    magnetic_field_coupling_analytic as magnetic_field_coupling_analytic_old,
+)
 from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic
 
 b1 = magnetic_field_coupling_analytic_old(mesh, mesh2.vertices)
@@ -171,7 +173,7 @@ mlab.quiver3d(*mesh2.vertices.T, *b2[:, :, 0].T)
 
 #########################################################
 # Gammma
-from bfieldtools.integrals_old import gamma0 as g1
+from bfieldtools.legacy.integrals import gamma0 as g1
 from bfieldtools.integrals import gamma0 as g2
 
 # RR =  mesh2.vertices[:, None, None, :] - mesh.vertices[None, mesh.faces]

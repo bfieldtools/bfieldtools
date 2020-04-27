@@ -1,15 +1,18 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Fri Feb 28 12:44:50 2020
-
-@author: Rasmus Zetter
+Figure 1: Stream function example
+==================================
+    
+An example stream function (red--blue colormap) and its rotated gradient, i.e. the surface current density (arrows; green colormap) on a surface mesh with a hole in it. The surface normal is oriented up towards the reader.
 """
 
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
 import pkg_resources
 from bfieldtools.mesh_calculus import gradient
 import numpy as np
+
+SAVE = False
+SAVE_DIR = "."
+
 
 c = MeshConductor(
     mesh_file=pkg_resources.resource_filename(
@@ -140,9 +143,7 @@ module_manager2.scalar_lut_manager.title_text_property.color = (0.0, 0.0, 0.0)
 module_manager2.scalar_lut_manager.title_text_property.shadow_offset = np.array([1, -1])
 module_manager2.scalar_lut_manager.title_text_property.bold = False
 
-
-mlab.savefig(
-    "/l/bfieldtools/examples/publication_software/streamfunction_gradient.png",
-    figure=f,
-    magnification=4,
-)
+if SAVE:
+    mlab.savefig(
+        SAVE_DIR + "streamfunction_gradient.png", figure=f, magnification=4,
+    )

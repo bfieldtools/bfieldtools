@@ -7,7 +7,9 @@ The coil is positioned close to the end of the shield to demonstrate the effect
 """
 
 PLOT = True
-SAVE_FIGURES = True
+SAVE_FIGURES = False
+
+SAVE_DIR = "./Shielded coil/"
 
 import numpy as np
 from mayavi import mlab
@@ -16,8 +18,10 @@ import trimesh
 
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
 from bfieldtools.coil_optimize import optimize_streamfunctions
+from bfieldtools.utils import load_example_mesh, combine_meshes
+
 from bfieldtools.contour import scalar_contour
-from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
+from bfieldtools.viz import plot_3d_current_loops
 
 import pkg_resources
 
@@ -28,13 +32,7 @@ scaling_factor = 1
 
 
 # Load simple plane mesh that is centered on the origin
-planemesh = trimesh.load(
-    file_obj=pkg_resources.resource_filename(
-        "bfieldtools", "example_meshes/10x10_plane_hires.obj"
-    ),
-    process=False,
-)
-
+planemesh = load_example_mesh("10x10_plane_hires")
 planemesh.apply_scale(scaling_factor)
 
 # Specify coil plane geometry
@@ -50,7 +48,7 @@ coil_minus = trimesh.Trimesh(
     planemesh.vertices + center_offset - standoff, planemesh.faces, process=False
 )
 
-joined_planes = coil_plus.union(coil_minus)
+joined_planes = combine_meshes((coil_minus, coil_plus))
 
 
 # Create mesh class object
@@ -112,9 +110,7 @@ if PLOT:
 
     if SAVE_FIGURES:
         mlab.savefig(
-            "/l/bfieldtools/examples/publication_software/Shielded coil/shielded_biplanar_geometry.png",
-            figure=f,
-            magnification=4,
+            SAVE_DIR + "shielded_biplanar_geometry.png", figure=f, magnification=4,
         )
         mlab.close()
 
@@ -134,7 +130,6 @@ target_abs_error[:, 1:3] += 0.01
 
 target_spec = {
     "coupling": coil.B_coupling(target_points),
-    "rel_error": 0,
     "abs_error": target_abs_error,
     "target": target_field,
 }
@@ -170,9 +165,7 @@ if PLOT:
 
     if SAVE_FIGURES:
         mlab.savefig(
-            "/l/bfieldtools/examples/publication_software/Shielded coil/shielded_biplanar_ignored.png",
-            figure=f,
-            magnification=4,
+            SAVE_DIR + "shielded_biplanar_ignored.png", figure=f, magnification=4,
         )
         mlab.close()
 #################################################################
@@ -227,7 +220,6 @@ total_C = coil.B_coupling(target_points) + secondary_C
 
 target_spec_w_shield = {
     "coupling": total_C,
-    "rel_error": 0,
     "abs_error": target_abs_error,
     "target": target_field,
 }
@@ -259,9 +251,7 @@ if PLOT:
     f.scene.camera.zoom(0.95)
     if SAVE_FIGURES:
         mlab.savefig(
-            "/l/bfieldtools/examples/publication_software/Shielded coil/shielded_biplanar_prospective.png",
-            figure=f,
-            magnification=4,
+            SAVE_DIR + "shielded_biplanar_prospective.png", figure=f, magnification=4,
         )
         mlab.close()
 
@@ -317,53 +307,4 @@ if PLOT:
     fig.tight_layout(rect=[0, 0.03, 1, 0.95])
 
     if SAVE_FIGURES:
-        plt.savefig(
-            "/l/bfieldtools/examples/publication_software/Shielded coil/shielding_effect.pdf"
-        )
-
-
-###############################################################
-# Plot the difference in stream functions
-#
-# f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-#           size=(800, 800))
-# mlab.clf()
-#
-# plot_data_on_vertices(coil.mesh, np.nan_to_num(100 * (coil.s-coil.s2)/coil.s), figure=f, colorbar=True)
-#
-# mlab.colorbar(title='Relative error (%)')
-
-#
-################################################################
-## Finally, plot the field lines when the shield is included into the model
-#
-# extent = 8
-# N = 20
-# X, Y, Z = np.meshgrid(np.linspace(-extent, extent, N)+7.5, np.linspace(-extent, extent, N), np.linspace(-extent, extent, N))
-#
-# r = np.array([X.flatten(), Y.flatten(), Z.flatten()]).T
-#
-# r = r[shield.mesh.contains(r)]
-#
-#
-# coil.C_cyl = compute_C(coil.mesh, r)
-# shield.C_cyl = compute_C(shield.mesh, r)
-#
-# secondary_C_cyl = shield.C_cyl @ shield.coupling
-#
-# total_C_cyl = coil.C_cyl + secondary_C_cyl
-#
-#
-# Bfield = total_C_cyl @ coil.s2
-#
-# f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-#           size=(800, 800))
-# mlab.clf()
-#
-# quiv = mlab.quiver3d(*r.T, *Bfield.T)
-#
-#
-#
-# plot_3d_current_loops(loops, colors='auto', figure=f)
-#
-# shield.plot_mesh(representation='surface', opacity=0.1, cull_front=True)
+        plt.savefig(SAVE_DIR + "shielding_effect.pdf")

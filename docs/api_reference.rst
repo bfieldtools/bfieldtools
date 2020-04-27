@@ -20,20 +20,20 @@ API Reference
 Surface mesh field calculations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:py:mod:`bfieldtools.conductor`:
+:py:mod:`bfieldtools.mesh_conductor`:
 
 
 
-.. automodule:: bfieldtools.conductor
+.. automodule:: bfieldtools.mesh_conductor
    :no-members:
    :no-inherited-members:
 
-.. currentmodule:: bfieldtools.conductor
+.. currentmodule:: bfieldtools.mesh_conductor
 
 .. autosummary::
    :toctree: generated/
 
-   Conductor
+   MeshConductor
    CouplingMatrix
    StreamFunction
    
@@ -172,16 +172,16 @@ Scalar function contouring
 Line currents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:py:mod:`bfieldtools.line_path`:
+:py:mod:`bfieldtools.line_conductor`:
 
-.. automodule:: bfieldtools.line_path
+.. automodule:: bfieldtools.line_conductor
    :no-members:
    :no-inherited-members:
 
 .. autosummary::
    :toctree: generated/
 	
-	LinePath
+	LineConductor
 
 :py:mod:`bfieldtools.line_magnetics`:
 

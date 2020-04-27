@@ -9,6 +9,7 @@ from mayavi import mlab
 
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
 from bfieldtools.mesh_calculus import gradient
+from bfieldtools.utils import load_example_mesh
 
 # This doesn't matter, the problem is scale-invariant
 scaling_factor = 1

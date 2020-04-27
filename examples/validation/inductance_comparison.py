@@ -6,12 +6,6 @@ Use different number of quadrature points and two different implementations
 """
 
 import numpy as np
-import trimesh
-from timeit import timeit
-from time import clock
-
-import pkg_resources
-import sys
 import matplotlib.pyplot as plt
 
 from bfieldtools.utils import load_example_mesh
@@ -38,12 +32,3 @@ MM7 = self_inductance_matrix(coilmesh, quad_degree=7, analytic_self_coupling=Tru
 plt.gca().set_prop_cycle(None)
 for m in (MM5, MM6, MM7):
     plt.plot(np.diag(m), "--")
-
-
-from bfieldtools.mesh_impedance import (
-    triangle_self_coupling,
-    triangle_self_coupling_compact,
-)
-
-p1 = triangle_self_coupling(coilmesh)
-p2 = triangle_self_coupling_compact(coilmesh)

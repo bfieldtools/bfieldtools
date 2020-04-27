@@ -152,6 +152,7 @@ sphinx_gallery_conf = {
     "examples_dirs": "../examples",  # path to your example scripts
     "gallery_dirs": "auto_examples",  # path where to save gallery generated examples
     "filename_pattern": ".py",  # which examples are executed for plots etc
+    "ignore_pattern": r"mne\.py",
     "image_scrapers": scrapers,
     "abort_on_example_error": False,
     "download_section_examples": False,

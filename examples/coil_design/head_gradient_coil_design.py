@@ -12,6 +12,7 @@ from mayavi import mlab
 from bfieldtools.mesh_conductor import MeshConductor
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.utils import load_example_mesh
+from bfieldtools import sphtools
 
 
 # Load simple plane mesh that is centered on the origin
@@ -48,9 +49,6 @@ target_points = (
 # Specify target field and run solver.
 # Here, we specify the target field through the use of spherical harmonics.
 # We want to produce the field corresponding to a specific beta_l,m-component.
-
-from bfieldtools.sphtools import basis_fields
-
 
 lmax = 3
 alm = np.zeros((lmax * (lmax + 2),))

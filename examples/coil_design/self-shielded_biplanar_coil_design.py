@@ -21,7 +21,6 @@ import trimesh
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
 from bfieldtools.utils import combine_meshes, load_example_mesh
 
-
 # Load simple plane mesh that is centered on the origin
 planemesh = load_example_mesh("10x10_plane_hires")
 
@@ -130,6 +129,7 @@ U2 = CU2 @ shieldcoil.s
 
 ##############################################################
 # Now, plot the field streamlines and scalar potential
+
 
 from bfieldtools.contour import scalar_contour
 

@@ -5,8 +5,8 @@ Compact example of design of a cylindrical coil surrounded by a RF shield, i.e. 
 The effects of eddy currents due to inductive interaction with the shield is minimized
 """
 PLOT = True
-SAVE_FIGURES = True
-SAVE_PATH = "C:/Users/Rasmus Zetter/Documents/Aalto/bfieldtools/examples/publication_software/Minimal eddy current coil/"
+SAVE_FIGURES = False
+SAVE_PATH = "./Minimal eddy current coil/"
 
 
 import numpy as np
@@ -17,7 +17,7 @@ import trimesh
 from bfieldtools.mesh_conductor import MeshConductor
 
 from bfieldtools.coil_optimize import optimize_streamfunctions
-from bfieldtools.contour import scalar_contour, simplify_contour
+from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
 
 import pkg_resources
@@ -371,34 +371,6 @@ unshieldedB_t = (
 import matplotlib.pyplot as plt
 
 if PLOT and SAVE_FIGURES:
-    #    fig, ax = plt.subplots(3, 1, sharex=True, figsize=(4, 5))
-    #
-    #    #ax[0].set_title('Eddy currents minimized')
-    #
-    #    axnames = ['X', 'Y', 'Z']
-    #    for i in range(3):
-    #
-    #        ax[i].plot(time*1e3, np.mean(B_t, axis=0)[i].T, 'k-', label='Minimized', linewidth=2.0)
-    #        ax[i].plot(time*1e3, np.mean(unshieldedB_t, axis=0)[i].T, 'k--', label='Ignored', linewidth=2.0 )
-    #        #ax[1].set_title('Eddy currents ignored')
-    #    #    ax[i].yaxis.set_major_formatter(ScalarFormatter(useOffset=True))
-    #        #ax[1].set_ylabel('Transient field amplitude')
-    #
-    #        ax[i].spines['top'].set_visible(False)
-    #        ax[i].spines['right'].set_visible(False)
-    #        ax[i].set_ylabel(axnames[i])
-    #
-    #        ax[i].ticklabel_format(style='sci', axis='y', scilimits=(0,0), useOffset=False)
-    #
-    #    #ax[2].set_ylabel('Transient field')
-    #    ax[2].set_xlabel('Time (ms)')
-    #
-    #    plt.legend()
-    #    fig.tight_layout()
-    #    plt.savefig('/l/bfieldtools/examples/publication_software/Minimal eddy current coil/eddy_transient_allaxes.pdf')
-    #
-    #    plt.close('all')
-
     fig, ax = plt.subplots(1, 1, sharex=True, figsize=(8, 4))
     ax.plot(
         time * 1e3,
@@ -434,26 +406,6 @@ if PLOT and SAVE_FIGURES:
     ax.vlines([1, 5, 10, 20], 1e-4, 0.5, alpha=0.1, linewidth=3, color="r")
 
     plt.savefig(SAVE_PATH + "eddy_transient.pdf")
-
-#
-#    fig, ax = plt.subplots(1, 1, sharex=True, figsize=(3, 4))
-#    ax.plot(time*1e3, np.mean(B_t[0], axis=0).T, 'k-', label='Minimized', linewidth=1.5)
-#    #ax[0].set_title('Eddy currents minimized')
-#    ax.set_ylabel('Transient field amplitude')
-#    ax.plot(time*1e3, np.mean(unshieldedB_t[0], axis=0).T, 'k--', label='Ignored', linewidth=1.5 )
-#    #ax[1].set_title('Eddy currents ignored')
-#    ax.set_xlabel('Time (ms)')
-#    #ax[1].set_ylabel('Transient field amplitude')
-#
-#    ax.set_ylim(-00.05, 0.01)
-#    ax.set_xlim(0, 20)
-#
-#    ax.spines['top'].set_visible(False)
-#    ax.spines['right'].set_visible(False)
-#
-#    plt.legend()
-#    fig.tight_layout()
-#    plt.savefig('/l/bfieldtools/examples/publication_software/Minimal eddy current coil/eddy_transient_onaxis.pdf')
 
 
 from bfieldtools.mesh_calculus import gradient

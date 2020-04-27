@@ -1,25 +1,12 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Tue Jan 28 18:24:27 2020
+Field interpolation example
+============================
 
-@author: makinea1
 """
-
-# import sys
-# path = '/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools'
-# if path not in sys.path:
-#    sys.path.insert(0, path)
-
 import numpy as np
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
-from bfieldtools.suhtools import SuhBasis
-from trimesh.creation import icosphere
 from mayavi import mlab
 import trimesh
-import matplotlib.pyplot as plt
-from time import clock
-from bfieldtools.utils import find_mesh_boundaries
 
 import mne
 
