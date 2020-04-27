@@ -21,7 +21,6 @@ from .utils import tri_normals_and_areas
 #   Has also lot of functions for spherical <-> cartesian transformations.
 
 
-
 ############################################
 # Helper functions for sph computation
 
@@ -167,6 +166,7 @@ def sphvec2cart(sp, vec):
 ############################################
 # Functions for generating Legendre polynomials,
 # real spherical harmonics and vector spherical harmonics
+
 
 def lpmn_em(l, m, x):
     """
@@ -561,6 +561,39 @@ def potential(p, acoeffs, bcoeffs, lmax):
     return pot
 
 
+def field(p, acoeffs, bcoeffs, lmax, normalize=False, multiply_mu0=True):
+    """
+      Computes magnetic field at some point from the sph coefficients.
+    Ignores the 'DC' component l=0.
+
+    Parameters
+    ----------
+    p: Nx3 array
+        coordinates in which the potential is computed
+    acoeffs: lmax*(lmax+2)x1 array
+        spectral coefficients of r**l terms
+    bcoeffs: lmax*(lmax+2)x1 array
+        spectral coefficients of r**(-l) terms
+    lmax: int
+        maximum degree l which is used in computing  
+    normalize: boolean (optional)
+         if True: the fields are normalized w.r.t integration over
+         the unit sphere. Otherwise, the fields correspond to normalized
+         potential. The default is false.
+    multiply_mu0: boolean (optional)
+        multiply by mu_0 to obtain units of Tesla. The default is True
+        
+        
+    Returns
+    -------
+    B: Nx3 array
+        Magnetic field produced by the sph components
+    """
+
+    basis = basis_fields(p, lmax, normalize, multiply_mu0)
+
+    return basis[0] @ acoeffs + basis[1] @ bcoeffs
+
 
 def basis_fields(p, lmax, normalize=False, multiply_mu0=True):
     """
@@ -626,7 +659,6 @@ def basis_fields(p, lmax, normalize=False, multiply_mu0=True):
         B2 *= 1e-7 * 4 * np.pi
 
     return np.moveaxis(B1, 0, 2), np.moveaxis(B2, 0, 2)
-
 
 
 def compute_sphcoeffs_mesh(mesh, lmax):
@@ -705,7 +737,6 @@ def compute_sphcoeffs_mesh(mesh, lmax):
         print("l = %d computed" % (l))
 
     return alm, blm
-
 
 
 ###################################
@@ -864,8 +895,10 @@ class SphBasis:
         coeffs = np.array(coeffs)
         return coeffs
 
+
 ###################################
 # Functions for plotting spherical harmonics
+
 
 def plotYlms(sph, lmax, polar=False):
     """
@@ -1097,4 +1130,3 @@ def plotBVlm_volume(sph, l, m, lim, Np, offset):
     obj = mlab.quiver3d(p[:, 0], p[:, 1], p[:, 2], _Vlm[:, 0], _Vlm[:, 1], _Vlm[:, 2])
     obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
     return obj
-
