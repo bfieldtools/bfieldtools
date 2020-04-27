@@ -8,29 +8,15 @@ region between the two coil planes. The coil planes have holes in them,
 """
 
 import numpy as np
-from mayavi import mlab
 import trimesh
 
 from bfieldtools.mesh_conductor import MeshConductor
 from bfieldtools.coil_optimize import optimize_streamfunctions
-from bfieldtools.contour import scalar_contour
-from bfieldtools.viz import plot_3d_current_loops
-
-import pkg_resources
-
-
-# Set unit, e.g. meter or millimeter.
-# This doesn't matter, the problem is scale-invariant
-scaling_factor = 1
+from bfieldtools.utils import combine_meshes, load_example_mesh
 
 
 # Load simple plane mesh that is centered on the origin
-planemesh = trimesh.load(
-    file_obj=pkg_resources.resource_filename(
-        "bfieldtools", "example_meshes/plane_w_holes.stl"
-    ),
-    process=False,
-)
+planemesh = load_example_mesh("plane_w_holes")
 
 angle = np.pi / 2
 rotation_matrix = np.array(
@@ -43,11 +29,10 @@ rotation_matrix = np.array(
 )
 
 planemesh.apply_transform(rotation_matrix)
-planemesh.apply_scale(scaling_factor)
 
 # Specify coil plane geometry
-center_offset = np.array([0, 0, 0]) * scaling_factor
-standoff = np.array([0, 20, 0]) * scaling_factor
+center_offset = np.array([0, 0, 0])
+standoff = np.array([0, 20, 0])
 
 # Create coil plane pairs
 coil_plus = trimesh.Trimesh(
@@ -58,21 +43,19 @@ coil_minus = trimesh.Trimesh(
     planemesh.vertices + center_offset - standoff, planemesh.faces, process=False
 )
 
-joined_planes = coil_plus.union(coil_minus)
+joined_planes = combine_meshes((coil_plus, coil_minus))
 
 # Create MeshConductor object, which finds the holes and sets the boundary condition
-coil = MeshConductor(
-    verts=joined_planes.vertices, tris=joined_planes.faces, fix_normals=True
-)
+coil = MeshConductor(mesh_obj=joined_planes, fix_normals=True)
 
 ##############################################################
 # Set up target and stray field points
 
 # Here, the target points are on a volumetric grid within a sphere
 
-center = np.array([0, 0, 0]) * scaling_factor
+center = np.array([0, 0, 0])
 
-sidelength = 10 * scaling_factor
+sidelength = 10
 n = 8
 xx = np.linspace(-sidelength / 2, sidelength / 2, n)
 yy = np.linspace(-sidelength / 2, sidelength / 2, n)
@@ -100,16 +83,12 @@ target_points = (
 target_field = np.zeros(target_points.shape)
 target_field[:, 0] = target_field[:, 0] + 1
 
-target_rel_error = np.zeros_like(target_field)
-target_rel_error[:, 0] += 0.01
-
 target_abs_error = np.zeros_like(target_field)
 target_abs_error[:, 0] += 0.001
 target_abs_error[:, 1:3] += 0.005
 
 target_spec = {
     "coupling": coil.B_coupling(target_points),
-    "rel_error": target_rel_error,
     "abs_error": target_abs_error,
     "target": target_field,
 }

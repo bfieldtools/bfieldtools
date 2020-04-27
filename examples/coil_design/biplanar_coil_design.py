@@ -15,31 +15,16 @@ import trimesh
 
 from bfieldtools.mesh_conductor import MeshConductor
 from bfieldtools.coil_optimize import optimize_streamfunctions
-from bfieldtools.contour import scalar_contour
-from bfieldtools.viz import plot_3d_current_loops
-from bfieldtools.utils import combine_meshes
-
-import pkg_resources
-
-
-# Set unit, e.g. meter or millimeter.
-# This doesn't matter, the problem is scale-invariant
-scaling_factor = 1
+from bfieldtools.viz import plot_cross_section
+from bfieldtools.utils import combine_meshes, load_example_mesh
 
 
 # Load simple plane mesh that is centered on the origin
-planemesh = trimesh.load(
-    file_obj=pkg_resources.resource_filename(
-        "bfieldtools", "example_meshes/10x10_plane_hires.obj"
-    ),
-    process=False,
-)
-
-planemesh.apply_scale(scaling_factor * 1.6)
+planemesh = load_example_mesh("10x10_plane_hires")
 
 # Specify coil plane geometry
-center_offset = np.array([0, 0, 0]) * scaling_factor
-standoff = np.array([0, 5, 0]) * scaling_factor
+center_offset = np.array([0, 0, 0])
+standoff = np.array([0, 3, 0])
 
 # Create coil plane pairs
 coil_plus = trimesh.Trimesh(
@@ -62,9 +47,9 @@ coil = MeshConductor(
 
 # Here, the target points are on a volumetric grid within a sphere
 
-center = np.array([0, 0, 0]) * scaling_factor
+center = np.array([0, 0, 0])
 
-sidelength = 2 * scaling_factor
+sidelength = 1.5
 n = 8
 xx = np.linspace(-sidelength / 2, sidelength / 2, n)
 yy = np.linspace(-sidelength / 2, sidelength / 2, n)
@@ -83,16 +68,8 @@ target_points = (
 )
 
 
-#    #Here, the stray field points are on a spherical surface
-stray_radius = 20 * scaling_factor
-#    stray_length = 20 * scaling_factor
-#
-#    stray_points = cylinder_points(radius=stray_radius,
-#                                   length = stray_length,
-#                                   nlength = 5,
-#                                   nalpha = 30,
-#                                   orientation=np.array([1, 0, 0]))
-#
+# Here, the stray field points are on a spherical surface
+stray_radius = 20
 stray_points_mesh = trimesh.creation.icosphere(subdivisions=3, radius=stray_radius)
 stray_points = stray_points_mesh.vertices + center
 
@@ -106,7 +83,7 @@ n_stray_points = len(stray_points)
 # and it is scaled to match the C matrix in the optimization function
 
 target_field = np.zeros(target_points.shape)
-target_field[:, 0] = target_field[:, 0] + 1
+target_field[:, 0] += 1
 
 target_spec = {
     "coupling": coil.B_coupling(target_points),
@@ -123,6 +100,7 @@ bfield_specification = [target_spec, stray_spec]
 
 ##############################################################
 ## Compute the optimal stream function, either using a numerical solver or regularized least squares
+
 import mosek
 
 coil.s, prob = optimize_streamfunctions(
@@ -135,74 +113,21 @@ coil.s, prob = optimize_streamfunctions(
 
 
 #############################################################
-# Plot coil windings and target points
+# Plot the optimized stream function, then discretize it and plot coil windings and the resultant magnetic field
 
-N_contours = 10
+coil.s.plot()
 
-loops = scalar_contour(coil.mesh, coil.s, N_contours=N_contours)
+loops = coil.s.discretize(N_contours=10)
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-mlab.clf()
+loops.plot_loops()
 
-plot_3d_current_loops(loops, colors="auto", figure=f)
-
-B_target = coil.B_coupling(target_points) @ coil.s
-
+B_target = loops.magnetic_field(target_points)
 mlab.quiver3d(*target_points.T, *B_target.T)
 
 
-##############################################################
-# Plot cross-section of magnetic field and magnetic potential of the discretized loops
-
-from bfieldtools.line_magnetics import magnetic_field, scalar_potential
-
-x = y = np.linspace(-12, 12, 250)
-X, Y = np.meshgrid(x, y, indexing="ij")
-points = np.zeros((X.flatten().shape[0], 3))
-points[:, 0] = X.flatten()
-points[:, 1] = Y.flatten()
-
-B = np.zeros_like(points)
-U = np.zeros((points.shape[0],))
-for loop_idx in range(len(loops)):
-    B += magnetic_field(np.vstack((loops[loop_idx], loops[loop_idx][0])), points)
-    U += scalar_potential(np.vstack((loops[loop_idx], loops[loop_idx][0])), points)
-
-B = B.T[:2].reshape(2, x.shape[0], y.shape[0])
-lw = np.sqrt(B[0] ** 2 + B[1] ** 2)
-lw = 2 * lw / np.max(lw)
-
-U = U.reshape(x.shape[0], y.shape[0])
-
-plt.figure()
-
-plt.pcolormesh(X, Y, U.T, cmap="seismic", shading="gouraud")
-# plt.imshow(U, vmin=-1.0, vmax=1.0, cmap='seismic', interpolation='bicubic',
-#           extent=(x.min(), x.max(), y.min(), y.max()))
-
-seed_points = points[:, :2] * 0.3
-
-plt.streamplot(
-    x,
-    y,
-    B[1],
-    B[0],
-    density=2,
-    linewidth=lw,
-    color="k",
-    integration_direction="both",
-    start_points=seed_points,
-)
-plt.axis("equal")
-plt.axis("off")
-for loop in loops:
-    plt.plot(loop[:, 1], loop[:, 0], "k", linewidth=4, alpha=0.1)
-
-plt.tight_layout()
-
-
 #######################################################
-# Lets also do the same coil optimization using regularized least-squares
+# Lets also do the same coil optimization using regularized least-squares.
+# Now we can't specify inequality constraints (e.g. use error margins in the specification).
 
 
 from bfieldtools.coil_optimize import optimize_lsq
@@ -213,58 +138,48 @@ coil.s2 = optimize_lsq(
 
 
 #############################################################
-# Plot coil windings and target points
+# Plot the optimized stream function, then discretize it and plot coil windings and the resultant magnetic field
 
-N_contours = 10
+coil.s2.plot()
 
-loops = scalar_contour(coil.mesh, coil.s2, N_contours=N_contours)
+loops2 = coil.s2.discretize(N_contours=10)
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-mlab.clf()
+loops2.plot_loops()
 
-plot_3d_current_loops(loops, colors="auto", figure=f)
-
-B_target = coil.B_coupling(target_points) @ coil.s2
-
+B_target = loops2.magnetic_field(target_points)
 mlab.quiver3d(*target_points.T, *B_target.T)
 
 
 ##############################################################
 # Plot cross-section of magnetic field and magnetic potential of the discretized loops
 
-from bfieldtools.line_magnetics import magnetic_field, scalar_potential
-
 x = y = np.linspace(-12, 12, 250)
 X, Y = np.meshgrid(x, y, indexing="ij")
+
+
 points = np.zeros((X.flatten().shape[0], 3))
 points[:, 0] = X.flatten()
 points[:, 1] = Y.flatten()
 
-B = np.zeros_like(points)
-U = np.zeros((points.shape[0],))
-for loop_idx in range(len(loops)):
-    B += magnetic_field(np.vstack((loops[loop_idx], loops[loop_idx][0])), points)
-    U += scalar_potential(np.vstack((loops[loop_idx], loops[loop_idx][0])), points)
-
-B = B.T[:2].reshape(2, x.shape[0], y.shape[0])
-lw = np.sqrt(B[0] ** 2 + B[1] ** 2)
-lw = 2 * lw / np.max(lw)
+B = loops2.magnetic_field(points)
+U = loops2.scalar_potential(points)
 
 U = U.reshape(x.shape[0], y.shape[0])
+B = B.T[:2].reshape(2, x.shape[0], y.shape[0])
 
-plt.figure()
+lw = np.sqrt(B[0] ** 2 + B[1] ** 2)
 
-plt.pcolormesh(X, Y, U.T, cmap="seismic", shading="gouraud")
-# plt.imshow(U, vmin=-1.0, vmax=1.0, cmap='seismic', interpolation='bicubic',
-#           extent=(x.min(), x.max(), y.min(), y.max()))
+lw = 2 * lw / np.max(lw)
+
+plot_cross_section(X, Y, U, log=False, contours=False)
 
 seed_points = points[:, :2] * 0.3
 
 plt.streamplot(
     x,
     y,
-    B[1],
     B[0],
+    B[1],
     density=2,
     linewidth=lw,
     color="k",
@@ -273,7 +188,8 @@ plt.streamplot(
 )
 plt.axis("equal")
 plt.axis("off")
-for loop in loops:
-    plt.plot(loop[:, 1], loop[:, 0], "k", linewidth=4, alpha=0.1)
+
+plt.plot([-5, 5], [-3, -3], "k", linewidth=3, alpha=1)
+plt.plot([-5, 5], [3, 3], "k", linewidth=3, alpha=1)
 
 plt.tight_layout()

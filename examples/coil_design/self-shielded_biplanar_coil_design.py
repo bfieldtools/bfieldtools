@@ -19,32 +19,16 @@ from mayavi import mlab
 import trimesh
 
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
-from bfieldtools.mesh_magnetics import (
-    magnetic_field_coupling_analytic,
-    scalar_potential_coupling,
-)
-from bfieldtools.contour import scalar_contour
-from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
+from bfieldtools.utils import combine_meshes, load_example_mesh
 
-import pkg_resources
-
-# Set unit, e.g. meter or millimeter.
-# This doesn't matter, the problem is scale-invariant
-scaling_factor = 0.1
 
 # Load simple plane mesh that is centered on the origin
-planemesh = trimesh.load(
-    file_obj=pkg_resources.resource_filename(
-        "bfieldtools", "example_meshes/10x10_plane_hires.obj"
-    ),
-    process=False,
-)
+planemesh = load_example_mesh("10x10_plane_hires")
 
-planemesh.apply_scale(scaling_factor)
 
 # Specify coil plane geometry
-center_offset = np.array([0, 0, 0]) * scaling_factor
-standoff = np.array([0, 4, 0]) * scaling_factor
+center_offset = np.array([0, 0, 0])
+standoff = np.array([0, 4, 0])
 
 # Create coil plane pairs
 coil_plus = trimesh.Trimesh(
@@ -55,7 +39,7 @@ coil_minus = trimesh.Trimesh(
     planemesh.vertices + center_offset - standoff, planemesh.faces, process=False
 )
 
-mesh1 = coil_plus.union(coil_minus)
+mesh1 = combine_meshes((coil_plus, coil_minus))
 mesh2 = mesh1.copy()
 mesh2.apply_scale(1.4)
 
@@ -97,6 +81,7 @@ ssmax = eigvalsh(C.T @ C, M, eigvals=[M.shape[1] - 1, M.shape[1] - 1])
 
 ############################################################
 # Specify spherical harmonic and calculate corresponding shielded field
+
 beta = np.zeros(Beta1.shape[0])
 # beta[7] = 1 # Gradient
 beta[2] = 1  # Homogeneous
@@ -112,16 +97,18 @@ I2inner = P @ I1inner
 coil.s = StreamFunction(I1inner, coil)
 shieldcoil.s = StreamFunction(I2inner, shieldcoil)
 
-# s = mlab.triangular_mesh(*mesh1.vertices.T, mesh1.faces, scalars=I1)
-# s.enable_contours=True
-# s = mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces, scalars=I2)
-# s.enable_contours=True
+######################################################################3
+# Do a quick 3D plot
 
+f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
+
+coil.s.plot(figure=f, contours=20)
+shieldcoil.s.plot(figure=f, contours=20)
 
 ############################################################
-#
+# Compute the field and scalar potential on an XY-plane
 
-x = y = np.linspace(-0.8, 0.8, 150)
+x = y = np.linspace(-8, 8, 150)
 X, Y = np.meshgrid(x, y, indexing="ij")
 points = np.zeros((X.flatten().shape[0], 3))
 points[:, 0] = X.flatten()
@@ -143,6 +130,9 @@ U2 = CU2 @ shieldcoil.s
 
 ##############################################################
 # Now, plot the field streamlines and scalar potential
+
+from bfieldtools.contour import scalar_contour
+
 cc1 = scalar_contour(mesh1, mesh1.vertices[:, 2], contours=[-0.001])
 cc2 = scalar_contour(mesh2, mesh2.vertices[:, 2], contours=[-0.001])
 cx10 = cc1[0][:, 1]
@@ -160,15 +150,12 @@ lw = np.sqrt(B[0] ** 2 + B[1] ** 2)
 lw = 2 * np.log(lw / np.max(lw) * np.e + 1.1)
 
 xx = np.linspace(-1, 1, 16)
-# seed_points = 0.56*np.array([xx, -np.sqrt(1-xx**2)])
-# seed_points = np.hstack([seed_points, (0.56*np.array([xx, np.sqrt(1-xx**2)]))])
-# seed_points = np.hstack([seed_points, (0.56*np.array([np.zeros_like(xx), xx]))])
+
 seed_points = np.array([cx10 + 0.001, cy10])
 seed_points = np.hstack([seed_points, np.array([cx11 - 0.001, cy11])])
 seed_points = np.hstack([seed_points, (0.56 * np.array([np.zeros_like(xx), xx]))])
 
-# plt.streamplot(x,y, B[1], B[0], density=2, linewidth=lw, color='k',
-#               start_points=seed_points.T, integration_direction='both')
+
 U = (U1 + U2).reshape(x.shape[0], y.shape[0])
 U /= np.max(U)
 plt.figure()
@@ -188,8 +175,6 @@ plt.streamplot(
     arrowsize=0.1,
 )
 
-# plt.plot(seed_points[0], seed_points[1], '*')
-
 for loop in cc1 + cc2:
     plt.plot(loop[:, 1], loop[:, 0], "k", linewidth=4, alpha=1)
     plt.plot(-loop[:, 1], -loop[:, 0], "k", linewidth=4, alpha=1)
@@ -198,12 +183,3 @@ plt.axis("image")
 
 plt.xticks([])
 plt.yticks([])
-
-
-######################################################################3
-# Do a quick 3D plot
-
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-
-coil.s.plot(figure=f, contours=20)
-shieldcoil.s.plot(figure=f, contours=20)
