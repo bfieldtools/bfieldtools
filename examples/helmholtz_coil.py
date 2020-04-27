@@ -1,7 +1,9 @@
 """
+Field of a Helmholtz coils pair 
+------------------------------------------------------------------------------
 Example on how to compute the magnetic field from current line segments forming a Helmholtz coil pair.
-Also some fancy visualization.
 
+Visualization of the 3D field using Mayavi
 """
 
 from mayavi import mlab
@@ -9,8 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from bfieldtools.utils import cylinder_points
-from bfieldtools.bfield_line import bfield_line_segments
-
+from bfieldtools.line_magnetics import magnetic_field
 
 # Create helmholtz coil with radius R
 R = 5
@@ -44,13 +45,15 @@ b_points = np.array([x, y, z]).T
 
 B = np.zeros(b_points.shape)
 
-B += bfield_line_segments(c1_points, b_points)
-B += bfield_line_segments(c2_points, b_points)
+B += magnetic_field(c1_points, b_points)
+B += magnetic_field(c2_points, b_points)
 
 
 B_matrix = B.reshape((n, n, n, 3))
 
 B_matrix_norm = np.linalg.norm(B_matrix, axis=-1)
+
+#%% Visualization using mayavi
 
 field = mlab.pipeline.vector_field(
     X,
@@ -80,6 +83,12 @@ iso = mlab.pipeline.iso_surface(field, contours=10, opacity=0.2, colormap="virid
 # A trick to make transparency look better: cull the front face
 iso.actor.property.frontface_culling = True
 
+# Settings
+iso.contour.maximum_contour = 1e-07
+vcp.implicit_plane.widget.normal_to_y_axis = True
+
+
+#%% Plot field magnitude on x and y axes using matplotlib
 
 plt.figure()
 
@@ -90,7 +99,7 @@ x1 = y1 = np.zeros_like(z1)
 line1_points = np.vstack((x1, y1, z1)).T
 
 
-Bh_line1 = bfield_line_segments(c1_points, line1_points) + bfield_line_segments(
+Bh_line1 = magnetic_field(c1_points, line1_points) + magnetic_field(
     c2_points, line1_points
 )
 
@@ -107,7 +116,7 @@ z2 = x2 = np.zeros_like(y2)
 
 line2_points = np.vstack((x2, y2, z2)).T
 
-Bh_line2 = bfield_line_segments(c1_points, line2_points) + bfield_line_segments(
+Bh_line2 = magnetic_field(c1_points, line2_points) + magnetic_field(
     c2_points, line2_points
 )
 

@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Thu Sep  5 11:41:34 2019
+Test diagonal of inductance matrix
+----------------------------------------
 
-@author: makinea1
+Use different number of quadrature points and two different implementations
 """
 
 import numpy as np
@@ -21,11 +20,7 @@ coilmesh = load_example_mesh("10x10_plane")
 
 from bfieldtools.mesh_impedance import self_inductance_matrix, mutual_inductance_matrix
 
-# M0 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=0)
-# M1 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=1)
-# M2 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=2)
-# M3 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=3)
-# M4 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=4)
+
 M5 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=5)
 M6 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=6)
 M7 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=7)
@@ -34,15 +29,11 @@ plt.figure()
 for m in (M5, M6, M7):
     plt.plot(np.diag(m))
 
-
-# MM1 = self_inductance_matrix(coilmesh, quad_degree=1)
-# MM2 = self_inductance_matrix(coilmesh, quad_degree=2)
-# MM3 = self_inductance_matrix(coilmesh, quad_degree=3)
-# MM4 = self_inductance_matrix(coilmesh, quad_degree=4)
 MM5 = self_inductance_matrix(coilmesh, quad_degree=5, analytic_self_coupling=True)
 MM6 = self_inductance_matrix(coilmesh, quad_degree=6, analytic_self_coupling=True)
 MM7 = self_inductance_matrix(coilmesh, quad_degree=7, analytic_self_coupling=True)
 
+#%% Plot the diagonals
 
 plt.gca().set_prop_cycle(None)
 for m in (MM5, MM6, MM7):

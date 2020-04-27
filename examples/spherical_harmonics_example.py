@@ -1,42 +1,51 @@
 """
-Compact spherical harmonics tools and visualization example.
+Example of spherical harmonics tools and visualization
+----------------------------------------------------------------
 """
 
 import numpy as np
 from mayavi import mlab
 import matplotlib.pyplot as plt
 
-from bfieldtools.sphtools import sphbasis, plotsph, sphfittools
+from bfieldtools.sphtools import SphBasis
 from bfieldtools import sphtools
 
+# Create basis object for evaluation of inner products etc.
+sph = SphBasis(20)
 
-sph = sphbasis(20)
+#%% Plot sphs up to l=4
+mlab.figure()
+obj = sphtools.plotYlms(sph, 4)
 
-obj = plotsph.plotYlms(sph, 4)
-obj = plotsph.plotYlm(sph, 3, 3)
+# l=3, m=3
+mlab.figure()
+obj = sphtools.plotYlm(sph, 3, 3)
 
-#    obj = plotsph.plotPsilm(sph,5,2)
-#    obj = plotsph.plotPhilm(sph,2,0)
+#%% Plot vector spherical harmonics
+
+# Needs fixing: Plot sphere here
+# TODO: mesh info in sph (faces are missing!)
 
 offset = np.array((0, 0, 2))
 mlab.figure()
-obj = plotsph.plotBPhilm_volume(sph, 5, 0, 1, 10, offset)
+obj = sphtools.plotBVlm_volume(sph, 5, 0, 1, 10, offset)
 
 mlab.figure()
-obj = plotsph.plotBPsilm_volume(sph, 5, 0, 1, 10, offset)
+obj = sphtools.plotBWlm_volume(sph, 5, 0, 1, 10, offset)
 
+#%% Test inner products
 
-Psilm1 = sphtools.Psilm(1, 0, sph.sqp[:, 1], sph.sqp[:, 2])
-Psilm2 = sphtools.Psilm(7, 0, sph.sqp[:, 1], sph.sqp[:, 2])
+Vlm1 = sphtools.Wlm(1, 0, sph.sqp[:, 1], sph.sqp[:, 2])
+Vlm2 = sphtools.Wlm(7, 0, sph.sqp[:, 1], sph.sqp[:, 2])
 
-print(sph.innerproduct(Psilm1, Psilm2))
+print(sph.innerproduct(Vlm1, Vlm2))
 
-Philm1 = sphtools.Philm(1, 0, sph.sqp[:, 1], sph.sqp[:, 2])
-Philm2 = sphtools.Philm(7, 0, sph.sqp[:, 1], sph.sqp[:, 2])
+Wlm1 = sphtools.Wlm(1, 0, sph.sqp[:, 1], sph.sqp[:, 2])
+Wlm2 = sphtools.Wlm(7, 0, sph.sqp[:, 1], sph.sqp[:, 2])
 
-print(sph.innerproduct(Philm2, Philm2))
+print(sph.innerproduct(Wlm2, Wlm2))
 
-
+#%% Example of a spectrum
 B = np.zeros(sph.sqp.shape)
 # B[:,0] = 1
 B[:, 2] = sph.qp.points[:, 0] / np.max(sph.qp.points[:, 0])
@@ -49,8 +58,9 @@ coeffs = sph.avsphspectra(B, 7)  # OK??
 plt.figure()
 plt.semilogy(coeffs ** 2)
 
-obj = plotsph.plotYlm(sph, 5, 3)
+# obj = sphtools.plotYlm(sph, 5, 3)
 
+#%% Plot potential on a flat mesh
 Np = 10
 lim = 3
 x, y, z = np.meshgrid(
@@ -71,8 +81,10 @@ pot = sphtools.potential(p, acoeffs, bcoeffs, lmax)
 
 pot = np.reshape(pot, x.shape)
 
+mlab.figure()
 mlab.mesh(x[:, :, 0], y[:, :, 0], z[:, :, 0], scalars=pot[:, :, 0], colormap="Spectral")
 
+#%% Fit spectrum to random data
 coords = np.zeros((p.shape[0], p.shape[1], 3))
 coords[:, :, 0] = p
 coords[:, :, 1] = p
@@ -84,7 +96,7 @@ B[:, 1] = 0.3
 B += 0.4 * np.random.randn(B.shape[0], B.shape[1])
 
 lmax = 5
-coeffs, coeffs2, mse = sphfittools.fitSpectra(sph, coords, B, lmax)
+coeffs, coeffs2, mse = sphtools.fit_spectra(coords, B, lmax)
 
 plt.figure()
 plt.semilogy(coeffs ** 2, ".")
