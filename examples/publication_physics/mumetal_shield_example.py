@@ -1,21 +1,11 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Mon Sep  2 13:37:26 2019
-
-@author: makinea1
+Example of a cylindrical perfect mu-metal shield
+=======================================================
 """
 
 import numpy as np
 import trimesh
 from mayavi import mlab
-
-import pkg_resources
-import sys
-
-path = "/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools"
-if path not in sys.path:
-    sys.path.insert(0, path)
 
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
 from bfieldtools.mesh_calculus import gradient
@@ -24,14 +14,7 @@ from bfieldtools.mesh_calculus import gradient
 scaling_factor = 1
 
 
-# Load simple plane mesh that is centered on the origin
-planemesh = trimesh.load(
-    file_obj=pkg_resources.resource_filename(
-        "bfieldtools", "example_meshes/10x10_plane_hires.obj"
-    ),
-    process=False,
-)
-
+planemesh = load_example_mesh("10x10_plane_hires")
 planemesh.apply_scale(scaling_factor)
 
 # Specify coil plane geometry
@@ -54,12 +37,7 @@ planemesh = joined_planes
 coil = MeshConductor(mesh_obj=joined_planes, fix_normals=True)
 
 # Separate object for shield geometry
-shieldmesh = trimesh.load(
-    file_obj=pkg_resources.resource_filename(
-        "bfieldtools", "example_meshes/closed_cylinder_remeshed.stl"
-    ),
-    process=True,
-)
+shieldmesh = load_example_mesh("closed_cylinder_remeshed")
 shieldmesh.apply_scale(15)
 
 shield = MeshConductor(mesh_obj=shieldmesh, process=True, fix_normals=True)

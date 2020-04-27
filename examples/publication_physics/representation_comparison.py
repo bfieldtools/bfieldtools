@@ -1,16 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Tue Nov 26 16:28:49 2019
-
-@author: makinea1
+Compare SUH and SPH basis functions for the magnetic field
+=============================================================
 """
-
-import sys
-
-path = "/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools"
-if path not in sys.path:
-    sys.path.insert(0, path)
 
 
 import numpy as np
@@ -28,17 +19,10 @@ from bfieldtools.mesh_magnetics import magnetic_field_coupling_analytic
 from bfieldtools.mesh_magnetics import scalar_potential_coupling
 from bfieldtools.sphtools import compute_sphcoeffs_mesh, basis_fields
 from bfieldtools.suhtools import SuhBasis
+from bfieldtools.utils import load_example_mesh
 
 
-# https://graphics.stanford.edu/~mdfisher/Data/Meshes/bunny.obj
-mesh = trimesh.load(
-    file_obj=pkg_resources.resource_filename(
-        "bfieldtools", "example_meshes/bunny_repaired.obj"
-    ),
-    process=True,
-)
-# Bunny not still watertight, this fixes it
-trimesh.repair.fill_holes(mesh)
+mesh = load_example_mesh("bunny_repaired")
 
 mesh.vertices -= mesh.vertices.mean(axis=0)
 
@@ -93,13 +77,9 @@ def plot_basis_fields(C, comps):
         i += 1
 
 
-#        if i==5:
-#            i=0
-#            j+=1
-
 comps = [0, 4, 10, 15]
 scene = mlab.figure(bgcolor=(1, 1, 1), size=(1200, 350))
-plot_basis_fields(np.moveaxis(Ca, 2, 0), comps)
+plot_basis_fields(Ca, comps)
 scene.scene.parallel_projection = True
 scene.scene.z_plus_view()
 scene.scene.camera.zoom(4)

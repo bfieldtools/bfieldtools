@@ -1,17 +1,14 @@
 """
 Plot different field patterns the basic integrals
+========================================================
 
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
-import sys
 from mayavi import mlab
 import trimesh
 
-path = "/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools"
-if path not in sys.path:
-    sys.path.insert(0, path)
 
 from bfieldtools.integrals import triangle_potential_uniform
 from bfieldtools.integrals import triangle_potential_dipole_linear
@@ -136,5 +133,3 @@ for ii, func in enumerate(
     s.scene.camera.orthogonalize_view_up()
     s.scene.camera.pitch(1)
     s.scene.camera.orthogonalize_view_up()
-
-    # Zoom one step still
