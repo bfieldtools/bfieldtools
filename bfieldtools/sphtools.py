@@ -701,7 +701,7 @@ def basis_fields(p, lmax, normalization="default", R=1):
                 _Wlm *= 1 / np.sqrt(R ** (2 * l + 1) * l * mu0)
 
             _Wlm = sphvec2cart(sp, _Wlm)
-            B2[idx] = _Wlm  # r**l functions
+            B2[idx] = -1 * _Wlm  # r**l functions
 
             _Vlm = Vlm(l, m, sp[:, 1], sp[:, 2])
             if normalization == "default":
@@ -714,7 +714,7 @@ def basis_fields(p, lmax, normalization="default", R=1):
             _Vlm[:, 1] *= sp[:, 0] ** (-l - 2)
             _Vlm[:, 2] *= sp[:, 0] ** (-l - 2)
             _Vlm = sphvec2cart(sp, _Vlm)
-            B1[idx] = _Vlm  # 1/r**l functions
+            B1[idx] = -1 * _Vlm  # 1/r**l functions
 
             idx += 1
 
