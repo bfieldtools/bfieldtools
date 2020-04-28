@@ -1,5 +1,5 @@
-language: generic
-dist: xenial
+language: python
+dist: bionic
 cache:
   pip: true
 addons:
@@ -17,7 +17,7 @@ env:
             
 jobs:
   include:
-    - name: "Python 3.7 on Xenial Linux"
+    - name: "Python 3.7 on Bionic Linux"
       os: linux
       python: "3.7"
     - name: "Python 3.7 on macOS"
