@@ -1,5 +1,5 @@
 language: generic
-dist: bionic
+dist: xenial
 cache:
   pip: true
 addons:
@@ -17,12 +17,12 @@ env:
             
 jobs:
   include:
-    - name: "Python 3.7 on Bionic Linux"
+    - name: "Python 3.7 on Xenial Linux"
       os: linux
-      python: 3.7
+      python: "3.7"
     - name: "Python 3.7 on macOS"
       os: osx
-      osx_image: xcode11.2  # Python 3.7.4 running on macOS 10.14.4
+      osx_image: xcode11.3  # Python 3.7.4 running on macOS 10.14.4
       language: shell       # 'language: python' is an error on Travis CI macOS      
     - name: "Python 3.7 on Windows 10"
       os: windows           # Windows 10.0.17134 N/A Build 17134
@@ -37,13 +37,13 @@ before_install:
  - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
      /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1400x900x24 -ac +extension GLX +render -noreset;
      fi;
- - python -m pip install --upgrade pip
- - pip install vtk xvfbwrapper
- - pip install -r requirements.txt
+ - python -m pip install --user --upgrade pip
+ - pip install --user vtk xvfbwrapper
+ - pip install --user -r requirements.txt
  
- - pip install black
+ - pip install --user black
  - black --check .
- - pip install --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
+ - pip install --user --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
 
 install:
   - python setup.py install
