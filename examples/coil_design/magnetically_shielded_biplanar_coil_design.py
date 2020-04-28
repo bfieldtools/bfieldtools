@@ -16,6 +16,7 @@ from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
 from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
+from bfieldtools.utils import combine_meshes
 
 import pkg_resources
 
@@ -48,7 +49,7 @@ coil_minus = trimesh.Trimesh(
     planemesh.vertices + center_offset - standoff, planemesh.faces, process=False
 )
 
-joined_planes = coil_plus.union(coil_minus)
+joined_planes = combine_meshes((coil_plus, coil_minus))
 
 
 # Create mesh class object

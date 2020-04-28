@@ -53,18 +53,14 @@ e.start()
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(750, 900))
 
-c.suh_basis.plot(
+surfaces = c.suh_basis.plot(
     Nfuncs=c.basis.shape[1], Ncols=2, dist=0.1, colormap="RdBu", figure=f, ncolors=256
 )
 
 f.scene.z_plus_view()
 1 + 1
 #
-for n in range(c.basis.shape[1]):
-    surface = e.scenes[0].children[n].children[0].children[0].children[0]
-    #    surface.enable_contours = True
-    #    surface.contour.filled_contours = True
-    #    surface.contour.number_of_contours = 17
+for surface in surfaces:
     surface.actor.mapper.interpolate_scalars_before_mapping = True
 
 

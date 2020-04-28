@@ -178,7 +178,7 @@ def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
 
 
 def scalar_potential_coupling(
-    mesh, r, Nchunks=None, multiply_coeff=True, approx_far=False, margin=3
+    mesh, r, Nchunks=None, multiply_coeff=False, approx_far=False, margin=3
 ):
     """
     Coupling matrix corresponding to a mapping from a stream function
@@ -276,7 +276,7 @@ def scalar_potential_coupling(
     if multiply_coeff:
         coeff = 1e-7  # mu_0/(4*pi)
     else:
-        coeff = 1
+        coeff = 1 / (4 * np.pi)
     return Uv * coeff
 
 
