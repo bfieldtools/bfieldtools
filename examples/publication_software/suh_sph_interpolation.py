@@ -8,113 +8,22 @@ from bfieldtools.sphtools import basis_fields as sphfield
 from bfieldtools.sphtools import basis_potentials, potential
 import mne
 
+
 #%%
-# from mne.datasets import sample
-
-data_path = "/Users/joonas/Codes/MEGNord2019/example_data/MNE-sample-data"
-
-import os
-
-sample_data_raw_file = os.path.join(
-    data_path, "MEG", "sample", "sample_audvis_filt-0-40_raw.fif"
-)
-raw = mne.io.read_raw_fif(sample_data_raw_file)
-
-
-events = mne.find_events(raw, stim_channel="STI 014")
-
-event_dict = {
-    "auditory/left": 1,
-    "auditory/right": 2,
-    "visual/left": 3,
-    "visual/right": 4,
-    "smiley": 5,
-    "buttonpress": 32,
-}
-
-reject_criteria = dict(
-    mag=4000e-15,  # 4000 fT
-    grad=4000e-13,  # 4000 fT/cm
-    eeg=150e-6,  # 150 µV
-    eog=250e-6,
-)
-
-epochs = mne.Epochs(
-    raw, events, event_id=1, tmin=-0.2, tmax=0.5, reject=reject_criteria, preload=True
-)
-epochs.pick_types(meg="mag")
-evoked = epochs.average()
+SAVE_DIR = "./MNE interpolation/"
 
 #%%
 
+with np.load(SAVE_DIR + "mne_data.npz", allow_pickle=True) as data:
+    mesh = data["mesh"]
+    p = data["p"]
+    n = data["n"]
+    mesh = trimesh.Trimesh(vertices=data["vertices"], faces=data["faces"])
+
+evoked = mne.Evoked(SAVE_DIR + "left_auditory-ave.fif")
 
 i0, i1 = evoked.time_as_index(0.08)[0], evoked.time_as_index(0.09)[0]
 field = evoked.data[:, i0:i1].mean(axis=1)
-
-# Read BEM for surface geometry and transform to correct coordinate system
-import os.path as op
-
-subject = "sample"
-subjects_dir = op.join(data_path, "subjects")
-bem_fname = op.join(
-    subjects_dir, subject, "bem", subject + "-5120-5120-5120-bem-sol.fif"
-)
-bem = mne.read_bem_solution(bem_fname)
-
-# Head mesh 0
-# Innerskull mesh 2
-surf_index = 2
-
-trans_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw-trans.fif")
-trans0 = mne.read_trans(trans_fname)
-R = trans0["trans"][:3, :3]
-t = trans0["trans"][:3, 3]
-# Surface from MRI to HEAD
-rr = (bem["surfs"][surf_index]["rr"] - t) @ R
-# Surface from HEAD to DEVICE
-trans1 = evoked.info["dev_head_t"]
-R = trans1["trans"][:3, :3]
-t = trans1["trans"][:3, 3]
-rr = (rr - t) @ R
-
-mesh = trimesh.Trimesh(rr, bem["surfs"][surf_index]["tris"])
-mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
-
-surf_index = 0
-
-R = trans0["trans"][:3, :3]
-t = trans0["trans"][:3, 3]
-# Surface from MRI to HEAD
-rr = (bem["surfs"][surf_index]["rr"] - t) @ R
-# Surface from HEAD to DEVICE
-R = trans1["trans"][:3, :3]
-t = trans1["trans"][:3, 3]
-rr = (rr - t) @ R
-head = trimesh.Trimesh(rr, bem["surfs"][surf_index]["tris"])
-
-mlab.triangular_mesh(*head.vertices.T, head.faces, color=(0.5, 0.5, 0.5), opacity=0.5)
-
-mesh = head
-
-
-# Sensor locations and directions in DEVICE coordinate system
-p = np.array(
-    [
-        ch["loc"][:3]
-        for ch in evoked.info["chs"]
-        if ch["ch_name"][-1] == "1" and ch["ch_name"][:3] == "MEG"
-    ]
-)
-n = np.array(
-    [
-        ch["loc"][-3:]
-        for ch in evoked.info["chs"]
-        if ch["ch_name"][-1] == "1" and ch["ch_name"][:3] == "MEG"
-    ]
-)
-# Plot sensor locations and directions
-mlab.quiver3d(*p.T, *n.T, mode="arrow")
-
 
 #%% radius for inner/outer sph
 
