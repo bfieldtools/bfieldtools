@@ -40,7 +40,6 @@ jobs:
       osx_image: xcode11.3  # Python 3.7.4 running on macOS 10.14.4
       language: shell       # 'language: python' is an error on Travis CI macOS
       env:
-        - TOXENV=py3
         - HOMEBREW_NO_INSTALL_CLEANUP=1
         - HOMEBREW_NO_ANALYTICS=1
       before_cache:
@@ -55,12 +54,14 @@ jobs:
         - python3 -m pip install --upgrade virtualenv
         - virtualenv -p python3 --system-site-packages "$HOME/venv"
         - source "$HOME/venv/bin/activate"
-        - python -m pip install --user --upgrade pip
-        - pip install --user vtk xvfbwrapper
-        - pip install --user -r requirements.txt
-        - pip install --user black
+        - python3 -m pip install --user --upgrade pip
+        - pip3 install --user vtk xvfbwrapper
+        - pip3 install --user -r requirements.txt
+        - pip3 install --user black
         - black --check .
-        - pip install --user --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
+        - pip3 install --user --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
+      install:
+        - python3 setup.py install
     - name: "Python 3.7 on Windows 10"
       os: windows           # Windows 10.0.17134 N/A Build 17134
       language: shell       # 'language: python' is an error on Travis CI Windows
