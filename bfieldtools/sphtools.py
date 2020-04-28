@@ -522,7 +522,8 @@ def Vlm(l, m, theta, phi):
 ############################################
 # Potential and field from the spherical harmonics
 
-def basis_potentials(p,lmax, normalization = 'default', R = 1):
+
+def basis_potentials(p, lmax, normalization="default", R=1):
     """
     Computes inner/outer basis functions for magnetic scalar potential.
     Ignores the 'DC' component l=0.
@@ -551,9 +552,9 @@ def basis_potentials(p,lmax, normalization = 'default', R = 1):
     """
     mu0 = 1e-7 * 4 * np.pi
     L = lmax * (lmax + 2)
-    
-    pot1 = np.zeros((p.shape[0],L))
-    pot2 = np.zeros((p.shape[0],L))
+
+    pot1 = np.zeros((p.shape[0], L))
+    pot2 = np.zeros((p.shape[0], L))
 
     sp = cartesian2spherical(p)
 
@@ -561,20 +562,20 @@ def basis_potentials(p,lmax, normalization = 'default', R = 1):
     for l in range(1, lmax + 1):
         for m in range(-1 * l, l + 1):
             _ylm = ylm(l, m, sp[:, 1], sp[:, 2])
-            
-            pot1[:,lind] = sp[:, 0] ** (-1 * l - 1) * _ylm
+
+            pot1[:, lind] = sp[:, 0] ** (-1 * l - 1) * _ylm
             pot2[:, lind] = sp[:, 0] ** l * _ylm
-            
-            if normalization == 'energy':
-                pot1[:,lind] *= np.sqrt(R**(2*l+1)/((l+1)*mu0))
-                pot2[:,lind] *= 1/np.sqrt(R**(2*l+1)*l*mu0)
-                
+
+            if normalization == "energy":
+                pot1[:, lind] *= np.sqrt(R ** (2 * l + 1) / ((l + 1) * mu0))
+                pot2[:, lind] *= 1 / np.sqrt(R ** (2 * l + 1) * l * mu0)
+
             lind += 1
-            
+
     return pot1, pot2
 
 
-def potential(p, acoeffs, bcoeffs, lmax, normalization = 'default', R = 1):
+def potential(p, acoeffs, bcoeffs, lmax, normalization="default", R=1):
     """
     Computes magnetic scalar potential from the sph coefficients.
     Ignores the 'DC' component l=0.
@@ -605,11 +606,11 @@ def potential(p, acoeffs, bcoeffs, lmax, normalization = 'default', R = 1):
     """
 
     basis = basis_potentials(p, lmax, normalization, R)
-   
-    return basis[0]*acoeffs + basis[1]*bcoeffs
+
+    return basis[0] @ acoeffs + basis[1] @ bcoeffs
 
 
-def field(p, acoeffs, bcoeffs, lmax, normalization="default", R = 1):
+def field(p, acoeffs, bcoeffs, lmax, normalization="default", R=1):
     """
       Computes magnetic field at some point from the sph coefficients.
     Ignores the 'DC' component l=0.
@@ -646,12 +647,12 @@ def field(p, acoeffs, bcoeffs, lmax, normalization="default", R = 1):
         Magnetic field produced by the sph components
     """
 
-    basis = basis_fields(p, lmax, normalization=normalization, R = R)
+    basis = basis_fields(p, lmax, normalization=normalization, R=R)
 
     return basis[0] @ acoeffs + basis[1] @ bcoeffs
 
 
-def basis_fields(p, lmax, normalization="default", R = 1):
+def basis_fields(p, lmax, normalization="default", R=1):
     """
     Computes magnetic field of each sph coefficient.
     Ignores the 'DC' component l=0.
@@ -692,23 +693,23 @@ def basis_fields(p, lmax, normalization="default", R = 1):
             _Wlm[:, 0] *= sp[:, 0] ** (l - 1)
             _Wlm[:, 1] *= sp[:, 0] ** (l - 1)
             _Wlm[:, 2] *= sp[:, 0] ** (l - 1)
-            
+
             if normalization == "default":
-                _Wlm *= np.sqrt(2 * l ** 2 + l)*mu0
+                _Wlm *= np.sqrt(2 * l ** 2 + l) * mu0
             if normalization == "energy":
-                _Wlm *= np.sqrt(2 * l ** 2 + l)*mu0
-                _Wlm *= 1/np.sqrt(R**(2*l+1)*l*mu0)
-                
+                _Wlm *= np.sqrt(2 * l ** 2 + l) * mu0
+                _Wlm *= 1 / np.sqrt(R ** (2 * l + 1) * l * mu0)
+
             _Wlm = sphvec2cart(sp, _Wlm)
             B2[idx] = _Wlm  # r**l functions
 
             _Vlm = Vlm(l, m, sp[:, 1], sp[:, 2])
             if normalization == "default":
-                _Vlm *= np.sqrt((2 * l + 1) * (l + 1))*mu0
+                _Vlm *= np.sqrt((2 * l + 1) * (l + 1)) * mu0
             if normalization == "energy":
-                _Vlm *= np.sqrt((2 * l + 1) * (l + 1))*mu0
-                _Vlm *= np.sqrt(R**(2*l+1)/((l+1)*mu0))
-                
+                _Vlm *= np.sqrt((2 * l + 1) * (l + 1)) * mu0
+                _Vlm *= np.sqrt(R ** (2 * l + 1) / ((l + 1) * mu0))
+
             _Vlm[:, 0] *= sp[:, 0] ** (-l - 2)
             _Vlm[:, 1] *= sp[:, 0] ** (-l - 2)
             _Vlm[:, 2] *= sp[:, 0] ** (-l - 2)
@@ -720,7 +721,6 @@ def basis_fields(p, lmax, normalization="default", R = 1):
     # FIX, should be handled earlier maybe
     B1[np.isinf(B1)] = 0
     B2[np.isinf(B2)] = 0
-
 
     return np.moveaxis(B1, 0, 2), np.moveaxis(B2, 0, 2)
 
