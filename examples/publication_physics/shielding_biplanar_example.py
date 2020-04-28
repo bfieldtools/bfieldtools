@@ -110,10 +110,10 @@ cy10 = cc1[0][:, 0]
 cx20 = cc2[0][:, 1]
 cy20 = cc2[0][:, 0]
 
-cx11 = np.vstack(cc1[1:])[:, 1]
-cy11 = np.vstack(cc1[1:])[:, 0]
-cx21 = np.vstack(cc2[1:])[:, 1]
-cy21 = np.vstack(cc2[1:])[:, 0]
+cx11 = cc1[1][:, 1]
+cy11 = cc1[1][:, 0]
+cx21 = cc2[1][:, 1]
+cy21 = cc2[1][:, 0]
 
 B = (B1.T + B2.T)[:2].reshape(2, x.shape[0], y.shape[0])
 lw = np.sqrt(B[0] ** 2 + B[1] ** 2)

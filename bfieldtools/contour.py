@@ -118,7 +118,7 @@ def scalar_contour(mesh, scalars, N_contours=10, contours=None, return_values=Fa
         kmax = len(c_edge_inds)
         k = 0
 
-        # Loop over c_edges´by essentially solving a linked list from c_edges_in_c_faces
+        # Loop over c_edges by essentially solving a linked list from c_edges_in_c_faces
         while k < kmax:
             sorted_inds.append(c_edge_inds.index(val))
             c_edges_in_c_faces[ii] = -1
@@ -126,35 +126,42 @@ def scalar_contour(mesh, scalars, N_contours=10, contours=None, return_values=Fa
 
             if len(ii) == 0:
                 # Next edge not found in the adjacency list, contour must be closed now
-                # Sort points containing contours by adjacency of the edges
-                # and append to contour_polys
-
-                contour_polys.append(points[sorted_inds])
-                contour_values.append(c)
-
-                # Break the loop if all edges have been visited
-                if np.all(c_edges_in_c_faces == -1):
-                    break
-
-                # Else find a starting point in another contour at the same level
-                sorted_inds = []
-
-                ii = np.flatnonzero(c_edges_in_c_faces[:, 0] >= 0)[0]
-                jj = 0
-
-                # Compute gradient in face
-                c_face_gradient = g[:, c_face_inds[ii]]
-
-                # once again, check winding direction
-                vec = (
-                    points[c_edge_inds.index(c_edges_in_c_faces[ii, 0])]
-                    - points[c_edge_inds.index(c_edges_in_c_faces[ii, 1])]
-                )
-
-                if c_face_gradient.dot(vec) >= 0:
-                    jj = 0
+                # OR the loop is not closed, test this:
+                ii_temp, jj_temp = np.nonzero(c_edges_in_c_faces == val)
+                if len(ii_temp) > 0:
+                    # Proceed to another direction (direction does not matter)
+                    ii = ii_temp
+                    jj = jj_temp
                 else:
-                    jj = 1
+                    # Sort points containing contours by adjacency of the edges
+                    # and append to contour_polys
+
+                    contour_polys.append(points[sorted_inds])
+                    contour_values.append(c)
+
+                    # Break the loop if all edges have been visited
+                    if np.all(c_edges_in_c_faces == -1):
+                        break
+
+                    # Else find a starting point in another contour at the same level
+                    sorted_inds = []
+
+                    ii = np.flatnonzero(c_edges_in_c_faces[:, 0] >= 0)[0]
+                    jj = 0
+
+                    # Compute gradient in face
+                    c_face_gradient = g[:, c_face_inds[ii]]
+
+                    # once again, check winding direction
+                    vec = (
+                        points[c_edge_inds.index(c_edges_in_c_faces[ii, 0])]
+                        - points[c_edge_inds.index(c_edges_in_c_faces[ii, 1])]
+                    )
+
+                    if c_face_gradient.dot(vec) >= 0:
+                        jj = 0
+                    else:
+                        jj = 1
 
             else:
                 # Edge found
