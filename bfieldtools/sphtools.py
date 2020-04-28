@@ -522,8 +522,59 @@ def Vlm(l, m, theta, phi):
 ############################################
 # Potential and field from the spherical harmonics
 
+def basis_potentials(p,lmax, normalization = 'default', R = 1):
+    """
+    Computes inner/outer basis functions for magnetic scalar potential.
+    Ignores the 'DC' component l=0.
 
-def potential(p, acoeffs, bcoeffs, lmax):
+    Parameters
+    ----------
+    p: Nx3 array
+        coordinates in which the potential is computed
+    lmax: int
+        maximum degree l which is used in computing
+    normalization: string
+        which normalization scheme to use
+        "default": No normalization, just <Y_lm,Y_l'm'> = delta_ll'mm' (default)
+        "energy": each term in inner/outer basis function with respect to 
+                  sphere with radius R is normalized to unit energy
+    R: float
+        Sphere radius that separates inner/outer components            
+                  
+    Returns
+    -------
+    pot1: Nxlmax*(lmax+2) array
+        inner potential (alpha_lm) basis functions at p
+    pot2: Nxlmax*(lmax+2) array
+        outer potential (beta_lm) basis functions at p     
+
+    """
+    mu0 = 1e-7 * 4 * np.pi
+    L = lmax * (lmax + 2)
+    
+    pot1 = np.zeros((p.shape[0],L))
+    pot2 = np.zeros((p.shape[0],L))
+
+    sp = cartesian2spherical(p)
+
+    lind = 0
+    for l in range(1, lmax + 1):
+        for m in range(-1 * l, l + 1):
+            _ylm = ylm(l, m, sp[:, 1], sp[:, 2])
+            
+            pot1[:,lind] = sp[:, 0] ** (-1 * l - 1) * _ylm
+            pot2[:, lind] = sp[:, 0] ** l * _ylm
+            
+            if normalization == 'energy':
+                pot1[:,lind] *= np.sqrt(R**(2*l+1)/((l+1)*mu0))
+                pot2[:,lind] *= 1/np.sqrt(R**(2*l+1)*l*mu0)
+                
+            lind += 1
+            
+    return pot1, pot2
+
+
+def potential(p, acoeffs, bcoeffs, lmax, normalization = 'default', R = 1):
     """
     Computes magnetic scalar potential from the sph coefficients.
     Ignores the 'DC' component l=0.
@@ -538,30 +589,27 @@ def potential(p, acoeffs, bcoeffs, lmax):
         spectral coefficients of r**(-l) terms
     lmax: int
         maximum degree l which is used in computing
-
+    normalization: string
+        which normalization scheme to use
+        "default": No normalization, just <Y_lm,Y_l'm'> = delta_ll'mm' (default)
+        "energy": each term in inner/outer basis function with respect to 
+                  sphere with radius R is normalized to unit energy
+    R: float
+        Sphere radius that separates inner/outer components   
+                  
     Returns
     -------
-    pot: Nx1 array
+    pot1: Nx array
         magnetic scalar potential at p
 
     """
 
-    pot = np.zeros(p.shape[0])
-
-    sp = cartesian2spherical(p)
-
-    lind = 0
-    for l in range(1, lmax + 1):
-        for m in range(-1 * l, l + 1):
-            _ylm = ylm(l, m, sp[:, 1], sp[:, 2])
-            pot += (
-                acoeffs[lind] * sp[:, 0] ** l + bcoeffs[lind] * sp[:, 0] ** (-1 * l - 1)
-            ) * _ylm
-            lind += 1
-    return pot
+    basis = basis_potentials(p, lmax, normalization, R)
+   
+    return basis[0]*acoeffs + basis[1]*bcoeffs
 
 
-def field(p, acoeffs, bcoeffs, lmax, normalize=False, multiply_mu0=True):
+def field(p, acoeffs, bcoeffs, lmax, normalization="default", R = 1):
     """
       Computes magnetic field at some point from the sph coefficients.
     Ignores the 'DC' component l=0.
@@ -576,12 +624,20 @@ def field(p, acoeffs, bcoeffs, lmax, normalize=False, multiply_mu0=True):
         spectral coefficients of r**(-l) terms
     lmax: int
         maximum degree l which is used in computing  
-    normalize: boolean (optional)
-         if True: the fields are normalized w.r.t integration over
-         the unit sphere. Otherwise, the fields correspond to normalized
-         potential. The default is false.
-    multiply_mu0: boolean (optional)
-        multiply by mu_0 to obtain units of Tesla. The default is True
+    normalization: string
+        "default": the fields correspond to magnetic potential.
+        "unit": the fields are normalized w.r.t integration over the unit sphere.
+        "energy": each term in inner/outer basis function with respect to 
+            sphere with radius R is normalized to unit energy 
+    R: float
+        Sphere radius that separates inner/outer components   
+                
+    Returns
+    -------
+    B1: N x 3 x N_lmax array
+        magnetic field at p for each alpha_lm
+    B2: N x 3 x N_lmax array
+        magnetic field at p for each beta_lm
         
         
     Returns
@@ -590,12 +646,12 @@ def field(p, acoeffs, bcoeffs, lmax, normalize=False, multiply_mu0=True):
         Magnetic field produced by the sph components
     """
 
-    basis = basis_fields(p, lmax, normalize, multiply_mu0)
+    basis = basis_fields(p, lmax, normalization=normalization, R = R)
 
     return basis[0] @ acoeffs + basis[1] @ bcoeffs
 
 
-def basis_fields(p, lmax, normalize=False, multiply_mu0=True):
+def basis_fields(p, lmax, normalization="default", R = 1):
     """
     Computes magnetic field of each sph coefficient.
     Ignores the 'DC' component l=0.
@@ -606,13 +662,14 @@ def basis_fields(p, lmax, normalize=False, multiply_mu0=True):
         coordinates in which the field is computed
     lmax: int
         maximum degree l used in the computation
-    normalize: boolean (optional)
-         if True: the fields are normalized w.r.t integration over
-         the unit sphere. Otherwise, the fields correspond to normalized
-         potential. The default is false.
-    multiply_mu0: boolean (optional)
-        multiply by mu_0 to obtain units of Tesla. The default is True
-
+    normalization: string
+        "default": the fields correspond to magnetic potential.
+        "unit": the fields are normalized w.r.t integration over the unit sphere.
+        "energy": each term in inner/outer basis function with respect to 
+            sphere with radius R is normalized to unit energy 
+    R: float
+        Sphere radius that separates inner/outer components   
+                
     Returns
     -------
     B1: N x 3 x N_lmax array
@@ -621,6 +678,7 @@ def basis_fields(p, lmax, normalize=False, multiply_mu0=True):
         magnetic field at p for each beta_lm
 
     """
+    mu0 = 1e-7 * 4 * np.pi
     L = lmax * (lmax + 2)  # Fixed
     B1 = np.zeros((L, p.shape[0], p.shape[1]))
     B2 = np.zeros((L, p.shape[0], p.shape[1]))
@@ -631,17 +689,26 @@ def basis_fields(p, lmax, normalize=False, multiply_mu0=True):
     for l in range(1, lmax + 1):
         for m in range(-1 * l, l + 1):
             _Wlm = Wlm(l, m, sp[:, 1], sp[:, 2])
-            if not normalize:
-                _Wlm *= np.sqrt(2 * l ** 2 + l)
             _Wlm[:, 0] *= sp[:, 0] ** (l - 1)
             _Wlm[:, 1] *= sp[:, 0] ** (l - 1)
             _Wlm[:, 2] *= sp[:, 0] ** (l - 1)
+            
+            if normalization == "default":
+                _Wlm *= np.sqrt(2 * l ** 2 + l)*mu0
+            if normalization == "energy":
+                _Wlm *= np.sqrt(2 * l ** 2 + l)*mu0
+                _Wlm *= 1/np.sqrt(R**(2*l+1)*l*mu0)
+                
             _Wlm = sphvec2cart(sp, _Wlm)
             B2[idx] = _Wlm  # r**l functions
 
             _Vlm = Vlm(l, m, sp[:, 1], sp[:, 2])
-            if not normalize:
-                _Vlm *= np.sqrt((2 * l + 1) * (l + 1))
+            if normalization == "default":
+                _Vlm *= np.sqrt((2 * l + 1) * (l + 1))*mu0
+            if normalization == "energy":
+                _Vlm *= np.sqrt((2 * l + 1) * (l + 1))*mu0
+                _Vlm *= np.sqrt(R**(2*l+1)/((l+1)*mu0))
+                
             _Vlm[:, 0] *= sp[:, 0] ** (-l - 2)
             _Vlm[:, 1] *= sp[:, 0] ** (-l - 2)
             _Vlm[:, 2] *= sp[:, 0] ** (-l - 2)
@@ -654,9 +721,6 @@ def basis_fields(p, lmax, normalize=False, multiply_mu0=True):
     B1[np.isinf(B1)] = 0
     B2[np.isinf(B2)] = 0
 
-    if multiply_mu0:
-        B1 *= 1e-7 * 4 * np.pi
-        B2 *= 1e-7 * 4 * np.pi
 
     return np.moveaxis(B1, 0, 2), np.moveaxis(B2, 0, 2)
 
