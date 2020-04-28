@@ -7,7 +7,7 @@ region between the two coil planes.
 
 """
 PLOT = True
-SAVE_FIGURES = True
+SAVE_FIGURES = False
 
 SAVE_DIR = "./Biplanar coil/"
 

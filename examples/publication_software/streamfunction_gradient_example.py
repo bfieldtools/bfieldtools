@@ -68,17 +68,17 @@ j = gradient(s.vert, c.mesh, rotated=True)
 
 Len = np.log(np.linalg.norm(j, axis=0))
 
-mlab.quiver3d(
+vectors = mlab.quiver3d(
     *c.mesh.triangles_center.T, *j, mode="arrow", colormap="Greens", scalars=Len
 )
 
-vectors = engine.scenes[0].children[2].children[0].children[0]
+# vectors = engine.scenes[0].children[2].children[0].children[0]
 vectors.glyph.glyph.scale_mode = "scale_by_scalar"
 vectors.glyph.glyph.scale_factor = 0.6
 f.scene.z_plus_view()
 
 
-module_manager2 = engine.scenes[0].children[2].children[0]
+module_manager2 = vectors.module_manager
 module_manager2.scalar_lut_manager.scalar_bar_representation.maximum_size = np.array(
     [100000, 100000]
 )

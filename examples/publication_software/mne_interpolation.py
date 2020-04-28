@@ -10,83 +10,186 @@ import trimesh
 
 import mne
 
-from mne.datasets import sample
+PLOT = True
+IMPORT_MNE_DATA = True
 
-data_path = sample.data_path()
-fname = data_path + "/MEG/sample/sample_audvis-ave.fif"
-# Reading
-condition = "Left Auditory"
-evoked = mne.read_evokeds(fname, condition=condition, baseline=(None, 0), proj=True)
-evoked.pick_types(meg="mag")
-evoked.plot(exclude=[], time_unit="s")
+SAVE_MNE_DATA = True
+SAVE_DIR = "./MNE interpolation/"
 
-i0, i1 = evoked.time_as_index(0.08)[0], evoked.time_as_index(0.09)[0]
-field = evoked.data[:, i0:i1].mean(axis=1)
+if IMPORT_MNE_DATA:
 
-# Read BEM for surface geometry and transform to correct coordinate system
-import os.path as op
+    from mne.datasets import sample
 
-subject = "sample"
-subjects_dir = op.join(data_path, "subjects")
-bem_fname = op.join(
-    subjects_dir, subject, "bem", subject + "-5120-5120-5120-bem-sol.fif"
-)
-bem = mne.read_bem_solution(bem_fname)
+    data_path = sample.data_path()
+    fname = data_path + "/MEG/sample/sample_audvis-ave.fif"
+    # Reading
+    condition = "Left Auditory"
+    evoked = mne.read_evokeds(fname, condition=condition, baseline=(None, 0), proj=True)
+    evoked.pick_types(meg="mag")
+    evoked.plot(exclude=[], time_unit="s")
+
+    i0, i1 = evoked.time_as_index(0.08)[0], evoked.time_as_index(0.09)[0]
+    field = evoked.data[:, i0:i1].mean(axis=1)
+
+    # Read BEM for surface geometry and transform to correct coordinate system
+    import os.path as op
+
+    subject = "sample"
+    subjects_dir = op.join(data_path, "subjects")
+    bem_fname = op.join(
+        subjects_dir, subject, "bem", subject + "-5120-5120-5120-bem-sol.fif"
+    )
+    bem = mne.read_bem_solution(bem_fname)
+
+    # Head mesh 0
+    # Innerskull mesh 2
+    surf_index = 2
+
+    trans_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw-trans.fif")
+    trans0 = mne.read_trans(trans_fname)
+    R = trans0["trans"][:3, :3]
+    t = trans0["trans"][:3, 3]
+    # Surface from MRI to HEAD
+    rr = (bem["surfs"][surf_index]["rr"] - t) @ R
+    # Surface from HEAD to DEVICE
+    trans1 = evoked.info["dev_head_t"]
+    R = trans1["trans"][:3, :3]
+    t = trans1["trans"][:3, 3]
+    rr = (rr - t) @ R
+
+    mesh = trimesh.Trimesh(rr, bem["surfs"][surf_index]["tris"])
+    mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
+
+    surf_index = 0
+
+    R = trans0["trans"][:3, :3]
+    t = trans0["trans"][:3, 3]
+    # Surface from MRI to HEAD
+    rr = (bem["surfs"][surf_index]["rr"] - t) @ R
+    # Surface from HEAD to DEVICE
+    R = trans1["trans"][:3, :3]
+    t = trans1["trans"][:3, 3]
+    rr = (rr - t) @ R
+    head = trimesh.Trimesh(rr, bem["surfs"][surf_index]["tris"])
+
+    mesh = head
+
+    # Sensor locations and directions in DEVICE coordinate system
+    p = np.array(
+        [
+            ch["loc"][:3]
+            for ch in evoked.info["chs"]
+            if ch["ch_name"][-1] == "1" and ch["ch_name"][:3] == "MEG"
+        ]
+    )
+    n = np.array(
+        [
+            ch["loc"][-3:]
+            for ch in evoked.info["chs"]
+            if ch["ch_name"][-1] == "1" and ch["ch_name"][:3] == "MEG"
+        ]
+    )
+
+    from mne.datasets import sample
+
+    data_path = sample.data_path()
+    fname = data_path + "/MEG/sample/sample_audvis-ave.fif"
+    # Reading
+    condition = "Left Auditory"
+    evoked = mne.read_evokeds(fname, condition=condition, baseline=(None, 0), proj=True)
+    evoked.pick_types(meg="mag")
+    evoked.plot(exclude=[], time_unit="s")
+
+    i0, i1 = evoked.time_as_index(0.08)[0], evoked.time_as_index(0.09)[0]
+    field = evoked.data[:, i0:i1].mean(axis=1)
+
+    # Read BEM for surface geometry and transform to correct coordinate system
+    import os.path as op
+
+    subject = "sample"
+    subjects_dir = op.join(data_path, "subjects")
+    bem_fname = op.join(
+        subjects_dir, subject, "bem", subject + "-5120-5120-5120-bem-sol.fif"
+    )
+    bem = mne.read_bem_solution(bem_fname)
+
+    # Head mesh 0
+    # Innerskull mesh 2
+    surf_index = 2
+
+    trans_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw-trans.fif")
+    trans0 = mne.read_trans(trans_fname)
+    R = trans0["trans"][:3, :3]
+    t = trans0["trans"][:3, 3]
+    # Surface from MRI to HEAD
+    rr = (bem["surfs"][surf_index]["rr"] - t) @ R
+    # Surface from HEAD to DEVICE
+    trans1 = evoked.info["dev_head_t"]
+    R = trans1["trans"][:3, :3]
+    t = trans1["trans"][:3, 3]
+    rr = (rr - t) @ R
+
+    mesh = trimesh.Trimesh(rr, bem["surfs"][surf_index]["tris"])
+    mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
+
+    surf_index = 0
+
+    R = trans0["trans"][:3, :3]
+    t = trans0["trans"][:3, 3]
+    # Surface from MRI to HEAD
+    rr = (bem["surfs"][surf_index]["rr"] - t) @ R
+    # Surface from HEAD to DEVICE
+    R = trans1["trans"][:3, :3]
+    t = trans1["trans"][:3, 3]
+    rr = (rr - t) @ R
+    head = trimesh.Trimesh(rr, bem["surfs"][surf_index]["tris"])
+
+    mesh = head
+
+    # Sensor locations and directions in DEVICE coordinate system
+    p = np.array(
+        [
+            ch["loc"][:3]
+            for ch in evoked.info["chs"]
+            if ch["ch_name"][-1] == "1" and ch["ch_name"][:3] == "MEG"
+        ]
+    )
+    n = np.array(
+        [
+            ch["loc"][-3:]
+            for ch in evoked.info["chs"]
+            if ch["ch_name"][-1] == "1" and ch["ch_name"][:3] == "MEG"
+        ]
+    )
+
+    if PLOT:
+        # Plot sensor locations and directions
+        mlab.triangular_mesh(
+            *head.vertices.T, head.faces, color=(0.5, 0.5, 0.5), opacity=0.5
+        )
+        mlab.quiver3d(*p.T, *n.T, mode="arrow")
+
+    if SAVE_MNE_DATA:
+        np.savez(
+            SAVE_DIR + "mne_data.npz",
+            mesh=mesh,
+            p=p,
+            n=n,
+            vertices=mesh.vertices,
+            faces=mesh.faces,
+        )
+        evoked.save(SAVE_DIR + "left_auditory-ave.fif")
 
 
-# Head mesh 0
-# Innerskull mesh 2
-surf_index = 2
+else:
 
-trans_fname = op.join(data_path, "MEG", "sample", "sample_audvis_raw-trans.fif")
-trans0 = mne.read_trans(trans_fname)
-R = trans0["trans"][:3, :3]
-t = trans0["trans"][:3, 3]
-# Surface from MRI to HEAD
-rr = (bem["surfs"][surf_index]["rr"] - t) @ R
-# Surface from HEAD to DEVICE
-trans1 = evoked.info["dev_head_t"]
-R = trans1["trans"][:3, :3]
-t = trans1["trans"][:3, 3]
-rr = (rr - t) @ R
+    with np.load(SAVE_DIR + "mne_data.npz", allow_pickle=True) as data:
+        mesh = data["mesh"]
+        p = data["p"]
+        n = data["n"]
+        mesh = trimesh.Trimesh(vertices=data["vertices"], faces=data["faces"])
 
-mesh = trimesh.Trimesh(rr, bem["surfs"][surf_index]["tris"])
-mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
-
-surf_index = 0
-
-R = trans0["trans"][:3, :3]
-t = trans0["trans"][:3, 3]
-# Surface from MRI to HEAD
-rr = (bem["surfs"][surf_index]["rr"] - t) @ R
-# Surface from HEAD to DEVICE
-R = trans1["trans"][:3, :3]
-t = trans1["trans"][:3, 3]
-rr = (rr - t) @ R
-head = trimesh.Trimesh(rr, bem["surfs"][surf_index]["tris"])
-
-mlab.triangular_mesh(*head.vertices.T, head.faces, color=(0.5, 0.5, 0.5), opacity=0.5)
-
-mesh = head
-
-
-# Sensor locations and directions in DEVICE coordinate system
-p = np.array(
-    [
-        ch["loc"][:3]
-        for ch in evoked.info["chs"]
-        if ch["ch_name"][-1] == "1" and ch["ch_name"][:3] == "MEG"
-    ]
-)
-n = np.array(
-    [
-        ch["loc"][-3:]
-        for ch in evoked.info["chs"]
-        if ch["ch_name"][-1] == "1" and ch["ch_name"][:3] == "MEG"
-    ]
-)
-# Plot sensor locations and directions
-mlab.quiver3d(*p.T, *n.T, mode="arrow")
+    evoked = mne.Evoked(SAVE_DIR + "left_auditory-ave.fif")
 
 #%% Fit the surface current for the auditory evoked response
 c = MeshConductor(mesh_obj=mesh, basis_name="suh", N_suh=150)
@@ -118,16 +221,6 @@ for reg_exp in reg_exps:
         surf = s.plot(False)
         surf.actor.mapper.interpolate_scalars_before_mapping = True
         surf.module_manager.scalar_lut_manager.number_of_colors = 16
-
-# plt.plot(reg_exps, rel_errors, '.-')
-
-# Additional filtering
-# sbasis = SuhBasis(mesh, 100)
-# A = sbasis.basis
-# a_filt = A@(A.T @ M @ a)
-# s = StreamFunction(a_filt, c)
-# mlab.figure()
-# s.plot(True)
 
 #%% Interpolate to the sensor surface
 import pkg_resources

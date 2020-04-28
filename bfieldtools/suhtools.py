@@ -273,6 +273,7 @@ class SuhBasis:
         i = 0
         j = 0
 
+        s = []
         for n in indices:
             print(i, j)
 
@@ -285,7 +286,7 @@ class SuhBasis:
             else:
                 scalars = self.inner2vert @ self.basis[:, n]
 
-            s = plot_data_on_vertices(tmp_mesh, scalars, figure=figure, **kwargs)
+            s.append(plot_data_on_vertices(tmp_mesh, scalars, figure=figure, **kwargs))
 
             if i < Ncols:
                 i += 1
