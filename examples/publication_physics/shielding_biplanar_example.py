@@ -11,7 +11,7 @@ import trimesh
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
-from bfieldtools.utils import load_example_mesh
+from bfieldtools.utils import load_example_mesh, combine_meshes
 
 
 # Set unit, e.g. meter or millimeter.
@@ -35,7 +35,7 @@ coil_minus = trimesh.Trimesh(
     planemesh.vertices + center_offset - standoff, planemesh.faces, process=False
 )
 
-mesh1 = coil_plus.union(coil_minus)
+mesh1 = combine_meshes((coil_minus, coil_plus))
 mesh2 = mesh1.copy()
 mesh2.apply_scale(1.4)
 

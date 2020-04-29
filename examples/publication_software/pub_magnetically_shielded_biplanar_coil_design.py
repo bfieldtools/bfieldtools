@@ -8,6 +8,7 @@ The coil is positioned close to the end of the shield to demonstrate the effect
 
 PLOT = True
 SAVE_FIGURES = False
+SAVE_STREAMFUNCTION = False
 
 SAVE_DIR = "./Shielded coil/"
 
@@ -101,8 +102,10 @@ target_points = (
 if PLOT:
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
 
-    coil.plot_mesh(representation="surface")
-    shield.plot_mesh(representation="surface", cull_front=True, color=(0.9, 0.9, 0.9))
+    coil.plot_mesh(representation="surface", figure=f, opacity=0.15)
+    shield.plot_mesh(
+        representation="surface", cull_front=True, color=(0.9, 0.9, 0.9), figure=f
+    )
     mlab.points3d(*target_points.T)
 
     f.scene.isometric_view()
@@ -145,6 +148,8 @@ coil.s, coil.prob = optimize_streamfunctions(
 )
 
 
+if SAVE_STREAMFUNCTION:
+    np.save(SAVE_DIR + "biplanar_streamfunction.npy", coil.s.vert)
 ##############################################################
 # Plot coil windings and target points
 

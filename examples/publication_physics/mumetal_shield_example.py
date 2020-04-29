@@ -9,7 +9,7 @@ from mayavi import mlab
 
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
 from bfieldtools.mesh_calculus import gradient
-from bfieldtools.utils import load_example_mesh
+from bfieldtools.utils import load_example_mesh, combine_meshes
 
 # This doesn't matter, the problem is scale-invariant
 scaling_factor = 1
@@ -31,7 +31,7 @@ coil_minus = trimesh.Trimesh(
     planemesh.vertices + center_offset - standoff, planemesh.faces, process=False
 )
 
-joined_planes = coil_plus.union(coil_minus)
+joined_planes = combine_meshes((coil_plus, coil_minus))
 planemesh = joined_planes
 
 # Create mesh class object
@@ -74,8 +74,8 @@ s0 = mlab.triangular_mesh(
 s0.actor.property.backface_culling = False
 s0.actor.property.ambient = 0.5
 
-I_prim = np.load("biplanar_current.npy")
-sprim = StreamFunction(I_prim, coil)
+I_prim = np.load("../publication_software/Shielded coil/biplanar_streamfunction.npy")
+sprim = StreamFunction(coil.vert2inner @ I_prim, coil)
 m = max(abs(sprim))
 s1 = sprim.plot(False, 16, vmin=-m, vmax=m)
 s2 = sprim.plot(True, 20)
@@ -120,7 +120,7 @@ P_prim = coil.U_coupling(shieldmesh.vertices - d * shieldmesh.vertex_normals)
 #%% Plot the resulting primary potential
 mlab.figure()
 s = mlab.triangular_mesh(
-    *shieldmesh.vertices.T, shieldmesh.faces, scalars=P_prim @ I_prim, opacity=1.0
+    *shieldmesh.vertices.T, shieldmesh.faces, scalars=P_prim @ sprim, opacity=1.0
 )
 s.enable_contours = True
 s.contour.filled_contours = True
@@ -132,7 +132,7 @@ P_shield = shield.U_coupling(shieldmesh.vertices - d * shieldmesh.vertex_normals
 
 ####################################################################
 #%% Solve equivalent stream function for the perfect linear mu-metal layer
-I_shield = np.linalg.solve(-P_shield, P_prim @ I_prim)
+I_shield = np.linalg.solve(-P_shield, P_prim @ sprim)
 # I_shield = P_prim @ I_prim
 s_shield = StreamFunction(I_shield, shield)
 g = gradient(s_shield, shieldmesh, rotated=True)
@@ -221,7 +221,7 @@ u0 = abs(
 )  # Solid angle of the shield, zero outside
 u0 /= u0.max()
 u0[u0 < 1e-6] = 0
-u1 = (U2_prim @ I_prim).reshape(N, N)
+u1 = (U2_prim @ sprim).reshape(N, N)
 u2 = (U2_shield @ I_shield).reshape(N, N) * u0
 u3 = (u1 + u2) * u0
 

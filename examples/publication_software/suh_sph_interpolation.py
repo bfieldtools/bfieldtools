@@ -1,3 +1,9 @@
+"""
+SUH-SPH interpolation comparison
+==================================
+"""
+
+
 import numpy as np
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
 from mayavi import mlab
@@ -98,7 +104,6 @@ s = StreamFunction(a, c)
 
 reco_suh = B_sensors @ s
 
-mlab.figure()
 surf = s.plot(False)
 surf.actor.mapper.interpolate_scalars_before_mapping = True
 surf.module_manager.scalar_lut_manager.number_of_colors = 16

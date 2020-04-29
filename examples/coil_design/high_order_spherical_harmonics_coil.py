@@ -78,7 +78,7 @@ alm = np.zeros((lmax * (lmax + 2),))
 blm = np.zeros((lmax * (lmax + 2),))
 
 # Set one specific component to one
-blm[17] += 1
+blm[16] += 1
 
 sphfield = sphtools.field(target_points, alm, blm, lmax)
 
