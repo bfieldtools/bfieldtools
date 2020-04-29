@@ -2,5 +2,7 @@ mne
 sphinx
 sphinx-gallery
 sphinxcontrib-bibtex
+sphinx_bootstrap_theme
 numpydoc
 pybtex
+pillow

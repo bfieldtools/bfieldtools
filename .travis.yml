@@ -67,8 +67,10 @@ jobs:
         
       before_deploy:
         - cd docs
+        # Generate autosummary stuff separately
+        - sphinx-autogen -o generated -t _templates *.rst
         # Use Sphinx to make the html docs
-        - make html
+        - make html-noplot
         # Tell GitHub not to use jekyll to compile the docs
         - touch _build/html/.nojekyll
 
