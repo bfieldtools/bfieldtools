@@ -38,7 +38,7 @@ jobs:
       - bash <(curl -s https://codecov.io/bash)
 
     - stage: 'deploy to pypi'
-      if: tag is present AND branch = nonexisting 
+      if: tag IS present AND branch = nonexisting 
       deploy:
         provider: pypi
         user: "__token__"
