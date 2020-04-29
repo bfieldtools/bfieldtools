@@ -49,8 +49,8 @@ jobs:
           # tags: true
           
     - stage: 'deploy docs'
-    # Run stage if a tag is present or if commit message includes "[deploy docs]"
-      if: tag IS present OR commit_message =~ ^/[deploy docs]/$
+    # Run stage if a tag is present or if commit message includes "deploy docs"
+      if: tag IS present OR commit_message =~ ^/deploy docs/$
       before_deploy:
         - pip install -r requirements_docs.txt
         - cd docs
