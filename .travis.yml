@@ -49,8 +49,8 @@ jobs:
           # tags: true
           
     - stage: 'deploy docs'
-    # Run stage if a tag is present or if commit message includes "[build docs]"
-      if: tag is present OR commit_message =~ ^[build docs]$
+    # Run stage if a tag is present or if commit message includes "[deploy docs]"
+      if: tag is present OR commit_message =~ ^/[deploy docs]/$
       before_deploy:
         - pip install -r requirements_docs.txt
         - cd docs
@@ -67,7 +67,7 @@ jobs:
         github_token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
         repo: bfieldtools/bfieldtools.github.io
         target_branch: master
-        keep-history: true
+        keep_history: true
         on:
           tags: true
         local_dir: _build/html/
