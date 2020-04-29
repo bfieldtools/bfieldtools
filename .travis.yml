@@ -78,7 +78,7 @@ jobs:
       # the organization page GitHub repository.
       deploy:
         provider: pages
-        cleanup: false
+        skip_cleanup: true
         github_token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
         repo: bfieldtools/bfieldtools.github.io
         target_branch: master
