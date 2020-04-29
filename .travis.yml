@@ -51,7 +51,7 @@ jobs:
     - stage: 'deploy docs'
     # Run stage if a tag is present or if commit message includes "[build docs]"
       if: tag is present OR commit_message =~ ^[build docs]$
-        before_deploy:
+      before_deploy:
         - pip install -r requirements_docs.txt
         - cd docs
         # Use Sphinx to make the html docs
