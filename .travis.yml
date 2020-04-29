@@ -7,7 +7,7 @@ cache:
   pip: true
   
   directories:
-   - .docs
+   - docs
 addons:
   apt:
     packages:
