@@ -65,7 +65,7 @@ jobs:
       install:
         - python setup.py install
         
-      before_deploy:
+      script:
         - cd docs
         # Generate autosummary stuff separately
         - sphinx-autogen -o generated -t _templates *.rst
