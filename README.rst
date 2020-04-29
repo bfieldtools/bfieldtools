@@ -7,13 +7,13 @@
   
 |Travis|_ |Codecov|_ |Black|_ |Conda|_ |pypi|_
 
-.. |Travis| image:: https://travis-ci.com/bfieldtools-team/bfieldtools.svg?token=zziPTxRYBYdrsGqgmpjH&branch=master
-.. _Travis: https://travis-ci.com/bfieldtools-team/bfieldtools
+.. |Travis| image:: https://travis-ci.com/bfieldtools/bfieldtools.svg?token=zziPTxRYBYdrsGqgmpjH&branch=master
+.. _Travis: https://travis-ci.com/bfieldtools/bfieldtools
 
 
 
-.. |Codecov| image:: https://codecov.io/gh/bfieldtools-team/bfieldtools/branch/master/graph/badge.svg?token=R6WGNQ4QBV
-.. _Codecov: https://codecov.io/gh/bfieldtools-team/bfieldtools
+.. |Codecov| image:: https://codecov.io/gh/bfieldtools/bfieldtools/branch/master/graph/badge.svg?token=R6WGNQ4QBV
+.. _Codecov: https://codecov.io/gh/bfieldtools/bfieldtools
 
 
 
