@@ -39,18 +39,18 @@ jobs:
       - pytest --cov=bfieldtools ./tests
       # Push coverage to codecov.io
       - bash <(curl -s https://codecov.io/bash)
-
-    - stage: 'deploy to pypi'
-      if: tag IS present AND branch = nonexisting 
-      deploy:
-        provider: pypi
-        user: "__token__"
-        password:
-          secure: "Your encrypted token"
-        on:
-          branch: nonexisting
-          # tags: true
-          
+#
+#    - stage: 'deploy to pypi'
+#      if: tag IS present AND branch = nonexisting 
+#      deploy:
+#        provider: pypi
+#        user: "__token__"
+#        password:
+#          secure: "Your encrypted token"
+#        on:
+#          branch: nonexisting
+#          # tags: true
+#          
     - stage: 'deploy docs'
       env:
         - CACHE_NAME=DEPLOY_DOCS
@@ -74,15 +74,13 @@ jobs:
         # Tell GitHub not to use jekyll to compile the docs
         - touch _build/html/.nojekyll
 
-      # Tell Travis CI to copy the documentation to the gh-pages branch of
-      # your GitHub repository.
+      # Tell Travis CI to copy the documentation to the master branch of
+      # the organization page GitHub repository.
       deploy:
         provider: pages
-        skip_cleanup: true
+        cleanup: false
         github_token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
         repo: bfieldtools/bfieldtools.github.io
         target_branch: master
         keep_history: true
-        on:
-          tags: true
         local_dir: _build/html/
