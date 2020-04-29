@@ -9,7 +9,7 @@ import cvxopt
 from cvxopt import matrix
 from scipy.sparse.linalg import svds
 from scipy.linalg import eigh as largest_eigh
-from scipy.linalg import eigvalsh
+from scipy.linalg import eigvalsh, sqrtm
 import cvxpy as cp
 
 from .mesh_conductor import StreamFunction
@@ -226,7 +226,7 @@ def optimize_streamfunctions(
         ub = cp.Parameter(shape=upper_bounds.shape, name="ub")
 
         # Formulate problem and constraints
-        objective = cp.Minimize((1 / 2) * cp.quad_form(x, P))
+        objective = cp.Minimize((1 / 2) * cp.sum_squares(P @ x))
 
         constraints = [G @ x >= lb, G @ x <= ub]
 
@@ -239,7 +239,7 @@ def optimize_streamfunctions(
     for par in problem.parameters():
         if par.name() == "P":
             # Make sure that quadratic matrix is positive semi-definite, scale constraint matrix
-            par.value = 0.5 * (quadratic_matrix + quadratic_matrix.T)
+            par.value = sqrtm(0.5 * (quadratic_matrix + quadratic_matrix.T))
         elif par.name() == "G":
             par.value = constraint_matrix / s[0]
         elif par.name() == "lb":
