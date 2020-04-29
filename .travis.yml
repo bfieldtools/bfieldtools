@@ -5,6 +5,9 @@ python:
   - "3.7"
 cache:
   pip: true
+  
+  directories:
+   - .docs
 addons:
   apt:
     packages:
@@ -49,15 +52,20 @@ jobs:
           # tags: true
           
     - stage: 'deploy docs'
+      env:
+        - CACHE_NAME=DEPLOY_DOCS
     # Run stage if a tag is present or if commit message includes "deploy"
       if: tag IS present OR commit_message =~ deploy
-      before_deploy:
-        - echo "Building Sphinx-docs and deploying to GitHub Pages"
+      before_install:
         - python -m pip install --upgrade pip
         - pip install vtk xvfbwrapper
         - pip install -r requirements.txt
         - pip install -r requirements_docs.txt
+        
+      install:
         - python setup.py install
+        
+      before_deploy:
         - cd docs
         # Use Sphinx to make the html docs
         - make html
