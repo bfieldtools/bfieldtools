@@ -139,8 +139,8 @@ target_points = (
 # Plot coil, shield and target points
 if PLOT:
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-    coil.plot_mesh()
-    shield.plot_mesh()
+    coil.plot_mesh(figure=f, opacity=0.2)
+    shield.plot_mesh(figure=f, opacity=0.2)
     mlab.points3d(*target_points.T)
 
 

@@ -635,14 +635,6 @@ def field(p, acoeffs, bcoeffs, lmax, normalization="default", R=1):
                 
     Returns
     -------
-    B1: N x 3 x N_lmax array
-        magnetic field at p for each alpha_lm
-    B2: N x 3 x N_lmax array
-        magnetic field at p for each beta_lm
-        
-        
-    Returns
-    -------
     B: Nx3 array
         Magnetic field produced by the sph components
     """

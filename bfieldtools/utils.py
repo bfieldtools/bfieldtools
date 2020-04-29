@@ -431,8 +431,6 @@ class MeshProjection:
     def __init__(self, mesh, quad_degree):
         self.mesh = mesh
 
-        from bfieldtools.utils import get_quad_points
-
         weights, self.quadpoints, ref_coords = get_quad_points(
             mesh.vertices, mesh.faces, "dunavant_0" + str(quad_degree), None, True
         )

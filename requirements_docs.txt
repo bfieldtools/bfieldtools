@@ -1,0 +1,6 @@
+mne
+sphinx
+sphinx-gallery
+sphinxcontrib-bibtex
+numpydoc
+pybtex

@@ -1,3 +1,9 @@
+"""
+SUH-SPH interpolation comparison
+==================================
+"""
+
+
 import numpy as np
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
 from mayavi import mlab
@@ -80,6 +86,7 @@ PINV = False
 if PINV:
     alpha = np.linalg.pinv(Bca_sensors, rcond=1e-15) @ field
 else:
+    # Calculate using regularization
     ssa = np.linalg.svd(Bca_sensors @ Bca_sensors.T, False, False)
     reg_exp = 6
     _lambda = np.max(ssa) * (10 ** (-reg_exp))

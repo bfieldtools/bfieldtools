@@ -1,86 +1,78 @@
-language: python
+os: linux
 dist: bionic
+language: python
+python:
+  - "3.7"
 cache:
   pip: true
 addons:
   apt:
     packages:
       - libxkbcommon-x11-0
-      - libosmesa6
-      - libglx-mesa0
-      - libopengl0
-      - libglx0
-      - libdbus-1-3
+services:
+  - xvfb
 
-env:
-    global: PYTHON_VERSION=3.7 DISPLAY=:99.0
-            
+stages:
+ - test
+ - 'deploy to pypi'
+ - 'deploy docs'
+  
 jobs:
-
-  allow_failures:
-    - os: osx
-    - os: windows
-    
   include:
-    - name: "Python 3.7 on Bionic Linux"
-      os: linux
-      python: "3.7"
+    - stage: test
       before_install:
-        - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
-            /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1400x900x24 -ac +extension GLX +render -noreset;
-            fi;
+      - python -m pip install --upgrade pip
+      - pip install vtk xvfbwrapper
+      - pip install -r requirements.txt
+      - pip install black
+      - black --check .
+      - pip install --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
+
+      install:
+      - python setup.py install
+
+      script:
+      - pytest ./tests
+      - pytest --cov=bfieldtools ./tests
+      # Push coverage to codecov.io
+      - bash <(curl -s https://codecov.io/bash)
+
+    - stage: 'deploy to pypi'
+      if: tag IS present AND branch = nonexisting 
+      deploy:
+        provider: pypi
+        user: "__token__"
+        password:
+          secure: "Your encrypted token"
+        on:
+          branch: nonexisting
+          # tags: true
+          
+    - stage: 'deploy docs'
+    # Run stage if a tag is present or if commit message includes "deploy"
+      if: tag IS present OR commit_message =~ deploy
+      before_deploy:
+        - echo "Building Sphinx-docs and deploying to GitHub Pages"
         - python -m pip install --upgrade pip
         - pip install vtk xvfbwrapper
         - pip install -r requirements.txt
-        - pip install black
-        - black --check .
-        - pip install --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
-    - name: "Python 3.7 on macOS"
-      os: osx
-      osx_image: xcode11.3  # Python 3.7.4 running on macOS 10.14.4
-      language: shell       # 'language: python' is an error on Travis CI macOS
-      env:
-        - TOXENV=py3
-        - HOMEBREW_NO_INSTALL_CLEANUP=1
-        - HOMEBREW_NO_ANALYTICS=1
-      before_cache:
-        - rm -f "$HOME/Library/Caches/pip/log/debug.log"
-      cache:
-        directories:
-          - "$HOME/Library/Caches/pip"
-      addons:
-        homebrew:
-          packages: python3
-      before_install:
-        - python3 -m pip install --upgrade virtualenv
-        - virtualenv -p python3 --system-site-packages "$HOME/venv"
-        - source "$HOME/venv/bin/activate"
-        - python -m pip install --user --upgrade pip
-        - pip install --user vtk xvfbwrapper
-        - pip install --user -r requirements.txt
-        - pip install --user black
-        - black --check .
-        - pip install --user --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
-    - name: "Python 3.7 on Windows 10"
-      os: windows           # Windows 10.0.17134 N/A Build 17134
-      language: shell       # 'language: python' is an error on Travis CI Windows
-      before_install:
-        - choco install python --version 3.7
-        - python -m pip install --upgrade pip
-        - python -m pip install --user --upgrade pip
-        - pip install --user vtk xvfbwrapper
-        - pip install --user -r requirements.txt
-        - pip install --user black
-        - black --check .
-        - pip install --user --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
-      env: PATH=/c/Python37:/c/Python37/Scripts:$PATH      
- 
-install:
-  - python setup.py install
+        - pip install -r requirements_docs.txt
+        - python setup.py install
+        - cd docs
+        # Use Sphinx to make the html docs
+        - make html
+        # Tell GitHub not to use jekyll to compile the docs
+        - touch _build/html/.nojekyll
 
-script:
-  - pytest ./tests
-  - pytest --cov=bfieldtools ./tests
-  
-after_script:
-  - bash <(curl -s https://codecov.io/bash)
+      # Tell Travis CI to copy the documentation to the gh-pages branch of
+      # your GitHub repository.
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        github_token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
+        repo: bfieldtools/bfieldtools.github.io
+        target_branch: master
+        keep_history: true
+        on:
+          tags: true
+        local_dir: _build/html/

@@ -217,6 +217,13 @@ html_theme_options = {
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
+# A list of paths that contain extra files not directly related to
+# the documentation, such as robots.txt or .htaccess.
+# Relative paths are taken as relative to the configuration directory.
+# They are copied to the output directory. They will overwrite any
+# existing file of the same name.
+html_extra_path = ["_extra"]
+
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
