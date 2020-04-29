@@ -52,7 +52,12 @@ jobs:
     # Run stage if a tag is present or if commit message includes "deploy"
       if: tag IS present OR commit_message =~ deploy
       before_deploy:
+        - echo "Building Sphinx-docs and deploying to GitHub Pages"
+        - python -m pip install --upgrade pip
+        - pip install vtk xvfbwrapper
+        - pip install -r requirements.txt
         - pip install -r requirements_docs.txt
+        - python setup.py install
         - cd docs
         # Use Sphinx to make the html docs
         - make html
