@@ -17,7 +17,7 @@ services:
 
 stages:
  - test
- - 'deploy to pypi'
+# - 'deploy to pypi'
  - 'deploy docs'
   
 jobs:
@@ -70,7 +70,7 @@ jobs:
         # Generate autosummary stuff separately
         - sphinx-autogen -o generated -t _templates *.rst
         # Use Sphinx to make the html docs
-        - make html-noplot
+        - make html
         # Tell GitHub not to use jekyll to compile the docs
         - touch $TRAVIS_BUILD_DIR/docs/_build/html/.nojekyll
 
