@@ -191,7 +191,11 @@ else:
 
     evoked = mne.Evoked(SAVE_DIR + "left_auditory-ave.fif")
 
-#%% Fit the surface current for the auditory evoked response
+
+###########################################################
+# Fit the surface current for the auditory evoked response
+
+
 c = MeshConductor(mesh_obj=mesh, basis_name="suh", N_suh=150)
 M = c.mass
 # B_sensors = np.sum(c.B_coupling(p) * n[:,:,None], axis=1)
@@ -222,7 +226,9 @@ for reg_exp in reg_exps:
         surf.actor.mapper.interpolate_scalars_before_mapping = True
         surf.module_manager.scalar_lut_manager.number_of_colors = 16
 
-#%% Interpolate to the sensor surface
+###########################################################
+# Interpolate to the sensor surface
+
 import pkg_resources
 
 # Load simple plane mesh that is centered on the origin
@@ -302,7 +308,8 @@ surf2.module_manager.scalar_lut_manager.number_of_colors = 15
 ##mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, color=(1,1,1))
 
 
-#%% Calculate magnetic field in a box
+###########################################################
+# Calculate magnetic field in a box
 Nvol = 30
 x = np.linspace(-0.125, 0.125, Nvol)
 vol_points = np.array(np.meshgrid(x, x, x, indexing="ij")).reshape(3, -1).T
@@ -314,7 +321,8 @@ s = StreamFunction(a, c)
 # s = StreamFunction(a, c)
 Bvol = Bvol_coupling @ s
 
-#%% Plot with streamlines
+###########################################################
+# Plot the computed magnetic field with streamlines
 from bfieldtools.mesh_calculus import gradient
 
 # mlab.quiver3d(*vol_points.T, *Bvol.T)
@@ -395,6 +403,7 @@ sensors.actor.property.color = (0.5, 0.5, 0.5)
 sensors.actor.mapper.scalar_visibility = False
 sensors.glyph.glyph_source.glyph_source.resolution = 32
 sensors.glyph.glyph.scale_factor = 0.03
+# sensors.glyph.glyph_source.glyph_source.shaft_radius = 0.05
 
 grad_s = gradient(c.basis @ s, mesh, rotated=True)
 q = mlab.quiver3d(
@@ -403,7 +412,7 @@ q = mlab.quiver3d(
     colormap="viridis",
     mode="arrow"
 )
-sensors.glyph.glyph_source.glyph_source.shaft_radius = 0.05
+
 mlab.triangular_mesh(*head.vertices.T, head.faces, color=(0.8, 0.8, 0.8), opacity=1.0)
 
 #

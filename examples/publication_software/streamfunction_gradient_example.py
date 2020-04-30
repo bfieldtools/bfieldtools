@@ -97,22 +97,22 @@ module_manager2.scalar_lut_manager.scalar_bar.height = 0.8
 module_manager2.scalar_lut_manager.scalar_bar.position = np.array([0.82, 0.1])
 module_manager2.scalar_lut_manager.scalar_bar.position2 = np.array([0.17, 0.8])
 module_manager2.scalar_lut_manager.scalar_bar.width = 0.17
-scene = engine.scenes[0]
-scene.scene.camera.position = [
+
+f.scene.camera.position = [
     -0.3696892487983681,
     0.2840788710848503,
     3.701830880912346,
 ]
-scene.scene.camera.focal_point = [
+f.scene.camera.focal_point = [
     -0.3696892487983681,
     0.2840788710848503,
     0.8575533408480627,
 ]
-scene.scene.camera.view_angle = 30.0
-scene.scene.camera.view_up = [0.0, 1.0, 0.0]
-scene.scene.camera.clipping_range = [2.5164461179149695, 3.263810326333801]
-scene.scene.camera.compute_view_plane_normal()
-scene.scene.render()
+f.scene.camera.view_angle = 30.0
+f.scene.camera.view_up = [0.0, 1.0, 0.0]
+f.scene.camera.clipping_range = [2.5164461179149695, 3.263810326333801]
+f.scene.camera.compute_view_plane_normal()
+f.scene.render()
 module_manager2.scalar_lut_manager.scalar_bar.position = np.array([0.82, 0.1])
 module_manager2.scalar_lut_manager.scalar_bar.position2 = np.array([0.17, 0.8])
 module_manager2.scalar_lut_manager.scalar_bar.number_of_labels = 0
