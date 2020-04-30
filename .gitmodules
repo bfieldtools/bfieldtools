@@ -1,0 +1,4 @@
+[submodule "html"]
+	path = docs/_build/html
+	url = git@github.com:bfieldtools/bfieldtools.github.io.git
+	branch = master
