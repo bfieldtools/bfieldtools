@@ -14,6 +14,9 @@ addons:
       - libxkbcommon-x11-0
 services:
   - xvfb
+  
+git:
+  submodules: false
 
 stages:
  - test
