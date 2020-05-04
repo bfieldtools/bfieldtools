@@ -68,7 +68,7 @@ class SuhBasis:
             self.mesh_conductor = obj
         elif isinstance(obj, trimesh.Trimesh):
             self.mesh_conductor = mesh_conductor.MeshConductor(
-                mesh_obj=obj, resistance_full_rank=True, **kwargs
+                mesh_obj=obj, resistance_full_rank=False, **kwargs
             )
         else:
             raise TypeError("obj type should be either Trimesh or Conductor")
