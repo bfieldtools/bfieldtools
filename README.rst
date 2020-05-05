@@ -1,7 +1,7 @@
 .. -*- mode: rst -*-
 
 
-.. image:: logo/logo_simple_w_name.svg
+.. image:: https://bfieldtools.github.io/_static/logo_simple_w_name.svg
   :width: 800
   :alt: *bfieldtools logo and title*
   
@@ -54,9 +54,8 @@ Requires Python 3.7 or newer.
 Documentation
 ^^^^^^^^^^^^^
 
-Online documentation, including an API reference and examples can be found in ReadTheDocs_.
+Online documentation, including an API reference and examples can be found at https://bfieldtools.github.io/.
 
-.. _ReadTheDocs: https://readthedocs.org/
 
 Installing bfieldtools
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -75,7 +74,7 @@ If using conda, you can also install from conda-forge:
     
 For advanced installation instructions, see the online `installation instructions`_.
 
-.. _installation instructions: https://readthedocs.org/
+.. _installation instructions: https://bfieldtools.github.io/installation.html
 
 
 Citing bfieldtools
