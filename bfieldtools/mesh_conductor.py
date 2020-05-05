@@ -63,6 +63,7 @@ class MeshConductor:
     The bases can include built-in boundary conditions for the data: inner and
     suh bases assume dirichlet boundary condition (equal value within each boundary),
     while vertex basis does not set a boundary condition.
+    
     """
 
     def __init__(

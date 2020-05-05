@@ -4,7 +4,7 @@
   --a-color-light: rgb(102, 179, 255);
   --a-color-lighter: rgb(204, 230, 255);
   --text-color: #2c3e50;
-  --carousel-radius: 12px;
+  --carousel-radius: 15px;
 }
 html {
   position: relative;
@@ -288,7 +288,7 @@ div.slide {
 div.carousel .chopper {
   border-radius: var(--carousel-radius);
   overflow: hidden;
-  min-height: 275px;
+  min-height: 300px;
   width: 100%;
   background-size: cover;
   background-position: center;
@@ -303,7 +303,7 @@ div.jumbotron {
   background-image: linear-gradient(
     to right,
     #aaa 0,
-    rgba(0, 0, 0, 0.0001) 100%
+    rgba(0, 0, 0, 0.00001) 100%
   );
   border-radius: var(--carousel-radius);
 }
@@ -311,7 +311,7 @@ div.jumbotron {
   background-image: linear-gradient(
     to left,
     #aaa 0,
-    rgba(0, 0, 0, 0.0001) 100%
+    rgba(0, 0, 0, 0.00001) 100%
   );
   border-radius: var(--carousel-radius);
 }
@@ -529,22 +529,22 @@ a.sphx-glr-backref-instance:hover {
   text-decoration: underline;
 }
 a[class^="sphx-glr-backref-module"] {
-  /* make non-MNE instances look like regular code */
+  /* make non-bfieldtools instances look like regular code */
   color: var(--text-color);
 }
 a[class^="sphx-glr-backref-module"]:hover {
   color: var(--a-color);
 }
-a[class^="sphx-glr-backref-module-mne"] {
-  /* make all MNE things bold */
+a[class^="sphx-glr-backref-module-bfieldtools"] {
+  /* make all bfieldtools things bold */
   font-weight: 600;
   color: var(--a-color);
 }
-a[class^="sphx-glr-backref-module-mne"]:hover {
+a[class^="sphx-glr-backref-module-bfieldtools"]:hover {
   color: var(--a-color-light);
 }
 /* Long API titles need to wrap for mobile */
-div[id^="mne-"] h1 {
+div[id^="bfieldtools-"] h1 {
   word-break: break-word;
 }
 div[id^="examples-using-"] h2 {

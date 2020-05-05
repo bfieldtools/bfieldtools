@@ -538,7 +538,7 @@ def basis_potentials(p, lmax, normalization="default", R=1):
         which normalization scheme to use
         "default": No normalization, just <Y_lm,Y_l'm'> = delta_ll'mm' (default)
         "energy": each term in inner/outer basis function with respect to 
-                  sphere with radius R is normalized to unit energy
+        sphere with radius R is normalized to unit energy
     R: float
         Sphere radius that separates inner/outer components            
                   
@@ -594,7 +594,7 @@ def potential(p, acoeffs, bcoeffs, lmax, normalization="default", R=1):
         which normalization scheme to use
         "default": No normalization, just <Y_lm,Y_l'm'> = delta_ll'mm' (default)
         "energy": each term in inner/outer basis function with respect to 
-                  sphere with radius R is normalized to unit energy
+        sphere with radius R is normalized to unit energy
     R: float
         Sphere radius that separates inner/outer components   
                   
@@ -629,7 +629,7 @@ def field(p, acoeffs, bcoeffs, lmax, normalization="default", R=1):
         "default": the fields correspond to magnetic potential.
         "unit": the fields are normalized w.r.t integration over the unit sphere.
         "energy": each term in inner/outer basis function with respect to 
-            sphere with radius R is normalized to unit energy 
+        sphere with radius R is normalized to unit energy 
     R: float
         Sphere radius that separates inner/outer components   
                 

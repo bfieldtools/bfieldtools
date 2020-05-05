@@ -1,12 +1,12 @@
 """
 Examples of thermal noise computation
-==========================
+=====================================
 
 Different examples:
-   unit_disc: DC Bnoise of a unit disc at z-axis and comparison to analytical formula
-   unit_sphere: DC Bnoise of a spherical shell at origin and comparison to analytical formula
-   cylinder: DC Bnoise inside a cylindrical conductor
-   AC: AC Bnoise of a unit disc at one position
+- unit_disc: DC Bnoise of a unit disc at z-axis and comparison to analytical formula
+- unit_sphere: DC Bnoise of a spherical shell at origin and comparison to analytical formula
+- cylinder: DC Bnoise inside a cylindrical conductor
+- AC: AC Bnoise of a unit disc at one position
 
 Analytic formulas are from Lee and Romalis (2008)
 """

@@ -310,6 +310,7 @@ surf2.module_manager.scalar_lut_manager.number_of_colors = 15
 
 ###########################################################
 # Calculate magnetic field in a box
+
 Nvol = 30
 x = np.linspace(-0.125, 0.125, Nvol)
 vol_points = np.array(np.meshgrid(x, x, x, indexing="ij")).reshape(3, -1).T
@@ -323,6 +324,7 @@ Bvol = Bvol_coupling @ s
 
 ###########################################################
 # Plot the computed magnetic field with streamlines
+
 from bfieldtools.mesh_calculus import gradient
 
 # mlab.quiver3d(*vol_points.T, *Bvol.T)
