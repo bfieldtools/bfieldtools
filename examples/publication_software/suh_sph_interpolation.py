@@ -150,7 +150,7 @@ print(
     np.linalg.norm(reco_suh - field) / np.linalg.norm(field),
 )
 
-f = mlab.figure()
+f = mlab.figure(bgcolor=(1, 1, 1))
 surf = s.plot(False, figure=f)
 surf.actor.mapper.interpolate_scalars_before_mapping = True
 surf.module_manager.scalar_lut_manager.number_of_colors = 16

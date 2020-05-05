@@ -46,6 +46,8 @@ alms = np.zeros_like(alms)
 B0 = (magnetic_field_coupling(coilmesh, test_points) @ weights).T
 B1 = sphtools.field(test_points, alms, blms, lmax).T
 
+mlab.figure(bgcolor=(1, 1, 1))
+
 s = mlab.triangular_mesh(
     *coilmesh.vertices.T, coilmesh.faces, scalars=weights, colormap="viridis"
 )

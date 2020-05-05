@@ -27,6 +27,7 @@ c_points = np.vstack((c_points, c_points[0, :]))
 c1_points = c_points - np.array([0, R / 2, 0])
 c2_points = c_points + np.array([0, R / 2, 0])
 
+mlab.figure(bgcolor=(1, 1, 1))
 mlab.plot3d(*c1_points.T)
 mlab.plot3d(*c2_points.T)
 
@@ -55,6 +56,8 @@ B_matrix = B.reshape((n, n, n, 3))
 B_matrix_norm = np.linalg.norm(B_matrix, axis=-1)
 
 #%% Visualization using mayavi
+
+mlab.figure(bgcolor=(1, 1, 1))
 
 field = mlab.pipeline.vector_field(
     X,
