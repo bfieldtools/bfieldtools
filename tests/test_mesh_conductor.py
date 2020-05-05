@@ -74,6 +74,21 @@ def test_mesh_conductor_creation():
                 assert c.basis.shape == (len(c.mesh.vertices), c.opts["N_suh"])
 
 
+def test_mesh_conductor_resistance_update():
+
+    obj = _fake_mesh_conductor(resistivity=1)
+
+    R1 = obj.resistance
+
+    obj.resistivity = 10
+
+    assert obj.resistivity == 10
+
+    R2 = obj.resistance
+
+    assert_allclose(R2 / 10, R1)
+
+
 def test_streamfunction_creation():
     """
     Test creating StreamFunctions with different bases
