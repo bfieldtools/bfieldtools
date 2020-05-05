@@ -427,9 +427,8 @@ class MeshConductor:
         if (name in ("resistivity", "thickness")) and self.matrices[
             "resistance"
         ] is not None:
-            self.matrices[
-                "resistance"
-            ] = self._resistance()  # Re-compute with new parameters
+            self.matrices["resistance"] = None  # Flush old matrix
+            self._resistance()  # Re-compute with new parameters
 
     def plot_mesh(self, cull_front=False, cull_back=False, **kwargs):
         """
