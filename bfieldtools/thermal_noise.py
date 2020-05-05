@@ -137,14 +137,14 @@ def noise_covar(B_coupling, vl, Nmodes=None):
     Bcov: ndarray (Np, Np, 3, Nfreqs) or (Np, Np, 3)
         Magnetic noise covariance
     """
-    if Nmodes == None:
+    if Nmodes is None:
         Nmodes = vl.shape[1]
 
     if vl.ndim == 2:
         b = np.einsum("ihj,jl->ilh", B_coupling, vl[:, 0:Nmodes])
         Bcov = np.einsum("jih,lih->jlh", b, b)
     else:
-        b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes])
+        b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, :, 0:Nmodes])
         Bcov = np.einsum("jihk,lihk->jlhk", b, b)
 
     return Bcov
@@ -169,14 +169,14 @@ def noise_var(B_coupling, vl, Nmodes=None):
     Bcov: ndarray (Np, 3, Nfreqs) or (Np, 3)
         Magnetic noise variance
     """
-    if Nmodes == None:
+    if Nmodes is None:
         Nmodes = vl.shape[1]
 
     if vl.ndim == 2:
         b = np.einsum("ihj,jl->ilh", B_coupling, vl[:, 0:Nmodes])
         Bcov = np.einsum("ijh,ijh->ih", b, b)
     else:
-        b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes])
+        b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, :, 0:Nmodes])
         Bcov = np.einsum("ijhk,ijhk->ihk", b, b)
 
     return Bcov
@@ -201,14 +201,14 @@ def noise_covar_dir(B_coupling, vl, Nmodes=None):
     Bcov: ndarray (Np, 3, 3, Nfreqs) or (Np, 3, 3)
         Magnetic noise covariance x, y and z field components
     """
-    if Nmodes == None:
+    if Nmodes is None:
         Nmodes = vl.shape[1]
 
     if vl.ndim == 2:
         b = np.einsum("ihj,jl->ilh", B_coupling, vl[:, 0:Nmodes])
         Bcov = np.einsum("ihj,ihl-> ijl", b, b)
     else:
-        b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes])
+        b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, :, 0:Nmodes])
         Bcov = np.einsum("ihjk,ihlk-> ijlk", b, b)
 
     return Bcov
