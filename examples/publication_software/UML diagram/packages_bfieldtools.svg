@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0rc1 (09960d6f05, 2020-04-09)"
+   sodipodi:docname="packages_bfieldtools.svg"
+   id="svg294"
+   version="1.1"
+   viewBox="0 0 518.0145 468.74109"
+   height="468.74109pt"
+   width="517.72852pt">
+  <metadata
+     id="metadata300">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs298" />
+  <sodipodi:namedview
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     fit-margin-left="0"
+     fit-margin-top="0"
+     inkscape:current-layer="svg294"
+     inkscape:window-maximized="1"
+     inkscape:window-y="0"
+     inkscape:window-x="0"
+     inkscape:cy="317.37288"
+     inkscape:cx="615.04089"
+     inkscape:zoom="1.9509954"
+     showgrid="false"
+     id="namedview296"
+     inkscape:window-height="2063"
+     inkscape:window-width="3840"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <polygon
+     transform="translate(159.06174,468.34864)"
+     id="polygon8"
+     points="330,0 330,-36 220,-36 220,0 "
+     stroke="#000000"
+     fill="none" />
+  <text
+     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text10"
+     fill="#000000"
+     font-size="14px"
+     font-family="Times, serif"
+     y="454.04865"
+     x="434.06174"
+     text-anchor="middle">coil_optimize</text>
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon15"
+     points="208.5,-72 341.5,-72 341.5,-108 208.5,-108 "
+     stroke="#000000"
+     fill="none" />
+  <text
+     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text17"
+     fill="#000000"
+     font-size="14px"
+     font-family="Times, serif"
+     y="454.04865"
+     x="275.5"
+     text-anchor="middle">mesh_conductor</text>
+  <path
+     inkscape:connector-curvature="0"
+     id="path22"
+     d="m 379.4254,450.34874 c -7.7004,0 -16.8571,0 -25.4148,0"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="rotate(-90,570.47137,154.87737)"
+     id="polygon24"
+     points="279.5001,-61.5868 275,-71.5867 270.5001,-61.5867 275,-66.5867 275.0001,-61.5867 275,-66.5867 "
+     stroke="#000000"
+     fill="#000000" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon29"
+     points="28.5,-216 99.5,-216 99.5,-252 28.5,-252 "
+     stroke="#000000"
+     fill="none" />
+  <text
+     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text31"
+     fill="#000000"
+     font-size="14px"
+     font-family="Times, serif"
+     y="310.04865"
+     x="64.5"
+     text-anchor="middle">contour</text>
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon36"
+     points="184.5,-432 303.5,-432 303.5,-468 184.5,-468 "
+     stroke="#000000"
+     fill="none" />
+  <text
+     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text38"
+     fill="#000000"
+     font-size="14px"
+     font-family="Times, serif"
+     y="94.048653"
+     x="244.5"
+     text-anchor="middle">mesh_calculus</text>
+  <path
+     inkscape:connector-curvature="0"
+     id="path43"
+     d="m 75.5318,288.28984 c 19.4076,-31.0754 61.805,-95.9447 105.9682,-143.9412 9.5606,-10.3904 21.0355,-20.7404 31.5573,-29.5577"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon45"
+     points="216.5069,-428.8028 215.5003,-422.1516 220.3701,-431.9769 209.7868,-429.1055 216.5069,-428.8028 212.6436,-425.6286 "
+     stroke="#000000"
+     fill="#000000" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon50"
+     points="204,-360 284,-360 284,-396 204,-396 "
+     stroke="#000000"
+     fill="none" />
+  <text
+     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text52"
+     fill="#000000"
+     font-size="14px"
+     font-family="Times, serif"
+     y="166.04865"
+     x="244.5"
+     text-anchor="middle">integrals</text>
+  <path
+     inkscape:connector-curvature="0"
+     id="path57"
+     d="m 244.5,144.18004 c 0,-7.7004 0,-16.8571 0,-25.4148"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon59"
+     points="244,-426.5867 248.5001,-421.5868 244,-431.5867 239.5001,-421.5867 244,-426.5867 244.0001,-421.5867 "
+     stroke="#000000"
+     fill="#000000" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon64"
+     points="170.5,-144 291.5,-144 291.5,-180 170.5,-180 "
+     stroke="#000000"
+     fill="none" />
+  <text
+     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text66"
+     fill="#000000"
+     font-size="14px"
+     font-family="Times, serif"
+     y="382.04865"
+     x="231.5"
+     text-anchor="middle">line_conductor</text>
+  <path
+     inkscape:connector-curvature="0"
+     id="path71"
+     d="m 189.3588,360.18004 c -24.4187,-10.5279 -55.1508,-23.7776 -80.0149,-34.4975"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon73"
+     points="104.2187,-216.6602 110.5918,-218.8129 99.6272,-218.6397 107.0285,-210.5483 104.2187,-216.6602 108.8102,-214.6806 "
+     stroke="#000000"
+     fill="#000000" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon78"
+     points="212.5,-288 335.5,-288 335.5,-324 212.5,-324 "
+     stroke="#000000"
+     fill="none" />
+  <text
+     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text80"
+     fill="#000000"
+     font-size="14px"
+     font-family="Times, serif"
+     y="238.04865"
+     x="274.5"
+     text-anchor="middle">line_magnetics</text>
+  <path
+     inkscape:connector-curvature="0"
+     id="path85"
+     d="m 246.0861,359.95874 c 7.0965,-9.9638 15.024,-22.8271 19.4139,-35.6101 6.8321,-19.8947 8.9785,-43.6119 9.4722,-61.7037"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon87"
+     points="274.5342,-282.8956 278.974,-277.842 274.5941,-287.8952 269.9747,-277.9498 274.5342,-282.8956 274.4744,-277.8959 "
+     stroke="#000000"
+     fill="#000000" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon92"
+     points="117.5,-216 256.5,-216 256.5,-252 117.5,-252 "
+     stroke="#000000"
+     fill="none" />
+  <text
+     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text94"
+     fill="#000000"
+     font-size="14px"
+     font-family="Times, serif"
+     y="310.04865"
+     x="187.5"
+     text-anchor="middle">mesh_impedance</text>
+  <path
+     inkscape:connector-curvature="0"
+     id="path99"
+     d="m 220.3969,360.18004 c -4.9643,-8.1235 -10.9191,-17.8677 -16.3897,-26.8196"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon101"
+     points="200.8598,-211.3203 207.3069,-209.4004 198.2526,-215.5867 199.6273,-204.7074 200.8598,-211.3203 203.4671,-207.0539 "
+     stroke="#000000"
+     fill="#000000" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon106"
+     points="313,-216 367,-216 367,-252 313,-252 "
+     stroke="#000000"
+     fill="none" />
+  <text
+     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text108"
+     fill="#000000"
+     font-size="14px"
+     font-family="Times, serif"
+     y="310.04865"
+     x="340.5"
+     text-anchor="middle">viz</text>
+  <path
+     inkscape:connector-curvature="0"
+     id="path113"
+     d="m 259.0053,360.18004 c 13.9181,-9.1937 30.9786,-20.463 45.8868,-30.3106"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon115"
+     points="308.7091,-213.3308 307.0173,-206.8201 312.8811,-216.0866 302.0568,-214.3297 308.7091,-213.3308 304.5371,-210.5749 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path120"
+     d="m 266.9297,216.18004 c -3.279,-7.8697 -7.1917,-17.2602 -10.8242,-25.9781"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon122"
+     points="253.5953,-354.9713 259.6723,-352.0868 251.6722,-359.5867 251.3646,-348.6252 253.5953,-354.9713 255.5184,-350.356 "
+     stroke="#000000"
+     fill="#000000" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon127"
+     points="270,-504 324,-504 324,-540 270,-540 "
+     stroke="#000000"
+     fill="none" />
+  <text
+     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text129"
+     fill="#000000"
+     font-size="14px"
+     font-family="Times, serif"
+     y="22.048653"
+     x="297.5"
+     text-anchor="middle">utils</text>
+  <path
+     inkscape:connector-curvature="0"
+     id="path134"
+     d="m 257.8741,72.18004 c 6.0421,-8.2082 13.3022,-18.0708 19.948,-27.0991"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon136"
+     points="280.4817,-499.56 281.1416,-492.8656 283.4458,-503.5867 273.8936,-498.201 280.4817,-499.56 277.5176,-495.5333 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path141"
+     d="m 222.615,432.29654 c -22.6395,-9.0039 -48.7295,-21.1547 -70.115,-35.9479 -25.9472,-17.9487 -50.6167,-44.2776 -67.1971,-63.8257"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon143"
+     points="81.4109,-211.9011 88.0682,-210.9369 78.2122,-215.7442 81.1508,-205.1793 81.4109,-211.9011 84.6095,-208.0581 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path148"
+     d="m 264.3969,432.18004 c -4.9643,-8.1235 -10.9191,-17.8677 -16.3897,-26.8196"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon150"
+     points="244.8598,-139.3203 251.3069,-137.4004 242.2526,-143.5867 243.6273,-132.7074 244.8598,-139.3203 247.4671,-135.0539 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path155"
+     d="M 208.9302,444.35354 C 127.5432,432.94634 0.5,400.12154 0.5,306.34864 c 0,0 0,0 0,-72 0,-81.5076 102.232,-117.8308 174.3486,-133.314"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon157"
+     points="179.4134,-440.3557 175.4225,-434.9406 184.3109,-441.363 173.6093,-443.7561 179.4134,-440.3557 174.5159,-439.3484 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path162"
+     d="m 208.9499,433.48194 c -18.5358,-8.0907 -36.5588,-19.9231 -47.4499,-37.1333 -12.1828,-19.2512 -3.2486,-44.3812 7.3405,-63.1926"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon164"
+     points="170.9988,-211.5879 172.2617,-204.9806 173.5865,-215.8662 164.5607,-209.6384 170.9988,-211.5879 168.4112,-207.3095 "
+     stroke="#000000"
+     fill="#000000" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon169"
+     points="353.5,-288 488.5,-288 488.5,-324 353.5,-324 "
+     stroke="#000000"
+     fill="none" />
+  <text
+     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text171"
+     fill="#000000"
+     font-size="14px"
+     font-family="Times, serif"
+     y="238.04865"
+     x="421.5"
+     text-anchor="middle">mesh_magnetics</text>
+  <path
+     inkscape:connector-curvature="0"
+     id="path176"
+     d="m 342.0742,436.11724 c 38.6696,-9.765 81.9705,-23.8123 93.4258,-39.7686 28.47,-39.6564 12.0883,-99.6586 -1.5409,-134.4235"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon178"
+     points="431.4499,-283.3125 437.5127,-280.3984 429.5492,-287.9371 429.1883,-276.9772 431.4499,-283.3125 433.3505,-278.6878 "
+     stroke="#000000"
+     fill="#000000" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon183"
+     points="378.5,-360 455.5,-360 455.5,-396 378.5,-396 "
+     stroke="#000000"
+     fill="none" />
+  <text
+     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text185"
+     fill="#000000"
+     font-size="14px"
+     font-family="Times, serif"
+     y="166.04865"
+     x="417.5"
+     text-anchor="middle">sphtools</text>
+  <path
+     inkscape:connector-curvature="0"
+     id="path190"
+     d="m 342.4677,437.19434 c 44.1994,-9.9469 96.8359,-24.6287 113.0323,-40.8457 58.1232,-58.1973 81.8108,-107.4813 43,-180 -7.4578,-13.935 -20.2756,-24.895 -33.5424,-33.194"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon192"
+     points="460.0494,-359.7556 466.6335,-361.1341 455.7264,-362.2679 462.1115,-353.3526 460.0494,-359.7556 464.3725,-357.2434 "
+     stroke="#000000"
+     fill="#000000" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon197"
+     points="348.5,-144 425.5,-144 425.5,-180 348.5,-180 "
+     stroke="#000000"
+     fill="none" />
+  <text
+     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text199"
+     fill="#000000"
+     font-size="14px"
+     font-family="Times, serif"
+     y="382.04865"
+     x="387.5"
+     text-anchor="middle">suhtools</text>
+  <path
+     inkscape:connector-curvature="0"
+     id="path204"
+     d="m 303.7623,432.18004 c 14.1929,-9.124 31.5659,-20.2924 46.8013,-30.0865"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon206"
+     points="354.5408,-141.1334 352.7683,-134.6442 358.7467,-143.8372 347.9015,-142.2149 354.5408,-141.1334 350.3349,-138.4296 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path211"
+     d="m 284.1325,431.88644 c 4.8494,-10.417 10.9896,-23.6837 16.3675,-35.5378 9.4771,-20.8898 20.0063,-44.6014 27.8823,-62.4405"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon213"
+     points="329.9441,-211.1166 332.0444,-204.7261 331.9613,-215.6916 323.8093,-208.3571 329.9441,-211.1166 327.9268,-206.5416 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path218"
+     d="m 188.2413,288.03514 c 1.3249,-18.7179 5.0114,-48.2807 15.2587,-71.6865 4.3196,-9.8664 10.7891,-19.5783 17.3199,-27.9858"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon220"
+     points="223.6317,-356.0427 223.9557,-349.3237 226.7937,-359.916 216.9838,-355.0152 223.6317,-356.0427 220.4697,-352.1694 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path225"
+     d="m 184.3911,288.16004 c -4.446,-30.9943 -9.9379,-95.389 11.1089,-143.8114 4.559,-10.489 12.0028,-20.3 19.7275,-28.6052"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon227"
+     points="218.3106,-428.2297 217.9956,-421.5102 221.8258,-431.7854 211.5952,-427.8376 218.3106,-428.2297 214.7954,-424.6739 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path232"
+     d="m 246.246,288.27294 c 32.4065,-9.9712 72.8179,-22.4055 106.666,-32.8203"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon234"
+     points="357.4509,-286.4464 353.9954,-280.6749 362.2298,-287.9169 351.3486,-289.2769 357.4509,-286.4464 352.672,-284.9759 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path239"
+     d="m 179.8995,288.07564 c -16.1686,-42.029 -49.0057,-147.2028 -4.3995,-215.727 18.6259,-28.6131 56.2482,-42.1787 84.8168,-48.539"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon241"
+     points="264.9794,-517.5813 260.9689,-512.1807 269.8805,-518.5708 259.1877,-521.0027 264.9794,-517.5813 260.0783,-516.5917 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path246"
+     d="m 376.8354,216.18004 c -25.2653,-10.2774 -56.9073,-23.1488 -82.9151,-33.7282"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon248"
+     points="288.7471,-359.7978 295.0742,-362.0821 284.1156,-361.6818 291.683,-353.7454 288.7471,-359.7978 293.3786,-357.9137 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path253"
+     d="m 389.7537,216.34124 c -16.4497,-9.8592 -36.5378,-22.7442 -53.2537,-35.9926 -25.0866,-19.8827 -50.9072,-45.6974 -68.7838,-64.5781"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon255"
+     points="263.7218,-428.3057 270.4245,-427.7355 260.3023,-431.9536 263.8583,-421.5803 263.7218,-428.3057 267.1414,-424.6579 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path260"
+     d="m 400.9603,216.27924 c -10.3695,-9.8762 -22.5948,-22.7577 -31.4603,-35.9306 -29.2777,-43.5029 -51.4759,-100.8552 -63.0499,-134.354"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon262"
+     points="304.3068,-499.2067 310.1728,-495.9142 302.7031,-503.9426 301.6483,-493.0276 304.3068,-499.2067 305.9105,-494.4709 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path267"
+     d="m 378.6754,146.19044 c -24.0445,-10.007 -55.2365,-22.9886 -81.4939,-33.9166"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon269"
+     points="291.8695,-430.0774 298.2148,-432.3107 287.2533,-431.9986 294.7566,-424.0016 291.8695,-430.0774 296.4857,-428.1562 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path274"
+     d="M 409.2466,144.20244 C 400.0225,125.08884 383.818,94.71864 364.5,72.34864 355.1628,61.53624 343.4527,51.26694 332.4453,42.64364"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon276"
+     points="327.6964,-500.9345 334.4002,-501.4914 323.7158,-503.9602 328.954,-494.3263 327.6964,-500.9345 331.6771,-497.9089 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path281"
+     d="m 391.8061,360.11094 c 5.8248,-24.6695 16.2687,-68.9025 23.0891,-97.7892"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon283"
+     points="415.5798,-283.0442 418.8104,-277.1439 416.7288,-287.9104 410.0513,-279.2121 415.5798,-283.0442 414.4308,-278.178 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path288"
+     d="m 375.6399,360.18004 c -5.3028,-8.1235 -11.6636,-17.8677 -17.5072,-26.8196"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(0.5,540.34864)"
+     id="polygon290"
+     points="354.7529,-211.3998 361.2543,-209.6727 352.0198,-215.5867 353.7178,-204.7531 354.7529,-211.3998 357.486,-207.2129 "
+     stroke="#000000"
+     fill="#000000" />
+</svg>
