@@ -221,7 +221,7 @@ for reg_exp in reg_exps:
     rel_errors.append(rel_error)
 
     if plot_this:
-        mlab.figure()
+        mlab.figure(bgcolor=(1, 1, 1))
         surf = s.plot(False)
         surf.actor.mapper.interpolate_scalars_before_mapping = True
         surf.module_manager.scalar_lut_manager.number_of_colors = 16
@@ -237,7 +237,7 @@ helmet.vertices[:, 2] -= 0.05
 
 # Reset coupling by hand
 c.B_coupling.reset()
-mlab.figure()
+mlab.figure(bgcolor=(1, 1, 1))
 B_surf = np.sum(
     c.B_coupling(helmet.vertices) * helmet.vertex_normals[:, :, None], axis=1
 )
@@ -306,6 +306,7 @@ surf2.module_manager.scalar_lut_manager.number_of_colors = 15
 
 ###########################################################
 # Calculate magnetic field in a box
+
 Nvol = 30
 x = np.linspace(-0.125, 0.125, Nvol)
 vol_points = np.array(np.meshgrid(x, x, x, indexing="ij")).reshape(3, -1).T
@@ -319,6 +320,7 @@ Bvol = Bvol_coupling @ s
 
 ###########################################################
 # Plot the computed magnetic field with streamlines
+
 from bfieldtools.mesh_calculus import gradient
 
 # mlab.quiver3d(*vol_points.T, *Bvol.T)

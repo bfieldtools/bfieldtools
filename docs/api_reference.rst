@@ -228,9 +228,8 @@ Spherical harmonics
 	potential
 	field
 	compute_sphcoeffs_mesh
+	basis_potentials
 	basis_fields
-	fit_spectra
-	reconstruct_B
 	plotYlms
 	plotYlm
 	plotWlm
@@ -268,8 +267,7 @@ Thermal noise
 .. autosummary::
    :toctree: generated/
    
-   compute_DC_current_modes
-   compute_AC_current_modes
+   compute_current_modes
    noise_covar
    noise_var
    noise_covar_dir
@@ -323,3 +321,4 @@ Utilities
    fix_normals
    inner2vert
    vert2inner
+   MeshProjection

@@ -63,6 +63,7 @@ class MeshConductor:
     The bases can include built-in boundary conditions for the data: inner and
     suh bases assume dirichlet boundary condition (equal value within each boundary),
     while vertex basis does not set a boundary condition.
+    
     """
 
     def __init__(
@@ -427,9 +428,8 @@ class MeshConductor:
         if (name in ("resistivity", "thickness")) and self.matrices[
             "resistance"
         ] is not None:
-            self.matrices[
-                "resistance"
-            ] = self._resistance()  # Re-compute with new parameters
+            self.matrices["resistance"] = None  # Flush old matrix
+            self._resistance()  # Re-compute with new parameters
 
     def plot_mesh(self, cull_front=False, cull_back=False, **kwargs):
         """

@@ -84,14 +84,14 @@ target_spec = {
 }
 
 #%%
-# import mosek
+import mosek
 
 coil.s, prob = optimize_streamfunctions(
     coil,
     [target_spec],
     objective="minimum_inductive_energy",
-    # solver="MOSEK",
-    # solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+    solver="MOSEK",
+    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
 )
 
 ###############################################################

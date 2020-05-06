@@ -32,6 +32,7 @@ mesh = trimesh.Trimesh(points, tris)
 scalars = np.zeros(7)
 scalars[0] = 1
 # Stream function
+mlab.figure(bgcolor=(1, 1, 1))
 s1 = mlab.triangular_mesh(*points.T, tris, scalars=scalars, colormap="viridis")
 # Stream lines
 s2 = mlab.triangular_mesh(*points.T, tris, scalars=scalars, colormap="viridis")
@@ -49,7 +50,7 @@ for ii in range(7):
     mesh2 = mesh2.subdivide()
 
 U = scalar_potential_coupling(mesh, mesh2.vertices) @ scalars
-
+mlab.figure(bgcolor=(1, 1, 1))
 s3 = mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces, scalars=U, colormap="bwr")
 s3.enable_contours = True
 s3.contour.minimum_contour = -5.2e-07
@@ -67,11 +68,14 @@ if False:
     for ii in range(5):
         mesh3 = mesh3.subdivide()
     A = vector_potential_coupling(mesh, mesh3.vertices) @ scalars
+    mlab.figure(bgcolor=(1, 1, 1))
     vectors = mlab.quiver3d(*mesh3.vertices.T, *A, mode="2ddash", color=(0, 0, 1))
     vectors.glyph.glyph_source.glyph_position = "center"
     vectors.actor.property.render_lines_as_tubes = True
     vectors.actor.property.line_width = 3.0
 #%%
+
+
 points = (
     np.array([[0.001, 1, 1], [0.001, 1, -1], [0.001, -1, -1], [0.001, -1, 1]]) * 2
     + 0.001

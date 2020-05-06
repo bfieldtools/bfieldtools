@@ -1,6 +1,8 @@
 """
+
 Compare SUH and SPH basis functions for the magnetic field
 =============================================================
+
 """
 
 

@@ -1,12 +1,14 @@
 """
-Thermal noise computation
-==========================
+Examples of thermal noise computation
+=====================================
 
-Three different examples:
-   unit_sphere: DC Bnoise of a spherical shell at origin and comparison to analytical formula
-   unit_disc: DC Bnoise of a unit disc at z-axis and comparison to analytical formula
-   AC: AC Bnoise of a unit disc at one position
+Different examples:
+- unit_disc: DC Bnoise of a unit disc at z-axis and comparison to analytical formula
+- unit_sphere: DC Bnoise of a spherical shell at origin and comparison to analytical formula
+- cylinder: DC Bnoise inside a cylindrical conductor
+- AC: AC Bnoise of a unit disc at one position
 
+Analytic formulas are from Lee and Romalis (2008)
 """
 
 
@@ -17,8 +19,7 @@ from mayavi import mlab
 
 from bfieldtools.mesh_impedance import self_inductance_matrix, resistance_matrix
 from bfieldtools.thermal_noise import (
-    compute_AC_current_modes,
-    compute_DC_current_modes,
+    compute_current_modes,
     noise_covar,
     noise_var,
     visualize_current_modes,
@@ -32,25 +33,92 @@ font = {"family": "normal", "weight": "normal", "size": 16}
 plt.rc("font", **font)
 
 # Fix the simulation parameters
-d = 100e-6
-sigma = 3.7e7
-T = 300
-kB = 1.38064852e-23
-mu0 = 4 * np.pi * 1e-7
-freqs = np.array((0,))
+d = 100e-6  # thickness
+sigma = 3.7e7  # conductivity
+res = 1 / sigma  # resistivity
+T = 300  # temperature
+kB = 1.38064852e-23  # Boltz
+mu0 = 4 * np.pi * 1e-7  # permeability of freespace
+# freqs = np.array((0,))
 
 
-Nchunks = 8
-quad_degree = 2
+# Nchunks = 8
+# quad_degree = 2
 
-##############################################################################
-# Unit sphere
+
+###############################################################################
+# DC magnetic noise from unit disc
+
+mesh = trimesh.load(
+    pkg_resources.resource_filename("bfieldtools", "example_meshes/unit_disc.stl")
+)
+mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
+mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
+
+# Compute the AC-current modes and visualize them
+vl, u = compute_current_modes(
+    obj=mesh, T=T, resistivity=res, thickness=d, mode="AC", return_eigenvals=True
+)
+
+scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
+visualize_current_modes(mesh, vl[:, :, 0], 42, 5, contours=True)
+
+# Define field points on z axis
+Np = 30
+z = np.linspace(0.1, 1, Np)
+fp = np.array((np.zeros(z.shape), np.zeros(z.shape), z)).T
+
+B_coupling = magnetic_field_coupling(mesh, fp, analytic=True)  # field coupling matrix
+
+# Compute noise variance
+B = np.sqrt(noise_var(B_coupling, vl))
+
+# Calculate Bz noise using analytical formula and plot the results
+r = 1
+Ban = (
+    mu0
+    * np.sqrt(sigma * d * kB * T / (8 * np.pi * z ** 2))
+    * (1 / (1 + z ** 2 / r ** 2))
+)
+
+plt.figure()
+plt.subplot(2, 1, 1)
+plt.semilogy(z, Ban, label="Analytic")
+plt.semilogy(z, B[:, 2, 0], "x", label="Numerical")
+plt.legend(frameon=False)
+plt.xlabel("Distance d/R")
+plt.ylabel("DC noise Bz (T/rHz)")
+
+plt.subplot(2, 1, 2)
+plt.plot(z, np.abs((B[:, 2, 0] - Ban)) / np.abs(Ban) * 100)
+plt.xlabel("Distance d/R")
+plt.ylabel("Relative error (%)")
+plt.tight_layout()
+
+# Next, we compute the DC noise without reference to the inductance
+vl_dc, u_dc = compute_current_modes(
+    obj=mesh, T=T, resistivity=res, thickness=d, mode="DC", return_eigenvals=True
+)
+
+# Compute noise variance
+B_dc = np.sqrt(noise_var(B_coupling, vl_dc))
+
+# Compare results computed using AC and DC formulation
+plt.figure()
+plt.semilogy(z, B_dc[:, 2], "o", label="DC mode")
+plt.semilogy(z, B[:, 2, 0], "x", label="AC mode")
+plt.legend(frameon=False)
+plt.xlabel("Distance d/R")
+plt.ylabel("DC noise Bz (T/rHz)")
+plt.tight_layout()
+
+###############################################################################
+# DC magnetic noise in the center of sphere with different radii
 # ------------
-
 
 Np = 10
 radius = np.linspace(0.1, 1, Np)
-fp = np.zeros((1, 3))
+fp = np.zeros((1, 3))  # calculate are at origin
 
 B = np.zeros((Np, 3))
 for i in range(Np):
@@ -61,52 +129,11 @@ for i in range(Np):
 
     B_coupling = magnetic_field_coupling(mesh, fp, analytic=True)
 
-    S = np.ones(mesh.triangles_center.shape[0]) * sigma
-    sheet_resistance = 1 / (d * S)
-
-    # Compute the resistance and inductance matrices
-    R = resistance_matrix(mesh, sheet_resistance=sheet_resistance)
-    # M = self_inductance_matrix(mesh, Nchunks=Nchunks, quad_degree=quad_degree)
-
-    # vl = compute_current_modes_ind_res(mesh, M, R, freqs, T, closed=True)
-    vl = compute_DC_current_modes(mesh, T, closed=True)
-
-    #    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-    #               size=(800, 800))
-    #    visualize_current_modes(mesh,vl[:,:,0], 8, 1)
-
-    #    vl[:,0] = np.zeros(vl[:,0].shape) # fix DC-component
-
-    Btemp = noise_var(mesh, B_coupling, vl)
-    #    Btemp = compute_dc_Bnoise(mesh,vl,fp,sigma,d,T)
-    # B[i] = Btemp[:, :, 0]
+    vl = compute_current_modes(obj=mesh, T=T, resistivity=res, thickness=d, mode="DC")
+    Btemp = noise_var(B_coupling, vl[:, 1:])  # avoid spatial "DC" mode
     B[i] = Btemp
 
-scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
-scene.scene.z_minus_view()
-surface = scene.children[0].children[0].children[0].children[0]
-surface.actor.property.representation = "wireframe"
-surface.actor.mapper.scalar_visibility = False
-scene.scene.camera.position = [0.0, 0.0, -5.530686305704514]
-scene.scene.camera.focal_point = [0.0, 0.0, 0.0]
-scene.scene.camera.view_angle = 30.0
-scene.scene.camera.view_up = [0.0, 1.0, 0.0]
-scene.scene.camera.clipping_range = [3.485379442647469, 8.118646600290083]
-scene.scene.camera.compute_view_plane_normal()
-scene.scene.render()
-scene.scene.camera.position = [0.0, 0.0, -4.570815128681416]
-scene.scene.camera.focal_point = [0.0, 0.0, 0.0]
-scene.scene.camera.view_angle = 30.0
-scene.scene.camera.view_up = [0.0, 1.0, 0.0]
-scene.scene.camera.clipping_range = [2.535106977394602, 7.1443773556116374]
-scene.scene.camera.compute_view_plane_normal()
-scene.scene.render()
-mlab.savefig(
-    "/Users/joonas/Documents/Manuscripts/ThermalNoise/figures/validation/sphere.png",
-    size=(800, 800),
-)
-
+# Analytic formula
 Ban = mu0 * np.sqrt(2 * sigma * d * kB * T / (3 * np.pi * (radius) ** 2))
 
 plt.figure(figsize=(5, 5))
@@ -128,67 +155,6 @@ plt.ylabel(r"$B_z$ noise at DC (fT/rHz)")
 plt.tight_layout()
 
 
-RE = np.abs((np.sqrt(B[:, 2]) - Ban)) / np.abs(Ban) * 100
-plt.figure()
-plt.plot(radius, RE)
-plt.xlabel("Sphere radius")
-plt.ylabel("Relative error (%)")
-
-##############################################################################
-# Unit disc, DC noise
-# ---------------------
-
-mesh = trimesh.load(
-    pkg_resources.resource_filename("bfieldtools", "example_meshes/unit_disc.stl")
-)
-mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
-mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
-
-freqs = np.array((0,))
-
-S = np.ones(mesh.triangles_center.shape[0]) * sigma
-sheet_resistance = 1 / (d * S)
-
-# Compute the resistance and inductance matrices
-R = resistance_matrix(mesh, sheet_resistance=sheet_resistance)
-M = self_inductance_matrix(mesh, Nchunks=Nchunks, quad_degree=quad_degree)
-
-# vl = compute_AC_current_modes(mesh, M, R, freqs, T, closed=False)
-vl = compute_DC_current_modes(mesh, R, T, closed=False)
-
-
-scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-
-# visualize_current_modes(mesh, vl[:,:,0], 42, 5, contours=False)
-
-Np = 30
-
-z = np.linspace(0.1, 1, Np)
-fp = np.array((np.zeros(z.shape), np.zeros(z.shape), z)).T
-
-B_coupling = magnetic_field_coupling(mesh, fp, analytic=True)
-B = np.sqrt(noise_var(mesh, B_coupling, vl))
-
-r = 1
-Ban = (
-    mu0
-    * np.sqrt(sigma * d * kB * T / (8 * np.pi * z ** 2))
-    * (1 / (1 + z ** 2 / r ** 2))
-)
-
-plt.figure()
-plt.semilogy(z, Ban, label="Analytic")
-plt.semilogy(z, B[:, 2], "x", label="Numerical")
-plt.legend()
-plt.xlabel("Distance d/R")
-plt.ylabel("DC noise Bz (T/rHz)")
-plt.tight_layout()
-
-plt.figure()
-plt.plot(z, np.abs((B[:, 2] - Ban)) / np.abs(Ban) * 100)
-plt.xlabel("Distance d/R")
-plt.ylabel("Relative error (%)")
-
 ##############################################################################
 # Closed cylinder, DC noise
 # --------------------------
@@ -198,50 +164,22 @@ mesh = trimesh.load(
 )
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 
+# Compute noise current modes at DC
+vl = compute_current_modes(obj=mesh, T=T, resistivity=res, thickness=d, mode="DC")
 
-S = np.ones(mesh.triangles_center.shape[0]) * sigma
-sheet_resistance = 1 / (d * S)
-
-# Compute the resistance and inductance matrices
-R = resistance_matrix(mesh, sheet_resistance=sheet_resistance)
-M = self_inductance_matrix(mesh, Nchunks=Nchunks, quad_degree=quad_degree)
-
-vl = compute_current_modes_ind_res(mesh, M, R, freqs, T, closed=True)
-
+# Visualize the current modes
 scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
+visualize_current_modes(mesh, vl, 8, 1)
 
-visualize_current_modes(mesh, vl[:, :, 0], 8, 1)
-
-
-scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
-scene.scene.z_minus_view()
-surface = scene.children[0].children[0].children[0].children[0]
-surface.actor.property.representation = "wireframe"
-surface.actor.mapper.scalar_visibility = False
-scene.scene.isometric_view()
-# scene.scene.camera.position = [2.2578932293957665, 2.2578932293957665, 2.2578932293957665]
-# scene.scene.camera.focal_point = [0.0, 0.0, 0.0]
-# scene.scene.camera.view_angle = 30.0
-# scene.scene.camera.view_up = [0.0, 0.0, 1.0]
-# scene.scene.camera.clipping_range = [1.5738238620907348, 6.861972426889951]
-# scene.scene.camera.compute_view_plane_normal()
-scene.scene.render()
-mlab.savefig(
-    "/Users/joonas/Documents/Manuscripts/ThermalNoise/figures/validation/cylinder.png",
-    size=(800, 800),
-)
-
+# Calculate field noise along long axis of the cylinder
 Np = 30
-
 x = np.linspace(-0.95, 0.95, Np)
 fp = np.array((x, np.zeros(x.shape), np.zeros(x.shape))).T
 
 B_coupling = magnetic_field_coupling(mesh, fp, analytic=True)
-B = noise_var(mesh, B_coupling, vl)
+B = noise_var(B_coupling, vl[:, 1:])  # avoid spatial "DC" mode
 
-# B = compute_dc_Bnoise(mesh,vl,fp,sigma,d,T)
-
+# Analytic formula valid only at the center of cylinder
 a = 0.5
 L = 2
 rat = L / (2 * a)
@@ -254,6 +192,7 @@ Gfact = (
     )
 )
 Ban = np.sqrt(Gfact) * mu0 * np.sqrt(kB * T * sigma * d) / a
+
 
 plt.figure(figsize=(5, 5))
 plt.plot(x, Ban * np.ones(x.shape) * 1e15, label="Analytic", linewidth=2)
@@ -273,17 +212,9 @@ plt.xlabel("Distance along long axis")
 plt.ylabel("DC noise along axis (fT/rHz)")
 plt.tight_layout()
 
-plt.figure()
-plt.semilogy(x, np.sqrt(B[:, 0]), label="x")
-plt.semilogy(x, np.sqrt(B[:, 1]), label="y")
-plt.semilogy(x, np.sqrt(B[:, 2]), "--", label="z")
-plt.legend()
-plt.xlabel("Distance along long axis x")
-plt.ylabel("DC noise (T/rHz)")
-
 
 ##############################################################################
-# Unit disc, AC mode
+# Unit disc, AC noise
 # ------------------
 
 mesh = trimesh.load(
@@ -292,68 +223,36 @@ mesh = trimesh.load(
     )
 )
 
+Nfreqs = 10
+freqs = np.logspace(0, 4, 15)  # freqs from 1 to 10 kHz
 
-# Nfreqs = 100
-# freqs = np.logspace(0, 3, Nfreqs) #30 frequencies from 1 to 1000 Hz
-# inds = np.where(freqs < 600)
-# freqs = freqs[inds]
-# Nfreqs = freqs.shape[0]
+vl = compute_current_modes(
+    obj=mesh,
+    T=T,
+    resistivity=res,
+    thickness=d,
+    mode="AC",
+    freqs=freqs,
+    return_eigenvals=False,
+)
 
-Nfreqs = 70
-freqs = np.linspace(0, 1200, Nfreqs)
 
-S = np.ones(mesh.triangles_center.shape[0]) * sigma
-sheet_resistance = 1 / (d * S)
-
-# Compute the resistance and inductance matrices
-R = resistance_matrix(mesh, sheet_resistance=sheet_resistance)
-M = self_inductance_matrix(mesh, Nchunks=Nchunks, quad_degree=quad_degree)
-
-vl = compute_AC_current_modes(mesh, M, R, freqs, T, closed=False)
-
-#
-# fp = np.zeros((1,3))
-# fp[0,2] = 0.1
-
-Np = 50
+Np = 10
 z = np.linspace(0.05, 1, Np)
 fp = np.array((np.zeros(z.shape), np.zeros(z.shape), z)).T
 
 B_coupling = magnetic_field_coupling(mesh, fp, analytic=True)
 
-Bf = np.sqrt(noise_var(mesh, B_coupling, vl))
+Bf = np.sqrt(noise_var(B_coupling, vl))  # noise variance
 
-# r = 1
-# Ban = mu0*np.sqrt(sigma*d*kB*T/(8*np.pi*fp[0,2]**2))*(1/(1+fp[0,2]**2/r**2))
-
-plt.figure(figsize=(5, 5))
+# Plot Bz noise as a function of frequency
+plt.figure()
 plt.loglog(freqs, Bf[:, 2, :].T * 1e15, linewidth=2)
 plt.grid()
-plt.ylim(1, 20)
+# plt.ylim(1, 20)
 plt.gca().spines["right"].set_visible(False)
 plt.gca().spines["top"].set_visible(False)
 plt.legend(frameon=False)
 plt.xlabel("Frequency (Hz)")
 plt.ylabel(r"$B_z$ noise (fT/rHz)")
-plt.tight_layout()
-
-f_interp = np.linspace(0, 1200, 1200)
-
-cutf = np.zeros(Np)
-for i in range(Np):
-    Btemp = np.interp(f_interp, freqs, Bf[i, 2, :])
-    idx = np.max(np.where(Btemp >= 1 / np.sqrt(2) * Btemp[0]))
-    cutf[i] = f_interp[idx]
-
-cutf_an = 1 / (4 * mu0 * sigma * d * z)
-
-plt.figure(figsize=(5, 5))
-plt.loglog(z, cutf_an, linewidth=2, label="Infinite plane")
-plt.loglog(z, cutf, "x", markersize=10, markeredgewidth=2, label="Disc")
-plt.grid()
-plt.gca().spines["right"].set_visible(False)
-plt.gca().spines["top"].set_visible(False)
-plt.legend(frameon=False)
-plt.xlabel("Distance (z/R)")
-plt.ylabel("3-dB cutoff frequency (Hz)")
 plt.tight_layout()

@@ -16,23 +16,23 @@ sph = SphBasis(40)
 ###############################################################################
 # Plot Spherical harmonics Ylms on the sphere
 # Plot Ylms up to l = 4
-mlab.figure()
+mlab.figure(bgcolor=(1, 1, 1))
 obj = sphtools.plotYlms(sph, lmax=4)
 
 # Plot Ylm with l=3, m=3
-mlab.figure()
+mlab.figure(bgcolor=(1, 1, 1))
 obj = sphtools.plotYlm(sph, l=3, m=3)
 
 ###############################################################################
 # Plot vector spherical harmonics Vlms / Wlms on the sphere
 
 # Plot Vlm with l=2, m=2
-mlab.figure()
+mlab.figure(bgcolor=(1, 1, 1))
 obj = sphtools.plotVlm(sph, l=2, m=2)
 obj.scene.z_plus_view()
 
 # Plot Wlm with the same order and degree, l=2, m=2
-mlab.figure()
+mlab.figure(bgcolor=(1, 1, 1))
 obj = sphtools.plotWlm(sph, l=2, m=2)
 obj.scene.z_plus_view()
 
@@ -41,12 +41,12 @@ obj.scene.z_plus_view()
 
 # Plot BVlm with l=2, m=2
 offset = np.array((0, 0, 3))  # add offset due to divergence in origin
-mlab.figure()
+mlab.figure(bgcolor=(1, 1, 1))
 obj = sphtools.plotBVlm_volume(sph, l=2, m=2, lim=1, Np=10, offset=offset)
 
 # Plot BWlm with l=2, m=2
 offset = np.array((0, 0, 0))  # include origin
-mlab.figure()
+mlab.figure(bgcolor=(1, 1, 1))
 obj = sphtools.plotBWlm_volume(sph, l=2, m=2, lim=1, Np=10, offset=offset)
 
 ###############################################################################

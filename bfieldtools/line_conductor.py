@@ -35,6 +35,7 @@ class LineConductor(Path3D):
         kwargs: dict
             passed to scalar_contour if called. Relevant kw:s are N_contours
             and contours
+            
         """
         vertices = np.zeros((0, 3))
         entities = []
@@ -55,7 +56,10 @@ class LineConductor(Path3D):
 
     def simplify(self, min_edge=1e-3, angle_threshold=2e-2, smooth=True):
         """
-        Simplifies contour paths
+        Simplifies contour paths.
+        
+        Parameters
+        ----------
         c: array-like
             List of polygons describing closed loops.
         min_edge: float
@@ -68,6 +72,7 @@ class LineConductor(Path3D):
         Returns
         -------
         simplified_linepath: LineConductor
+        
         """
         simplified_loops = [
             simplify_contour(

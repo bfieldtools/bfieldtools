@@ -96,6 +96,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
     "sphinx.ext.autosummary",
+    "sphinx_fontawesome",
     "numpydoc",
     "sphinx.ext.intersphinx",
     "sphinx_gallery.gen_gallery",
@@ -188,7 +189,7 @@ numpydoc_show_class_members = False
 html_theme = "bootstrap"
 
 html_theme_options = {
-    "bootswatch_theme": "simplex",
+    "bootswatch_theme": "readable",
     "navbar_sidebarrel": False,  # Render the next/prev links in navbar?
     "navbar_pagenav": False,
     "navbar_class": "navbar",
@@ -209,8 +210,8 @@ html_theme_options = {
     # Location of link to source.
     # Options are "nav" (default), "footer" or anything else to exclude.
     "source_link_position": "footer",
+    "navbar_class": "navbar navbar-inverse",
 }
-
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

@@ -19,34 +19,30 @@ def test_compute_modes():
 
     obj = _fake_mesh_conductor("unit_disc")
 
-    DC_n = thermal_noise.compute_DC_current_modes(
-        obj, T=300, resistivity=1e-8, thickness=1e-3
+    DC_n = thermal_noise.compute_current_modes(
+        obj, T=300, resistivity=1e-8, thickness=1e-3, mode="DC"
     )
 
-    AC_n = thermal_noise.compute_AC_current_modes(
-        obj, freqs=np.array([0]), T=300, resistivity=1e-8, thickness=1e-3
+    AC_n = thermal_noise.compute_current_modes(
+        obj, freqs=np.array((0,)), T=300, resistivity=1e-8, thickness=1e-3, mode="AC"
     )
 
     points = np.array([[0.1, 0, 0.2], [-0.1, 0.1, -0.2]])
 
     obj.set_basis("vertex")
 
-    DC_Bn_covar = thermal_noise.noise_covar(obj.mesh, obj.B_coupling(points), DC_n)
-    AC_Bn_covar = thermal_noise.noise_covar(obj.mesh, obj.B_coupling(points), AC_n)
+    DC_Bn_covar = thermal_noise.noise_covar(obj.B_coupling(points), DC_n)
+    AC_Bn_covar = thermal_noise.noise_covar(obj.B_coupling(points), AC_n)
 
     assert_allclose(DC_Bn_covar, AC_Bn_covar[:, :, :, 0])
 
-    DC_Bn_covar_dir = thermal_noise.noise_covar_dir(
-        obj.mesh, obj.B_coupling(points), DC_n
-    )
-    AC_Bn_covar_dir = thermal_noise.noise_covar_dir(
-        obj.mesh, obj.B_coupling(points), AC_n
-    )
+    DC_Bn_covar_dir = thermal_noise.noise_covar_dir(obj.B_coupling(points), DC_n)
+    AC_Bn_covar_dir = thermal_noise.noise_covar_dir(obj.B_coupling(points), AC_n)
 
     assert_allclose(DC_Bn_covar_dir, AC_Bn_covar_dir[:, :, :, 0])
 
-    DC_Bn_var = thermal_noise.noise_var(obj.mesh, obj.B_coupling(points), DC_n)
-    AC_Bn_var = thermal_noise.noise_var(obj.mesh, obj.B_coupling(points), AC_n)
+    DC_Bn_var = thermal_noise.noise_var(obj.B_coupling(points), DC_n)
+    AC_Bn_var = thermal_noise.noise_var(obj.B_coupling(points), AC_n)
 
     assert_allclose(DC_Bn_var, AC_Bn_var[:, :, 0])
 
