@@ -50,58 +50,57 @@ def A_matrix_complex(mesh):
     return A
 
 
-mesh = load_example_mesh("meg_helmet", process=False)
+def flatten_mesh(mesh, _lambda=1.0):
+    """ Flatten the mesh, return uv coordinates and the mesh in 2D  
 
-N = mesh.vertices.shape[0]
+    Parameters
+    ----------
+    mesh : Trimesh object 
+        must have boundary
+    _lambda : int <= 1.0
+        parameter for trading of area-distortion/angle-preservation. 
+        The default is 1.0
 
-L = laplacian_matrix(mesh)
-M = mass_matrix(mesh)
-Ac = A_matrix_complex(mesh)
-# lambda <= 1.0
-# if lambda == 1.0 => conformal mapping
-# if lambda == 0.5 =>  not conformal but less area distortion
-# if lambda > 1 (e.g. 1.01-1.1) weird folding effects
-_lambda = 0.5
-vals, uv = eigsh(-0.5 * L.T - _lambda * Ac, 6, M, which="LM", sigma=0)
+    Returns
+    -------
+    u : array
+        first coordinate of the paramterization
+    v : array
+        second coordinate of the paramterization
+    mesh2d : Trimesh object with coordinates (u,v,0)
 
-# Coordinates with initial phase
-u = uv[:, 1].real
-v = uv[:, 1].imag
+    lambda <= 1.0
+    if lambda == 1.0 => conformal mapping
+    if lambda == 0.5 =>  not conformal but less area distortion
+    if lambda > 1 (e.g. 1.01-1.1) weird folding effects
+    """
 
-# Determine "phase" by matching the uv coordinate function with mesh coordinates
-theta = np.linspace(0, 2 * np.pi, 50)
-yy = np.imag(np.exp(1j * theta)[:, None] * uv[:, 1])
-# plt.plot(np.sum(mesh.vertices[:,0]*xx, axis=1))
-ii = np.argmax(np.sum(mesh.vertices[:, 1] * yy, axis=1))
+    N = mesh.vertices.shape[0]
 
-theta = theta[ii]
-u = np.real(np.exp(1j * theta) * uv[:, 1])
-v = np.imag(np.exp(1j * theta) * uv[:, 1])
-#%%
-from mayavi import mlab
-from bfieldtools.viz import plot_data_on_vertices, plot_mesh, plot_data_on_faces
+    L = laplacian_matrix(mesh)
+    M = mass_matrix(mesh)
+    Ac = A_matrix_complex(mesh)
+    vals, uv = eigsh(-0.5 * L.T - _lambda * Ac, 6, M, which="LM", sigma=0)
 
-plot_data_on_vertices(mesh, u, ncolors=15)
-plot_data_on_vertices(mesh, v, ncolors=15)
+    # Coordinates with initial phase
+    u = uv[:, 1].real
+    v = uv[:, 1].imag
 
-#%% Plot flattened mesh and area distortion on faces
-mesh2d = trimesh.Trimesh(np.array([u, v, 0 * u]).T, mesh.faces, process=False)
-plot_data_on_faces(mesh2d, mesh2d.area_faces / mesh.area_faces)
+    # Determine "phase" by matching the uv coordinate function with mesh coordinates
+    theta = np.linspace(0, 2 * np.pi, 50)
+    yy = np.imag(np.exp(1j * theta)[:, None] * uv[:, 1])
+    # plt.plot(np.sum(mesh.vertices[:,0]*xx, axis=1))
+    ii = np.argmax(np.sum(mesh.vertices[:, 1] * yy, axis=1))
 
-#%% Plot gradient of the two coordinate functions
-from bfieldtools.mesh_calculus import gradient
+    theta = theta[ii]
+    u = np.real(np.exp(1j * theta) * uv[:, 1])
+    v = np.imag(np.exp(1j * theta) * uv[:, 1])
 
-gx = gradient(u, mesh)
-gy = gradient(v, mesh)
-cos = np.sum(gx * gy, axis=0) / (
-    np.linalg.norm(gx, axis=0) * np.linalg.norm(gy, axis=0)
-)
-plot_data_on_faces(mesh, cos, vmin=-1, vmax=1)
-mlab.quiver3d(*mesh.triangles_center.T, *gx, color=(1, 0, 0), mode="arrow")
-mlab.quiver3d(*mesh.triangles_center.T, *gy, color=(0, 0, 1), mode="arrow")
+    mesh2d = trimesh.Trimesh(np.array([u, v, 0 * u]).T, mesh.faces, process=False)
+    return u, v, mesh2d
 
-#%% Map points from 2D to 3D
-import trimesh
+
+# Map points from 2D to 3D or vice versa
 
 
 def mesh2plane(points3d, mesh, u, v):
@@ -132,7 +131,33 @@ def plane2mesh(points2d, mesh, u, v):
     return np.array(p)
 
 
-#%%
+#%% Determine 2D parameterization and plot coordinate function on the 3D mesh
+from mayavi import mlab
+from bfieldtools.viz import plot_data_on_vertices, plot_mesh, plot_data_on_faces
+
+mesh = load_example_mesh("meg_helmet", process=False)
+u, v, mesh2d = flatten_mesh(mesh, _lambda=1.0)
+
+plot_data_on_vertices(mesh, u, ncolors=15)
+plot_data_on_vertices(mesh, v, ncolors=15)
+
+#%% Plot flattened mesh and area distortion on faces
+plot_data_on_faces(mesh2d, mesh2d.area_faces / mesh.area_faces)
+
+#%% Plot gradient of the two coordinate functions and the cosine of the angle between the gradients
+from bfieldtools.mesh_calculus import gradient
+
+gx = gradient(u, mesh)
+gy = gradient(v, mesh)
+cos = np.sum(gx * gy, axis=0) / (
+    np.linalg.norm(gx, axis=0) * np.linalg.norm(gy, axis=0)
+)
+plot_data_on_faces(mesh, cos, vmin=-1, vmax=1)
+mlab.quiver3d(*mesh.triangles_center.T, *gx, color=(1, 0, 0), mode="arrow")
+mlab.quiver3d(*mesh.triangles_center.T, *gy, color=(0, 0, 1), mode="arrow")
+
+
+#%% Map hexagonal grid from 2d to the 3D mesh
 d = np.sqrt(3 / 4)
 m = np.min((u.min(), v.min()))
 mm = np.min((u.max(), v.max()))
