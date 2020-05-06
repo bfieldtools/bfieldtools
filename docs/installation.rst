@@ -44,7 +44,7 @@ The stream function optimization functionality of bfieldtools relies on external
 
 MOSEK_
 ^^^^^^^^
-Optional solver dependecy. Robust and fast, but commercial (requires licenese). Installable via pip or conda.
+Optional solver dependecy. Robust and fast, but commercial (requires license). Installable via pip or conda.
 
 OSQP
 ^^^^^^
