@@ -19,17 +19,24 @@ c = LineConductor(mesh=mesh, scalars=sf)
 
 
 # Plot loops for testing
-c.plot_loops()
+fig = c.plot_loops()
 
-#%% Calculate flux between two sets of line conductors
-from bfieldtools.line_magnetics import flux
+#%% Calculate mutual_inductance between two sets of line conductors
 
 mesh2 = mesh.copy()
 mesh2.vertices[:, 1] += 1
 c2 = LineConductor(mesh=mesh2, scalars=sf)
-f = flux(c, c2)
+c2.plot_loops(figure=fig)
+
+Mself = c.line_mutual_inductance(c, separate_loops=True, radius=1e-2)
+M2 = c.line_mutual_inductance(c2, separate_loops=True)
+
 
 # Plot the mutual inductance matrix
 import matplotlib.pyplot as plt
 
-plt.matshow(f)
+ff, ax = plt.subplots(1, 2)
+plt.sca(ax[0])
+plt.matshow(Mself, fignum=0)
+plt.sca(ax[1])
+plt.matshow(M2, fignum=0)

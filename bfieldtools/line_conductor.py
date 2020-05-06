@@ -186,6 +186,32 @@ class LineConductor(Path3D):
 
         return Ufield
 
+    def line_mutual_inductance(self, path, separate_loops=False, **kwargs):
+        """
+        Calculate mutual inductance between self and another line current (path)
+
+        Parameters
+        ----------
+        path : Path3d or LineConductor object
+            The other line conductor
+        separate_loops : TYPE, optional
+            If True, return the inductance separately for each loop. The default is False.
+
+        Returns
+        -------
+        M: array
+            If separate loops, shape (N_loops, N_loops_path). Otherwise (N_loops_path,).
+            where N_loops_path = len(path.entities)
+
+        """
+
+        M = line_magnetics.mutual_inductance(self, path, **kwargs)
+
+        if not separate_loops:
+            M = np.sum(M, axis=0)
+
+        return M
+
     def mesh_mutual_inductance(self, mesh, separate_loops=False, **kwargs):
         """
         Computes the mutual inductance between the polyline loops and a mesh_conductor
