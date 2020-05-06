@@ -145,8 +145,8 @@ class LineConductor(Path3D):
         Afield = np.zeros((len(self.entities), len(points), 3))
         for ii, loop in enumerate(self.entities):
             Afield[ii] = line_magnetics.vector_potential(
-                self.vertices[loop.points[:-1]], points, **kwargs
-            )[0, :, :]
+                self.vertices[loop.points], points, **kwargs
+            )
 
         if not separate_loops:
             Afield = np.sum(Afield, axis=0)

@@ -14,7 +14,7 @@ PLOT = True
 IMPORT_MNE_DATA = True
 
 SAVE_MNE_DATA = True
-SAVE_DIR = "./MNE interpolation/"
+SAVE_DIR = "."
 
 if IMPORT_MNE_DATA:
 
@@ -227,15 +227,11 @@ for reg_exp in reg_exps:
         surf.module_manager.scalar_lut_manager.number_of_colors = 16
 
 ###########################################################
-# Interpolate to the sensor surface
+#%% Interpolate to the sensor surface
 
-import pkg_resources
+from bfieldtools.utils import load_example_mesh
 
-# Load simple plane mesh that is centered on the origin
-file_obj = pkg_resources.resource_filename(
-    "bfieldtools", "example_meshes/meg_helmet.obj"
-)
-helmet = trimesh.load(file_obj, process=True)
+helmet = load_example_mesh("meg_helmet", process=False)
 # Bring the surface roughly to the correct place
 helmet.vertices[:, 2] -= 0.05
 

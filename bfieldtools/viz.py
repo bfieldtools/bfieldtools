@@ -283,7 +283,15 @@ def plot_cross_section(
 
 
 def plot_data_on_faces(
-    mesh, data, figure=None, figsize=(800, 800), colorbar=False, ncolors=256, **kwargs
+    mesh,
+    data,
+    figure=None,
+    figsize=(800, 800),
+    colorbar=False,
+    ncolors=256,
+    vmin=None,
+    vmax=None,
+    **kwargs
 ):
     """ Plot any data determined on the faces of a mesh
 
@@ -341,7 +349,11 @@ def plot_data_on_faces(
 
     if kwargs["colormap"] == "RdBu":
         rangemax = np.max(np.abs(data))
-        lutmanager.data_range = np.array([-rangemax * 1.01, rangemax * 1.01])
+        if vmin is None:
+            vmin = -rangemax * 1.01
+        if vmax is None:
+            vmax = rangemax * 1.01
+        lutmanager.data_range = np.array([vmin, vmax])
         lutmanager.use_default_range = False
 
     lutmanager.number_of_colors = ncolors
