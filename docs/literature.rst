@@ -17,19 +17,30 @@ Selected papers
 A selection of useful papers can also be found below:
 
 
-Items containing the word "surface"
+Coil-design papers using the similar methods as bfieldtools
 
 .. bibliography:: references.bib
-   :all:
    :list: bullet
    :style: mystyle
-   :filter: title % "surface"
+   :filter: key == "poole" or key == "pis" or key == "bring"
 
-
-Items containing the word "coil"
+General introduction to stream functions
 
 .. bibliography:: references.bib
-   :all:
    :list: bullet
    :style: mystyle
-   :filter: title % "coil"
+   :filter: key % "peeren" or key == "zeven"
+   
+On the calculation of Laplace-Beltrami eigenfunctions (Surface Harmonics)
+
+.. bibliography:: references.bib
+   :list: bullet
+   :style: mystyle
+   :filter: key == "levy" or key == "reuter"
+   
+Thermal noise
+
+.. bibliography:: references.bib
+   :list: bullet
+   :style: mystyle
+   :filter: key == "roth" or key == "uhlemann"
