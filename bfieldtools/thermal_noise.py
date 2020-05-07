@@ -144,7 +144,7 @@ def noise_covar(B_coupling, vl, Nmodes=None):
         b = np.einsum("ihj,jl->ilh", B_coupling, vl[:, 0:Nmodes])
         Bcov = np.einsum("jih,lih->jlh", b, b)
     else:
-        b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, :, 0:Nmodes])
+        b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes, :])
         Bcov = np.einsum("jihk,lihk->jlhk", b, b)
 
     return Bcov
@@ -176,7 +176,7 @@ def noise_var(B_coupling, vl, Nmodes=None):
         b = np.einsum("ihj,jl->ilh", B_coupling, vl[:, 0:Nmodes])
         Bcov = np.einsum("ijh,ijh->ih", b, b)
     else:
-        b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, :, 0:Nmodes])
+        b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes, :])
         Bcov = np.einsum("ijhk,ijhk->ihk", b, b)
 
     return Bcov
@@ -208,7 +208,7 @@ def noise_covar_dir(B_coupling, vl, Nmodes=None):
         b = np.einsum("ihj,jl->ilh", B_coupling, vl[:, 0:Nmodes])
         Bcov = np.einsum("ihj,ihl-> ijl", b, b)
     else:
-        b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, :, 0:Nmodes])
+        b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes, :])
         Bcov = np.einsum("ihjk,ihlk-> ijlk", b, b)
 
     return Bcov
