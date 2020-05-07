@@ -6,6 +6,7 @@
           <li data-target="#examples_carousel" data-slide-to="0" class="active"></li>
           <li data-target="#examples_carousel" data-slide-to="1" class=""></li>
           <li data-target="#examples_carousel" data-slide-to="2" class=""></li>
+          <li data-target="#examples_carousel" data-slide-to="3" class=""></li>
         </ol>
         <!-- Carousel items -->
         <div class="carousel-inner">
@@ -37,7 +38,15 @@
               </div>
             </div>
           </div>
-
+          <div class="item">
+            <div class="chopper container" style="background-image: url(_images/sphx_glr_thermal_noise_simulation_003.png)" title="Clusters">
+              <div class="carousel-caption">
+                <h3>Thermal magnetic noise</h3>
+                <p>Computation of thermal magnetic noise, including frequency-dependence 
+                   <a class="btn btn-default btn-xs" href="auto_examples/index.html#thermal-noise-computation" role="button">Check it out<i class="fa fa-arrow-right"></i></a></p>
+              </div>
+            </div>
+          </div>
         </div>
         <!-- Carousel nav -->
         <a class="carousel-control left" href="#examples_carousel" role="button" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>

@@ -241,7 +241,7 @@ html_show_sourcelink = True
 html_copy_source = False
 
 
-autosummary_generate = True
+# autosummary_generate = True
 
 
 def append_attr_meth_examples(app, what, name, obj, options, lines):

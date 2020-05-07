@@ -2,3 +2,6 @@
 	path = docs/_build/html
 	url = git@github.com:bfieldtools/bfieldtools.github.io.git
 	branch = master
+[submodule "docs/auto_examples"]
+	path = docs/auto_examples
+	url = git@github.com:bfieldtools/auto_examples.git
