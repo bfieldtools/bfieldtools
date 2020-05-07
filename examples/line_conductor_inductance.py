@@ -20,13 +20,15 @@ from mayavi import mlab
 # from a plane mesh.  Finally, we discretize the  mode into a set of wire loops, which we plot.
 
 mesh = load_example_mesh("10x10_plane")
+mesh.apply_scale(0.1)  # Downsize from 10 meters to 1 meter
+N_contours = 20
 
 sb = SuhBasis(mesh, 10)  # Construct surface-harmonics basis
 sf = StreamFunction(
     sb.basis[:, 1], sb.mesh_conductor
 )  # Turn single mode into a stream function
 c = LineConductor(
-    mesh=mesh, scalars=sf
+    mesh=mesh, scalars=sf, N_contours=N_contours
 )  # Discretize the stream function into wire loops
 
 
@@ -41,11 +43,11 @@ c.plot_loops(origin=np.array([0, -100, 0]))
 
 mesh2 = mesh.copy()
 mesh2.vertices[:, 1] += 1
-c2 = LineConductor(mesh=mesh2, scalars=sf)
+c2 = LineConductor(mesh=mesh2, scalars=sf, N_contours=N_contours)
 fig = c.plot_loops(origin=np.array([0, -100, 0]))
 c2.plot_loops(figure=fig, origin=np.array([0, -100, 0]))
 
-Mself = c.line_mutual_inductance(c, separate_loops=True, radius=1e-2)
+Mself = c.line_mutual_inductance(c, separate_loops=True, radius=1e-3)
 M2 = c.line_mutual_inductance(c2, separate_loops=True)
 
 ###############################################
@@ -62,3 +64,21 @@ plt.matshow(M2, fignum=0)
 plt.title("Mutual inductance matrix between the sets of wire loops")
 
 ff.tight_layout()
+
+#########################################################
+#%% The inductance derived from the continous current density
+# 1) Magnetic energy of a inductor is E = 0.5*L*I^2
+# 2) For unit current I=1 the inductance is L=2*E
+# 3) The total current of a stream function (sf) integrated over
+#    the from minimum to maximum is dsf = max(sf) - min(sf)
+# 4) When discretized to N conductors the current per conductor is
+#    I =  dsf / N
+# 5) When sf is normalized such that I=1, i.e., dsf = N
+#    the inductance approximated by the continous stream function is
+#    L = 2*sf.magnetic_energy
+
+scaling = N_contours / (sf.max() - sf.min())
+L_approx = 2 * sf.magnetic_energy * (scaling ** 2)
+
+print("Inductance based on the continuous current density", L_approx)
+print("Inductance based on r=1mm wire", np.sum(Mself))

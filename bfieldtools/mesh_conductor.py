@@ -684,7 +684,7 @@ class StreamFunction(np.ndarray):
         Stream-function resistive power
         """
         R = self.mesh_conductor.resistance
-        return 0.5 * self.T @ self.basis.T @ R @ self.basis @ self
+        return self.T @ R @ self
 
     @property
     def magnetic_energy(self):
@@ -692,7 +692,7 @@ class StreamFunction(np.ndarray):
         Stream-function magnetic energy
         """
         M = self.mesh_conductor.inductance
-        return 0.5 * self.T @ self.basis.T @ M @ self.basis @ self
+        return 0.5 * self.T @ M @ self
 
     def plot(self, background=True, contours=False, **kwargs):
         """
