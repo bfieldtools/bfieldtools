@@ -148,7 +148,7 @@ class MeshConductor:
         self.opts = {
             "outer_boundaries": None,
             "mass_lumped": False,
-            "resistance_full_rank": True,
+            "resistance_full_rank": False,
             "inductance_nchunks": None,
             "basis_name": "inner",
             "N_suh": 100,

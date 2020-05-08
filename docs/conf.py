@@ -153,11 +153,10 @@ sphinx_gallery_conf = {
     "examples_dirs": "../examples",  # path to your example scripts
     "gallery_dirs": "auto_examples",  # path where to save gallery generated examples
     "filename_pattern": ".py",  # which examples are executed for plots etc
-    "ignore_pattern": r"mne\.py",
     "image_scrapers": scrapers,
     "abort_on_example_error": False,
     "download_section_examples": False,
-    "show_memory": False,
+    "show_memory": True,
     "reference_url": {
         # The module you locally document uses None
         "sphinx_gallery": None,
@@ -211,6 +210,7 @@ html_theme_options = {
     # Options are "nav" (default), "footer" or anything else to exclude.
     "source_link_position": "footer",
     "navbar_class": "navbar navbar-inverse",
+    "globaltoc_depth": 1,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
