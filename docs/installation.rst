@@ -7,7 +7,7 @@ bfieldtools is a pure Python package, and depends on several other Python packag
 Using conda
 -----------
 
-We strongly recommend the Anaconda_ distribution of Python, which comes with more than 250 scientific packages pre-bundled, and includes the conda command line tool for installing new packages and managing different package sets (“environments”) for different projects. Alternatively, the more bare-bones Miniconda_ distribution should also work.
+We strongly recommend the Anaconda_ distribution of Python, which comes with a variety of scientific packages pre-bundled, and includes the conda command line tool for installing new packages and managing different package sets (“environments”) for different projects. Alternatively, the more bare-bones Miniconda_ distribution also works.
 
 
 .. _Anaconda: https://www.anaconda.com/
@@ -30,7 +30,18 @@ bfieldtools can also be installed using the pip package manager.
 From source
 -----------
 
-Basic setuptools workflow applies.
+To download the most-recent release of bfieldtools, run
+
+.. code-block:: bash
+
+    curl -s https://api.github.com/repos/bfieldtools/bfieldtools/releases/latest
+    
+Alternatively, to download the *development* version of bfieldtools, run
+
+.. code-block:: bash
+    curl -s https://api.github.com/repos/bfieldtools/bfieldtools/releases/latest
+    
+After downloading, basic setuptools workflow applies.
     
 .. code-block:: bash
 
@@ -40,27 +51,8 @@ Basic setuptools workflow applies.
 Additional solvers
 -------------------
 
-The stream function optimization functionality of bfieldtools relies on external numerical solvers, for which the installation procedures may vary. Here, we link to the installation procedures of these solvers.
+The stream function optimization functionality of bfieldtools relies on external numerical solvers, for which the installation procedures may vary.  For more details, see the `documentation of CVXPY`_. OSQP, CVXOPT, SCS and ECOS are installed with bfieldtools and are also available through conda and pip. MOSEK_ is (optional solver dependency, recommended) robust and fast, but commercial (requires license). Installable via pip or conda.
 
-MOSEK_
-^^^^^^^^
-Optional solver dependecy. Robust and fast, but commercial (requires license). Installable via pip or conda.
-
-OSQP
-^^^^^^
-Installed with bfieldtools, available through conda and pip
-
-CVXOPT
-^^^^^^
-Installed with bfieldtools, available through conda and pip
-
-SCS
-^^^^^^
-Installed with bfieldtools, available through conda and pip
- 
-ECOS
-^^^^^^
-Installed with bfieldtools, available through conda and pip
-
+.. _documentation of CVXPY: https://www.cvxpy.org/install/index.html#install-from-source
 
 .. _MOSEK: https://docs.mosek.com/9.0/pythonapi/install-interface.html

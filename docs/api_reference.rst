@@ -37,50 +37,7 @@ Surface mesh field calculations
    CouplingMatrix
    StreamFunction
    
- 
-Convex optimization of stream functions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:py:mod:`bfieldtools.coil_optimize`:
-
-.. automodule:: bfieldtools.coil_optimize
-   :no-members:
-   :no-inherited-members:
-
-.. currentmodule:: bfieldtools.coil_optimize
-
-.. autosummary::
-   :toctree: generated/
-   
-   optimize_streamfunctions
-   optimize_lsq
-   cvxpy_solve_qp
-   cvxopt_solve_qp
-   
-
-
-Mesh impedance
-~~~~~~~~~~~~~~~
-
-:py:mod:`bfieldtools.mesh_impedance`:
-
-.. automodule:: bfieldtools.mesh_impedance
-   :no-members:
-   :no-inherited-members:
-
-.. currentmodule:: bfieldtools.mesh_impedance
-
-
-.. autosummary::
-   :toctree: generated/
-   
-   resistance_matrix
-   self_inductance_matrix
-   mutual_inductance_matrix
-   mesh2line_mutual_inductance
-
-   
-   
 Surface mesh calculus
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -105,8 +62,27 @@ Surface mesh calculus
    divergence
    curl_matrix
    curl
-   
+      
 
+Mesh impedance
+~~~~~~~~~~~~~~~
+
+:py:mod:`bfieldtools.mesh_impedance`:
+
+.. automodule:: bfieldtools.mesh_impedance
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: bfieldtools.mesh_impedance
+
+
+.. autosummary::
+   :toctree: generated/
+   
+   resistance_matrix
+   self_inductance_matrix
+   mutual_inductance_matrix
+   mesh2line_mutual_inductance
 
 Stream function magnetic couplings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -126,6 +102,54 @@ Stream function magnetic couplings
 	magnetic_field_coupling_analytic
 	scalar_potential_coupling
 	vector_potential_coupling
+	
+	
+	
+Line currents
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:py:mod:`bfieldtools.line_conductor`:
+
+.. automodule:: bfieldtools.line_conductor
+   :no-members:
+   :no-inherited-members:
+
+.. autosummary::
+   :toctree: generated/
+	
+	LineConductor
+
+:py:mod:`bfieldtools.line_magnetics`:
+
+.. automodule:: bfieldtools.line_magnetics
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: bfieldtools.line_magnetics
+
+.. autosummary::
+   :toctree: generated/
+   
+   
+Convex optimization of stream functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:py:mod:`bfieldtools.coil_optimize`:
+
+.. automodule:: bfieldtools.coil_optimize
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: bfieldtools.coil_optimize
+
+.. autosummary::
+   :toctree: generated/
+   
+   optimize_streamfunctions
+   optimize_lsq
+   cvxpy_solve_qp
+   cvxopt_solve_qp
+   
 
 
 Analytical integrals for fields and potentials
@@ -169,30 +193,7 @@ Scalar function contouring
    simplify_contour
    
    
-Line currents
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:py:mod:`bfieldtools.line_conductor`:
-
-.. automodule:: bfieldtools.line_conductor
-   :no-members:
-   :no-inherited-members:
-
-.. autosummary::
-   :toctree: generated/
-	
-	LineConductor
-
-:py:mod:`bfieldtools.line_magnetics`:
-
-.. automodule:: bfieldtools.line_magnetics
-   :no-members:
-   :no-inherited-members:
-
-.. currentmodule:: bfieldtools.line_magnetics
-
-.. autosummary::
-   :toctree: generated/
    
 Spherical harmonics
 ~~~~~~~~~~~~~~~~~~~
@@ -207,35 +208,16 @@ Spherical harmonics
 .. autosummary::
    :toctree: generated/
 	
-	SphBasis
-	cartesian2spherical
-	spherical2cartesian
-	Rotmatrix
-	cartvec2sph
-	sphvec2cart
 	lpmn_em
-	derlpmn_em
-	xlm
 	ylm
-	derxlm
-	sinxlm
-	dthylm
-	dphiylm
-	Plm
-	Blm
 	Wlm
 	Vlm
+	basis_potentials
+	basis_fields
 	potential
 	field
 	compute_sphcoeffs_mesh
-	basis_potentials
-	basis_fields
-	plotYlms
-	plotYlm
-	plotWlm
-	plotBWlm_volume
-	plotVlm
-	plotBVlm_volume
+
 	
 	
 Surface harmonics

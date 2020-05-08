@@ -16,20 +16,19 @@ Selected papers
 
 A selection of useful papers can also be found below:
 
-
-Coil-design papers using the similar methods as bfieldtools
-
-.. bibliography:: references.bib
-   :list: bullet
-   :style: mystyle
-   :filter: key == "poole" or key == "pis" or key == "bring"
-
 General introduction to stream functions
 
 .. bibliography:: references.bib
    :list: bullet
    :style: mystyle
    :filter: key % "peeren" or key == "zeven"
+   
+Coil-design papers using the similar methods as bfieldtools
+
+.. bibliography:: references.bib
+   :list: bullet
+   :style: mystyle
+   :filter: key == "poole" or key == "pis" or key == "bring"
    
 On the calculation of Laplace-Beltrami eigenfunctions (Surface Harmonics)
 
@@ -44,3 +43,17 @@ Thermal noise
    :list: bullet
    :style: mystyle
    :filter: key == "roth" or key == "uhlemann"
+
+   
+Related software
+================
+
+ - gptoolbox_ (MATLAB toolbox for geometry processing) 
+ - shtools_ (Fortran and Python tools for working with spherical harmonics)
+ - `gBringout/CoilDesign`_   (MATLAB software for coil design using stream functions and convex optimization)
+ 
+.. _gptoolbox: https://github.com/alecjacobson/gptoolbox
+
+.. _shtools: https://shtools.oca.eu/shtools/public/
+
+.. _gBringout/CoilDesign: https://github.com/gBringout/CoilDesign

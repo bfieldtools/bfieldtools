@@ -62,9 +62,15 @@ class SuhBasis:
         if boundary_condition in ("dirichlet", "neumann"):
             self.bc = boundary_condition
         else:
-            raise ValueError("boundary_conditions should e either dirichlet or neumann")
+            raise ValueError(
+                "boundary_conditions should be either dirichlet or neumann"
+            )
 
         if isinstance(obj, mesh_conductor.MeshConductor):
+            if obj.opts["resistance_full_rank"] is True:
+                raise ValueError(
+                    "resistance matrix must not be deflated (resistance_full_rank must be False)"
+                )
             self.mesh_conductor = obj
         elif isinstance(obj, trimesh.Trimesh):
             self.mesh_conductor = mesh_conductor.MeshConductor(
@@ -118,22 +124,22 @@ class SuhBasis:
         print("Calculating surface harmonics expansion...")
 
         if not self.magnetic:
-            L = self.mesh_conductor.laplacian
+            L = -self.mesh_conductor.laplacian
             M = self.mesh_conductor.mass
         elif self.magnetic == "AC":
-            L = -self.mesh_conductor.resistance
+            L = self.mesh_conductor.resistance
             M = self.mesh_conductor.inductance
             # If mesh is closed, add 'deflation' to the inductance
             # L matrix deflation is already provided by Conductor(resistance_full_rank=True)
             if self.mesh.is_watertight:
                 M += np.ones(M.shape) * np.mean(np.diag(M))
         elif self.magnetic == "DC":
-            L = -self.mesh_conductor.resistance
+            L = self.mesh_conductor.resistance
             M = self.mesh_conductor.mass
         else:
             raise ValueError("Parameter 'magnetic' must be False, 'DC', or 'AC'.")
 
-        if not self.magnetic and (self.mesh.is_watertight or self.bc == "neumann"):
+        if self.mesh.is_watertight or self.bc == "neumann":
             print("Closed mesh or Neumann BC, leaving out the constant component")
 
             N0 = 1
@@ -161,9 +167,9 @@ class SuhBasis:
         if (not self.magnetic) and self.solver_sparse and (self.Nc < self._max_Nc):
 
             if shiftinvert:
-                u, v = eigsh(-L, N, M, sigma=0, which="LM", v0=v0)
+                u, v = eigsh(L, N, M, sigma=0, which="LM", v0=v0)
             else:
-                u, v = eigsh(-L, N, M, which="SA", v0=v0)
+                u, v = eigsh(L, N, M, which="SA", v0=v0)
 
             self.basis = v[:, N0:]
             self.eigenvals = u[N0:]
@@ -173,12 +179,12 @@ class SuhBasis:
                 L = L.toarray()
                 M = M.toarray()
 
-                u, v = eigh(-L, M, eigvals=(0, N - 1))
+                u, v = eigh(L, M, eigvals=(0, N - 1))
             else:
                 if self.magnetic == "DC":
                     M = M.toarray()
 
-                u, v = eigh(-L, M, eigvals=(0, N - 1))
+                u, v = eigh(L, M, eigvals=(0, N - 1))
 
             self.basis = v[:, N0:]
             self.eigenvals = u[N0:]

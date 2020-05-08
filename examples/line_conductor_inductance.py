@@ -65,8 +65,9 @@ plt.title("Mutual inductance matrix between the sets of wire loops")
 
 ff.tight_layout()
 
-#########################################################
-#%% The inductance derived from the continous current density
+#%%
+# The inductance derived from the continous current density
+# ---------------------------------------------------------
 # 1) Magnetic energy of a inductor is E = 0.5*L*I^2
 # 2) For unit current I=1 the inductance is L=2*E
 # 3) The total current of a stream function (sf) integrated over
