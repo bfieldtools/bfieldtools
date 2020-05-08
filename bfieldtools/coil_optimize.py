@@ -8,7 +8,7 @@ import numpy as np
 import cvxopt
 from cvxopt import matrix
 from scipy.sparse.linalg import svds
-from scipy.linalg import eigh as largest_eigh
+from scipy.linalg import eigh
 from scipy.linalg import eigvalsh, sqrtm
 import cvxpy as cp
 
@@ -417,7 +417,7 @@ def _construct_constraints(mesh_conductor, bfield_specification):
     return constraint_matrix, target_stack
 
 
-def _construct_quadratic_objective(objective, mesh_conductor):
+def _construct_quadratic_objective(objective, mesh_conductor, deflate=True):
     """
 
     """
@@ -441,8 +441,8 @@ def _construct_quadratic_objective(objective, mesh_conductor):
               This requires eigenvalue computation, hold on."
         )
 
-        max_eval_L = largest_eigh(L, eigvals=(L.shape[0] - 1, L.shape[0] - 1))[0][0]
-        max_eval_R = largest_eigh(R, eigvals=(L.shape[0] - 1, L.shape[0] - 1))[0][0]
+        max_eval_L = eigh(L, eigvals=(L.shape[0] - 1, L.shape[0] - 1))[0][0]
+        max_eval_R = eigh(R, eigvals=(L.shape[0] - 1, L.shape[0] - 1))[0][0]
 
         scaled_R = max_eval_L / max_eval_R * R
 
@@ -452,11 +452,16 @@ def _construct_quadratic_objective(objective, mesh_conductor):
         quadratic_matrix = objective
 
     # Scale whole quadratic term according to largest eigenvalue
-    max_eval_quad = largest_eigh(
+    max_eval_quad = eigh(
         quadratic_matrix,
         eigvals=(quadratic_matrix.shape[0] - 1, quadratic_matrix.shape[0] - 1),
     )[0][0]
 
     quadratic_matrix /= max_eval_quad
+
+    if deflate:
+        evals = largest_eigh(quadratic_matrix, eigvals=(0, 1), eigvals_only=True)
+        if abs(evals[0]) < 1e-8 * abs(evals[1]):
+            quadratic_matrix += np.ones / np.sqrt(quadratic_matrix.shape[0])
 
     return quadratic_matrix
