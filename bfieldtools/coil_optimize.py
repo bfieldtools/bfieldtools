@@ -460,7 +460,7 @@ def _construct_quadratic_objective(objective, mesh_conductor, deflate=True):
     quadratic_matrix /= max_eval_quad
 
     if deflate:
-        evals = largest_eigh(quadratic_matrix, eigvals=(0, 1), eigvals_only=True)
+        evals = eigh(quadratic_matrix, eigvals=(0, 1), eigvals_only=True)
         if abs(evals[0]) < 1e-8 * abs(evals[1]):
             quadratic_matrix += np.ones / np.sqrt(quadratic_matrix.shape[0])
 
