@@ -17,7 +17,9 @@ from .mesh_conductor import StreamFunction
 
 def cvxpy_solve_qp(P, G, h, solver=cp.MOSEK, tolerance=None):
     """
-    Bare-bones quadratic programming solver function for CVXPY, minimizes
+    Bare-bones quadratic programming solver function for CVXPY.
+    
+    Minimizes
 
     .. math::
         (1/2) \mathbf{x}^T  \mathbf{P}  \mathbf{x}
@@ -87,7 +89,9 @@ def cvxpy_solve_qp(P, G, h, solver=cp.MOSEK, tolerance=None):
 
 def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7, **kwargs):
     """
-    Use cvxopt (without CVXPY wrapper) to minimize
+    Use cvxopt (without CVXPY wrapper) for quadratic programming.
+    
+    Minimize
 
     .. math::
         (1/2) \mathbf{x}^T  \mathbf{P}  \mathbf{x} + \mathbf{q}^T \mathbf{x}

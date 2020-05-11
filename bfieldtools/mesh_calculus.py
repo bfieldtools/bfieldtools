@@ -9,7 +9,7 @@ from scipy.sparse import csr_matrix, spdiags
 
 def laplacian_matrix(mesh, material_param=None):
     """
-    Sparse Laplace-Beltrami operator
+    Sparse Laplace-Beltrami operator.
 
     If inner vertices are not given Laplacian for all the mesh vertices is returned.
     This corresponds to zero-Neumann (natural) boundary condition on the possible
@@ -78,7 +78,7 @@ def laplacian_matrix(mesh, material_param=None):
 
 def mass_matrix(mesh, lumped=False):
     """
-    Computes mass matrix of mesh.
+    Computes mass matrix of a mesh.
 
     Parameters
     ----------
@@ -129,7 +129,7 @@ def mass_matrix(mesh, lumped=False):
 def gradient_matrix(mesh, rotated=False):
     """
     Calculate a (rotated) gradient matrix for hat basis functions
-    (stream functions) in the triangular mesh described by
+    (stream functions) in a mesh.
 
     Parameters
     ----------
@@ -178,7 +178,7 @@ def gradient_matrix(mesh, rotated=False):
 def gradient(vals, mesh, rotated=False):
     """
     Applies mesh (rotated) gradient matrix operator on vector that is
-    defined in the vertex locations of the mesh
+    defined in the vertex locations of the mesh.
 
     Parameters
     ----------
@@ -198,7 +198,8 @@ def gradient(vals, mesh, rotated=False):
 
 
 def divergence_matrix(mesh):
-    """ Divergence of tangential vector field on mesh faces as a linear mapping
+    """ 
+    Divergence of tangential vector field on mesh faces as a linear mapping.
 
     Parameters
     ----------
@@ -219,9 +220,10 @@ def divergence_matrix(mesh):
 
 
 def curl_matrix(mesh):
-    """ Adjoint curl of tangential vector field
+    """ 
+    Adjoint curl of tangential vector field.
 
-        Parameters
+    Parameters
     ----------
     mesh: Trimesh object
 
@@ -240,7 +242,8 @@ def curl_matrix(mesh):
 
 
 def divergence(vecs, mesh):
-    """ Divergence mapping applied to tangential vector field 'vecs'
+    """ 
+    Divergence mapping applied to tangential vector field 'vecs'
 
     Parameters
     ----------
@@ -259,11 +262,12 @@ def divergence(vecs, mesh):
 
 
 def curl(vecs, mesh):
-    """ Curl applied to tangential vector field
+    """ 
+    Curl applied to tangential vector field
 
     Parameters
     ----------
-        mesh: Trimesh object
+    mesh: Trimesh object
 
     Returns
     -------

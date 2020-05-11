@@ -1,6 +1,6 @@
 """
-Contains functions for computing the inductance matrices of triangle surface meshes,
-including both self- and mutual-inductance.
+Contains functions for computing the resistance and inductance matrices of triangle surface meshes.
+Includes both self- and mutual-inductance.
 """
 from psutil import virtual_memory
 import numpy as np
@@ -11,7 +11,7 @@ from .mesh_calculus import gradient_matrix, laplacian_matrix
 
 
 def resistance_matrix(mesh, sheet_resistance):
-    """ Resistance matrix
+    """ Resistance matrix of a mesh.
 
         Parameters
         ----------
@@ -38,9 +38,9 @@ def self_inductance_matrix(
     analytic_self_coupling=True,
 ):
     """ Calculate a self inductance matrix for hat basis functions
-        (stream functions) in the triangular mesh described by
+        (stream functions) in a mesh.
 
-        self-coupling terms are calculated anaytically
+        Self-coupling terms are calculated anaytically.
 
         Parameters
         ----------
@@ -120,7 +120,7 @@ def mutual_inductance_matrix(
     mesh1, mesh2, Nchunks=None, quad_degree=1, approx_far=True, margin=2
 ):
     """ Calculate a mutual inductance matrix for hat basis functions
-        (stream functions) between two surface meshes
+        (stream functions) between two surface meshes.
 
         Parameters
         ----------
@@ -212,9 +212,9 @@ def _estimate_nchunks(mesh1, mesh2, approx_far):
 
 def triangle_self_coupling(mesh):
     """
-    Self-coupling integrated analytically. Re-implemented based
-    on some simplifications in the calculation presented in
-
+    Self-coupling integrated analytically.
+    
+    Re-implemented based on some simplifications in the calculation presented in
 
     Poole, M.S., 2007. Improved equipment and techniques for dynamic
     shimming in high field MRI
@@ -249,7 +249,7 @@ def triangle_self_coupling(mesh):
 def mesh2line_mutual_inductance(mesh, line_vertices, quad_degree=3):
     """
     Mutual inductance of a closed line segment loop (last segment connecting to first)
-    and a triangle mesh
+    and a triangle mesh.
 
     Parameters
     ----------

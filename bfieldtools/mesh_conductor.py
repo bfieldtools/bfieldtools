@@ -49,7 +49,8 @@ def matrixwrapper(func):
 
 class MeshConductor:
     """
-    Class that is used for surface mesh field calculations, e.g. coil design.
+    Class that is used for surface mesh field calculations.
+    
     Computation functions are typically external functions that are called
     using lazy properties.
 
@@ -79,7 +80,6 @@ class MeshConductor:
         **kwargs
     ):
         """
-        Initialize MeshConductor object.
         First priority is to use given Trimesh object (mesh_obj).
         Second priority is to load mesh from file (mesh_file).
         Third priority is to use given verts and tris arrays (verts, tris).
@@ -596,7 +596,7 @@ class CouplingMatrix:
 
 
 class StreamFunction(np.ndarray):
-    """ Class for representing stream function(s) on a mesh_conductor
+    """ Class for representing stream function(s) on a MeshConductor
 
         Handles the mapping between different bases, e.g. inner vertices <->
         all vertices <-> surface harmonics
@@ -605,7 +605,7 @@ class StreamFunction(np.ndarray):
             vals: array of shape (N,) or (N,M)
                 where N corresponds to
                 the number of inner vertices in the mesh_conductor or the
-                the number of all vertices in the mesh_conductor.
+                the number of all vertices in the MeshConductor.
 
                 Multiple (M) stream functions can be stored in the object
                 by specifying vals with shape (N,M)
