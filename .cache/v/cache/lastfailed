@@ -1,0 +1,3 @@
+{
+  "tests/test_thermal_noise.py::test_compute_modes": true
+}
