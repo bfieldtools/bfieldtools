@@ -536,7 +536,7 @@ def basis_potentials(p, lmax, normalization="default", R=1):
         maximum degree l which is used in computing
     normalization: string
         which normalization scheme to use
-        "default": No normalization, just <Y_lm,Y_l'm'> = delta_ll'mm' (default)
+        "default": Integration over unit sphere <Y_lm,Y_l'm'> = delta_ll'mm' (default)
         "energy": each term in inner/outer basis function with respect to 
         sphere with radius R is normalized to unit energy
     R: float
@@ -592,7 +592,7 @@ def potential(p, acoeffs, bcoeffs, lmax, normalization="default", R=1):
         maximum degree l which is used in computing
     normalization: string
         which normalization scheme to use
-        "default": No normalization, just <Y_lm,Y_l'm'> = delta_ll'mm' (default)
+        "default": Integration over unit sphere <Y_lm,Y_l'm'> = delta_ll'mm' (default)
         "energy": each term in inner/outer basis function with respect to 
         sphere with radius R is normalized to unit energy
     R: float
@@ -626,7 +626,7 @@ def field(p, acoeffs, bcoeffs, lmax, normalization="default", R=1):
     lmax: int
         maximum degree l which is used in computing  
     normalization: string
-        "default": the fields correspond to magnetic potential.
+        "default": the fields correspond to normalized magnetic potential.
         "unit": the fields are normalized w.r.t integration over the unit sphere.
         "energy": each term in inner/outer basis function with respect to 
         sphere with radius R is normalized to unit energy 
@@ -656,7 +656,7 @@ def basis_fields(p, lmax, normalization="default", R=1):
     lmax: int
         maximum degree l used in the computation
     normalization: string
-        "default": the fields correspond to magnetic potential.
+        "default": the fields correspond to magnetic normalized potential.
         "unit": the fields are normalized w.r.t integration over the unit sphere.
         "energy": each term in inner/outer basis function with respect to 
             sphere with radius R is normalized to unit energy 

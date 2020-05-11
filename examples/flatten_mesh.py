@@ -50,6 +50,14 @@ def A_matrix_complex(mesh):
     return A
 
 
+def eigen_complex_laplacian(mesh, Nc, _lambda):
+    L = laplacian_matrix(mesh)
+    M = mass_matrix(mesh)
+    Ac = A_matrix_complex(mesh)
+    vals, uv = eigsh(-0.5 * L.T - _lambda * Ac, Nc, M, which="LM", sigma=0)
+    return vals, uv
+
+
 def flatten_mesh(mesh, _lambda=1.0):
     """ Flatten the mesh, return uv coordinates and the mesh in 2D  
 
@@ -72,15 +80,10 @@ def flatten_mesh(mesh, _lambda=1.0):
     lambda <= 1.0
     if lambda == 1.0 => conformal mapping
     if lambda == 0.5 =>  not conformal but less area distortion
+    when lambda --> 0 mapping becomes denegerate (real==imag)
     if lambda > 1 (e.g. 1.01-1.1) weird folding effects
     """
-
-    N = mesh.vertices.shape[0]
-
-    L = laplacian_matrix(mesh)
-    M = mass_matrix(mesh)
-    Ac = A_matrix_complex(mesh)
-    vals, uv = eigsh(-0.5 * L.T - _lambda * Ac, 6, M, which="LM", sigma=0)
+    vals, uv = eigen_complex_laplacian(mesh, 2, _lambda)
 
     # Coordinates with initial phase
     u = uv[:, 1].real
@@ -136,10 +139,20 @@ from mayavi import mlab
 from bfieldtools.viz import plot_data_on_vertices, plot_mesh, plot_data_on_faces
 
 mesh = load_example_mesh("meg_helmet", process=False)
-u, v, mesh2d = flatten_mesh(mesh, _lambda=1.0)
+u, v, mesh2d = flatten_mesh(mesh, _lambda=0.80)
 
 plot_data_on_vertices(mesh, u, ncolors=15)
 plot_data_on_vertices(mesh, v, ncolors=15)
+
+#%% Determine lambda with smallest area distortion
+# lls = np.linspace(0.01,1.0, 100)
+# mm = []
+# for ll in lls:
+#     u, v, mesh2d = flatten_mesh(mesh, _lambda=ll)
+#     d = mesh2d.area_faces / mesh.area_faces
+#     mm.append(np.std(d)/np.mean(d))
+#     print(np.std(d)/np.mean(d))
+# plt.plot(lls, mm)
 
 #%% Plot flattened mesh and area distortion on faces
 plot_data_on_faces(mesh2d, mesh2d.area_faces / mesh.area_faces)
@@ -154,8 +167,8 @@ cos = np.sum(gx * gy, axis=0) / (
 )
 plot_data_on_faces(mesh, cos, vmin=-1, vmax=1)
 mlab.quiver3d(*mesh.triangles_center.T, *gx, color=(1, 0, 0), mode="arrow")
-mlab.quiver3d(*mesh.triangles_center.T, *gy, color=(0, 0, 1), mode="arrow")
-
+q = mlab.quiver3d(*mesh.triangles_center.T, *gy, color=(0, 0, 1), mode="arrow")
+q.scene.isometric_view()
 
 #%% Map hexagonal grid from 2d to the 3D mesh
 d = np.sqrt(3 / 4)
@@ -164,7 +177,7 @@ mm = np.min((u.max(), v.max()))
 xx = np.linspace(m * 1.05, mm * 1.05, 12)
 yy = np.linspace(m * 1.05, mm * 1.05, 12) * d
 p = np.array(np.meshgrid(xx, yy, 0, indexing="ij"))
-p[0, :, ::2] += (xx[1] - xx[0]) * d / 2
+p[0, :, ::2] += (xx[1] - xx[0]) * 0.5
 
 p = p.reshape(3, -1).T
 
