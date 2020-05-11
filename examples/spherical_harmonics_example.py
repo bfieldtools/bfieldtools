@@ -24,7 +24,7 @@ mlab.figure(bgcolor=(1, 1, 1))
 obj = sphtools.plotYlm(sph, l=3, m=3)
 
 ###############################################################################
-# Plot vector spherical harmonics Vlms / Wlms on the sphere
+# Plot vector spherical harmonics Vlms / Wlms / Xlms on the sphere
 
 # Plot Vlm with l=2, m=2
 mlab.figure(bgcolor=(1, 1, 1))
@@ -35,6 +35,12 @@ obj.scene.z_plus_view()
 mlab.figure(bgcolor=(1, 1, 1))
 obj = sphtools.plotWlm(sph, l=2, m=2)
 obj.scene.z_plus_view()
+
+# Plot Xlm with the same order and degree, l=2, m=2
+mlab.figure(bgcolor=(1, 1, 1))
+obj = sphtools.plotXlm(sph, l=2, m=2)
+obj.scene.z_plus_view()
+
 
 ###############################################################################
 # Plot fields of vector spherical harmonics Vlms / Wlms on a volume
@@ -64,16 +70,24 @@ print(
 )
 
 Vlm1 = sphtools.Vlm(1, 0, sph.sqp[:, 1], sph.sqp[:, 2])
-Vlm2 = sphtools.Vlm(7, 0, sph.sqp[:, 1], sph.sqp[:, 2])
-print("Inner product between V_10 and V_70 is %f" % sph.innerproduct(Vlm1, Vlm2))
+Vlm2 = sphtools.Vlm(2, 0, sph.sqp[:, 1], sph.sqp[:, 2])
+print("Inner product between V_10 and V_20 is %f" % sph.innerproduct(Vlm1, Vlm2))
 print("Inner product between V_10 and V_10 is %f" % sph.innerproduct(Vlm1, Vlm1))
 
 Wlm1 = sphtools.Wlm(1, 0, sph.sqp[:, 1], sph.sqp[:, 2])
-Wlm2 = sphtools.Wlm(7, 0, sph.sqp[:, 1], sph.sqp[:, 2])
-print("Inner product between W_10 and W_70 is %f" % sph.innerproduct(Wlm1, Wlm2))
+Wlm2 = sphtools.Wlm(2, 0, sph.sqp[:, 1], sph.sqp[:, 2])
+print("Inner product between W_10 and W_20 is %f" % sph.innerproduct(Wlm1, Wlm2))
 print("Inner product between W_10 and W_10 is %f" % sph.innerproduct(Wlm1, Wlm1))
 
+Xlm1 = sphtools.Xlm(1, 0, sph.sqp[:, 1], sph.sqp[:, 2])
+Xlm2 = sphtools.Xlm(2, 0, sph.sqp[:, 1], sph.sqp[:, 2])
+print("Inner product between X_10 and X_20 is %f" % sph.innerproduct(Xlm1, Xlm2))
+print("Inner product between X_10 and X_10 is %f" % sph.innerproduct(Xlm1, Xlm1))
+
 print("Inner product between W_10 and V_10 is %f" % sph.innerproduct(Wlm1, Vlm1))
+print("Inner product between X_10 and V_10 is %f" % sph.innerproduct(Xlm1, Vlm1))
+print("Inner product between X_10 and W_10 is %f" % sph.innerproduct(Xlm1, Vlm1))
+
 
 ###############################################################################
 # Simple example of the calculation of sph spectrum of magnetic field

@@ -130,7 +130,7 @@ for i in range(Np):
     B_coupling = magnetic_field_coupling(mesh, fp, analytic=True)
 
     vl = compute_current_modes(obj=mesh, T=T, resistivity=res, thickness=d, mode="DC")
-    Btemp = noise_var(B_coupling, vl[:, 1:])  # avoid spatial "DC" mode
+    Btemp = noise_var(B_coupling, vl)
     B[i] = Btemp
 
 # Analytic formula
@@ -177,7 +177,7 @@ x = np.linspace(-0.95, 0.95, Np)
 fp = np.array((x, np.zeros(x.shape), np.zeros(x.shape))).T
 
 B_coupling = magnetic_field_coupling(mesh, fp, analytic=True)
-B = noise_var(B_coupling, vl[:, 1:])  # avoid spatial "DC" mode
+B = noise_var(B_coupling, vl)
 
 # Analytic formula valid only at the center of cylinder
 a = 0.5
