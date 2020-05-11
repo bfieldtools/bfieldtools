@@ -464,7 +464,7 @@ def Blm(l, m, theta, phi):
 def Wlm(l, m, theta, phi):
     """
     Vector basis function (Wlm) for r**l component of the magnetic field.
-    Normalization <Wlm,Psikn> = delta_lk,mn.
+    Normalization <Wlm,Wkn> = delta_lk,mn.
 
     Parameters
     ----------
@@ -492,7 +492,7 @@ def Wlm(l, m, theta, phi):
 def Vlm(l, m, theta, phi):
     """
     Vector basis function (Vlm) for r**(-l) component of the magnetic field.
-    Normalization <Vlm,Phikn> = delta_lk,mn.
+    Normalization <Vlm,Vkn> = delta_lk,mn.
 
     Parameters
     ----------
@@ -517,6 +517,36 @@ def Vlm(l, m, theta, phi):
     )
     Vlm *= 1 / np.sqrt((l + 1) * (2 * l + 1))
     return Vlm
+
+
+def Xlm(l, m, theta, phi):
+    """
+    Vector spherical harmonics basis function (Xlm).
+    Normalization <Xlm,Xkn> = delta_lk,mn.
+
+    Parameters
+    ----------
+    l: int
+        degree of Xlm
+    m: int
+        order of Xlm
+    theta: Nx1 array
+        evaluation points, theta at spherical coordinates
+    phi: Nx1 array
+        evaluation points, phi at spherical coordinates
+
+    Returns
+    -------
+    Xlm: Nx3 array
+        Xlm at (theta, phi).
+
+    """
+
+    temp = Blm(l, m, theta, phi)
+    r = np.zeros(temp.shape)
+    r[:, 0] = 1
+    Xlm = -1 * np.cross(r, temp, axis=1)
+    return Xlm
 
 
 ############################################
@@ -1184,5 +1214,32 @@ def plotBVlm_volume(sph, l, m, lim, Np, offset):
 
     _Vlm = sphvec2cart(sp, _Vlm)
     obj = mlab.quiver3d(p[:, 0], p[:, 1], p[:, 2], _Vlm[:, 0], _Vlm[:, 1], _Vlm[:, 2])
+    obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
+    return obj
+
+
+def plotXlm(sph, l, m):
+    """
+    Plots vector spherical harmonic basis function 'Xlm' over a sphere.
+
+    Parameters
+    ----------
+    sph: spherical harmonics analysis object
+    l: int
+        degree l
+    m: int
+        order m
+
+    Returns
+    -------
+    obj: mayavi object
+
+    """
+
+    _Xlm = Xlm(l, m, sph.sp[:, 1], sph.sp[:, 2])
+    _Xlm = sphvec2cart(sph.sp, _Xlm)
+    obj = mlab.quiver3d(
+        sph.p[:, 0], sph.p[:, 1], sph.p[:, 2], _Xlm[:, 0], _Xlm[:, 1], _Xlm[:, 2]
+    )
     obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
     return obj
