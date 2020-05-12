@@ -13,7 +13,7 @@ from mayavi import mlab
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
 from bfieldtools.mesh_conductor import MeshConductor
 
-from bfieldtools.sphtools import compute_sphcoeffs_mesh
+from bfieldtools.sphtools import compute_sphcoeffs_mesh_xlm
 from bfieldtools import sphtools
 
 
@@ -33,10 +33,10 @@ weights[coil.inner_vertices] = 1
 test_points = coilmesh.vertices.copy()
 test_points[:, 1] = 0
 
-lmax = 12
+lmax = 9
 
 
-sph_C = compute_sphcoeffs_mesh(coil.mesh, lmax)
+sph_C = compute_sphcoeffs_mesh_xlm(coil.mesh, lmax)
 
 alms = sph_C[0] @ weights
 blms = sph_C[1] @ weights

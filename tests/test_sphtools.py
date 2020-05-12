@@ -171,6 +171,70 @@ def test_field():
     # assert_allclose(B, B_b)
 
 
+def test_mesh_coupling():
+    """
+        Test compute_sphcoeffs_mesh with sphere
+    """
+
+    from bfieldtools.sphtools import compute_sphcoeffs_mesh
+    from bfieldtools.utils import load_example_mesh
+    from bfieldtools.sphtools import basis_potentials, basis_fields
+    from bfieldtools.sphtools import ylm, cartesian2spherical
+    from bfieldtools.mesh_calculus import mass_matrix
+
+    mesh = load_example_mesh("unit_sphere")
+    mesh.vertices *= 1 / np.sqrt(mesh.area / (4 * np.pi))  # Scale to unit radius
+    R = 2
+    mesh.vertices *= R  # Scale to R
+
+    c = compute_sphcoeffs_mesh(mesh, 3)
+
+    # Test potential
+    sp = cartesian2spherical(mesh.vertices)
+    M = mass_matrix(mesh, lumped=True)
+    u1, u2 = basis_potentials(mesh.vertices, 3)
+    diff1 = []
+    diff2 = []
+
+    for ll in range(1, 4):
+        for m in range(-ll, ll + 1):
+            s = ylm(ll, m, sp[:, 1], sp[:, 2])
+            p = u1 @ c[0] @ s
+            # p should be p= ll/(2*ll+1)s, test this
+            coeff = s @ M @ p / (s @ M @ s)
+            diff1.append(coeff - ll / (2 * ll + 1))
+            p = u2 @ c[1] @ s
+            # p should be p= -(ll+1)/(2*ll+1)s, test this
+            coeff = s @ M @ p / (s @ M @ s)
+            diff2.append(coeff + (ll + 1) / (2 * ll + 1))
+
+    # The integration accuracy is quite low so set the tolerance high
+    assert np.allclose(diff1, 0, atol=1e-2)
+    assert np.allclose(diff2, 0, atol=1e-2)
+
+    # Test field
+    b1, b2 = basis_fields(mesh.vertices, 3)
+    b1 = np.einsum("ijk,ij->ik", b1, mesh.vertex_normals)
+    b2 = np.einsum("ijk,ij->ik", b2, mesh.vertex_normals)
+    diff1 = []
+    diff2 = []
+    mu0 = 4 * np.pi * 1e-7
+    for ll in range(1, 4):
+        for m in range(-ll, ll + 1):
+            s = ylm(ll, m, sp[:, 1], sp[:, 2])
+            p = b1 @ c[0] @ s
+            # p should be p= mu0*(ll+1)*ll/(2*ll+1)/R s, test this
+            coeff = s @ M @ p / (s @ M @ s)
+            diff1.append(coeff / mu0 - (ll + 1) * ll / (2 * ll + 1) / R)
+            p = b2 @ c[1] @ s
+            # p should be p= mu0*(ll+1)*ll/(2*ll+1)/R s, test this
+            coeff = s @ M @ p / (s @ M @ s)
+            diff2.append(coeff / mu0 - (ll + 1) * ll / (2 * ll + 1) / R)
+
+    assert np.allclose(diff1, 0, atol=1e-2)
+    assert np.allclose(diff2, 0, atol=1e-2)
+
+
 # # sph class
 
 
