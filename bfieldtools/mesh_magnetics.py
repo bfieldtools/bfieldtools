@@ -20,8 +20,8 @@ from .integrals import (
 
 def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False):
     """
-    Given 'mesh', computes the "C matrix" which gives the magnetic field at
-    target points 'r' due to currents (stream function) on a surface mesh.
+    Computes the coupling matrix which gives the magnetic field at
+    target points due to currents (stream function) on a surface mesh.
 
     Parameters
     ----------
@@ -100,9 +100,8 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
 
 def magnetic_field_coupling_analytic(mesh, r, Nchunks=None):
     """
-    Given a mesh, computes the "C matrix" which gives the magnetic field at
-    some target points due to currents (stream function) on a surface mesh
-    using analytic formulas.
+    Computes the coupling matrix which gives the magnetic field at
+    target points due to currents (stream function) on a surface mesh using analytical formulas.
 
     Parameters
     ----------
@@ -181,8 +180,8 @@ def scalar_potential_coupling(
     mesh, r, Nchunks=None, multiply_coeff=False, approx_far=False, margin=3
 ):
     """
-    Coupling matrix corresponding to a mapping from a stream function
-    to scalar potential using analytic integrals
+    Coupling matrix from a stream function on a mesh
+    to scalar potential using analytic integrals.
 
     Parameters
     ----------
@@ -346,7 +345,7 @@ def vector_potential_coupling(
 ):
     """
     Compute vector potential coupling matrices
-    from linear stream functions using analytic integral
+    from a linear stream function on a mesh using analytic integrals.
 
     Parameters
     ----------
