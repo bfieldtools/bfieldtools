@@ -178,14 +178,58 @@ plt.figure()
 plt.plot(a ** 2)
 
 
-#%% Compute potential
-U_sph = potential(
-    p, alpha, np.zeros(alpha.shape), lmax=lmax, normalization="energy", R=R
+#%% Compute potential on the helmet mesh
+from bfieldtools.utils import load_example_mesh
+from bfieldtools.flatten_mesh import flatten_mesh, mesh2plane
+
+helmet = load_example_mesh("meg_helmet", process=False)
+# Bring the surface roughly to the correct place
+helmet.vertices[:, 2] -= 0.045
+# The helmet is slightly tilted, correct for this
+# (probably the right coordinate transformation could be found from MNE)
+rotmat = np.eye(3)
+tt = 0.015 * np.pi
+rotmat[:2, :2] = np.array([[np.cos(tt), np.sin(tt)], [-np.sin(tt), np.cos(tt)]])
+helmet.vertices = helmet.vertices @ rotmat
+tt = -0.02 * np.pi
+rotmat[1:, 1:] = np.array([[np.cos(tt), np.sin(tt)], [-np.sin(tt), np.cos(tt)]])
+helmet.vertices = helmet.vertices @ rotmat
+helmet.vertices[:, 1] += 0.005
+
+# plot_mesh(helmet)
+# mlab.points3d(*p.T, scale_factor=0.01)
+
+
+U_sph_helmet = potential(
+    helmet.vertices,
+    alpha,
+    np.zeros(alpha.shape),
+    lmax=lmax,
+    normalization="energy",
+    R=R,
 )
 
-U_suh = c.U_coupling(p) @ a
+U_suh_helmet = c.U_coupling(helmet.vertices) @ s
 
-#%% MNE interpolates using SPHERICAL HEAD MODEL
+#%%
+u, v, helmet2d = flatten_mesh(helmet, 0.9)
+puv = mesh2plane(p, helmet, u, v)
+f = plot_data_on_vertices(helmet2d, U_sph_helmet, ncolors=15)
+mlab.points3d(puv[:, 0], puv[:, 1], 0 * puv[:, 0], scale_factor=0.1, color=(0, 0, 0))
+f.scene.z_plus_view()
+
+f = plot_data_on_vertices(helmet2d, U_suh_helmet, ncolors=15)
+mlab.points3d(puv[:, 0], puv[:, 1], 0 * puv[:, 0], scale_factor=0.1, color=(0, 0, 0))
+f.scene.z_plus_view()
+
+#%% MNE interpolates using splines or something
+#%% Compute potential
+# U_sph = potential(
+# p, alpha, np.zeros(alpha.shape), lmax=lmax, normalization="energy", R=R
+# )
+#
+# U_suh = c.U_coupling(p) @ s
+
 # evoked1 = evoked.copy()
 # evoked1.data[:, :] = np.tile(U_sph.T, (evoked.times.shape[0], 1)).T
 # evoked1.plot_topomap(times=0.080, ch_type="mag")
