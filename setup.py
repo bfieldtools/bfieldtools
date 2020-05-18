@@ -2,34 +2,25 @@ from setuptools import setup, find_packages
 import sys
 import codecs
 
-# First, prevent accidental upload to PyPI
-def forbid_publish():
-    argv = sys.argv
-    blacklist = ["register", "upload"]
-
-    for command in blacklist:
-        if command in argv:
-            values = {"command": command}
-            print('Command "%(command)s" has been blacklisted, exiting...' % values)
-            sys.exit(2)
-
 
 def main():
-
-    forbid_publish()
 
     with open("requirements.txt") as f:
         requirements = f.read().splitlines()
 
     setup(
         name="bfieldtools",
-        description="Magnetic field modelling tools",
+        description="Open-source Python software for magnetic field modeling",
         long_description=codecs.open("README.rst", encoding="utf8").read(),
+        url="https://bfieldtools.github.io/",
+        license="BSD (3-clause)",
+        download_url="https://github.com/bfieldtools/bfieldtools",
         use_scm_version={
             "write_to": "bfieldtools/version.py",
             "write_to_template": '__version__ = "{version}"',
         },
         setup_requires=["setuptools_scm"],
+        python_requires=">=3.7",
         install_requires=requirements,
         packages=find_packages(),
         include_package_data=True,
@@ -44,9 +35,6 @@ def main():
         platforms="any",
         zip_safe=False,
     )
-
-
-### Authors, license etc. still need to be added
 
 
 if __name__ == "__main__":
