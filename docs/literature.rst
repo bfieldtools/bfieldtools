@@ -47,11 +47,13 @@ Thermal noise
    
 Related software
 ================
-
+ - libigl_ (C++ library for geometry processing with Python bindings)
  - gptoolbox_ (MATLAB toolbox for geometry processing) 
  - shtools_ (Fortran and Python tools for working with spherical harmonics)
- - `gBringout/CoilDesign`_   (MATLAB software for coil design using stream functions and convex optimization)
- 
+ - `gBringout/CoilDesign`_   (MATLAB functions for coil design using stream functions and convex optimization)
+
+.. _libigl: https://libigl.github.io/libigl-python-bindings/ 
+
 .. _gptoolbox: https://github.com/alecjacobson/gptoolbox
 
 .. _shtools: https://shtools.oca.eu/shtools/public/
