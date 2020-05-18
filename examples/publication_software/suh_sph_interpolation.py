@@ -11,7 +11,8 @@ import trimesh
 import matplotlib.pyplot as plt
 
 from bfieldtools.sphtools import basis_fields as sphfield
-from bfieldtools.sphtools import basis_potentials, potential, field
+from bfieldtools.sphtools import field as sph_field_eval
+from bfieldtools.sphtools import basis_potentials, potential
 import mne
 
 from bfieldtools.viz import plot_data_on_vertices, plot_mesh
@@ -220,7 +221,7 @@ helmet.vertices[:, 1] += 0.005
 # mlab.points3d(*p.T, scale_factor=0.01)
 
 
-B_sph_helmet = field(
+B_sph_helmet = sph_field_eval(
     helmet.vertices,
     alpha,
     np.zeros(alpha.shape),

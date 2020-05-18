@@ -196,7 +196,7 @@ if PLOT:
     fig = mlab.quiver3d(*p.T, *n.T, mode="arrow")
     scalars = B_surf @ s
     surf = mlab.triangular_mesh(
-        *helmet.verticeplotT, helmet.faces, scalars=scalars, colormap="seismic"
+        *helmet.vertices.T, helmet.faces, scalars=scalars, colormap="seismic"
     )
     surf.actor.mapper.interpolate_scalars_before_mapping = True
     surf.module_manager.scalar_lut_manager.number_of_colors = 15

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Flatten mesh using conformal mapping
-===========================================
+=============================================
 
 Map 3D mesh to a 2D (complex) plane with angle-preserving (conformal) mapping
 

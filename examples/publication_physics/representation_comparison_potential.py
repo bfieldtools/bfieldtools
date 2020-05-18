@@ -1,14 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri May 15 11:30:05 2020
-
-@author: Antti
 """
 
-"""
-
-Compare SUH and SPH basis functions for the magnetic field
-=============================================================
+Compare SUH and SPH basis functions for the magnetic scalar potential
+======================================================================
 
 """
 
