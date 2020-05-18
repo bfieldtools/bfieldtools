@@ -39,7 +39,7 @@ Csuh = magnetic_field_coupling_analytic(mesh, mesh_field.vertices) @ bsuh.basis
 
 #%%
 def plot_basis_fields(C, comps):
-    d = 0.2
+    d = 0.17
     i = 0
     j = 0
     for n in comps:
@@ -59,7 +59,7 @@ def plot_basis_fields(C, comps):
         vectors.glyph.glyph_source.glyph_position = "center"
         vectors.glyph.glyph_source.glyph_source.shaft_radius = 0.02
         vectors.glyph.glyph_source.glyph_source.tip_radius = 0.06
-        vectors.glyph.glyph.scale_factor = 0.025
+        vectors.glyph.glyph.scale_factor = 0.03
         #        m = np.max(abs((C[:,:,n].T*mesh_field.vertex_normals.T).sum(axis=0)))
         #        s =mlab.triangular_mesh(*p.T, mesh_field.faces,
         #                             scalars=(C[:,:,n].T*mesh_field.vertex_normals.T).sum(axis=0),

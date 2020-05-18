@@ -17,11 +17,9 @@ from bfieldtools.mesh_magnetics import (
 from bfieldtools.mesh_magnetics import scalar_potential_coupling as compute_U
 from bfieldtools.mesh_impedance import mutual_inductance_matrix
 from bfieldtools.contour import scalar_contour
-from bfieldtools.viz import plot_3d_current_loops
-from bfieldtools.sphtools import compute_sphcoeffs_mesh
-from bfieldtools.suhtools import SuhBasis
 from bfieldtools import sphtools
 from bfieldtools.utils import load_example_mesh
+from bfieldtools.mesh_calculus import mass_matrix
 
 # domain = 'sphere'
 # domain = 'cube'
@@ -46,8 +44,6 @@ elif domain == "cube":
     mesh1 = filter_laplacian(mesh1)
     mesh2 = filter_laplacian(mesh2, 0.9)
 elif domain == "combined":
-    import trimesh
-    import pkg_resources
     from trimesh.creation import icosphere
 
     mesh1 = icosphere(4, 0.65)
@@ -58,14 +54,14 @@ elif domain == "combined":
 
 coil1 = MeshConductor(
     mesh_obj=mesh1,
-    N_sph=7,
+    N_sph=3,
     inductance_nchunks=100,
     fix_normals=False,
     inductance_quad_degree=2,
 )
 coil2 = MeshConductor(
     mesh_obj=mesh2,
-    N_sph=7,
+    N_sph=3,
     inductance_nchunks=100,
     fix_normals=False,
     inductance_quad_degree=2,
@@ -97,11 +93,15 @@ CU2 = compute_U(mesh2, points)
 # suh = SuhBasis(mesh1, 100)
 
 #%% Specify (spherical harmonic) field and calculate corresponding shielded field
-b1 = mesh1.vertex_normals[:, 0]
-b2 = (
-    mesh1.vertex_normals[:, 0] * mesh1.vertices[:, 0]
-    - mesh1.vertex_normals[:, 1] * mesh1.vertices[:, 1]
-)
+# b10 = mesh1.vertex_normals[:, 0]
+# b20 = (
+#     mesh1.vertex_normals[:, 0] * mesh1.vertices[:, 0]
+#     - mesh1.vertex_normals[:, 1] * mesh1.vertices[:, 1]
+# )
+N = mass_matrix(mesh1, lumped=True)
+af, bf = sphtools.basis_fields(mesh1.vertices, 2)
+b1 = N @ np.sum(bf[:, :, 2] * mesh1.vertex_normals, axis=1)
+b2 = N @ np.sum(bf[:, :, 3] * mesh1.vertex_normals, axis=1)
 
 
 def plot_plane(opacity=0.8):
@@ -176,7 +176,7 @@ for bi in (b1, b2):
 
     #    fig = plot_3d_current_loops(contours1, tube_radius=0.005, colors=(1,1,1))
     surf = mlab.triangular_mesh(
-        *mesh1.vertices.T, mesh1.faces, scalars=I1, colormap="seismic"
+        *mesh1.vertices.T, mesh1.faces, scalars=I1, colormap="BrBG"
     )
     surf.actor.mapper.interpolate_scalars_before_mapping = True
     surf.module_manager.scalar_lut_manager.number_of_colors = 16
@@ -190,7 +190,7 @@ for bi in (b1, b2):
         *(mesh2.vertices * 0.99).T,
         faces2_masked,
         scalars=I2,
-        colormap="seismic",
+        colormap="BrBG",
         opacity=1.0
     )
     surf.actor.mapper.interpolate_scalars_before_mapping = True

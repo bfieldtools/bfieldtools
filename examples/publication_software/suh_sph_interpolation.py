@@ -11,9 +11,10 @@ import trimesh
 import matplotlib.pyplot as plt
 
 from bfieldtools.sphtools import basis_fields as sphfield
-from bfieldtools.sphtools import basis_potentials, potential
+from bfieldtools.sphtools import basis_potentials, potential, field
 import mne
 
+from bfieldtools.viz import plot_data_on_vertices
 
 #%%
 SAVE_DIR = "./MNE interpolation/"
@@ -62,7 +63,7 @@ R = np.min(np.linalg.norm(p, axis=1)) - 0.02
 
 #%%
 
-lmax = 9  # maximum degree
+lmax = 7  # maximum degree
 Bca, Bcb = sphfield(p, lmax, normalization="energy", R=R)
 
 # sph-components at sensors
@@ -82,7 +83,7 @@ Bcb_sensors = np.einsum("ijk,ij->ik", Bcb, n)
 # evoked1.plot_topomap(times=0.080, ch_type="mag", colorbar=False)
 
 #%% calculate inner sph-coeffients with pinv
-PINV = False
+PINV = True
 if PINV:
     alpha = np.linalg.pinv(Bca_sensors, rcond=1e-15) @ field
 else:
@@ -200,7 +201,7 @@ helmet.vertices[:, 1] += 0.005
 # mlab.points3d(*p.T, scale_factor=0.01)
 
 
-U_sph_helmet = potential(
+B_sph_helmet = field(
     helmet.vertices,
     alpha,
     np.zeros(alpha.shape),
@@ -208,17 +209,18 @@ U_sph_helmet = potential(
     normalization="energy",
     R=R,
 )
-
-U_suh_helmet = c.U_coupling(helmet.vertices) @ s
+B_sph_helmet = np.einsum("ij,ij->i", B_sph_helmet, helmet.vertex_normals)
+B_suh_helmet = c.B_coupling(helmet.vertices) @ s
+B_suh_helmet = np.einsum("ij,ij->i", B_suh_helmet, helmet.vertex_normals)
 
 #%%
 u, v, helmet2d = flatten_mesh(helmet, 0.9)
 puv = mesh2plane(p, helmet, u, v)
-f = plot_data_on_vertices(helmet2d, U_sph_helmet, ncolors=15)
+f = plot_data_on_vertices(helmet2d, B_sph_helmet, ncolors=15)
 mlab.points3d(puv[:, 0], puv[:, 1], 0 * puv[:, 0], scale_factor=0.1, color=(0, 0, 0))
 f.scene.z_plus_view()
 
-f = plot_data_on_vertices(helmet2d, U_suh_helmet, ncolors=15)
+f = plot_data_on_vertices(helmet2d, B_suh_helmet, ncolors=15)
 mlab.points3d(puv[:, 0], puv[:, 1], 0 * puv[:, 0], scale_factor=0.1, color=(0, 0, 0))
 f.scene.z_plus_view()
 
