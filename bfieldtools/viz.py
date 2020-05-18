@@ -372,6 +372,8 @@ def plot_data_on_vertices(
     cull_front=False,
     cull_back=False,
     autoscale=False,
+    vmin=None,
+    vmax=None,
     **kwargs
 ):
     """
@@ -429,6 +431,12 @@ def plot_data_on_vertices(
     if (np.all(data > 0) or np.all(data < 0)) and autoscale:
         rangemax = np.max(np.abs(data))
         lutmanager.data_range = np.array([-rangemax * 1.01, rangemax * 1.01])
+        lutmanager.use_default_range = False
+    elif vmax is not None:
+        if vmin is None:
+            lutmanager.data_range = np.array([-vmax, vmax])
+        else:
+            lutmanager.data_range = np.array([vmin, vmax])
         lutmanager.use_default_range = False
 
     return surf
