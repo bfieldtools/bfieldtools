@@ -694,6 +694,24 @@ class StreamFunction(np.ndarray):
         M = self.mesh_conductor.inductance
         return 0.5 * self.T @ M @ self
 
+    def coil_inductance(Nloops):
+        """
+        
+
+        Parameters
+        ----------
+        Nloops : the number of wire loops in the discrete coil (int)
+
+        Returns
+        -------
+        inductance: scalar (float)
+
+        """
+        scaling = Nloops / (self.max() - self.min())
+        L_approx = 2 * sf.magnetic_energy * (scaling ** 2)
+
+        return L_approx
+
     def plot(self, background=True, contours=False, **kwargs):
         """
         Plot the stream function
