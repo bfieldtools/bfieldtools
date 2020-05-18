@@ -14,7 +14,7 @@ from bfieldtools.sphtools import basis_fields as sphfield
 from bfieldtools.sphtools import basis_potentials, potential, field
 import mne
 
-from bfieldtools.viz import plot_data_on_vertices
+from bfieldtools.viz import plot_data_on_vertices, plot_mesh
 
 #%%
 SAVE_DIR = "./MNE interpolation/"
@@ -170,10 +170,29 @@ surf.module_manager.scalar_lut_manager.number_of_colors = 16
 # evoked1.data[:, :] = np.tile(reco_suh.T, (evoked.times.shape[0], 1)).T
 # evoked1.plot_topomap(times=0.080, ch_type="mag")
 
-
 #%% Plot spectra
-plt.figure()
-plt.plot(alpha ** 2)
+fig, ax = plt.subplots(1, 1)
+ax.plot(alpha ** 2)
+
+
+L = np.zeros((0,))
+M = np.zeros((0,))
+
+
+for l in range(1, lmax + 1):
+    m_l = np.arange(-l, l + 1, step=1, dtype=np.int_)
+    M = np.append(M, m_l)
+    L = np.append(L, np.repeat(l, len(m_l)))
+
+xticknames = [None] * len(alpha)
+for i in range(len(alpha)):
+    xticknames[i] = str(M[i])
+
+    m_l = np.arange(-L[i], L[i] + 1, step=1)
+
+    if i == int(np.floor(len(m_l))):
+        xticknames[i] += "\n" + str(L[i])
+
 
 plt.figure()
 plt.plot(a ** 2)
@@ -213,16 +232,49 @@ B_sph_helmet = np.einsum("ij,ij->i", B_sph_helmet, helmet.vertex_normals)
 B_suh_helmet = c.B_coupling(helmet.vertices) @ s
 B_suh_helmet = np.einsum("ij,ij->i", B_suh_helmet, helmet.vertex_normals)
 
-#%%
+#%% Compute flattened mesh
+
+
 u, v, helmet2d = flatten_mesh(helmet, 0.9)
 puv = mesh2plane(p, helmet, u, v)
-f = plot_data_on_vertices(helmet2d, B_sph_helmet, ncolors=15)
-mlab.points3d(puv[:, 0], puv[:, 1], 0 * puv[:, 0], scale_factor=0.1, color=(0, 0, 0))
-f.scene.z_plus_view()
 
-f = plot_data_on_vertices(helmet2d, B_suh_helmet, ncolors=15)
+
+#%% Magnetic field at sensor array surface
+
+from scipy.interpolate import Rbf
+
+rbf_f = Rbf(puv[:, 0], puv[:, 1], field, function="linear", smooth=0)
+rbf_field = rbf_f(helmet2d.vertices[:, 0], helmet2d.vertices[:, 1])
+
+
+vmin = -7e-13
+vmax = 7e-13
+f = plot_data_on_vertices(helmet2d, rbf_field, ncolors=15, vmin=vmin, vmax=vmax)
 mlab.points3d(puv[:, 0], puv[:, 1], 0 * puv[:, 0], scale_factor=0.1, color=(0, 0, 0))
 f.scene.z_plus_view()
+mlab.savefig(SAVE_DIR + "rbf_helmet_B.png", figure=f, magnification=4)
+
+suh_field = (
+    np.einsum("ijk,ij->ik", c.B_coupling(helmet.vertices), helmet.vertex_normals) @ s
+)
+
+
+f = plot_data_on_vertices(helmet2d, suh_field, ncolors=15, vmin=vmin, vmax=vmax)
+mlab.points3d(puv[:, 0], puv[:, 1], 0 * puv[:, 0], scale_factor=0.1, color=(0, 0, 0))
+f.scene.z_plus_view()
+mlab.savefig(SAVE_DIR + "suh_helmet_B.png", figure=f, magnification=4)
+
+
+Bca, Bcb = sphfield(helmet.vertices, lmax, normalization="energy", R=R)
+
+# sph-components at sensors
+sph_field = np.einsum("ijk,ij->ik", Bca, helmet.vertex_normals) @ alpha
+
+
+f = plot_data_on_vertices(helmet2d, sph_field, ncolors=15, vmin=vmin, vmax=vmax)
+mlab.points3d(puv[:, 0], puv[:, 1], 0 * puv[:, 0], scale_factor=0.1, color=(0, 0, 0))
+f.scene.z_plus_view()
+mlab.savefig(SAVE_DIR + "sph_helmet_B.png", figure=f, magnification=4)
 
 #%% MNE interpolates using splines or something
 #%% Compute potential
@@ -270,8 +322,7 @@ U_sph = potential(
 )
 
 #%%
-from bfieldtools.viz import plot_data_on_vertices
-from bfieldtools.viz import plot_mesh
+
 
 # Mask inside/outside using solid angle
 mask = abs(c.U_coupling.matrix.sum(axis=1)) < 1e-6

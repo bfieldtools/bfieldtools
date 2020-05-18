@@ -1,1 +1,5 @@
 recursive-include bfieldtools *.py *.stl *.obj
+
+include LICENSE.txt
+include README.rst
+include requirements.txt
