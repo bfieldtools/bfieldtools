@@ -4,8 +4,21 @@ Analytic integral for vectorized field / potential computation
 
 """
 
+__all__ = [
+    "c_coeffs",
+    "d_distance",
+    "gamma0",
+    "omega",
+    "potential_dipoles",
+    "potential_vertex_dipoles",
+    "triangle_potential_approx",
+    "triangle_potential_dipole_linear",
+    "triangle_potential_uniform",
+    "x_distance",
+    "x_distance2",
+]
+
 import numpy as np
-from .mesh_calculus import gradient_matrix
 
 
 def determinant(a):

@@ -3,6 +3,14 @@ Visualization functions tailored for bfieldtools.
 Mainly wrappers and convenience helpers around mayavi and matplotlib functions
 """
 
+__all__ = [
+    "plot_3d_current_loops",
+    "plot_cross_section",
+    "plot_data_on_faces",
+    "plot_data_on_vertices",
+    "plot_mesh",
+]
+
 from mayavi import mlab
 import matplotlib.pyplot as plt
 from matplotlib import colors as c

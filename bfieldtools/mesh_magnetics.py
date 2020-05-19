@@ -3,10 +3,16 @@ Contains functions for calculating the coupling of surface current density in a
 triangle mesh to magnetic field as well as scalar and vector potentials.
 
 """
+
+__all__ = [
+    "magnetic_field_coupling",
+    "magnetic_field_coupling_analytic",
+    "scalar_potential_coupling",
+    "vector_potential_coupling",
+]
+
 import time
 import numpy as np
-
-# from numba import jit
 
 
 from .utils import get_quad_points

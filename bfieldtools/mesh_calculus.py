@@ -3,6 +3,17 @@ Contains functions for computing vector calculus quantities on triangle surface 
 These include the gradient, rotated gradient, divergence, curl, Laplacian and mass matrices.
 """
 
+__all__ = [
+    "curl",
+    "curl_matrix",
+    "divergence",
+    "divergence_matrix",
+    "gradient",
+    "gradient_matrix",
+    "laplacian_matrix",
+    "mass_matrix",
+]
+
 import numpy as np
 from scipy.sparse import csr_matrix, spdiags
 

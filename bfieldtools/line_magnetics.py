@@ -3,6 +3,13 @@ Functions for working with current polylines, e.g. for calculating the magnetic 
 
 """
 
+__all__ = [
+    "magnetic_field",
+    "mutual_inductance",
+    "scalar_potential",
+    "self_inductance",
+    "vector_potential",
+]
 
 import numpy as np
 from .integrals import omega

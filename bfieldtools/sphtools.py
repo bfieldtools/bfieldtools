@@ -1,3 +1,51 @@
+"""
+Functions for constructing real spherical harmonics (Ylms), their gradients
+and related magnetic field 'basis vectorfunctions'
+(Wlms for r**l components, Vlms for r**(-l) components).
+
+Uses notations and definitions by Plattner and Simons (2014; https://arxiv.org/pdf/1306.3201.pdf)
+and the same normalization conventions.
+
+Integration over a surface of unit sphere is
+used as the inner product <C,D> = int C dot D dOmega.
+
+Also has many of functions for spherical <-> cartesian transformations.
+"""
+
+__all__ = [
+    "Blm",
+    "Plm",
+    "Rotmatrix",
+    "SphBasis",
+    "Vlm",
+    "Wlm",
+    "Xlm",
+    "basis_fields",
+    "basis_potentials",
+    "cartesian2spherical",
+    "cartvec2sph",
+    "compute_sphcoeffs_mesh",
+    "derlpmn_em",
+    "derxlm",
+    "dphiylm",
+    "dthylm",
+    "field",
+    "lpmn_em",
+    "plotBVlm_volume",
+    "plotBWlm_volume",
+    "plotVlm",
+    "plotWlm",
+    "plotXlm",
+    "plotYlm",
+    "plotYlms",
+    "potential",
+    "sinxlm",
+    "spherical2cartesian",
+    "sphvec2cart",
+    "xlm",
+    "ylm",
+]
+
 import numpy as np
 from scipy.special import factorial, lpmn
 import quadpy
@@ -6,19 +54,6 @@ from mayavi import mlab
 
 from .mesh_calculus import gradient_matrix
 from .utils import tri_normals_and_areas
-
-#############################################
-#   Functions for constructing real spherical harmonics (Ylms), their gradients
-#   and related magnetic field 'basis vectorfunctions'
-#   (Wlms for r**l components, Vlms for r**(-l) components).
-#
-#   Uses notations and definitions by Plattner and Simons (2014; https://arxiv.org/pdf/1306.3201.pdf)
-#   and the same normalization conventions.
-#
-#   Integration over a surface of unit sphere is
-#   used as the inner product <C,D> = int C dot D dOmega.
-#
-#   Has also lot of functions for spherical <-> cartesian transformations.
 
 
 ############################################

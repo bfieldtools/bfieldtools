@@ -1,6 +1,9 @@
 """
-
+This module includes a convenience class for working with polyline currents
 """
+
+__all__ = ["LineConductor"]
+
 import numpy as np
 from trimesh.path import Path3D
 from trimesh.path.entities import Line

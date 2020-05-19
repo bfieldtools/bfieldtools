@@ -2,6 +2,15 @@
 Contains functions for computing the resistance and inductance matrices of triangle surface meshes.
 Includes both self- and mutual-inductance.
 """
+
+__all__ = [
+    "mesh2line_mutual_inductance",
+    "mutual_inductance_matrix",
+    "resistance_matrix",
+    "self_inductance_matrix",
+    "triangle_self_coupling",
+]
+
 from psutil import virtual_memory
 import numpy as np
 

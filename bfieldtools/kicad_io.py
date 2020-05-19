@@ -1,3 +1,10 @@
+"""
+Module with functions for exporting polylines to the PCB design software KiCAD
+"""
+
+__all__ = ["python_to_kicad"]
+
+
 def python_to_kicad(
     loops, filename, plane_axes, origin, layer, net, scaling=1, trace_width=0.2
 ):

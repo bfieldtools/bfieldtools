@@ -3,6 +3,14 @@ Contains functions for computing thermal noise in conductive thin objects.
 
 """
 
+__all__ = [
+    "compute_current_modes",
+    "noise_covar",
+    "noise_covar_dir",
+    "noise_var",
+    "visualize_current_modes",
+]
+
 import numpy as np
 from mayavi import mlab
 import trimesh

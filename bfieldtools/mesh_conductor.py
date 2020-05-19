@@ -4,6 +4,15 @@ some convenient functions and properties.
 
 """
 
+__all__ = [
+    "CouplingMatrix",
+    "MeshConductor",
+    "StreamFunction",
+    "matrixwrapper",
+    "save_pickle",
+    "load_pickle",
+]
+
 from time import time
 import pickle
 

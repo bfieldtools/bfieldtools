@@ -11,6 +11,7 @@ from . import thermal_noise
 from . import utils
 from . import integrals
 from . import legacy
+from . import flatten_mesh
 
 try:
     from .version import __version__
@@ -40,4 +41,5 @@ __all__ = [
     "thermal_noise",
     "utils",
     "integrals",
+    "legacy",
 ]

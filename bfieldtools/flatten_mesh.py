@@ -2,6 +2,14 @@
 functions for flattening a mesh with a boundary
 """
 
+__all__ = [
+    "A_matrix_complex",
+    "eigen_complex_laplacian",
+    "flatten_mesh",
+    "mesh2plane",
+    "plane2mesh",
+]
+
 import numpy as np
 from bfieldtools.mesh_calculus import laplacian_matrix, mass_matrix
 from scipy.sparse.linalg import eigsh

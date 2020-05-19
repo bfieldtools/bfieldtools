@@ -4,12 +4,19 @@ using either a numerical solver or regularized least squares
 
 """
 
+__all__ = [
+    "cvxopt_solve_qp",
+    "cvxpy_solve_qp",
+    "optimize_lsq",
+    "optimize_streamfunctions",
+]
+
 import numpy as np
 import cvxopt
 from cvxopt import matrix
 from scipy.sparse.linalg import svds
 from scipy.linalg import eigh
-from scipy.linalg import eigvalsh, sqrtm
+from scipy.linalg import eigvalsh
 import cvxpy as cp
 
 from .mesh_conductor import StreamFunction

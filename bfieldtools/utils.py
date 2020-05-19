@@ -1,6 +1,23 @@
 """
 This module contains miscellaneous utility functions used across bfieldtools.
 """
+
+__all__ = [
+    "MeshProjection",
+    "combine_meshes",
+    "cylinder_points",
+    "dual_areas",
+    "find_mesh_boundaries",
+    "fix_normals",
+    "get_line_quad_points",
+    "get_quad_points",
+    "inner2vert",
+    "load_example_mesh",
+    "tri_normals_and_areas",
+    "vert2inner",
+]
+
+
 import os
 import numpy as np
 import quadpy

@@ -8,6 +8,8 @@ Surface harmonics == Laplace-Beltrami eigenfunctions
 
 """
 
+__all__ = ["SuhBasis"]
+
 import trimesh
 from scipy.sparse.linalg import eigsh
 from scipy.linalg import eigh
@@ -15,7 +17,6 @@ from scipy.linalg import eigh
 import numpy as np
 from mayavi import mlab
 
-from .mesh_magnetics import magnetic_field_coupling
 from .viz import plot_data_on_vertices
 from . import mesh_conductor
 
@@ -233,7 +234,7 @@ class SuhBasis:
         """ Plot basis functions on the mesh
 
             Nfuncs: int or array-like
-                 if int, the number functions starting from the first
+                 if int, the number functions starting from the first'Blm',
                  if list/array: the indices of the functions
 
             dist: float

@@ -4,6 +4,8 @@ Functions for creating contours (isolines) of a scalar function defined on a tri
 
 """
 
+__all__ = ["scalar_contour", "simplify_contour"]
+
 import numpy as np
 
 from scipy.sparse import eye as speye
