@@ -13,7 +13,6 @@ from scipy.sparse.linalg import eigsh
 from scipy.linalg import eigh
 
 import numpy as np
-from mayavi import mlab
 
 from .mesh_magnetics import magnetic_field_coupling
 from .viz import plot_data_on_vertices
@@ -253,6 +252,7 @@ class SuhBasis:
             kwargs: keyword arguments passed to mayavi (colormap, etc.)
 
         """
+        from mayavi import mlab
 
         if figure is None:
             figure = mlab.figure(
