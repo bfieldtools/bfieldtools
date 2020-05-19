@@ -42,4 +42,5 @@ __all__ = [
     "utils",
     "integrals",
     "legacy",
+    "flatten_mesh",
 ]
