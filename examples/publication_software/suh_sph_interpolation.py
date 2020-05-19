@@ -24,7 +24,6 @@ SAVE_DIR = "./MNE interpolation/"
 EVOKED = True
 
 with np.load(SAVE_DIR + "mne_data.npz", allow_pickle=True) as data:
-    # mesh = data["mesh"]
     p = data["p"]
     n = data["n"]
     mesh = trimesh.Trimesh(vertices=data["vertices"], faces=data["faces"])

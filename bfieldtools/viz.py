@@ -3,7 +3,6 @@ Visualization functions tailored for bfieldtools.
 Mainly wrappers and convenience helpers around mayavi and matplotlib functions
 """
 
-from mayavi import mlab
 import matplotlib.pyplot as plt
 from matplotlib import colors as c
 
@@ -35,6 +34,7 @@ def plot_mesh(
         Contains the plotted mesh
 
     """
+    from mayavi import mlab
 
     if figure is None:
         figure = mlab.figure(
@@ -85,6 +85,7 @@ def plot_3d_current_loops(
     fig: mlab figure
 
     """
+    from mayavi import mlab
 
     if figure is None:
         figure = mlab.figure(
@@ -316,6 +317,7 @@ def plot_data_on_faces(
         -------
         fig: mlab figure
     """
+    from mayavi import mlab
 
     if figure is None:
         figure = mlab.figure(
@@ -405,6 +407,7 @@ def plot_data_on_vertices(
     fig: mlab figure
 
     """
+    from mayavi import mlab
 
     if figure is None:
         figure = mlab.figure(

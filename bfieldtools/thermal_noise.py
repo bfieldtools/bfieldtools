@@ -4,7 +4,6 @@ Contains functions for computing thermal noise in conductive thin objects.
 """
 
 import numpy as np
-from mayavi import mlab
 import trimesh
 
 from .suhtools import SuhBasis
@@ -236,6 +235,7 @@ def visualize_current_modes(
         Which (matplotlib) colormap to use
 
     """
+    from mayavi import mlab
 
     N1 = np.floor(np.sqrt(Nmodes))
     dx = (mesh.vertices[:, 0].max() - mesh.vertices[:, 0].min()) * (1 + dist)

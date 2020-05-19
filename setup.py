@@ -20,7 +20,7 @@ def main():
             "write_to_template": '__version__ = "{version}"',
         },
         setup_requires=["setuptools_scm"],
-        python_requires=">=3.7",
+        python_requires=">=3.6",
         install_requires=requirements,
         packages=find_packages(),
         include_package_data=True,
