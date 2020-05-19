@@ -9,13 +9,13 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    inkscape:version="1.0rc1 (09960d6f05, 2020-04-09)"
    sodipodi:docname="packages_bfieldtools.svg"
-   id="svg294"
+   id="svg308"
    version="1.1"
-   viewBox="0 0 518.0145 468.74109"
-   height="468.74109pt"
-   width="517.72852pt">
+   viewBox="0.00 0.00 599.00 548.00"
+   height="548pt"
+   width="599pt">
   <metadata
-     id="metadata300">
+     id="metadata314">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -27,23 +27,19 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs298" />
+     id="defs312" />
   <sodipodi:namedview
-     fit-margin-bottom="0"
-     fit-margin-right="0"
-     fit-margin-left="0"
-     fit-margin-top="0"
-     inkscape:current-layer="svg294"
-     inkscape:window-maximized="1"
+     inkscape:current-layer="svg308"
+     inkscape:window-maximized="0"
      inkscape:window-y="0"
      inkscape:window-x="0"
-     inkscape:cy="317.37288"
-     inkscape:cx="615.04089"
-     inkscape:zoom="1.9509954"
+     inkscape:cy="33.626677"
+     inkscape:cx="405.50178"
+     inkscape:zoom="0.29185675"
      showgrid="false"
-     id="namedview296"
-     inkscape:window-height="2063"
-     inkscape:window-width="3840"
+     id="namedview310"
+     inkscape:window-height="1013"
+     inkscape:window-width="960"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0"
      guidetolerance="10"
@@ -53,534 +49,567 @@
      bordercolor="#666666"
      pagecolor="#ffffff" />
   <polygon
-     transform="translate(159.06174,468.34864)"
+     transform="translate(4,544)"
+     fill="#ffffff"
+     stroke="transparent"
+     points="595,-544 595,4 -4,4 -4,-544 "
+     id="polygon4" />
+  <polygon
+     transform="translate(4,544)"
      id="polygon8"
-     points="330,0 330,-36 220,-36 220,0 "
+     points="248.5,-36 138.5,-36 138.5,0 248.5,0 "
      stroke="#000000"
      fill="none" />
   <text
-     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     style="letter-spacing:0px;-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
      id="text10"
      fill="#000000"
      font-size="14px"
      font-family="Times, serif"
-     y="454.04865"
-     x="434.06174"
+     y="529.70001"
+     x="197.5"
      text-anchor="middle">coil_optimize</text>
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon15"
-     points="208.5,-72 341.5,-72 341.5,-108 208.5,-108 "
+     points="260,-108 127,-108 127,-72 260,-72 "
      stroke="#000000"
      fill="none" />
   <text
-     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     style="letter-spacing:0px;-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
      id="text17"
      fill="#000000"
      font-size="14px"
      font-family="Times, serif"
-     y="454.04865"
-     x="275.5"
+     y="457.70001"
+     x="197.5"
      text-anchor="middle">mesh_conductor</text>
   <path
      inkscape:connector-curvature="0"
      id="path22"
-     d="m 379.4254,450.34874 c -7.7004,0 -16.8571,0 -25.4148,0"
+     d="m 197.5,507.8314 c 0,-7.7004 0,-16.8571 0,-25.4148"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="rotate(-90,570.47137,154.87737)"
+     transform="translate(4,544)"
      id="polygon24"
-     points="279.5001,-61.5868 275,-71.5867 270.5001,-61.5867 275,-66.5867 275.0001,-61.5867 275,-66.5867 "
+     points="193.5001,-61.5867 193.5001,-61.5867 193.5,-66.5867 198.0001,-61.5868 193.5,-71.5867 189.0001,-61.5867 193.5,-66.5867 193.5001,-61.5867 "
      stroke="#000000"
      fill="#000000" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon29"
-     points="28.5,-216 99.5,-216 99.5,-252 28.5,-252 "
+     points="426,-252 355,-252 355,-216 426,-216 "
      stroke="#000000"
      fill="none" />
   <text
-     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     style="letter-spacing:0px;-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
      id="text31"
      fill="#000000"
      font-size="14px"
      font-family="Times, serif"
-     y="310.04865"
-     x="64.5"
+     y="313.70001"
+     x="394.5"
      text-anchor="middle">contour</text>
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon36"
-     points="184.5,-432 303.5,-432 303.5,-468 184.5,-468 "
+     points="395,-468 276,-468 276,-432 395,-432 "
      stroke="#000000"
      fill="none" />
   <text
-     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     style="letter-spacing:0px;-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
      id="text38"
      fill="#000000"
      font-size="14px"
      font-family="Times, serif"
-     y="94.048653"
-     x="244.5"
+     y="97.700012"
+     x="339.5"
      text-anchor="middle">mesh_calculus</text>
   <path
      inkscape:connector-curvature="0"
      id="path43"
-     d="m 75.5318,288.28984 c 19.4076,-31.0754 61.805,-95.9447 105.9682,-143.9412 9.5606,-10.3904 21.0355,-20.7404 31.5573,-29.5577"
+     d="M 410.9281,291.989 C 418.8025,282.1289 427.398,269.2441 431.5,256 c 4.7338,-15.2837 4.2552,-20.5762 0,-36 -11.0498,-40.0525 -41.8904,-77.3461 -64.8365,-100.8061"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon45"
-     points="216.5069,-428.8028 215.5003,-422.1516 220.3701,-431.9769 209.7868,-429.1055 216.5069,-428.8028 212.6436,-425.6286 "
+     points="362.6074,-424.862 362.6074,-424.862 359.0667,-428.3924 365.7847,-428.0487 355.526,-431.9228 359.43,-421.6754 359.0667,-428.3924 362.6074,-424.862 "
      stroke="#000000"
      fill="#000000" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon50"
-     points="204,-360 284,-360 284,-396 204,-396 "
+     points="375.5,-396 295.5,-396 295.5,-360 375.5,-360 "
      stroke="#000000"
      fill="none" />
   <text
-     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     style="letter-spacing:0px;-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
      id="text52"
      fill="#000000"
      font-size="14px"
      font-family="Times, serif"
-     y="166.04865"
-     x="244.5"
+     y="169.70001"
+     x="339.5"
      text-anchor="middle">integrals</text>
   <path
      inkscape:connector-curvature="0"
      id="path57"
-     d="m 244.5,144.18004 c 0,-7.7004 0,-16.8571 0,-25.4148"
+     d="m 339.5,147.8314 c 0,-7.7004 0,-16.8571 0,-25.4148"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon59"
-     points="244,-426.5867 248.5001,-421.5868 244,-431.5867 239.5001,-421.5867 244,-426.5867 244.0001,-421.5867 "
+     points="335.5001,-421.5867 335.5001,-421.5867 335.5,-426.5867 340.0001,-421.5868 335.5,-431.5867 331.0001,-421.5867 335.5,-426.5867 335.5001,-421.5867 "
      stroke="#000000"
      fill="#000000" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon64"
-     points="170.5,-144 291.5,-144 291.5,-180 170.5,-180 "
+     points="343,-180 222,-180 222,-144 343,-144 "
      stroke="#000000"
      fill="none" />
   <text
-     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     style="letter-spacing:0px;-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
      id="text66"
      fill="#000000"
      font-size="14px"
      font-family="Times, serif"
-     y="382.04865"
-     x="231.5"
+     y="385.70001"
+     x="286.5"
      text-anchor="middle">line_conductor</text>
   <path
      inkscape:connector-curvature="0"
      id="path71"
-     d="m 189.3588,360.18004 c -24.4187,-10.5279 -55.1508,-23.7776 -80.0149,-34.4975"
+     d="m 313.753,363.8314 c 13.6859,-9.124 30.4385,-20.2924 45.1297,-30.0865"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon73"
-     points="104.2187,-216.6602 110.5918,-218.8129 99.6272,-218.6397 107.0285,-210.5483 104.2187,-216.6602 108.8102,-214.6806 "
+     points="354.9352,-210.2901 354.9352,-210.2901 359.0955,-213.0636 357.4314,-206.5459 363.2558,-215.8372 352.4391,-214.0344 359.0955,-213.0636 354.9352,-210.2901 "
      stroke="#000000"
      fill="#000000" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon78"
-     points="212.5,-288 335.5,-288 335.5,-324 212.5,-324 "
+     points="337,-252 198,-252 198,-216 337,-216 "
      stroke="#000000"
      fill="none" />
   <text
-     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     style="letter-spacing:0px;-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
      id="text80"
      fill="#000000"
      font-size="14px"
      font-family="Times, serif"
-     y="238.04865"
-     x="274.5"
-     text-anchor="middle">line_magnetics</text>
+     y="313.70001"
+     x="271.5"
+     text-anchor="middle">mesh_impedance</text>
   <path
      inkscape:connector-curvature="0"
      id="path85"
-     d="m 246.0861,359.95874 c 7.0965,-9.9638 15.024,-22.8271 19.4139,-35.6101 6.8321,-19.8947 8.9785,-43.6119 9.4722,-61.7037"
+     d="m 282.7149,363.8314 c -1.6043,-7.7004 -3.5119,-16.8571 -5.2948,-25.4148"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon87"
-     points="274.5342,-282.8956 278.974,-277.842 274.5941,-287.8952 269.9747,-277.9498 274.5342,-282.8956 274.4744,-277.8959 "
+     points="273.3757,-205.7969 273.3757,-205.7969 272.3559,-210.6918 277.7811,-206.7148 271.3361,-215.5867 268.9703,-204.8791 272.3559,-210.6918 273.3757,-205.7969 "
      stroke="#000000"
      fill="#000000" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon92"
-     points="117.5,-216 256.5,-216 256.5,-252 117.5,-252 "
+     points="179.5,-252 125.5,-252 125.5,-216 179.5,-216 "
      stroke="#000000"
      fill="none" />
   <text
-     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     style="letter-spacing:0px;-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
      id="text94"
      fill="#000000"
      font-size="14px"
      font-family="Times, serif"
-     y="310.04865"
-     x="187.5"
-     text-anchor="middle">mesh_impedance</text>
+     y="313.70001"
+     x="156.5"
+     text-anchor="middle">viz</text>
   <path
      inkscape:connector-curvature="0"
      id="path99"
-     d="m 220.3969,360.18004 c -4.9643,-8.1235 -10.9191,-17.8677 -16.3897,-26.8196"
+     d="m 253.6955,363.8314 c -18.701,-10.3575 -42.1587,-23.3495 -61.3438,-33.9751"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon101"
-     points="200.8598,-211.3203 207.3069,-209.4004 198.2526,-215.5867 199.6273,-204.7074 200.8598,-211.3203 203.4671,-207.0539 "
+     points="188.3419,-214.149 188.3419,-214.149 183.968,-216.5716 190.5222,-218.0856 179.594,-218.9941 186.1617,-210.2125 183.968,-216.5716 188.3419,-214.149 "
      stroke="#000000"
      fill="#000000" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon106"
-     points="313,-216 367,-216 367,-252 313,-252 "
+     points="419,-324 296,-324 296,-288 419,-288 "
      stroke="#000000"
      fill="none" />
   <text
-     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     style="letter-spacing:0px;-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
      id="text108"
      fill="#000000"
      font-size="14px"
      font-family="Times, serif"
-     y="310.04865"
-     x="340.5"
-     text-anchor="middle">viz</text>
+     y="241.70001"
+     x="361.5"
+     text-anchor="middle">line_magnetics</text>
   <path
      inkscape:connector-curvature="0"
      id="path113"
-     d="m 259.0053,360.18004 c 13.9181,-9.1937 30.9786,-20.463 45.8868,-30.3106"
+     d="m 355.9485,219.8314 c -2.3788,-7.7851 -5.2123,-17.0585 -7.8518,-25.6967"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon115"
-     points="308.7091,-213.3308 307.0173,-206.8201 312.8811,-216.0866 302.0568,-214.3297 308.7091,-213.3308 304.5371,-210.5749 "
-     stroke="#000000"
-     fill="#000000" />
-  <path
-     inkscape:connector-curvature="0"
-     id="path120"
-     d="m 266.9297,216.18004 c -3.279,-7.8697 -7.1917,-17.2602 -10.8242,-25.9781"
-     stroke="#000000"
-     fill="none" />
-  <polygon
-     transform="translate(0.5,540.34864)"
-     id="polygon122"
-     points="253.5953,-354.9713 259.6723,-352.0868 251.6722,-359.5867 251.3646,-348.6252 253.5953,-354.9713 255.5184,-350.356 "
+     points="344.0485,-350.0232 344.0485,-350.0232 342.5874,-354.805 348.3521,-351.3382 341.1263,-359.5867 339.7449,-348.7082 342.5874,-354.805 344.0485,-350.0232 "
      stroke="#000000"
      fill="#000000" />
   <polygon
-     transform="translate(0.5,540.34864)"
-     id="polygon127"
-     points="270,-504 324,-504 324,-540 270,-540 "
+     transform="translate(4,544)"
+     id="polygon120"
+     points="290.5,-540 236.5,-540 236.5,-504 290.5,-504 "
      stroke="#000000"
      fill="none" />
   <text
-     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
-     id="text129"
+     style="letter-spacing:0px;-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text122"
      fill="#000000"
      font-size="14px"
      font-family="Times, serif"
-     y="22.048653"
-     x="297.5"
+     y="25.700012"
+     x="267.5"
      text-anchor="middle">utils</text>
   <path
      inkscape:connector-curvature="0"
-     id="path134"
-     d="m 257.8741,72.18004 c 6.0421,-8.2082 13.3022,-18.0708 19.948,-27.0991"
+     id="path127"
+     d="M 321.3314,75.8314 C 312.7848,67.2848 302.4443,56.9443 293.1198,47.6198"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
+     id="polygon129"
+     points="288.9844,-496.5156 288.9844,-496.5156 285.4488,-500.0512 292.1664,-499.6976 281.9133,-503.5867 285.8024,-493.3336 285.4488,-500.0512 288.9844,-496.5156 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path134"
+     d="M 264.2254,443.976 C 295.1379,436.3794 330.4759,423.1078 355.5,400 c 17.7917,-16.4293 27.8515,-42.3786 33.2794,-62.201"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(4,544)"
      id="polygon136"
-     points="280.4817,-499.56 281.1416,-492.8656 283.4458,-503.5867 273.8936,-498.201 280.4817,-499.56 277.5176,-495.5333 "
+     points="384.7852,-206.2245 384.7852,-206.2245 385.9986,-211.075 389.1506,-205.1324 387.212,-215.9255 380.4197,-207.3166 385.9986,-211.075 384.7852,-206.2245 "
      stroke="#000000"
      fill="#000000" />
   <path
      inkscape:connector-curvature="0"
      id="path141"
-     d="m 222.615,432.29654 c -22.6395,-9.0039 -48.7295,-21.1547 -70.115,-35.9479 -25.9472,-17.9487 -50.6167,-44.2776 -67.1971,-63.8257"
+     d="m 219.9585,435.8314 c 10.962,-8.8682 24.3114,-19.6677 36.168,-29.2596"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon143"
-     points="81.4109,-211.9011 88.0682,-210.9369 78.2122,-215.7442 81.1508,-205.1793 81.4109,-211.9011 84.6095,-208.0581 "
+     points="252.2742,-137.5477 252.2742,-137.5477 256.1615,-140.6924 255.1045,-134.0491 260.0487,-143.8372 249.4439,-141.0462 256.1615,-140.6924 252.2742,-137.5477 "
      stroke="#000000"
      fill="#000000" />
   <path
      inkscape:connector-curvature="0"
      id="path148"
-     d="m 264.3969,432.18004 c -4.9643,-8.1235 -10.9191,-17.8677 -16.3897,-26.8196"
+     d="M 264.3252,441.3367 C 300.4122,432.8156 344.9309,419.5103 381.5,400 c 55.127,-29.4112 108,-27.518 108,-90 0,0 0,0 0,-72 0,-56.4512 -55.9702,-97.6676 -99.5321,-121.1976"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon150"
-     points="244.8598,-139.3203 251.3069,-137.4004 242.2526,-143.5867 243.6273,-132.7074 244.8598,-139.3203 247.4671,-135.0539 "
+     points="385.7459,-427.3137 385.7459,-427.3137 381.3156,-429.6316 387.8319,-431.3011 376.8852,-431.9494 383.6599,-423.3264 381.3156,-429.6316 385.7459,-427.3137 "
      stroke="#000000"
      fill="#000000" />
   <path
      inkscape:connector-curvature="0"
      id="path155"
-     d="M 208.9302,444.35354 C 127.5432,432.94634 0.5,400.12154 0.5,306.34864 c 0,0 0,0 0,-72 0,-81.5076 102.232,-117.8308 174.3486,-133.314"
+     d="m 198.2751,435.6845 c 1.486,-18.983 5.7921,-48.9974 18.2249,-71.6845 5.8692,-10.71 14.5439,-20.6469 23.2778,-29.0007"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon157"
-     points="179.4134,-440.3557 175.4225,-434.9406 184.3109,-441.363 173.6093,-443.7561 179.4134,-440.3557 174.5159,-439.3484 "
-     stroke="#000000"
-     fill="#000000" />
-  <path
-     inkscape:connector-curvature="0"
-     id="path162"
-     d="m 208.9499,433.48194 c -18.5358,-8.0907 -36.5588,-19.9231 -47.4499,-37.1333 -12.1828,-19.2512 -3.2486,-44.3812 7.3405,-63.1926"
-     stroke="#000000"
-     fill="none" />
-  <polygon
-     transform="translate(0.5,540.34864)"
-     id="polygon164"
-     points="170.9988,-211.5879 172.2617,-204.9806 173.5865,-215.8662 164.5607,-209.6384 170.9988,-211.5879 168.4112,-207.3095 "
+     points="235.9924,-209.1953 235.9924,-209.1953 239.6958,-212.5547 239.0158,-205.8623 243.3993,-215.914 232.9691,-212.5284 239.6958,-212.5547 235.9924,-209.1953 "
      stroke="#000000"
      fill="#000000" />
   <polygon
-     transform="translate(0.5,540.34864)"
-     id="polygon169"
-     points="353.5,-288 488.5,-288 488.5,-324 353.5,-324 "
+     transform="translate(4,544)"
+     id="polygon162"
+     points="163,-324 28,-324 28,-288 163,-288 "
      stroke="#000000"
      fill="none" />
   <text
-     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
-     id="text171"
+     style="letter-spacing:0px;-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text164"
      fill="#000000"
      font-size="14px"
      font-family="Times, serif"
-     y="238.04865"
-     x="421.5"
+     y="241.70001"
+     x="99.5"
      text-anchor="middle">mesh_magnetics</text>
   <path
      inkscape:connector-curvature="0"
-     id="path176"
-     d="m 342.0742,436.11724 c 38.6696,-9.765 81.9705,-23.8123 93.4258,-39.7686 28.47,-39.6564 12.0883,-99.6586 -1.5409,-134.4235"
+     id="path169"
+     d="M 183.7693,435.7958 C 166.5686,412.153 137.3162,369.0392 120.5,328 112.3124,308.0185 106.9295,284.1717 103.6653,266.0464"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
-     id="polygon178"
-     points="431.4499,-283.3125 437.5127,-280.3984 429.5492,-287.9371 429.1883,-276.9772 431.4499,-283.3125 433.3505,-278.6878 "
+     transform="translate(4,544)"
+     id="polygon171"
+     points="99.6521,-278.0322 99.6521,-278.0322 98.8175,-282.962 104.089,-278.7833 97.983,-287.8919 95.2152,-277.2811 98.8175,-282.962 99.6521,-278.0322 "
      stroke="#000000"
      fill="#000000" />
   <polygon
-     transform="translate(0.5,540.34864)"
-     id="polygon183"
-     points="378.5,-360 455.5,-360 455.5,-396 378.5,-396 "
+     transform="translate(4,544)"
+     id="polygon176"
+     points="591,-396 514,-396 514,-360 591,-360 "
      stroke="#000000"
      fill="none" />
   <text
-     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
-     id="text185"
+     style="letter-spacing:0px;-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text178"
      fill="#000000"
      font-size="14px"
      font-family="Times, serif"
-     y="166.04865"
-     x="417.5"
+     y="169.70001"
+     x="556.5"
      text-anchor="middle">sphtools</text>
   <path
      inkscape:connector-curvature="0"
-     id="path190"
-     d="m 342.4677,437.19434 c 44.1994,-9.9469 96.8359,-24.6287 113.0323,-40.8457 58.1232,-58.1973 81.8108,-107.4813 43,-180 -7.4578,-13.935 -20.2756,-24.895 -33.5424,-33.194"
+     id="path183"
+     d="M 264.2159,450.6885 C 343.695,445.3424 469.9648,431.9608 503.5,400 560.5471,345.631 562.222,243.8202 559.2109,194.3837"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
-     id="polygon192"
-     points="460.0494,-359.7556 466.6335,-361.1341 455.7264,-362.2679 462.1115,-353.3526 460.0494,-359.7556 464.3725,-357.2434 "
+     transform="translate(4,544)"
+     id="polygon185"
+     points="555.1893,-349.917 555.1893,-349.917 554.8293,-354.904 559.6776,-350.241 554.4692,-359.891 550.701,-349.593 554.8293,-354.904 555.1893,-349.917 "
      stroke="#000000"
      fill="#000000" />
   <polygon
-     transform="translate(0.5,540.34864)"
-     id="polygon197"
-     points="348.5,-144 425.5,-144 425.5,-180 348.5,-180 "
+     transform="translate(4,544)"
+     id="polygon190"
+     points="89,-180 12,-180 12,-144 89,-144 "
      stroke="#000000"
      fill="none" />
   <text
-     style="-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
-     id="text199"
+     style="letter-spacing:0px;-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text192"
      fill="#000000"
      font-size="14px"
      font-family="Times, serif"
-     y="382.04865"
-     x="387.5"
+     y="385.70001"
+     x="54.5"
      text-anchor="middle">suhtools</text>
   <path
      inkscape:connector-curvature="0"
-     id="path204"
-     d="m 303.7623,432.18004 c 14.1929,-9.124 31.5659,-20.2924 46.8013,-30.0865"
+     id="path197"
+     d="M 161.4151,435.8314 C 142.7011,426.4089 119.6568,414.8062 99.76,404.7883"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
+     id="polygon199"
+     points="95.5051,-139.34 95.5051,-139.34 91.0393,-141.5886 97.5289,-143.3593 86.5734,-143.8372 93.4814,-135.3207 91.0393,-141.5886 95.5051,-139.34 "
+     stroke="#000000"
+     fill="#000000" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path204"
+     d="m 192.3073,435.7623 c -7.0239,-24.6695 -19.6181,-68.9025 -27.8427,-97.7892"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(4,544)"
      id="polygon206"
-     points="354.5408,-141.1334 352.7683,-134.6442 358.7467,-143.8372 347.9015,-142.2149 354.5408,-141.1334 350.3349,-138.4296 "
+     points="160.389,-206.2926 160.389,-206.2926 159.0197,-211.1015 164.717,-207.5249 157.6505,-215.9104 156.061,-205.0603 159.0197,-211.1015 160.389,-206.2926 "
      stroke="#000000"
      fill="#000000" />
   <path
      inkscape:connector-curvature="0"
      id="path211"
-     d="m 284.1325,431.88644 c 4.8494,-10.417 10.9896,-23.6837 16.3675,-35.5378 9.4771,-20.8898 20.0063,-44.6014 27.8823,-62.4405"
+     d="M 272.5418,291.8257 C 274.2453,272.9578 278.7266,243.0362 290.5,220 c 5.2931,-10.3566 13.0981,-20.2346 20.9303,-28.6437"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon213"
-     points="329.9441,-211.1166 332.0444,-204.7261 331.9613,-215.6916 323.8093,-208.3571 329.9441,-211.1166 327.9268,-206.5416 "
+     points="307.5634,-352.7797 307.5634,-352.7797 311.0615,-356.3524 310.7788,-349.6315 314.5595,-359.925 304.348,-355.928 311.0615,-356.3524 307.5634,-352.7797 "
      stroke="#000000"
      fill="#000000" />
   <path
      inkscape:connector-curvature="0"
      id="path218"
-     d="m 188.2413,288.03514 c 1.3249,-18.7179 5.0114,-48.2807 15.2587,-71.6865 4.3196,-9.8664 10.7891,-19.5783 17.3199,-27.9858"
+     d="M 269.6281,291.7886 C 267.2487,260.4829 266.0209,195.2758 290.5,148 c 5.3479,-10.3283 13.1684,-20.1984 20.998,-28.6089"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon220"
-     points="223.6317,-356.0427 223.9557,-349.3237 226.7937,-359.916 216.9838,-355.0152 223.6317,-356.0427 220.4697,-352.1694 "
+     points="307.6294,-424.7433 307.6294,-424.7433 311.1248,-428.3186 310.8471,-421.5975 314.6202,-431.8938 304.4117,-427.8892 311.1248,-428.3186 307.6294,-424.7433 "
      stroke="#000000"
      fill="#000000" />
   <path
      inkscape:connector-curvature="0"
      id="path225"
-     d="m 184.3911,288.16004 c -4.446,-30.9943 -9.9379,-95.389 11.1089,-143.8114 4.559,-10.489 12.0028,-20.3 19.7275,-28.6052"
+     d="m 228.0971,291.8314 c -23.1062,-9.6724 -51.7009,-21.6423 -76.0548,-31.837"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon227"
-     points="218.3106,-428.2297 217.9956,-421.5102 221.8258,-431.7854 211.5952,-427.8376 218.3106,-428.2297 214.7954,-424.6739 "
+     points="147.8152,-284.1006 147.8152,-284.1006 143.203,-286.0313 149.5528,-288.2516 138.5908,-287.962 146.0775,-279.9496 143.203,-286.0313 147.8152,-284.1006 "
      stroke="#000000"
      fill="#000000" />
   <path
      inkscape:connector-curvature="0"
      id="path232"
-     d="m 246.246,288.27294 c 32.4065,-9.9712 72.8179,-22.4055 106.666,-32.8203"
+     d="M 268.5115,291.563 C 266.9749,281.1537 265.2672,267.8866 264.5,256 259.7233,181.9946 263.2835,94.5602 265.7203,50.4703"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon234"
-     points="357.4509,-286.4464 353.9954,-280.6749 362.2298,-287.9169 351.3486,-289.2769 357.4509,-286.4464 352.672,-284.9759 "
+     points="261.735,-493.7871 261.735,-493.7871 262.0225,-498.7789 266.2276,-493.5284 262.3099,-503.7706 257.2425,-494.0458 262.0225,-498.7789 261.735,-493.7871 "
      stroke="#000000"
      fill="#000000" />
   <path
      inkscape:connector-curvature="0"
      id="path239"
-     d="m 179.8995,288.07564 c -16.1686,-42.029 -49.0057,-147.2028 -4.3995,-215.727 18.6259,-28.6131 56.2482,-42.1787 84.8168,-48.539"
+     d="m 159.7523,219.9243 c 40.0233,-12.007 91.9515,-27.5854 129.6954,-38.9086"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon241"
-     points="264.9794,-517.5813 260.9689,-512.1807 269.8805,-518.5708 259.1877,-521.0027 264.9794,-517.5813 260.0783,-516.5917 "
+     points="285.6296,-363.0388 285.6296,-363.0388 290.4187,-364.4756 286.9227,-358.7286 295.2079,-365.9124 284.3365,-367.349 290.4187,-364.4756 285.6296,-363.0388 "
      stroke="#000000"
      fill="#000000" />
   <path
      inkscape:connector-curvature="0"
      id="path246"
-     d="m 376.8354,216.18004 c -25.2653,-10.2774 -56.9073,-23.1488 -82.9151,-33.7282"
+     d="M 129.8962,219.7623 C 173.2661,193.7404 252.9153,145.9508 300.5565,117.3661"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon248"
-     points="288.7471,-359.7978 295.0742,-362.0821 284.1156,-361.6818 291.683,-353.7454 288.7471,-359.7978 293.3786,-357.9137 "
+     points="296.7757,-426.7654 296.7757,-426.7654 301.0632,-429.3379 299.0909,-422.9067 305.3506,-431.9104 294.4604,-430.6241 301.0632,-429.3379 296.7757,-426.7654 "
      stroke="#000000"
      fill="#000000" />
   <path
      inkscape:connector-curvature="0"
      id="path253"
-     d="m 389.7537,216.34124 c -16.4497,-9.8592 -36.5378,-22.7442 -53.2537,-35.9926 -25.0866,-19.8827 -50.9072,-45.6974 -68.7838,-64.5781"
+     d="M 105.077,219.8202 C 115.6573,187.6992 141.2501,120.1394 181.5,76 195.4319,60.7219 214.6485,48.1088 231.3835,38.9255"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon255"
-     points="263.7218,-428.3057 270.4245,-427.7355 260.3023,-431.9536 263.8583,-421.5803 263.7218,-428.3057 267.1414,-424.6579 "
+     points="227.5315,-505.1525 227.5315,-505.1525 231.9539,-507.4856 229.6313,-501.1724 236.3762,-509.8186 225.4318,-509.1326 231.9539,-507.4856 227.5315,-505.1525 "
      stroke="#000000"
      fill="#000000" />
   <path
      inkscape:connector-curvature="0"
      id="path260"
-     d="m 400.9603,216.27924 c -10.3695,-9.8762 -22.5948,-22.7577 -31.4603,-35.9306 -29.2777,-43.5029 -51.4759,-100.8552 -63.0499,-134.354"
+     d="M 517.7268,152.7853 C 512.9377,151.1668 508.1079,149.5411 503.5,148 470.9219,137.1047 434.6471,125.1429 404.5136,115.2528"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon262"
-     points="304.3068,-499.2067 310.1728,-495.9142 302.7031,-503.9426 301.6483,-493.0276 304.3068,-499.2067 305.9105,-494.4709 "
+     points="400.4601,-428.7647 400.4601,-428.7647 395.7092,-430.3231 401.8627,-433.0405 390.9583,-431.8815 399.0576,-424.4888 395.7092,-430.3231 400.4601,-428.7647 "
      stroke="#000000"
      fill="#000000" />
   <path
      inkscape:connector-curvature="0"
      id="path267"
-     d="m 378.6754,146.19044 c -24.0445,-10.007 -55.2365,-22.9886 -81.4939,-33.9166"
+     d="M 529.8438,147.9357 C 500.6364,128.615 452.0033,97.8142 407.5,76 373.4972,59.3328 332.9708,44.183 304.2923,34.2011"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon269"
-     points="291.8695,-430.0774 298.2148,-432.3107 287.2533,-431.9986 294.7566,-424.0016 291.8695,-430.0774 296.4857,-428.1562 "
+     points="300.1288,-509.8551 300.1288,-509.8551 295.4007,-511.4816 301.5926,-514.1104 290.6726,-513.1081 298.6649,-505.5998 295.4007,-511.4816 300.1288,-509.8551 "
      stroke="#000000"
      fill="#000000" />
   <path
      inkscape:connector-curvature="0"
      id="path274"
-     d="M 409.2466,144.20244 C 400.0225,125.08884 383.818,94.71864 364.5,72.34864 355.1628,61.53624 343.4527,51.26694 332.4453,42.64364"
+     d="m 60.1993,363.7623 c 7.7092,-24.6695 21.532,-68.9025 30.5591,-97.7892"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon276"
-     points="327.6964,-500.9345 334.4002,-501.4914 323.7158,-503.9602 328.954,-494.3263 327.6964,-500.9345 331.6771,-497.9089 "
+     points="86.8642,-278.3656 86.8642,-278.3656 88.3556,-283.138 91.1593,-277.0233 89.847,-287.9104 82.569,-279.7078 88.3556,-283.138 86.8642,-278.3656 "
      stroke="#000000"
      fill="#000000" />
   <path
      inkscape:connector-curvature="0"
      id="path281"
-     d="m 391.8061,360.11094 c 5.8248,-24.6695 16.2687,-68.9025 23.0891,-97.7892"
+     d="m 80.2389,363.8314 c 12.8048,-9.0387 28.452,-20.0838 42.233,-29.8116"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
+     transform="translate(4,544)"
      id="polygon283"
-     points="415.5798,-283.0442 418.8104,-277.1439 416.7288,-287.9104 410.0513,-279.2121 415.5798,-283.0442 414.4308,-278.178 "
+     points="118.5996,-210.0703 118.5996,-210.0703 122.6845,-212.9537 121.1947,-206.3939 126.7693,-215.8372 116.0045,-213.7467 122.6845,-212.9537 118.5996,-210.0703 "
+     stroke="#000000"
+     fill="#000000" />
+  <polygon
+     transform="translate(4,544)"
+     id="polygon288"
+     points="117,-36 0,-36 0,0 117,0 "
+     stroke="#000000"
+     fill="none" />
+  <text
+     style="letter-spacing:0px;-inkscape-font-specification:sans-serif;font-family:sans-serif;font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;"
+     id="text290"
+     fill="#000000"
+     font-size="14px"
+     font-family="Times, serif"
+     y="529.70001"
+     x="62.5"
+     text-anchor="middle">thermal_noise</text>
+  <path
+     inkscape:connector-curvature="0"
+     id="path295"
+     d="m 96.5662,507.8314 c 17.5871,-9.3798 39.2254,-20.9202 57.9506,-30.907"
+     stroke="#000000"
+     fill="none" />
+  <polygon
+     transform="translate(4,544)"
+     id="polygon297"
+     points="150.6212,-67.1312 150.6212,-67.1312 155.0329,-69.4842 152.7388,-63.1606 159.4447,-71.8372 148.5035,-71.1018 155.0329,-69.4842 150.6212,-67.1312 "
      stroke="#000000"
      fill="#000000" />
   <path
      inkscape:connector-curvature="0"
-     id="path288"
-     d="m 375.6399,360.18004 c -5.3028,-8.1235 -11.6636,-17.8677 -17.5072,-26.8196"
+     id="path302"
+     d="M 61.4868,507.7623 C 60.1223,483.201 57.6804,439.2474 56.0752,410.3541"
      stroke="#000000"
      fill="none" />
   <polygon
-     transform="translate(0.5,540.34864)"
-     id="polygon290"
-     points="354.7529,-211.3998 361.2543,-209.6727 352.0198,-215.5867 353.7178,-204.7531 354.7529,-211.3998 357.486,-207.2129 "
+     transform="translate(4,544)"
+     id="polygon304"
+     points="52.0598,-133.9258 52.0598,-133.9258 51.7824,-138.9181 56.5528,-134.1754 51.505,-143.9104 47.5667,-133.6761 51.7824,-138.9181 52.0598,-133.9258 "
      stroke="#000000"
      fill="#000000" />
 </svg>
