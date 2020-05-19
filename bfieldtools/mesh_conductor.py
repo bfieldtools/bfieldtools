@@ -16,7 +16,6 @@ __all__ = [
 from time import time
 import pickle
 
-from mayavi import mlab
 import trimesh
 import numpy as np
 from scipy.sparse import issparse
@@ -725,6 +724,7 @@ class StreamFunction(np.ndarray):
         """
         Plot the stream function
         """
+        from mayavi import mlab
 
         mesh = self.mesh_conductor.mesh
         scalars = self.vert

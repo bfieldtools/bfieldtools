@@ -50,8 +50,6 @@ import numpy as np
 from scipy.special import factorial, lpmn
 import quadpy
 
-from mayavi import mlab
-
 from .mesh_calculus import gradient_matrix
 from .utils import tri_normals_and_areas
 
@@ -1007,6 +1005,7 @@ def plotYlms(sph, lmax, polar=False):
     polar: boolean
         plot polar representation?
     """
+    from mayavi import mlab
 
     theta = np.reshape(sph.sp[:, 1], (sph.Np, sph.Np))
     phi = np.reshape(sph.sp[:, 2], (sph.Np, sph.Np))
@@ -1057,6 +1056,7 @@ def plotYlm(sph, l, m):
         order m
 
     """
+    from mayavi import mlab
 
     theta = np.reshape(sph.sp[:, 1], (sph.Np, sph.Np))
     phi = np.reshape(sph.sp[:, 2], (sph.Np, sph.Np))
@@ -1097,6 +1097,7 @@ def plotWlm(sph, l, m):
     obj: mayavi object
 
     """
+    from mayavi import mlab
 
     _Wlm = Wlm(l, m, sph.sp[:, 1], sph.sp[:, 2])
     _Wlm = sphvec2cart(sph.sp, _Wlm)
@@ -1169,6 +1170,7 @@ def plotVlm(sph, l, m):
     obj: mayavi object
 
     """
+    from mayavi import mlab
 
     _Vlm = Vlm(l, m, sph.sp[:, 1], sph.sp[:, 2])
     _Vlm = sphvec2cart(sph.sp, _Vlm)
@@ -1202,6 +1204,7 @@ def plotBVlm_volume(sph, l, m, lim, Np, offset):
     obj: mayavi object
 
     """
+    from mayavi import mlab
 
     x, y, z = np.meshgrid(
         np.linspace(-lim + offset[0], lim + offset[0], Np),
@@ -1242,6 +1245,7 @@ def plotXlm(sph, l, m):
     obj: mayavi object
 
     """
+    from mayavi import mlab
 
     _Xlm = Xlm(l, m, sph.sp[:, 1], sph.sp[:, 2])
     _Xlm = sphvec2cart(sph.sp, _Xlm)
