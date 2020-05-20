@@ -1,23 +1,11 @@
 .. -*- mode: rst -*-
 
-
-.. raw:: html
-
-  <div class="col-xs-12 jumbotron align-center">
-    <div class="col-xs-12 nopad">
-      <img src="https://bfieldtools.github.io/_static/logo_simple_w_name.svg" style="max-width: 1000px; width: 100%" alt="bfieldtools">
-      <p>
-      Open-source Python software for magnetic field modeling
-      </p>
-
-      
+|bfieldtools|_
 |
 |Travis|_ |Codecov|_ |Black|_ |Conda|_ |pypi|_   
 
-.. raw:: html
-  
-    </div>
-    </div>
+.. |bfieldtools| image:: https://bfieldtools.github.io/_static/logo_simple_w_name.svg
+.. _bfieldtools: https://bfieldtools.github.io
 
 .. |Travis| image:: https://travis-ci.com/bfieldtools/bfieldtools.svg?token=zziPTxRYBYdrsGqgmpjH&branch=master
 .. _Travis: https://travis-ci.com/bfieldtools/bfieldtools
