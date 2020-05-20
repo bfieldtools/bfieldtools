@@ -9,6 +9,8 @@ def main():
         requirements = f.read().splitlines()
 
     setup(
+        maintainer="Rasmus Zetter",
+        maintainer_email="rasmus.zetter@aalto.fi",
         name="bfieldtools",
         description="Open-source Python software for magnetic field modeling",
         long_description=codecs.open("README.rst", encoding="utf8").read(),

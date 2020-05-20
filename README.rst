@@ -1,7 +1,9 @@
 .. -*- mode: rst -*-
 
 |bfieldtools|_
+
 |
+
 |Travis|_ |Codecov|_ |Black|_ |Conda|_ |pypi|_   
 
 .. |bfieldtools| image:: https://bfieldtools.github.io/_static/logo_simple_w_name.svg
