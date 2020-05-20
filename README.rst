@@ -79,27 +79,24 @@ Citing bfieldtools
 
 When using the software package in a publication, please cite:
 
-Preprints in ArXiv
+Preprints in ArXiv (coming up)
 
 .. code-block:: BiBTeX
 
     @article{makinen2020bfieldtools,
-        title = Magnetic-field modeling with surface currents: Physical and
-  computational principles of bfieldtools},
+        title = {Magnetic-field modeling with surface currents: Physical and computational principles of bfieldtools},
         year = {2020},
         journal = {ArXiv},
-        author = {Mäkinen, Antti J. and Zetter, Rasmus and Iivanainen, Joonas and 
-  Zevenhoven, Koos C. J. and Parkkonen Lauri and Ilmoniemi, Risto J.},
-        url = {}
+        author = {Mäkinen, Antti J. and Zetter, Rasmus and Iivanainen, Joonas and Zevenhoven, Koos C. J. and Parkkonen, Lauri and Ilmoniemi, Risto J.},
+        url = {https://arxiv.org/}
     }
     
     @article{zetter2020bfieldtools,
         title = {Magnetic-field modeling with surface currents: Implementation and usage of bfieldtools},
         year = {2020},
         journal = {ArXiv},
-        author = {Zetter, Rasmus and Mäkinen, Antti J. and Iivanainen, Joonas and 
-  Zevenhoven, Koos C. J. and Ilmoniemi, Risto J. and Parkkonen Lauri},
-        url = {}
+        author = {Zetter, Rasmus and Mäkinen, Antti J. and Iivanainen, Joonas and Zevenhoven, Koos C. J. and Ilmoniemi, Risto J. and Parkkonen, Lauri},
+        url = {https://arxiv.org/}
     }
     
 Contributing
