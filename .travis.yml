@@ -42,8 +42,7 @@ jobs:
       - pytest --cov=bfieldtools ./tests
       # Push coverage to codecov.io
       - bash <(curl -s https://codecov.io/bash)
-
-    - stage: 'deploy to pypi'
+      
       deploy:
         provider: pypi
         user: "__token__"
