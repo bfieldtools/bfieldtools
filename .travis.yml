@@ -44,13 +44,11 @@ jobs:
       - bash <(curl -s https://codecov.io/bash)
 
     - stage: 'deploy to pypi'
-      if: tag IS present AND branch = master
       deploy:
         provider: pypi
         user: "__token__"
         password: $PYPI_TOKEN
         on:
-          branch: master
           tags: true
 #          
 #    - stage: 'deploy docs'
