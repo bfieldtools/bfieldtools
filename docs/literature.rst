@@ -8,14 +8,14 @@ For a more theoretical and in-depth overview of the physics and computations use
 .. bibliography:: references.bib
    :list: bullet
    :style: mystyle
-   :filter: key == "makinen"
+   :filter: key == "bfieldtools_physics"
 
 For a more software-centred  of bfieldtools and an overview of coil design, please see
 
 .. bibliography:: references.bib
    :list: bullet
    :style: mystyle
-   :filter: key == "zetter"
+   :filter: key == "bfieldtools_software"
 
 Selected papers
 ^^^^^^^^^^^^^^^^
