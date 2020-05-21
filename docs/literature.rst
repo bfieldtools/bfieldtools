@@ -5,11 +5,17 @@ The functionality of bfieldtools is based on a stream-function discretization of
 
 For a more theoretical and in-depth overview of the physics and computations used in bfieldtools, please see
 
-Mäkinen et al., 2020 (write out whole reference, link DOI)
+.. bibliography:: references.bib
+   :list: bullet
+   :style: mystyle
+   :filter: key == "makinen"
 
 For a more software-centred  of bfieldtools and an overview of coil design, please see
 
-Zetter et al., 2020 (write out whole reference, link DOI)
+.. bibliography:: references.bib
+   :list: bullet
+   :style: mystyle
+   :filter: key == "zetter"
 
 Selected papers
 ^^^^^^^^^^^^^^^^

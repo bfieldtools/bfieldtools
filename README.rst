@@ -88,7 +88,7 @@ When using the software package in a publication, please cite these preprints av
         year = {2020},
         journal = {ArXiv},
         author = {Zetter, Rasmus and Mäkinen, Antti J. and Iivanainen, Joonas and Zevenhoven, Koos C. J. and Ilmoniemi, Risto J. and Parkkonen, Lauri},
-        url = {https://arxiv.org/}
+        url = {https://arxiv.org/abs/2005.10056}
     }
     
 Contributing
