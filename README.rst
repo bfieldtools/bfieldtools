@@ -71,9 +71,7 @@ For advanced installation instructions, see the online `installation instruction
 Citing bfieldtools
 ^^^^^^^^^^^^^^^^^^
 
-When using the software package in a publication, please cite:
-
-Preprints in ArXiv (coming up)
+When using the software package in a publication, please cite these preprints available in ArXiv:
 
 .. code-block:: BiBTeX
 
@@ -82,7 +80,7 @@ Preprints in ArXiv (coming up)
         year = {2020},
         journal = {ArXiv},
         author = {Mäkinen, Antti J. and Zetter, Rasmus and Iivanainen, Joonas and Zevenhoven, Koos C. J. and Parkkonen, Lauri and Ilmoniemi, Risto J.},
-        url = {https://arxiv.org/}
+        url = {https://arxiv.org/abs/2005.10060}
     }
     
     @article{zetter2020bfieldtools,
