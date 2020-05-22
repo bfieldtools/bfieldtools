@@ -17,21 +17,15 @@ bfieldtools can most easily be installed using the pip package manager.
 From source
 -----------
 
-To download the most-recent release of bfieldtools, run
+To install the *development* version of bfieldtools, run
 
 .. code-block:: bash
+    wget https://github.com/bfieldtools/bfieldtools/archive/master.zip
 
-    curl -s https://api.github.com/repos/bfieldtools/bfieldtools/releases/latest
-    
-Alternatively, to download the *development* version of bfieldtools, run
-
-.. code-block:: bash
-    curl -s https://api.github.com/repos/bfieldtools/bfieldtools/releases/latest
-    
-After downloading, basic setuptools workflow applies.
+After downloading and unzipping the archive, basic setuptools workflow applies.
     
 .. code-block:: bash
-
+    cd bfieldtools/
     python setup.py install
 
 
