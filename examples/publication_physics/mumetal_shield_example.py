@@ -1,6 +1,6 @@
 """
-Example of a cylindrical perfect mu-metal shield
-=======================================================
+Field distortion by a perfect mu-metal shield
+===========================================================
 """
 
 import numpy as np

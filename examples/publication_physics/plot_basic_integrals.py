@@ -1,5 +1,5 @@
 """
-Plot different field patterns the basic integrals
+Analytic integrals as scalar fields
 ========================================================
 
 """

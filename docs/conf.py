@@ -162,6 +162,7 @@ sphinx_gallery_conf = {
         "sphinx_gallery": None,
     },
     "backreferences_dir": "./generated/",
+    "ignore_pattern": r"/test",
 }
 
 
