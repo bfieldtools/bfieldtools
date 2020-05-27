@@ -1,5 +1,5 @@
 """
-Design a field of a closed enclosed in a volume
+Design a field enclosed in a volume
 ================================================
 """
 
