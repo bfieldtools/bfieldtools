@@ -1,6 +1,6 @@
 """
-Example of designing biplanar 
-==========================================
+Example of designing a shielded biplanar coil
+===============================================
 """
 
 import numpy as np
@@ -51,8 +51,15 @@ P = -np.linalg.solve(M22, M21)
 A1, Beta1 = coil1.sph_couplings
 A2, Beta2 = coil2.sph_couplings
 
+# Use lines below to get coulings with different normalization
+# from bfieldtools.sphtools import compute_sphcoeffs_mesh
+# A1, Beta1 = compute_sphcoeffs_mesh(mesh1, 5, normalization='energy', R=1)
+# A2, Beta2 = compute_sphcoeffs_mesh(mesh2, 5, normalization='energy', R=1)
 
-x = y = np.linspace(-0.8, 0.8, 150)
+# Beta1 = Beta1[:, coil1.inner_vertices]
+# Beta2 = Beta2[:, coil2.inner_vertices]
+
+x = y = np.linspace(-0.8, 0.8, 50)  # 150)
 X, Y = np.meshgrid(x, y, indexing="ij")
 points = np.zeros((X.flatten().shape[0], 3))
 points[:, 0] = X.flatten()
@@ -78,8 +85,8 @@ ssmax = eigvalsh(C.T @ C, M, eigvals=[M.shape[1] - 1, M.shape[1] - 1])
 
 #%% Specify spherical harmonic and calculate corresponding shielded field
 beta = np.zeros(Beta1.shape[0])
-# beta[7] = 1 # Gradient
-beta[2] = 1  # Homogeneous
+beta[7] = 1  # Gradient
+# beta[2] = 1  # Homogeneous
 
 # Minimum residual
 _lambda = 1e3

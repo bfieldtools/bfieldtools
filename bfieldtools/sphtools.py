@@ -780,7 +780,7 @@ def basis_fields(p, lmax, normalization="default", R=1):
     return np.moveaxis(B1, 0, 2), np.moveaxis(B2, 0, 2)
 
 
-def compute_sphcoeffs_mesh(mesh, lmax):
+def compute_sphcoeffs_mesh(mesh, lmax, normalization="default", R=1):
     """
     Computes multipole moment (spherical harmonics coefficient) transformation
     from the mesh.
@@ -790,15 +790,20 @@ def compute_sphcoeffs_mesh(mesh, lmax):
     mesh: mesh object - the surface mesh
     lmax: int
         maximum degree l of the fit
-
+    normalization: str
+        'default' (Ylm**2 integrated over solid angle to 1)
+        'energy' (field energy of basis fields normalized to 1 in R-ball)
+    R: float                           
+        radius in the energy normalization
     Returns
     -------
-    alm: (lmax*(lmax+2)xNvertices array
+    Calm: (lmax*(lmax+2)xNvertices array
           transformation from the mesh to alm coefficients (r**l-terms)
-    blm: (lmax*(lmax+2)xNvertices array
+    Cblm: (lmax*(lmax+2)xNvertices array
           transformation from the mesh to blm coefficients (r**(-l)-terms)
 
     """
+    mu0 = 1e-7 * 4 * np.pi
 
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
     tri_normals, tri_areas = tri_normals_and_areas(mesh.vertices, mesh.faces)
@@ -806,8 +811,8 @@ def compute_sphcoeffs_mesh(mesh, lmax):
     centers = np.mean(mesh.vertices[mesh.faces], axis=1)
     centers_sp = cartesian2spherical(centers)
 
-    alm = np.zeros((lmax * (lmax + 2), mesh.vertices.shape[0]))
-    blm = np.zeros((lmax * (lmax + 2), mesh.vertices.shape[0]))
+    Calm = np.zeros((lmax * (lmax + 2), mesh.vertices.shape[0]))
+    Cblm = np.zeros((lmax * (lmax + 2), mesh.vertices.shape[0]))
 
     idx = 0
     for l in range(1, lmax + 1):
@@ -822,12 +827,17 @@ def compute_sphcoeffs_mesh(mesh, lmax):
             # Combine rotated gradient (operates on stream function -> j)
             integral_alm = alm_terms[0] @ Gx + alm_terms[1] @ Gy + alm_terms[2] @ Gz
             integral_blm = blm_terms[0] @ Gx + blm_terms[1] @ Gy + blm_terms[2] @ Gz
-            blm[idx] = -1 / ((2 * l + 1) * l) * integral_blm
-            alm[idx] = 1 / ((2 * l + 1) * (l + 1)) * integral_alm
+            # Default normalization
+            Cblm[idx] = -1 / ((2 * l + 1) * l) * integral_blm
+            Calm[idx] = 1 / ((2 * l + 1) * (l + 1)) * integral_alm
+            if normalization == "energy":
+                Cblm[idx] *= np.sqrt(R ** (2 * l + 1) * l * mu0)
+                Calm[idx] *= np.sqrt(((l + 1) * mu0) / (R ** (2 * l + 1)))
+
             idx += 1
         print("l = %d computed" % (l))
 
-    return alm, blm
+    return Calm, Cblm
 
 
 ###################################
