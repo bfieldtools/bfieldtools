@@ -102,14 +102,12 @@ target_points = (
 if PLOT:
     f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
 
-    coil.plot_mesh(representation="surface", figure=f, opacity=0.15)
-    shield.plot_mesh(
-        representation="surface", cull_front=True, color=(0.9, 0.9, 0.9), figure=f
-    )
+    coil.plot_mesh(representation="surface", figure=f, opacity=0.5)
+    shield.plot_mesh(representation="surface", opacity=0.2, figure=f)
     mlab.points3d(*target_points.T)
 
     f.scene.isometric_view()
-    f.scene.camera.zoom(1.2)
+    f.scene.camera.zoom(1.1)
 
     if SAVE_FIGURES:
         mlab.savefig(
