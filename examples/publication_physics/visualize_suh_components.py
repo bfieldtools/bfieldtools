@@ -32,9 +32,12 @@ plane.apply_transform(t)
 bunny = load_example_mesh("bunny_repaired")
 bunny.vertices -= bunny.vertices.mean(axis=0)
 
+mlab.figure(bgcolor=(1, 1, 1))
 for mesh in (sphere, plane, bunny):
-    mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
-
+    s = mlab.triangular_mesh(
+        *mesh.vertices.T, mesh.faces, color=(0.5, 0.5, 0.5), opacity=0.2
+    )
+s.scene.z_plus_view()
 
 Nc = 20
 basis_sphere = SuhBasis(sphere, Nc)
