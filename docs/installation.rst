@@ -1,27 +1,14 @@
 Install
 ============
 
-bfieldtools is a pure Python package, and depends on several other Python packages. bfieldtools requires Python version 3.7 or higher.
+bfieldtools is a pure Python package, and depends on several other Python packages. bfieldtools requires Python version 3.6 or higher.
 
-
-Using conda
------------
-
-We strongly recommend the Anaconda_ distribution of Python, which comes with a variety of scientific packages pre-bundled, and includes the conda command line tool for installing new packages and managing different package sets (“environments”) for different projects. Alternatively, the more bare-bones Miniconda_ distribution also works.
-
-
-.. _Anaconda: https://www.anaconda.com/
-.. _Miniconda: : https://docs.conda.io/en/latest/miniconda.html
-
-.. code-block:: bash
-
-    conda install -c conda-forge bfieldtools
 
 
 Using pip
 -----------
 
-bfieldtools can also be installed using the pip package manager. 
+bfieldtools can most easily be installed using the pip package manager. 
 
 .. code-block:: bash
 
@@ -30,21 +17,15 @@ bfieldtools can also be installed using the pip package manager.
 From source
 -----------
 
-To download the most-recent release of bfieldtools, run
+To install the *development* version of bfieldtools, run
 
 .. code-block:: bash
+    wget https://github.com/bfieldtools/bfieldtools/archive/master.zip
 
-    curl -s https://api.github.com/repos/bfieldtools/bfieldtools/releases/latest
-    
-Alternatively, to download the *development* version of bfieldtools, run
-
-.. code-block:: bash
-    curl -s https://api.github.com/repos/bfieldtools/bfieldtools/releases/latest
-    
-After downloading, basic setuptools workflow applies.
+After downloading and unzipping the archive, basic setuptools workflow applies.
     
 .. code-block:: bash
-
+    cd bfieldtools/
     python setup.py install
 
 
