@@ -150,7 +150,7 @@ plot_3d_current_loops(loops, colors="auto", figure=f)
 B_target = coil.B_coupling(target_points) @ coil.s
 
 mlab.quiver3d(*target_points.T, *B_target.T, mode="arrow", scale_factor=0.75)
-###############################################################
+#%%
 
 f.scene.isometric_view()
 f.scene.camera.zoom(0.95)

@@ -48,7 +48,7 @@ joined_planes = combine_meshes((coil_plus, coil_minus))
 # Create MeshConductor object, which finds the holes and sets the boundary condition
 coil = MeshConductor(mesh_obj=joined_planes, fix_normals=True)
 
-##############################################################
+#%%
 # Set up target and stray field points
 
 # Here, the target points are on a volumetric grid within a sphere
@@ -74,7 +74,7 @@ target_points = (
 )
 
 
-##############################################################
+#%%
 # Create bfield specifications used when optimizing the coil geometry
 
 # The absolute target field amplitude is not of importance,
@@ -95,7 +95,7 @@ target_spec = {
 
 bfield_specification = [target_spec]
 
-##############################################################
+#%%
 # Run QP solver
 import mosek
 
@@ -107,7 +107,7 @@ coil.s, prob = optimize_streamfunctions(
     solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
 )
 
-#############################################################
+#%%
 # Plot the computed streamfunction
 
 coil.s.plot(ncolors=256)

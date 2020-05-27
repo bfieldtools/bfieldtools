@@ -31,7 +31,7 @@ mesh = trimesh.Trimesh(points0, tris0)
 scalars = np.zeros(7)
 scalars[0] = 1
 
-#########################################################
+#%%
 #%% Plot element
 def plot_element():
     # Stream function
@@ -48,7 +48,7 @@ def plot_element():
 mlab.figure(bgcolor=(1, 1, 1))
 plot_element()
 
-#########################################################
+#%%
 #%% Scalar potential
 points = np.array([[0.01, 1, 1], [0.01, 1, -1], [0.01, -1, -1], [0.01, -1, 1]]) * 2
 tris = np.array([[0, 1, 2], [2, 3, 0]])
@@ -67,7 +67,7 @@ s3.actor.property.line_width = 3.0
 s3.scene.x_plus_view()
 plot_element()
 
-#########################################################
+#%%
 #%% Vector potential
 points = np.array([[1, 1, 0.01], [1, -1, 0.01], [-1, -1, 0.01], [-1, 1, 0.01]]) * 2
 tris = np.array([[0, 1, 2], [2, 3, 0]])
@@ -82,7 +82,7 @@ vectors.actor.property.render_lines_as_tubes = True
 vectors.actor.property.line_width = 3.0
 plot_element()
 
-#########################################################
+#%%
 #%% Magnetic field and its magnitude
 from bfieldtools.viz import plot_data_on_vertices
 

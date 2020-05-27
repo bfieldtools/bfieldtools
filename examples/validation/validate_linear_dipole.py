@@ -27,7 +27,7 @@ from bfieldtools.integrals import triangle_potential_dipole_linear
 from bfieldtools.integrals import omega
 from bfieldtools.utils import tri_normals_and_areas
 
-#########################################################
+#%%
 #%% Test potential shape slightly above the surface
 # points = np.array([[0,0,0],
 #                   [1,0,0],
@@ -67,7 +67,7 @@ for i in range(3):
         plt.ylabel("x")
         plt.xlabel("y")
 
-#########################################################
+#%%
 #%% Test summation formula
 # NOTE: the sign of tilde(omega)_i in the bfieldtools
 # (triangle_potential_dipole_linear) is equal to -omega_i
@@ -98,7 +98,7 @@ plt.axis("image")
 plt.tight_layout()
 
 
-#########################################################
+#%%
 #%% Test asymptotic behavour
 def dip_potential(Reval, Rdip, moment):
     R = Reval - Rdip

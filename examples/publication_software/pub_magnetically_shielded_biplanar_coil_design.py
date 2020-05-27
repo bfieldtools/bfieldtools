@@ -69,7 +69,7 @@ shield = MeshConductor(
 )
 
 
-###############################################################
+#%%
 # Set up target  points and plot geometry
 
 # Here, the target points are on a volumetric grid within a sphere
@@ -116,7 +116,7 @@ if PLOT:
         mlab.close()
 
 
-################################################################
+#%%
 # Let's design a coil without taking the magnetic shield into account
 
 # The absolute target field amplitude is not of importance,
@@ -148,7 +148,7 @@ coil.s, coil.prob = optimize_streamfunctions(
 
 if SAVE_STREAMFUNCTION:
     np.save(SAVE_DIR + "biplanar_streamfunction.npy", coil.s.vert)
-##############################################################
+#%%
 # Plot coil windings and target points
 
 loops = scalar_contour(coil.mesh, coil.s.vert, N_contours=10)
@@ -171,7 +171,7 @@ if PLOT:
             SAVE_DIR + "shielded_biplanar_ignored.png", figure=f, magnification=4,
         )
         mlab.close()
-#################################################################
+#%%
 # Now, let's compute the effect of the shield on the field produced by the coil
 
 # Points slightly inside the shield
@@ -189,7 +189,7 @@ shield.s = StreamFunction(
     np.linalg.solve(shield.U_coupling(points), coil.U_coupling(points) @ coil.s), shield
 )
 
-##########################################################
+#%%
 # Plot the difference in field when taking the shield into account
 
 if PLOT:
@@ -212,7 +212,7 @@ if PLOT:
     f.scene.isometric_view()
     mlab.colorbar(B_quiver, title="Difference in magnetic field (a.u.)")
 
-###############################################################
+#%%
 # Let's redesign the coil taking the shield into account prospectively
 
 shield.coupling = np.linalg.solve(shield.U_coupling(points), coil.U_coupling(points))
@@ -236,7 +236,7 @@ coil.s2, coil.prob2 = optimize_streamfunctions(
     solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
 )
 
-##############################################################
+#%%
 # Plot the newly designed coil windings and field at the target points
 
 loops = scalar_contour(coil.mesh, coil.s2.vert, N_contours=10)
@@ -258,7 +258,7 @@ if PLOT:
         )
         mlab.close()
 
-###############################################################
+#%%
 # Plot difference in field
 
 

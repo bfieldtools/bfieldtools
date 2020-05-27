@@ -110,7 +110,7 @@ scene.scene.camera.compute_view_plane_normal()
 scene.scene.render()
 
 
-############################################
+#%%
 #%% Calculate primary potential matrix
 # Compute slightly inside
 d = 1e-3
@@ -126,11 +126,11 @@ s.enable_contours = True
 s.contour.filled_contours = True
 s.contour.number_of_contours = 30
 
-##################################################
+#%%
 #%% Calculate linear collocation BEM matrix
 P_shield = shield.U_coupling(shieldmesh.vertices - d * shieldmesh.vertex_normals)
 
-####################################################################
+#%%
 #%% Solve equivalent stream function for the perfect linear mu-metal layer
 I_shield = np.linalg.solve(-P_shield, P_prim @ sprim)
 # I_shield = P_prim @ I_prim

@@ -11,9 +11,9 @@ import matplotlib.pyplot as plt
 import trimesh
 from mayavi import mlab
 
-#########################################################
+#%%
 # Test potential shape slightly above the surface
-#########################################################
+#%%
 x = np.sin(np.pi / 6)
 y = np.cos(np.pi / 6)
 points = (
@@ -36,9 +36,9 @@ mesh = trimesh.Trimesh(points, tris)
 scalars = np.zeros(7)
 scalars[0] = 1
 
-#########################################################
+#%%
 # Linear dipole density
-#########################################################
+#%%
 
 # Sign ok
 points = np.array([[0.1, 1, 1], [0.1, 1, -1], [0.1, -1, -1], [0.1, -1, 1]]) * 2
@@ -76,7 +76,7 @@ mlab.triangular_mesh(
 )
 mlab.colorbar()
 
-#########################################################
+#%%
 #
 points = np.zeros((100, 3))
 points[:, 2] = np.linspace(-1, 1, 100)
@@ -94,7 +94,7 @@ plt.plot(o2)
 mlab.plot3d(*points.T, points[:, 2], colormap="seismic")
 mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
 
-#########################################################
+#%%
 # Plot x_i
 
 from bfieldtools.integrals import x_distance
@@ -113,7 +113,7 @@ mlab.colorbar()
 mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, representation="wireframe")
 mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
 
-#########################################################
+#%%
 # Uniform charge density
 from bfieldtools.legacy.integrals import triangle_potential_uniform as u1
 from bfieldtools.integrals import triangle_potential_uniform as u2
@@ -136,7 +136,7 @@ mlab.colorbar()
 mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, representation="wireframe")
 mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
 
-#########################################################
+#%%
 #
 from bfieldtools.integrals import d_distance
 
@@ -155,7 +155,7 @@ mlab.colorbar()
 mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, representation="wireframe")
 mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
 
-#########################################################
+#%%
 #
 from bfieldtools.legacy.mesh_magnetics import (
     magnetic_field_coupling_analytic as magnetic_field_coupling_analytic_old,
@@ -171,7 +171,7 @@ mlab.figure("b field")
 mlab.quiver3d(*mesh2.vertices.T, *b1[:, :, 0].T)
 mlab.quiver3d(*mesh2.vertices.T, *b2[:, :, 0].T)
 
-#########################################################
+#%%
 # Gammma
 from bfieldtools.legacy.integrals import gamma0 as g1
 from bfieldtools.integrals import gamma0 as g2

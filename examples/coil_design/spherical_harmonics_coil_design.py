@@ -50,7 +50,7 @@ coil = MeshConductor(
 )
 
 
-##############################################################
+#%%
 # Set up target spherical harmonics components
 
 target_alms = np.zeros((coil.opts["N_sph"] * (coil.opts["N_sph"] + 2),))
@@ -59,7 +59,7 @@ target_blms = np.zeros((coil.opts["N_sph"] * (coil.opts["N_sph"] + 2),))
 target_blms[3] += 1
 
 
-##############################################################
+#%%
 # Create bfield specifications used when optimizing the coil geometry
 
 
@@ -70,7 +70,7 @@ target_spec = {
 }
 
 
-##############################################################
+#%%
 # Run QP solver
 import mosek
 
@@ -83,7 +83,7 @@ coil.s, prob = optimize_streamfunctions(
 )
 
 
-#############################################################
+#%%
 # Plot coil windings
 
 coil.s.discretize(N_contours=8).plot_loops()

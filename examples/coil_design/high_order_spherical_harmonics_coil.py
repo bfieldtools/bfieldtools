@@ -40,7 +40,7 @@ coil = MeshConductor(
     mesh_obj=joined_planes, fix_normals=True, basis_name="suh", N_suh=100
 )
 
-##############################################################
+#%%
 # Set up target and stray field points
 
 # Here, the target points are on a volumetric grid within a sphere
@@ -66,7 +66,7 @@ target_points = (
 )
 
 
-##############################################################
+#%%
 # Create bfield specifications used when optimizing the coil geometry
 
 
@@ -96,7 +96,7 @@ target_spec = {
 }
 
 
-##############################################################
+#%%
 # Run QP solver
 import mosek
 
@@ -108,6 +108,6 @@ coil.s, prob = optimize_streamfunctions(
     solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
 )
 
-#############################################################
+#%%
 # Plot coil windings and target points
 coil.s.discretize(N_contours=10).plot_loops()

@@ -13,7 +13,7 @@ from bfieldtools import sphtools
 # Create basis object for plotting, evaluation of inner products etc.
 sph = SphBasis(40)
 
-###############################################################################
+#%%
 # Plot Spherical harmonics Ylms on the sphere
 # Plot Ylms up to l = 4
 mlab.figure(bgcolor=(1, 1, 1))
@@ -23,7 +23,7 @@ obj = sphtools.plotYlms(sph, lmax=4)
 mlab.figure(bgcolor=(1, 1, 1))
 obj = sphtools.plotYlm(sph, l=3, m=3)
 
-###############################################################################
+#%%
 # Plot vector spherical harmonics Vlms / Wlms / Xlms on the sphere
 
 # Plot Vlm with l=2, m=2
@@ -42,7 +42,7 @@ obj = sphtools.plotXlm(sph, l=2, m=2)
 obj.scene.z_plus_view()
 
 
-###############################################################################
+#%%
 # Plot fields of vector spherical harmonics Vlms / Wlms on a volume
 
 # Plot BVlm with l=2, m=2
@@ -55,7 +55,7 @@ offset = np.array((0, 0, 0))  # include origin
 mlab.figure(bgcolor=(1, 1, 1))
 obj = sphtools.plotBWlm_volume(sph, l=2, m=2, lim=1, Np=10, offset=offset)
 
-###############################################################################
+#%%
 # Test inner products in quadrature points defined in sph-object
 
 Ylm1 = sphtools.ylm(2, 1, sph.sqp[:, 1], sph.sqp[:, 2])
@@ -89,7 +89,7 @@ print("Inner product between X_10 and V_10 is %f" % sph.innerproduct(Xlm1, Vlm1)
 print("Inner product between X_10 and W_10 is %f" % sph.innerproduct(Xlm1, Vlm1))
 
 
-###############################################################################
+#%%
 # Simple example of the calculation of sph spectrum of magnetic field
 # defined on the sphere using the inner product.
 

@@ -110,7 +110,7 @@ shield = MeshConductor(
 # shield.mesh = shield.mesh.subdivide()
 
 
-###############################################################
+#%%
 # Set up target  points and plot geometry
 
 # Here, the target points are on a volumetric grid within a sphere
@@ -144,7 +144,7 @@ if PLOT:
     mlab.points3d(*target_points.T)
 
 
-###############################################################
+#%%
 # Compute C matrices that are used to compute the generated magnetic field
 
 mutual_inductance = coil.mutual_inductance(shield)
@@ -155,7 +155,7 @@ mutual_inductance = coil.mutual_inductance(shield)
 shield.M_coupling = np.linalg.solve(-shield.inductance, mutual_inductance.T)
 secondary_C = shield.B_coupling(target_points) @ -shield.M_coupling
 
-###############################################################
+#%%
 # Create bfield specifications used when optimizing the coil geometry
 
 # The absolute target field amplitude is not of importance,
@@ -217,7 +217,7 @@ for idx, t in enumerate(time):
         }
     )
 
-###############################################################
+#%%
 # Run QP solver
 
 import mosek
@@ -234,7 +234,7 @@ from bfieldtools.mesh_conductor import StreamFunction
 
 shield.induced_s = StreamFunction(shield.M_coupling @ coil.s, shield)
 
-###############################################################
+#%%
 # Plot coil windings and target points
 
 
@@ -286,7 +286,7 @@ if PLOT:
 # mlab.title('Coils which minimize the transient effects of conductive shield')
 
 
-###############################################################
+#%%
 # For comparison, let's see how the coils look when we ignore the conducting shield
 
 
@@ -342,7 +342,7 @@ if PLOT:
         mlab.savefig(SAVE_PATH + "eddy_no.png", figure=f, magnification=4)
         mlab.close()
 
-####################################################################
+#%%
 # Finally, let's compare the time-courses
 
 
