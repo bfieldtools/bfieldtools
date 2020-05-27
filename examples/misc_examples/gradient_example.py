@@ -28,7 +28,7 @@ vals = np.exp(-0.5 * (r / r.max()))
 tri_centers = planemesh.vertices[planemesh.faces].mean(axis=1).T
 tri_centers[1] += 0.1
 
-###############################################################################
+#%%
 #  Calculate the gradient (e.g., flow from potential)
 g = gradient(vals, planemesh, rotated=False)
 
@@ -40,7 +40,7 @@ plot_data_on_vertices(planemesh, vals, ncolors=15, figure=scene)
 vecs = mlab.quiver3d(*tri_centers, *g, color=(1, 1, 1), mode="arrow", scale_factor=5)
 vecs.glyph.glyph_source.glyph_position = "center"
 
-###############################################################################
+#%%
 # The same but rotated (e.g. current density from a stream function)
 g = gradient(vals, planemesh, rotated=True)
 

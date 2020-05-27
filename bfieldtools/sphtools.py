@@ -1142,6 +1142,8 @@ def plotBWlm_volume(sph, l, m, lim, Np, offset):
 
     """
 
+    from mayavi import mlab
+
     x, y, z = np.meshgrid(
         np.linspace(-lim + offset[0], lim + offset[0], Np),
         np.linspace(-lim + offset[1], lim + offset[1], Np),

@@ -16,7 +16,7 @@ from bfieldtools.integrals import gamma0
 from bfieldtools.integrals import omega
 from bfieldtools.utils import tri_normals_and_areas
 
-#########################################################
+#%%
 #%% Create there orthogonal planes
 points = np.array([[0, 0, 0], [1, 0.5, 0], [0, 1, 0]]) + 0.15
 

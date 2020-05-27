@@ -43,7 +43,7 @@ joined_planes = combine_meshes((coil_plus, coil_minus))
 # Create mesh class object
 coil = MeshConductor(mesh_obj=joined_planes, fix_normals=True, basis_name="inner")
 
-###############################################################
+#%%
 # Set up target and stray field points. Here, the target points are on a planar
 # 4x4 grid slightly smaller than the coil dimensions.
 
@@ -89,13 +89,13 @@ target_abs_error = np.zeros_like(target_field)
 target_abs_error[:, 1] += 0.1
 target_abs_error[:, 0::2] += 0.1
 
-###############################################################
+#%%
 # Plot target points and mesh
 coil.plot_mesh(opacity=0.1)
 mlab.quiver3d(*target_points.T, *target_field.T)
 
 
-###############################################################
+#%%
 # Compute coupling matrix that is used to compute the generated magnetic field, create field specification
 
 
@@ -105,7 +105,7 @@ target_spec = {
     "target": target_field,
 }
 
-###############################################################
+#%%
 # Run QP solver, plot result
 
 import mosek

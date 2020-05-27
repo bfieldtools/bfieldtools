@@ -26,7 +26,7 @@ if path not in sys.path:
 from bfieldtools.integrals import triangle_potential_uniform
 from bfieldtools.utils import tri_normals_and_areas
 
-#########################################################
+#%%
 #%% Test potential shape slightly above the surface
 points = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0]])
 
@@ -52,7 +52,7 @@ plt.imshow(pot[:, 0].reshape(Nx, Nx), extent=(xx.min(), xx.max(), xx.max(), xx.m
 plt.ylabel("x")
 plt.xlabel("y")
 
-#########################################################
+#%%
 #%% Test asymptotic behavour by comparing potential of  charge at the
 #    center of mass of the triangle having the same first moment
 def charge_potential(Reval, Rcharge, moment):

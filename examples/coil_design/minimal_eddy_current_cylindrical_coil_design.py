@@ -49,13 +49,8 @@ rotation_matrix = np.array(
 coilmesh.apply_transform(rotation_matrix)
 
 coilmesh1 = coilmesh.copy()
-# coilmesh1.apply_scale(1.3)
 
 coilmesh2 = coilmesh.copy()
-
-# coilmesh1 = coilmesh.union(coilmesh1)
-# coilmesh1 = coilmesh1.subdivide().subdivide()
-# coilmesh2 = coilmesh.subdivide()
 
 
 # Create mesh class object
@@ -93,10 +88,9 @@ shield = MeshConductor(
 )
 
 
-###############################################################
+#%%
 # Set up target  points and plot geometry
 
-# Here, the target points are on a volumetric grid within a sphere
 
 center = np.array([0, 0, 0])
 
@@ -121,13 +115,13 @@ target_points = (
 
 # Plot coil, shield and target points
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-coil.plot_mesh()
-shield.plot_mesh()
+coil.plot_mesh(figure=f, opacity=0.2)
+shield.plot_mesh(figure=f, opacity=0.2)
 mlab.points3d(*target_points.T)
 
 
-###############################################################
-# Compute C matrices that are used to compute the generated magnetic field
+#%%
+# Compute eddy-current coupling
 
 mutual_inductance = coil.mutual_inductance(shield)
 
@@ -137,7 +131,7 @@ mutual_inductance = coil.mutual_inductance(shield)
 shield.M_coupling = np.linalg.solve(-shield.inductance, mutual_inductance.T)
 secondary_C = shield.B_coupling(target_points) @ -shield.M_coupling
 
-###############################################################
+#%%
 # Create bfield specifications used when optimizing the coil geometry
 
 # The absolute target field amplitude is not of importance,
@@ -157,23 +151,7 @@ target_spec = {
 from scipy.linalg import eigh
 
 l, U = eigh(shield.resistance, shield.inductance, eigvals=(0, 500))
-#
-# U = np.zeros((shield.inductance.shape[0], len(li)))
-# U[shield.inner_verts, :] = Ui
 
-
-#
-# plt.figure()
-# plt.plot(1/li)
-
-
-# shield.M_coupling = np.linalg.solve(-shield.inductance, mutual_inductance.T)
-# secondary_C = shield.B_coupling(target_points) @ -shield.M_coupling
-
-
-#
-# tmin, tmax = 0.001, 0.001
-# Fs=10000
 
 time = [0.001, 0.003, 0.005]
 eddy_error = [0.05, 0.01, 0.0025]
@@ -199,8 +177,8 @@ for idx, t in enumerate(time):
         }
     )
 
-###############################################################
-# Run QP solver
+#%%
+# Run QP solver to optimize stream function
 
 import mosek
 
@@ -216,7 +194,7 @@ from bfieldtools.mesh_conductor import StreamFunction
 
 shield.induced_s = StreamFunction(shield.M_coupling @ coil.s, shield)
 
-###############################################################
+#%%
 # Plot coil windings and target points
 
 
@@ -251,7 +229,7 @@ f.scene.camera.parallel_projection = 1
 
 f.scene.camera.zoom(1.4)
 
-###############################################################
+#%%
 # For comparison, let's see how the coils look when we ignore the conducting shield
 
 
@@ -298,7 +276,7 @@ f.scene.camera.parallel_projection = 1
 f.scene.camera.zoom(1.4)
 
 
-####################################################################
+#%%
 # Finally, let's compare the time-courses
 
 

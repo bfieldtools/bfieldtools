@@ -15,7 +15,7 @@ from bfieldtools.utils import load_example_mesh
 import numpy as np
 from mayavi import mlab
 
-###############################################
+#%%
 # We create a set of wire loops by picking a single (arbitrary) surface-harmonic mode
 # from a plane mesh.  Finally, we discretize the  mode into a set of wire loops, which we plot.
 
@@ -36,7 +36,7 @@ c = LineConductor(
 c.plot_loops(origin=np.array([0, -100, 0]))
 
 
-###############################################
+#%%
 # Now, we create a shifted copy of the wire loops, and the calculate the
 # mutual_inductance between two sets of line conductors
 
@@ -50,7 +50,7 @@ c2.plot_loops(figure=fig, origin=np.array([0, -100, 0]))
 Mself = c.line_mutual_inductance(c, separate_loops=True, radius=1e-3)
 M2 = c.line_mutual_inductance(c2, separate_loops=True)
 
-###############################################
+#%%
 # Now, we plot the inductance matrices
 
 import matplotlib.pyplot as plt

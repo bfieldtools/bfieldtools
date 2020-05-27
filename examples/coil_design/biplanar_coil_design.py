@@ -42,7 +42,7 @@ coil = MeshConductor(
     mesh_obj=joined_planes, fix_normals=True, basis_name="suh", N_suh=100
 )
 
-##############################################################
+#%%
 # Set up target and stray field points
 
 # Here, the target points are on a volumetric grid within a sphere
@@ -76,7 +76,7 @@ stray_points = stray_points_mesh.vertices + center
 n_stray_points = len(stray_points)
 
 
-##############################################################
+#%%
 # Create bfield specifications used when optimizing the coil geometry
 
 # The absolute target field amplitude is not of importance,
@@ -98,7 +98,7 @@ stray_spec = {
 
 bfield_specification = [target_spec, stray_spec]
 
-##############################################################
+#%%
 ## Compute the optimal stream function, either using a numerical solver or regularized least squares
 
 import mosek
@@ -112,7 +112,7 @@ coil.s, prob = optimize_streamfunctions(
 )
 
 
-#############################################################
+#%%
 # Plot the optimized stream function, then discretize it and plot coil windings and the resultant magnetic field
 
 coil.s.plot()
@@ -125,7 +125,7 @@ B_target = loops.magnetic_field(target_points)
 mlab.quiver3d(*target_points.T, *B_target.T)
 
 
-#######################################################
+#%%
 # Lets also do the same coil optimization using regularized least-squares.
 # Now we can't specify inequality constraints (e.g. use error margins in the specification).
 
@@ -137,7 +137,7 @@ coil.s2 = optimize_lsq(
 )
 
 
-#############################################################
+#%%
 # Plot the optimized stream function, then discretize it and plot coil windings and the resultant magnetic field
 
 coil.s2.plot()
@@ -150,7 +150,7 @@ B_target = loops2.magnetic_field(target_points)
 mlab.quiver3d(*target_points.T, *B_target.T)
 
 
-##############################################################
+#%%
 # Plot cross-section of magnetic field and magnetic potential of the discretized loops
 
 x = y = np.linspace(-12, 12, 250)

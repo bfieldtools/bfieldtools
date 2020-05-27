@@ -26,7 +26,7 @@ if path not in sys.path:
 from bfieldtools.integrals import gamma0
 from bfieldtools.utils import tri_normals_and_areas
 
-#########################################################
+#%%
 #%% Test potential shape slightly above the surface
 points = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0]])
 
@@ -54,7 +54,7 @@ plt.imshow(
 plt.ylabel("x")
 plt.xlabel("y")
 
-#########################################################
+#%%
 """ Test potential at directly at the edge. As the line has no
     perpendicular dimensions, the potential is infinite at the edge.
     The regularization factor given to the function apprximates the line

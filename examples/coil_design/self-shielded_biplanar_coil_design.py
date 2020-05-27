@@ -45,13 +45,13 @@ mesh2.apply_scale(1.4)
 coil = MeshConductor(mesh_obj=mesh1, basis_name="inner", N_sph=4)
 shieldcoil = MeshConductor(mesh_obj=mesh2, basis_name="inner", N_sph=4)
 
-##############################################################
+#%%
 # Plot geometry
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
 coil.plot_mesh(opacity=0.2, figure=f)
 shieldcoil.plot_mesh(opacity=0.2, figure=f)
 
-##############################################################
+#%%
 # Compute inductances and coupling
 
 
@@ -66,7 +66,7 @@ P = -np.linalg.solve(M22, M21)
 A1, Beta1 = coil.sph_couplings
 A2, Beta2 = shieldcoil.sph_couplings
 
-############################################################
+#%%
 # Precalculations for the solution
 
 # Minimization of magnetic energy with spherical harmonic constraint
@@ -78,7 +78,7 @@ from scipy.linalg import eigvalsh
 
 ssmax = eigvalsh(C.T @ C, M, eigvals=[M.shape[1] - 1, M.shape[1] - 1])
 
-############################################################
+#%%
 # Specify spherical harmonic and calculate corresponding shielded field
 
 beta = np.zeros(Beta1.shape[0])
@@ -96,7 +96,7 @@ I2inner = P @ I1inner
 coil.s = StreamFunction(I1inner, coil)
 shieldcoil.s = StreamFunction(I2inner, shieldcoil)
 
-######################################################################3
+#%%
 # Do a quick 3D plot
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
@@ -104,7 +104,7 @@ f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800
 coil.s.plot(figure=f, contours=20)
 shieldcoil.s.plot(figure=f, contours=20)
 
-############################################################
+#%%
 # Compute the field and scalar potential on an XY-plane
 
 x = y = np.linspace(-8, 8, 150)
@@ -127,7 +127,7 @@ U1 = CU1 @ coil.s
 U2 = CU2 @ shieldcoil.s
 
 
-##############################################################
+#%%
 # Now, plot the field streamlines and scalar potential
 
 

@@ -69,13 +69,8 @@ shield = MeshConductor(
 )
 
 
-###############################################################
+#%%
 # Set up target  points and plot geometry
-
-# Here, the target points are on a volumetric grid within a sphere
-# Set up target and stray field points
-
-# Here, the target points are on a volumetric grid within a sphere
 
 center = np.array([9, 0, 0]) * scaling_factor
 
@@ -102,16 +97,16 @@ target_points = (
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
 
-coil.plot_mesh(representation="surface")
-shield.plot_mesh(representation="surface", cull_front=True, color=(0.9, 0.9, 0.9))
+coil.plot_mesh(representation="surface", figure=f, opacity=0.5)
+shield.plot_mesh(representation="surface", opacity=0.2, figure=f)
 mlab.points3d(*target_points.T)
 
 
 f.scene.isometric_view()
-f.scene.camera.zoom(1.2)
+f.scene.camera.zoom(1.1)
 
 
-################################################################
+#%%
 # Let's design a coil without taking the magnetic shield into account
 
 # The absolute target field amplitude is not of importance,
@@ -142,7 +137,7 @@ coil.s, coil.prob = optimize_streamfunctions(
 )
 
 
-##############################################################
+#%%
 # Plot coil windings and target points
 
 loops = scalar_contour(coil.mesh, coil.s.vert, N_contours=10)
@@ -155,12 +150,12 @@ plot_3d_current_loops(loops, colors="auto", figure=f)
 B_target = coil.B_coupling(target_points) @ coil.s
 
 mlab.quiver3d(*target_points.T, *B_target.T, mode="arrow", scale_factor=0.75)
-
+#%%
 
 f.scene.isometric_view()
 f.scene.camera.zoom(0.95)
 
-#################################################################
+#%%
 # Now, let's compute the effect of the shield on the field produced by the coil
 
 # Points slightly inside the shield
@@ -178,7 +173,7 @@ shield.s = StreamFunction(
     np.linalg.solve(shield.U_coupling(points), coil.U_coupling(points) @ coil.s), shield
 )
 
-##########################################################
+#%%
 # Plot the difference in field when taking the shield into account
 
 f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
@@ -200,7 +195,7 @@ B_quiver = mlab.quiver3d(
 f.scene.isometric_view()
 mlab.colorbar(B_quiver, title="Difference in magnetic field (a.u.)")
 
-###############################################################
+#%%
 # Let's redesign the coil taking the shield into account prospectively
 
 shield.coupling = np.linalg.solve(shield.U_coupling(points), coil.U_coupling(points))
@@ -225,7 +220,7 @@ coil.s2, coil.prob2 = optimize_streamfunctions(
     solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
 )
 
-##############################################################
+#%%
 # Plot the newly designed coil windings and field at the target points
 
 loops = scalar_contour(coil.mesh, coil.s2.vert, N_contours=10)
@@ -243,7 +238,7 @@ f.scene.isometric_view()
 f.scene.camera.zoom(0.95)
 
 
-###############################################################
+#%%
 # Plot difference in field
 
 

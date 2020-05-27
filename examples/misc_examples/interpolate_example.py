@@ -20,7 +20,7 @@ from bfieldtools import utils
 import pkg_resources
 
 
-#############################################################################
+#%%
 # Load a simple mesh and compute an example scalar function on it.
 # In this case, the scalar function is an eigenvector of a generalized eigenvalue decomposition
 
@@ -44,7 +44,7 @@ scalars[inner_verts] = v[:, 12]
 original_scalars = scalars.copy()
 original_mesh = mesh.copy()
 
-#####################################################################
+#%%
 # Plot original scalars and mesh
 
 scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
@@ -57,7 +57,7 @@ mlab.triangular_mesh(
 )
 
 
-#####################################################################
+#%%
 # Now, interpolate scalars
 
 
@@ -72,7 +72,7 @@ mesh = original_mesh.subdivide().subdivide()
 scalars = mlab.pipeline.probe_data(ug, *mesh.vertices.T)
 
 
-#####################################################################
+#%%
 # Plot subdivided mesh and interpolated scalars
 
 scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))

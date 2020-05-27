@@ -19,7 +19,7 @@ from bfieldtools import sphtools
 helmetmesh = load_example_mesh("meg_helmet")
 coil = MeshConductor(mesh_obj=helmetmesh, fix_normals=True)
 
-###############################################################
+#%%
 # Set up target and stray field points.
 # Here, the target points are on a volumetric grid within a sphere
 
@@ -50,7 +50,7 @@ target_points = (
 )
 
 
-###############################################################
+#%%
 # Specify target field and run solver.
 # Here, we specify the target field through the use of spherical harmonics.
 # We want to produce the field corresponding to a specific beta_l,m-component.
@@ -94,7 +94,7 @@ coil.s, prob = optimize_streamfunctions(
     solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
 )
 
-###############################################################
+#%%
 # Plot coil windings
 
 

@@ -46,7 +46,7 @@ mu0 = 4 * np.pi * 1e-7  # permeability of freespace
 # quad_degree = 2
 
 
-###############################################################################
+#%%
 # DC magnetic noise from unit disc
 
 mesh = trimesh.load(
@@ -112,7 +112,7 @@ plt.xlabel("Distance d/R")
 plt.ylabel("DC noise Bz (T/rHz)")
 plt.tight_layout()
 
-###############################################################################
+#%%
 # DC magnetic noise in the center of sphere with different radii
 # ------------
 
@@ -155,7 +155,7 @@ plt.ylabel(r"$B_z$ noise at DC (fT/rHz)")
 plt.tight_layout()
 
 
-##############################################################################
+#%%
 # Closed cylinder, DC noise
 # --------------------------
 
@@ -213,7 +213,7 @@ plt.ylabel("DC noise along axis (fT/rHz)")
 plt.tight_layout()
 
 
-##############################################################################
+#%%
 # Unit disc, AC noise
 # ------------------
 
