@@ -529,7 +529,7 @@ class CouplingMatrix:
         self.points = np.array([])
         self.matrix = np.array([])
 
-    def __call__(self, points, *fun_args, **kwargs):
+    def __call__(self, points, s=None, *fun_args, **kwargs):
         """
         Returns the output of self.function(self.parent, points).
         If some output has already been computed, use pre-computed values instead
@@ -539,6 +539,10 @@ class CouplingMatrix:
         ----------
             points: (N_points, ... ) numpy array
                 Array containing query points
+            s: (Nbasis,) numpy array
+                If None, return coupling matrix, 
+                if not None, return field, i.e, coupling_matrix @ s
+                default None
             *fun_args: additional arguments
                 Optional, additional arguments that are passed to self.function
 
@@ -583,24 +587,35 @@ class CouplingMatrix:
 
             M = self.matrix[m_existing_point_idx]
 
-        if self.matrix.ndim == 2:
-            M = M @ self.parent.basis
+        if s is None:
+            if self.matrix.ndim == 2:
+                M = M @ self.parent.basis
 
-        elif self.matrix.ndim == 3:
+            elif self.matrix.ndim == 3:
 
-            # Handle both sparse and dense basis matrices quickly
-            if issparse(self.parent.basis):
-                Mnew = []
-                for n in range(3):
-                    Mnew.append(M[:, n, :] @ self.parent.basis)
-                M = np.swapaxes(np.array(Mnew), 0, 1)
+                # Handle both sparse and dense basis matrices quickly
+                if issparse(self.parent.basis):
+                    Mnew = []
+                    for n in range(3):
+                        Mnew.append(M[:, n, :] @ self.parent.basis)
+                    M = np.swapaxes(np.array(Mnew), 0, 1)
+                else:
+                    M = np.einsum("ijk,kl->ijl", M, self.parent.basis)
+
             else:
-                M = np.einsum("ijk,kl->ijl", M, self.parent.basis)
+                raise ValueError("Matrix dimensions not ok")
 
+            return M
         else:
-            raise ValueError("Matrix dimensions not ok")
+            if self.matrix.ndim == 2:
+                field = M @ (self.parent.basis @ s)
+            elif self.matrix.ndim == 3:
+                ss = self.parent.basis @ s
+                field = np.einsum("ijk,k->ij", M, ss)
+            else:
+                raise ValueError("Matrix dimensions not ok")
 
-        return M
+            return field
 
 
 class StreamFunction(np.ndarray):
@@ -765,10 +780,8 @@ class StreamFunction(np.ndarray):
             Vector containing the scalar function value for each contour line
         """
         return LineConductor(
-            scalar_contour(
-                self.mesh_conductor.mesh,
-                self.vert,
-                N_contours=N_contours,
-                contours=contours,
-            )
+            mesh=self.mesh_conductor.mesh,
+            scalars=self.vert,
+            N_contours=N_contours,
+            contours=contours,
         )

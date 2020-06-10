@@ -127,8 +127,15 @@ def test_mesh_conductor_attributes():
 
     c.plot_mesh()
 
-    c.U_coupling(np.array([[0, 0, 2]]))
+    U = c.U_coupling(np.array([[0, 0, 2]]))
+    s = np.ones(c.basis.shape[1])
+    b0 = U @ s
     c.U_coupling.reset()
+
+    # Test multiplication inside the functions
+    b1 = c.U_coupling(np.array([[0, 0, 2]]), s=s)
+
+    assert_allclose(b0, b1)
 
 
 def test_streamfunction_attributes():

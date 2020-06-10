@@ -44,7 +44,7 @@ class LineConductor(Path3D):
         entities = []
 
         if loops is None:
-            loops = scalar_contour(mesh, scalars, **kwargs)
+            loops, vals = scalar_contour(mesh, scalars, return_values=True, **kwargs)
 
         for loop in loops:
             if np.all(loop[0] == loop[-1]):
@@ -56,6 +56,9 @@ class LineConductor(Path3D):
             vertices = np.append(vertices, loop, axis=0)
 
         Path3D.__init__(self, entities, vertices)
+
+        if loops is None:
+            self.vals = vals
 
     def simplify(self, min_edge=1e-3, angle_threshold=2e-2, smooth=True):
         """
