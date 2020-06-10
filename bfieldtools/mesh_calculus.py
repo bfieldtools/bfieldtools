@@ -22,29 +22,32 @@ def laplacian_matrix(mesh, material_param=None):
     """
     Sparse Laplace-Beltrami operator.
 
-    If inner vertices are not given Laplacian for all the mesh vertices is returned.
-    This corresponds to zero-Neumann (natural) boundary condition on the possible
-    outer boundary.
-    shape==(len(mesh.vertices), len(mesh.vertices))
-
-    If inner_vertices but no holes are given, the outer boundary is assumed grounded
-    and Laplacian only for the inner vertices is returned
-    shape==(len(inner_vertices), len(inner_vertices))
-
-    If both inner_vertices and holes are given, the outer boundary is assumed grounded
-    and constant floating boundary condition for each hole is assumed
-    shape==(len(inner_vertices)+len(holes), len(inner_vertices)+len(holes))
+    This function returns the so-called cotangent-Laplacian L, which can be 
+    used to solve the Laplacian eigenvectors as L @ v_i = -k_i^2 M @ v_i, 
+    where M is the mass matrix of the mesh (see mass_matrix).
+    
+    For meshes with boundaries, the matrix corresponds to zero-Neumann
+    boundary conditions (the natural boundary condtion).
+    
+    When solving something with zero-Dirichlet condition
+    only the inner vertices should be free parameters and
+    the associated elements of the matrix should be used.
+    
+    For more discussion about the boundary conditions related
+    to stream functions of divergence-free surface currents,
+    see the associated publication about the physics (Makinen 2020).
 
     Parameters
     ----------
     mesh: Trimesh Mesh object
     material_param: array-like with length N_triangles
-        material parameter for each triangle
+        material parameter for each triangle, used for resistance matrix
 
     Returns
     -------
-    sparse csr_matrix of variable shape (see description)
-        cotangent-laplacian: w_ij = - 0.5* (cot(alpha) + cot(beta))
+    sparse csr_matrix (N_vertices, N_vertices)
+        non-diagonal elements L_ij = - 0.5* (cot(alpha) + cot(beta))
+        diagonal elements L_ii = - sum_{i!=j} L_ij 
 
     """
     if material_param is None:
@@ -71,17 +74,18 @@ def laplacian_matrix(mesh, material_param=None):
             * (edges[:, i1, :] * edges[:, i2, :]).sum(axis=-1)
             / (2 * mesh.area_faces)
         )
-        # Append cot with cotangent terms multiplied by material parameter
+        # Append cot with cotangent terms multiplied by the material parameter
         cot.append(c * p)
 
     ii = np.ravel(ii)
     jj = np.ravel(jj)
     cot = np.ravel(cot)
-    # Build sparse matrix
+    # Build the sparse matrix
     L = csr_matrix((cot, (ii, jj)), shape=(N, N), dtype=float)
     # Sum contribution from both triangles (alpha and beta angles)
     # neighbouring the edge
     L = L + L.T
+    # Add the diagonal
     L = L - spdiags(L.sum(axis=0), 0, N, N)
 
     return L
