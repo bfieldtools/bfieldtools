@@ -119,6 +119,8 @@ def test_mesh_conductor_attributes():
 
     c2.sph_couplings
 
+    c2.set_sph_options(N_sph=3)
+
     # This should cause an error
     try:
         c.set_basis("foo")

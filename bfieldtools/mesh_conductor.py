@@ -119,6 +119,8 @@ class MeshConductor:
                 'inductance_nchunks':None,
                 'basis_name':'inner' (other: suh, vertex)
                 'N_suh': 100
+                'sph_normalization': 'default'
+                'sph_radius': 1
                 'N_sph': 5
                 'approx_far': True
                 'approx_far_margin': 2
@@ -127,32 +129,39 @@ class MeshConductor:
         Notes
         ------
         
-        *outer_boundaries*
+        **outer_boundaries**
         int or array_like, indices of outer boundaries given by utils.find_boundaries(). 
         One boundary index per mesh component. If None, outer_boundaries are set to 
         the longest boundary in each mesh component. When using basis 'inner', the outer boundary
         vertex values are fixed to zero.
         
-        *resistance_full_rank* (Boolean)
+        **resistance_full_rank** (Boolean)
         If True, applies inflation to the resistance matrix in order to increase
         the rank by one. By default, is False. Don't set to True without knowing what you are doing.
         
-        *inductance_nchunks* (int or None)
+        **inductance_nchunks** (int or None)
         Number of serial chunks to split self-inductance computation into, saving memory but taking more time.
         When approx_far is True, using more chunks is more efficient (multiply by 10-100x)
         If None (default), attempts to set number of chunks automatically based on the amount of free memory.
         Unfortunately, this estimation is not perfect.
 
-        *N_suh*
+        **N_suh**
         Number of surface harmonics to use if basis_name is 'suh'
         
-        *N_sph*
+        **sph_normalization**
+        'default' (Ylm**2 integrated over solid angle to 1) or
+        'energy' (field energy of basis fields normalized to 1 in R-ball)
+        
+        **sph_radius**
+        If sph_normalization is 'energy', defines the radius of the inner expansion
+        
+        **N_sph**
         Number of spherical harmonics degrees (l-degrees) to use for the spherical harmonics coupling computation
         
-        *approx_far* (Boolean)
+        **approx_far** (Boolean)
         If True, usesimple quadrature for points far from the source triangles when computing self-inductance
         
-        *approx_far_margin* (non-negative float)
+        **approx_far_margin** (non-negative float)
         Cut-off distance for "far" points measured in mean triangle side length.
 
 
@@ -192,6 +201,8 @@ class MeshConductor:
             "resistance_full_rank": False,
             "inductance_nchunks": None,
             "N_suh": 100,
+            "sph_normalization": "default",
+            "sph_radius": 1,
             "N_sph": 5,
             "inductance_quad_degree": 2,
             "approx_far": True,
@@ -432,6 +443,33 @@ class MeshConductor:
 
         return M
 
+    def set_sph_options(self, **kwargs):
+        """
+        Set or reset options related to the spherical harmonics (SPH) coupling of the 
+        MeshConductor object. If SPH couplings have already been computed, these will be 
+        flushed.
+    
+
+        Parameters
+        ----------
+        **kwargs 
+            Any parameter related to sph, namely "N_sph", "sph_normalization", "sph_radius" 
+
+        Returns
+        -------
+        None.
+
+        """
+
+        # Flush old results
+        self._alpha_coupling = None
+        self._beta_coupling = None
+
+        # Assign new values to opts, filter out opts not related to sph
+        for key, val in kwargs.items():
+            if key in ("N_sph", "sph_normalization", "sph_radius"):
+                self.opts[key] = val
+
     @property
     def sph_couplings(self):
         """
@@ -448,7 +486,12 @@ class MeshConductor:
         """
         if self._alpha_coupling is None:
             print("Computing coupling matrices")
-            Calpha, Cbeta = compute_sphcoeffs_mesh(self.mesh, self.opts["N_sph"])
+            Calpha, Cbeta = compute_sphcoeffs_mesh(
+                self.mesh,
+                self.opts["N_sph"],
+                self.opts["sph_normalization"],
+                self.opts["sph_radius"],
+            )
             # Store the results for further use
             self._alpha_coupling = Calpha
             self._beta_coupling = Cbeta
@@ -466,6 +509,12 @@ class MeshConductor:
 
         # If resistance-affecting parameter is changed after the resistance matrix has been computed,
         # then flush old result and re-compute
+        if (name in ("resistivity", "thickness")) and self.matrices[
+            "resistance"
+        ] is not None:
+            self.matrices["resistance"] = None  # Flush old matrix
+            self._resistance()  # Re-compute with new parameters
+
         if (name in ("resistivity", "thickness")) and self.matrices[
             "resistance"
         ] is not None:
