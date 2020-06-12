@@ -750,7 +750,7 @@ class StreamFunction(np.ndarray):
         M = self.mesh_conductor.inductance
         return 0.5 * self.T @ M @ self
 
-    def coil_inductance(Nloops):
+    def coil_inductance(self, Nloops):
         """
         
 
@@ -764,7 +764,7 @@ class StreamFunction(np.ndarray):
 
         """
         scaling = Nloops / (self.max() - self.min())
-        L_approx = 2 * sf.magnetic_energy * (scaling ** 2)
+        L_approx = 2 * self.magnetic_energy * (scaling ** 2)
 
         return L_approx
 
