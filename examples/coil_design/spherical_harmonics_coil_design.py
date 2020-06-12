@@ -22,7 +22,7 @@ planemesh = load_example_mesh("10x10_plane_hires")
 
 # Specify coil plane geometry
 center_offset = np.array([0, 0, 0])
-standoff = np.array([0, 3, 0])
+standoff = np.array([0, 15, 0])
 
 # Create coil plane pairs
 coil_plus = trimesh.Trimesh(
@@ -41,8 +41,18 @@ joined_planes.vertices = (
     joined_planes.vertices
     - 0.5
     * np.linalg.norm(joined_planes.vertices, axis=1)[:, None]
+    * np.sign(joined_planes.vertices[:, 1])[:, None]
     * joined_planes.vertex_normals
 )
+
+joined_planes.vertices = (
+    joined_planes.vertices
+    - 0.5
+    * np.linalg.norm(joined_planes.vertices, axis=1)[:, None]
+    * np.sign(joined_planes.vertices[:, 1])[:, None]
+    * joined_planes.vertex_normals
+)
+
 
 # Create mesh class object
 coil = MeshConductor(
@@ -82,8 +92,10 @@ coil.s, prob = optimize_streamfunctions(
     solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
 )
 
-
 #%%
 # Plot coil windings
 
-coil.s.discretize(N_contours=8).plot_loops()
+
+f = coil.plot_mesh(opacity=0.2)
+
+coil.s.discretize(N_contours=6).plot_loops(figure=f)
