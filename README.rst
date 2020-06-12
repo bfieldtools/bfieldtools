@@ -100,6 +100,7 @@ bfieldtools is under active development, and contributions are warmly welcome! F
 
 In general, The MNE-Python project provides `an overview of good practices`_ that (when applicable) should be followed in bfieldtools as well.
 
+.. _Black: https://github.com/psf/black
 .. _an overview of good practices: https://mne.tools/dev/install/contributing.html
 
 License
