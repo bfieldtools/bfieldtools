@@ -83,6 +83,7 @@ class MeshConductor:
         mesh_obj=None,
         process=False,
         fix_normals=True,
+        basis_name="inner",
         resistivity=1.68 * 1e-8,
         thickness=1e-4,
         **kwargs
@@ -105,6 +106,8 @@ class MeshConductor:
             If True,  Trimesh will pre-process the mesh.
         fix_normals: boolean
             If True,  normals+winding should be set so that they always point "out" from the origin.
+        basis_name: string
+            Which basis to use, must be 'inner', 'vertex' or 'suh'. See class docstring
         Resistivity: float or array (Nfaces)
             Resistivity value in Ohm/meter
         Thickness: float or array (Nfaces)
@@ -112,14 +115,45 @@ class MeshConductor:
         kwargs:
             Additional options with default settings are:
                 'outer_boundaries':None,
-                'mass_lumped':False,
-                'resistance_full_rank': True,
+                'resistance_full_rank': False,
                 'inductance_nchunks':None,
                 'basis_name':'inner' (other: suh, vertex)
                 'N_suh': 100
                 'N_sph': 5
                 'approx_far': True
                 'approx_far_margin': 2
+             
+            
+        Notes
+        ------
+        
+        *outer_boundaries*
+        int or array_like, indices of outer boundaries given by utils.find_boundaries(). 
+        One boundary index per mesh component. If None, outer_boundaries are set to 
+        the longest boundary in each mesh component. When using basis 'inner', the outer boundary
+        vertex values are fixed to zero.
+        
+        *resistance_full_rank* (Boolean)
+        If True, applies inflation to the resistance matrix in order to increase
+        the rank by one. By default, is False. Don't set to True without knowing what you are doing.
+        
+        *inductance_nchunks* (int or None)
+        Number of serial chunks to split self-inductance computation into, saving memory but taking more time.
+        When approx_far is True, using more chunks is more efficient (multiply by 10-100x)
+        If None (default), attempts to set number of chunks automatically based on the amount of free memory.
+        Unfortunately, this estimation is not perfect.
+
+        *N_suh*
+        Number of surface harmonics to use if basis_name is 'suh'
+        
+        *N_sph*
+        Number of spherical harmonics degrees (l-degrees) to use for the spherical harmonics coupling computation
+        
+        *approx_far* (Boolean)
+        If True, usesimple quadrature for points far from the source triangles when computing self-inductance
+        
+        *approx_far_margin* (non-negative float)
+        Cut-off distance for "far" points measured in mean triangle side length.
 
 
         """
@@ -155,10 +189,8 @@ class MeshConductor:
         # Populate options dictionary with defaults if not specified
         self.opts = {
             "outer_boundaries": None,
-            "mass_lumped": False,
             "resistance_full_rank": False,
             "inductance_nchunks": None,
-            "basis_name": "inner",
             "N_suh": 100,
             "N_sph": 5,
             "inductance_quad_degree": 2,
@@ -207,7 +239,8 @@ class MeshConductor:
         self.vert2inner = utils.vert2inner(self.mesh, self.inner_vertices, self.holes)
 
         # Sets basis for first time, calling self.set_basis()
-        self.set_basis(self.opts["basis_name"])
+        self.basis_name = basis_name
+        self.set_basis(self.basis_name)
 
     def set_basis(self, basis_name):
         """ The data is stored in vertex basis i.e. every
@@ -257,7 +290,7 @@ class MeshConductor:
                     if b[0] in c:
                         b_labels[m] = n
             b_lengths = np.array([len(b) for b in self.boundaries])
-            # Determine outer_boundaries by finding the boundary of max lenght
+            # Determine outer_boundaries by finding the boundary of max length
             # for each component
             outer_boundaries = []
             b_inds = np.arange(len(self.boundaries))
@@ -315,7 +348,7 @@ class MeshConductor:
         Compute and return mesh mass matrix.
 
         """
-        mass = mass_matrix(self.mesh, self.opts["mass_lumped"])
+        mass = mass_matrix(self.mesh, lumped=False)
         return mass
 
     @property
