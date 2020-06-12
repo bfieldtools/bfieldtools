@@ -1,10 +1,11 @@
 numpy
 scipy
 matplotlib
-pyqt5
+pyqt5<5.14
 pyqt5-sip
 sip
-mayavi
+vtk -f "https://vtk.org/download"
+https://github.com/enthought/mayavi/archive/master.zip
 quadpy>=0.13
 cvxpy
 cvxopt
