@@ -778,7 +778,7 @@ class StreamFunction(np.ndarray):
         """
         Returns the stream function in inner basis
         """
-        if self.mesh_conductor.basis_name == "inner":
+        if self.basis_name == "inner":
             return self
 
         return self.vert2inner @ self.basis @ self
@@ -788,16 +788,28 @@ class StreamFunction(np.ndarray):
         """
         Stream-function resistive power
         """
-        R = self.mesh_conductor.resistance
-        return self.T @ R @ self
+
+        # Compute resistance matrix if not present
+        if self.mesh_conductor.matrices["resistance"] is None:
+            self.mesh_conductor.resistance
+
+        R = self.mesh_conductor.matrices["resistance"]  # Always in vertex basis
+
+        return self.T @ self.basis.T @ R @ self.basis @ self
 
     @property
     def magnetic_energy(self):
         """
         Stream-function magnetic energy
         """
-        M = self.mesh_conductor.inductance
-        return 0.5 * self.T @ M @ self
+
+        # Compute inductance matrix if not present
+        if self.mesh_conductor.matrices["inductance"] is None:
+            self.mesh_conductor.inductance
+
+        M = self.mesh_conductor.matrices["inductance"]  # Always in vertex basis
+
+        return 0.5 * self.T @ self.basis.T @ M @ self.basis @ self
 
     def coil_inductance(self, Nloops):
         """
@@ -812,7 +824,7 @@ class StreamFunction(np.ndarray):
         inductance: scalar (float)
 
         """
-        scaling = Nloops / (self.max() - self.min())
+        scaling = Nloops / (self.vert.max() - self.vert.min())
         L_approx = 2 * self.magnetic_energy * (scaling ** 2)
 
         return L_approx
