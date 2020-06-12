@@ -56,7 +56,12 @@ joined_planes.vertices = (
 
 # Create mesh class object
 coil = MeshConductor(
-    mesh_obj=joined_planes, fix_normals=True, basis_name="suh", N_suh=100
+    mesh_obj=joined_planes,
+    fix_normals=True,
+    basis_name="suh",
+    N_suh=100,
+    sph_radius=0.2,
+    sph_normalization="energy",
 )
 
 
@@ -66,7 +71,7 @@ coil = MeshConductor(
 target_alms = np.zeros((coil.opts["N_sph"] * (coil.opts["N_sph"] + 2),))
 target_blms = np.zeros((coil.opts["N_sph"] * (coil.opts["N_sph"] + 2),))
 
-target_blms[3] += 1
+target_blms[4] += 1
 
 
 #%%
@@ -98,4 +103,42 @@ coil.s, prob = optimize_streamfunctions(
 
 f = coil.plot_mesh(opacity=0.2)
 
-coil.s.discretize(N_contours=6).plot_loops(figure=f)
+loops = coil.s.discretize(N_contours=6)
+
+loops.plot_loops(figure=f)
+
+#%%
+# Now, let's change the spherical harmonics inner expansion radius (i.e. the target region radius)
+# and optimize a new coil (with the same target sph component)
+
+coil.set_sph_options(sph_radius=1.4)
+
+
+target_spec = {
+    "coupling": coil.sph_couplings[1],
+    "abs_error": 0.01,
+    "target": target_blms,
+}
+
+
+#%%
+# Run QP solver
+import mosek
+
+coil.s2, prob = optimize_streamfunctions(
+    coil,
+    [target_spec],
+    objective="minimum_ohmic_power",
+    solver="MOSEK",
+    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+)
+
+#%%
+# Plot coil windings
+
+
+f2 = coil.plot_mesh(opacity=0.2)
+
+loops2 = coil.s2.discretize(N_contours=6)
+
+loops2.plot_loops(figure=f2)
