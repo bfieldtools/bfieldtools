@@ -1,9 +1,9 @@
 numpy
 scipy
 matplotlib
-pyqt5==5.14
-pyqt5-sip==12.7
-sip==5.2
+pyqt5<5.15
+pyqt5-sip
+sip
 mayavi
 quadpy>=0.13
 cvxpy
