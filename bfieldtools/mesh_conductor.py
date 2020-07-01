@@ -182,7 +182,7 @@ class MeshConductor:
 
         else:  # Fall back on verts, tris parameters
             if isinstance(verts, type(None)) or isinstance(tris, type(None)):
-                ValueError(
+                raise ValueError(
                     "You must provide either verts and tris, a mesh object or a mesh file"
                 )
 
