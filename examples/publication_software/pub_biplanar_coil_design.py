@@ -31,7 +31,6 @@ scaling_factor = 1
 # Load simple plane mesh that is centered on the origin
 planemesh = load_example_mesh("10x10_plane_hires")
 
-planemesh.apply_scale(scaling_factor * 1.6)
 
 # Specify coil plane geometry
 center_offset = np.array([0, 0, 0]) * scaling_factor
@@ -66,7 +65,7 @@ coil = MeshConductor(
 
 center = np.array([0, 0, 0]) * scaling_factor
 
-sidelength = 3 * scaling_factor
+sidelength = 2 * scaling_factor
 n = 8
 xx = np.linspace(-sidelength / 2, sidelength / 2, n)
 yy = np.linspace(-sidelength / 2, sidelength / 2, n)

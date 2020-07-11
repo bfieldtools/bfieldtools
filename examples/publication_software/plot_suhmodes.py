@@ -60,8 +60,14 @@ surfaces = c.suh_basis.plot(
 f.scene.z_plus_view()
 1 + 1
 #
-for surface in surfaces:
+for idx, surface in enumerate(surfaces):
     surface.actor.mapper.interpolate_scalars_before_mapping = True
+    surface.module_manager.scalar_lut_manager.data_range = np.array(
+        [
+            -np.max(np.abs(c.suh_basis.basis[:, idx])),
+            np.max(np.abs(c.suh_basis.basis[:, idx])),
+        ]
+    )
 
 
 # f.scene.camera.parallel_projection=1

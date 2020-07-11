@@ -128,7 +128,7 @@ print(
 
 #%% Suh fit
 
-c = MeshConductor(mesh_obj=mesh, basis_name="suh", N_suh=250)
+c = MeshConductor(mesh_obj=mesh, basis_name="suh", N_suh=150)
 M = c.mass
 
 B_sensors = np.einsum("ijk,ij->ik", c.B_coupling(p), n)
