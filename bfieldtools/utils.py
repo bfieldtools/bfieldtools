@@ -20,9 +20,15 @@ __all__ = [
 
 import os
 import numpy as np
-import quadpy
 import pkg_resources
 import trimesh
+
+try:
+    from quadpy import triangle
+    from quadpy import line_segment
+except ImportError:
+    from quadpy import t2 as triangle
+    from quadpy import c1 as line_segment
 
 
 def combine_meshes(meshes):
@@ -87,13 +93,13 @@ def get_quad_points(
 
     """
     # methods = [k for k in quadpy.triangle.__dict__.keys()]# if k[0].isupper()]
-    methods = [k for k in quadpy.triangle.__all__]
+    methods = [k for k in triangle.__all__]
     if method in methods:
         try:
-            rule = quadpy.triangle.__dict__[method]()
+            rule = triangle.__dict__[method]()
         except (TypeError) as error:
             if index is not None:
-                rule = quadpy.triangle.__dict__[method](index)
+                rule = triangle.__dict__[method](index)
             else:
                 print("The method requires index (check quadpy documentation)")
                 raise error
@@ -102,7 +108,7 @@ def get_quad_points(
         raise ValueError(
             "method: "
             + method
-            + " not in the available list of quadrature methods (check quadpy.triangle.__all__)"
+            + " not in the available list of quadrature methods (check triangle.__all__)"
         )
 
     x = rule.points[:, 0:2]
@@ -140,13 +146,13 @@ def get_line_quad_points(line_vertices, method="midpoint", index=None):
             quadrature points for each edge connecting the vertices
 
     """
-    methods = [k for k in quadpy.line_segment.__dict__.keys()]  # if k[0].isupper()]
+    methods = [k for k in line_segment.__all__]  # if k[0].isupper()]
     if method in methods:
         try:
-            rule = quadpy.line_segment.__dict__[method]()
+            rule = line_segment.__dict__[method]()
         except (TypeError) as error:
             if index is not None:
-                rule = quadpy.line_segment.__dict__[method](index)
+                rule = line_segment.__dict__[method](index)
             else:
                 print("The method requires index (check quadpy documentation)")
                 raise error
