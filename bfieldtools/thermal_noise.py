@@ -16,6 +16,7 @@ import trimesh
 
 from .suhtools import SuhBasis
 from .mesh_conductor import MeshConductor
+from .mesh_magnetics import magnetic_field_coupling
 
 
 def compute_current_modes(
@@ -218,6 +219,73 @@ def noise_covar_dir(B_coupling, vl, Nmodes=None):
         b = np.einsum("ihj,jlk->ilhk", B_coupling, vl[:, 0:Nmodes, :])
         Bcov = np.einsum("ihjk,ihlk-> ijlk", b, b)
 
+    return Bcov
+
+
+def sensornoise_covar(mesh, p, n, w, vl, Nmodes=None):
+    """
+    Calculates the upper diagonal of (AC or DC) magnetic noise covariance
+    on a sensor array described by integration points.
+    
+    Assumes same number of integration points for each sensor.
+    
+    Parameters
+    ----------
+    mesh: Trimesh-object
+        The boundary on which current density is specified
+    p: ndarray (Nsensors, Np, 3)
+        Coordinates of the integration points of the Nsensors
+    n: ndarray (Nsensors, Np, 3)
+        Orientations of the integration points of the Nsensors
+    w: ndarray (Nsensors, Np)
+        The weights of the integration points
+    vl: ndarray (Nvertices, Nmodes, x Nfreqs) or (Nvertices, Nmodes)
+        The Johnson noise current modes on the mesh
+    Nmodes: int
+        How many modes are included? If None, all modes in vl are included
+
+    Returns
+    -------
+    Bcov: ndarray (Nsensors, Nsensors, Nfreqs) or (Nsensors, Nsensors)
+        Magnetic noise covariance
+    """
+    if Nmodes is None:
+        Nmodes = vl.shape[1]
+
+    Nsensors = p.shape[0]
+    Np = p.shape[1]
+
+    # Compute the magnetic field coupling matrices along the orientations
+    # of the integration points
+    b = np.zeros((Np, Nsensors, mesh.vertices.shape[0]))
+    for i in range(Nsensors):
+        B_coupling = magnetic_field_coupling(mesh, p[i], analytic=True)
+        b[:, i] = np.einsum("ijk,ij->ik", B_coupling, n[i])
+
+    # Compute the magnetic noise covariance on the sensor array using the
+    # weights of the integration points
+    if vl.ndim == 2:
+        Bcov = np.zeros((Nsensors, Nsensors))
+        for i in range(Nsensors):
+            for j in range(i, Nsensors):
+                Bcov[i, j] = (
+                    w[i].T
+                    @ b[:, i]
+                    @ vl[:, 0:Nmodes]
+                    @ vl[:, 0:Nmodes].T
+                    @ b[:, j].T
+                    @ w[j]
+                )
+    else:
+        Bcov = np.zeros((Nsensors, Nsensors, vl.shape[2]))
+        for i in range(Nsensors):
+            for j in range(i, Nsensors):
+                temp = w[i].T @ b[:, i]
+                bi = np.einsum("ij,jkh->ikh", temp[None, :], vl[:, 0:Nmodes, :])
+                temp = w[j].T @ b[:, j]
+                bj = np.einsum("ij,jkh->ikh", temp[None, :], vl[:, 0:Nmodes, :])
+
+                Bcov[i, j] = np.einsum("ijh,ijh->h", bi, bj)
     return Bcov
 
 
