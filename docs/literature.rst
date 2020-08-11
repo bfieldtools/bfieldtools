@@ -16,6 +16,13 @@ For a more software-centred  of bfieldtools and an overview of coil design, plea
    :list: bullet
    :style: mystyle
    :filter: key == "bfieldtools_software"
+   
+For a detailed description of the thermal noise computation method used in bfieldtools, please see
+
+.. bibliography:: references.bib
+   :list: bullet
+   :style: mystyle
+   :filter: key == "bfieldtools_thermal_noise"
 
 Selected papers
 ^^^^^^^^^^^^^^^^
