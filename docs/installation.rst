@@ -13,6 +13,23 @@ bfieldtools can most easily be installed using the pip package manager.
 .. code-block:: bash
 
     pip install bfieldtools
+    
+    
+A note on Python environments and dependencies
+----------------------------------------------
+
+bfieldtools requires some dependencies to work. The most demanding dependency is mayavi, which is used for 3D plots. Mayavi, which in turn relies on vtk, can be a hassle to install on some platforms. One of the best ways to getn bfieldtools fully working is to use the Anaconda_ or Miniconda_ Python distributions. You can then run 
+
+.. code-block:: bash
+
+    conda install mayavi
+    
+to install mayavi, after which you can install bfieldtools using pip as seen above. bfieldtools itself is unfortunately not installable through conda since some other dependencies are pip-only.
+
+
+.. _Anaconda: https://www.anaconda.com/products/individual
+
+.. _Miniconda: https://docs.conda.io/en/latest/miniconda.html
 
 From source
 -----------
@@ -20,11 +37,13 @@ From source
 To install the *development* version of bfieldtools, run
 
 .. code-block:: bash
+
     wget https://github.com/bfieldtools/bfieldtools/archive/master.zip
 
 After downloading and unzipping the archive, basic setuptools workflow applies.
     
 .. code-block:: bash
+
     cd bfieldtools/
     python setup.py install
 
