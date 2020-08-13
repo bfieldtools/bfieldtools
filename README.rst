@@ -78,32 +78,32 @@ When using the software package in a publication, please cite these preprints av
 .. code-block:: BiBTeX
 
 
-@article{doi:10.1063/5.0016090,
-	author = {Mäkinen,Antti J.  and Zetter,Rasmus  and Iivanainen,Joonas  and Zevenhoven,Koos C. J.  and Parkkonen,Lauri  and Ilmoniemi,Risto J. },
-	title = {Magnetic-field modeling with surface currents. Part I. Physical and computational principles of bfieldtools},
-	journal = {Journal of Applied Physics},
-	volume = {128},
-	number = {6},
-	pages = {063906},
-	year = {2020},
-	doi = {10.1063/5.0016090},
-	URL = {https://doi.org/10.1063/5.0016090},
-	eprint = {https://doi.org/10.1063/5.0016090}
-}	
+	@article{doi:10.1063/5.0016090,
+		author = {Mäkinen, Antti J. and Zetter, Rasmus and Iivanainen, Joonas and Zevenhoven, Koos C. J. and Parkkonen, Lauri and Ilmoniemi, Risto J.},
+		title = {Magnetic-field modeling with surface currents. Part I. Physical and computational principles of bfieldtools},
+		journal = {Journal of Applied Physics},
+		volume = {128},
+		number = {6},
+		pages = {063906},
+		year = {2020},
+		doi = {10.1063/5.0016090},
+		URL = {https://doi.org/10.1063/5.0016090},
+		eprint = {https://doi.org/10.1063/5.0016090}
+	}	
 
 
-@article{doi:10.1063/5.0016087,
-	author = {Zetter,Rasmus  and J. Mäkinen,Antti  and Iivanainen,Joonas  and Zevenhoven,Koos C. J.  and Ilmoniemi,Risto J.  and Parkkonen,Lauri },
-	title = {Magnetic field modeling with surface currents. Part II. Implementation and usage of bfieldtools},
-	journal = {Journal of Applied Physics},
-	volume = {128},
-	number = {6},
-	pages = {063905},
-	year = {2020},
-	doi = {10.1063/5.0016087},
-	URL = {https://doi.org/10.1063/5.0016087},
-	eprint = {https://doi.org/10.1063/5.0016087}
-}    
+	@article{doi:10.1063/5.0016087,
+		author = {Zetter, Rasmus and Mäkinen, Antti J. and Iivanainen, Joonas and Zevenhoven, Koos C. J. and Ilmoniemi, Risto J. and Parkkonen, Lauri},
+		title = {Magnetic field modeling with surface currents. Part II. Implementation and usage of bfieldtools},
+		journal = {Journal of Applied Physics},
+		volume = {128},
+		number = {6},
+		pages = {063905},
+		year = {2020},
+		doi = {10.1063/5.0016087},
+		URL = {https://doi.org/10.1063/5.0016087},
+		eprint = {https://doi.org/10.1063/5.0016087}
+	}    
     
 Contributing
 ^^^^^^^^^^^^
