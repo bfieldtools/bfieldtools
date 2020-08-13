@@ -73,7 +73,7 @@ For advanced installation instructions, see the online `installation instruction
 Citing bfieldtools
 ^^^^^^^^^^^^^^^^^^
 
-When using the software package in a publication, please cite these preprints available in ArXiv:
+When using the software package in a publication, please cite the following articles:
 
 .. code-block:: BiBTeX
 
@@ -105,6 +105,8 @@ When using the software package in a publication, please cite these preprints av
 		eprint = {https://doi.org/10.1063/5.0016087}
 	}    
     
+When using the thermal noise computations, please cite this `preprint <https://arxiv.org/abs/2007.08963>`__ in arXiv.
+
 Contributing
 ^^^^^^^^^^^^
 
