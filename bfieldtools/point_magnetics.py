@@ -5,8 +5,6 @@ Fields for magnetic dipoles
 
 import numpy as np
 
-from numba import jit
-
 
 def cross(p, m):
     c = np.zeros_like(p)
@@ -17,7 +15,6 @@ def cross(p, m):
     return c
 
 
-@jit
 def magnetic_field_dipole_origin(points, moment):
     coeff = 1e-7  # mu0/(4*pi)
     m = moment
@@ -36,7 +33,6 @@ def vector_potential_dipole_origin(points, moment):
     return coeff * cross(p, m) / (r ** 3)[:, None]
 
 
-@jit
 def magnetic_field_dipoles(points, moments, points_dipoles):
     bb = np.zeros(moments.shape[:1] + points.shape, dtype=float)
     for ii, (p0, m) in enumerate(zip(points_dipoles, moments)):

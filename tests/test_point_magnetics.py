@@ -12,7 +12,7 @@ def test_magnetic_field():
         [[-1.0, -1.0, 0.0], [1.0, -1.0, 0.0], [1.0, 1.0, 0.0], [-1.0, 1.0, 0.0]]
     )
 
-    p0 = points / 2
+    p0 = p / 2
     m = np.array([0, 0, 1]) * np.ones((5, 1))
 
     field = magnetic_field_dipoles(p, m, p0)
@@ -25,6 +25,6 @@ def test_vector_potential():
         [[-1.0, -1.0, 0.0], [1.0, -1.0, 0.0], [1.0, 1.0, 0.0], [-1.0, 1.0, 0.0]]
     )
 
-    p0 = points / 2
+    p0 = p / 2
     m = np.array([0, 0, 1]) * np.ones((5, 1))
     field = vector_potential_dipoles(p, m, p0)
