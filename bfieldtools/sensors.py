@@ -15,6 +15,22 @@ class BaseSensor(ABC):
         super().__init__()
 
     def new_from_transform(self, transform):
+        """
+        Create a copy of the sensor and finalize it with 'transform'
+
+        Parameters
+        ----------
+        transform : ndarray (4,4) 
+           transformation matrix
+
+
+        Returns
+        -------
+        obj : self.__class__
+            New finalized object of the same class
+            and initialization parameters
+
+        """
         if self.base_sensor:
             d = self.__dict__.copy()
             d.pop("base_sensor")
@@ -26,6 +42,24 @@ class BaseSensor(ABC):
 
     @abstractmethod
     def finalize(self, transform):
+        """
+        Finalize the geometric information of the sensor
+        and transform it using 'transform'
+        
+        After finalize the object is ready for field measurements
+        and reciprocal field calculations
+
+        Parameters
+        ----------
+        transform : ndarray (4,4) 
+           transformation matrix
+
+
+        Returns
+        -------
+        None
+
+        """
         self.base_sensor = False
         t = transform
         if not isinstance(t, np.ndarray):
@@ -35,6 +69,23 @@ class BaseSensor(ABC):
 
     @abstractmethod
     def update_position(self, transform):
+        """
+        Update the geometric information of the sensor
+        by transform
+        
+        transform acts on the initial coordinates of the sensor
+        (not on the transformed coordinates)
+
+        Parameters
+        ----------
+        transform : ndarray (4,4) 
+           transformation matrix
+
+        Returns
+        -------
+        None
+
+        """
         t = transform
         if not isinstance(t, np.ndarray):
             raise TypeError("transform must be ndarray")
@@ -42,11 +93,41 @@ class BaseSensor(ABC):
             raise ValueError("transform shape must be (4,4)")
 
     @abstractmethod
-    def measure_bfield(self):
+    def measure_bfield(self, bfield_func):
+        """
+        Magnetic field measurement
+
+        Parameters
+        ----------
+        bfield_func : function
+            function taking (N, 3) array of points 
+            as parameter and outputting (N, 3) array of magnetic field
+
+        Returns
+        -------
+        meas : float
+            Magnetic field measurement
+
+        """
         pass
 
     @abstractmethod
-    def measure_afield(self):
+    def measure_afield(self, afield_func):
+        """
+        Magnetic field measurement using vector potential
+
+        Parameters
+        ----------
+        afield_func : function
+            function that takes (N, 3) array of points 
+            as a parameter and outputs (N, 3) array of vector potential
+
+        Returns
+        -------
+        meas : float
+            Magnetic field measurement using vector potential
+
+        """
         pass
 
     @abstractmethod
