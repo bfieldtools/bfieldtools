@@ -220,11 +220,11 @@ class MagnetometerLoop(BaseSensor):
     def measure_afield(self, afield_func, scheme_degree=1):
         scheme = quadpy.c1.gauss_patterson(scheme_degree)
         lc = self.line_conductor
-        segments = lc.discrete[0, 1:] - lc.discrete[0, :-1]
+        segments = lc.discrete[0][1:] - lc.discrete[0][:-1]
         # Points are from -1 to 1
         w = (scheme.points + 1) / 2
         quad_points = [
-            p + w[:, None] * s for s, p in zip(segments, lc.discrete[0, :-1])
+            p + w[:, None] * s for s, p in zip(segments, lc.discrete[0][:-1])
         ]
         # Nsegment, Nqpoints_per_segment, Nxyz
         quad_points = np.array(quad_points)
