@@ -162,7 +162,7 @@ def optimize_streamfunctions(
     bfield_specification,
     objective="minimum_inductive_energy",
     solver=None,
-    solver_opts={}
+    solver_opts={},
 ):
     """
     Quadratic optimization of coil stream function according to a specified objective.
@@ -222,13 +222,13 @@ def optimize_streamfunctions(
 
     # Symbolic variable for CVXPY
     x = cp.Variable(shape=(len(quadratic_matrix),), name="x")
-    
-    #Assign data to final variables
+
+    # Assign data to final variables
     PP = 0.5 * (quadratic_matrix + quadratic_matrix.T)
     P = np.linalg.cholesky(PP).T
-    
+
     G = constraint_matrix / s[0]
-    
+
     lb = lower_bounds
     ub = upper_bounds
 
