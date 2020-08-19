@@ -10,8 +10,8 @@ import pkg_resources
 from bfieldtools.mesh_calculus import gradient
 import numpy as np
 
-SAVE = False
-SAVE_DIR = "."
+SAVE = True
+SAVE_DIR = "./Streamfunction gradient/"
 
 
 c = MeshConductor(
@@ -77,26 +77,26 @@ vectors.glyph.glyph.scale_mode = "scale_by_scalar"
 vectors.glyph.glyph.scale_factor = 0.6
 f.scene.z_plus_view()
 
-
+#
 module_manager2 = vectors.module_manager
-module_manager2.scalar_lut_manager.scalar_bar_representation.maximum_size = np.array(
-    [100000, 100000]
-)
-module_manager2.scalar_lut_manager.scalar_bar_representation.minimum_size = np.array(
-    [1, 1]
-)
-module_manager2.scalar_lut_manager.scalar_bar_representation.position = np.array(
-    [0.82, 0.1]
-)
-module_manager2.scalar_lut_manager.scalar_bar_representation.position2 = np.array(
-    [0.17, 0.8]
-)
-module_manager2.scalar_lut_manager.show_scalar_bar = True
-module_manager2.scalar_lut_manager.show_legend = True
-module_manager2.scalar_lut_manager.scalar_bar.height = 0.8
-module_manager2.scalar_lut_manager.scalar_bar.position = np.array([0.82, 0.1])
-module_manager2.scalar_lut_manager.scalar_bar.position2 = np.array([0.17, 0.8])
-module_manager2.scalar_lut_manager.scalar_bar.width = 0.17
+#module_manager2.scalar_lut_manager.scalar_bar_representation.maximum_size = np.array(
+#    [100000, 100000]
+#)
+#module_manager2.scalar_lut_manager.scalar_bar_representation.minimum_size = np.array(
+#    [1, 1]
+#)
+#module_manager2.scalar_lut_manager.scalar_bar_representation.position = np.array(
+#    [0.82, 0.1]
+#)
+#module_manager2.scalar_lut_manager.scalar_bar_representation.position2 = np.array(
+#    [0.17, 0.8]
+#)
+#module_manager2.scalar_lut_manager.show_scalar_bar = True
+#module_manager2.scalar_lut_manager.show_legend = True
+#module_manager2.scalar_lut_manager.scalar_bar.height = 0.8
+#module_manager2.scalar_lut_manager.scalar_bar.position = np.array([0.82, 0.1])
+#module_manager2.scalar_lut_manager.scalar_bar.position2 = np.array([0.17, 0.8])
+#module_manager2.scalar_lut_manager.scalar_bar.width = 0.17
 
 f.scene.camera.position = [
     -0.3696892487983681,
