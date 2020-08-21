@@ -219,6 +219,10 @@ class MagnetometerLoop(BaseSensor):
         return np.prod(self.dimensions)
 
     @property
+    def integration_points():
+        return self.bfield_points
+
+    @property
     def scheme(self):
         return quadpy.c2.__dict__[self.quad_scheme]()
 
@@ -313,6 +317,15 @@ class SensorArray:
             sensor = base_sensor.new_from_transform(t)
             self.sensors[k] = sensor
 
+        self._integration_points = None
+
+    @property
+    def integration_points(self):
+        if self.integration_points is None:
+            p = np.array([s.integration_points for s in self.sensors.values()])
+            self._integration_points = p
+        return self._integration_points
+
     def fluxes(field_func):
         pass
 
@@ -327,7 +340,17 @@ class SensorArray:
             self.sensors[k].plot()
 
 
-def create_mag102():
+def extract_array_info():
+    """
+    Extract array info from mne
+    
+    For this mne with sample_data needs to be installed
+
+    Returns
+    -------
+    dictionary of transformation matrices
+
+    """
     from mne import read_evokeds
     from mne.datasets import sample
 
@@ -350,6 +373,20 @@ def create_mag102():
     names = [ch["ch_name"].replace(" ", "") for ch in evoked.info["chs"]]
     locs = [ch["loc"] for ch in evoked.info["chs"]]
     mats = [loc2mat(loc) for loc in locs]
+
+    return dict(zip(names, mats))
+
+
+def create_mag102():
+    import pkg_resources
+
+    fname = (
+        pkg_resources.resource_filename("bfieldtools", "sensor_data/mag102_trans.npz"),
+    )
+    arr_info = np.load(fname[0])
+
+    names = list(arr_info.keys())
+    mats = list(arr_info.values())
 
     bs = MagnetometerLoop((0.021, 0.021))
 
