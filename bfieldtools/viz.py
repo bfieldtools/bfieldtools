@@ -193,7 +193,7 @@ def plot_3d_current_loops(
     #        arrow2.glyph.glyph_source.glyph_source.radius = 0.3
     #        arrow2.glyph.glyph_source.glyph_source.height = 0.5
 
-    figure.scene.isometric_view()
+    arrow1.scene.isometric_view()
 
     return figure
 

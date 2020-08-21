@@ -28,3 +28,11 @@ def test_magnetometerloop():
     m2.measure_afield(m1.afield_self)
 
     # TODO test functionality with analytic stuff
+
+
+def test_sensor_array():
+    arr = create_mag102()
+
+    points = np.array([[0, 0, 0,], [0.1, 0, 0]])
+    b = arr.bfields_self(points)
+    a = arr.afields_self(points)

@@ -164,6 +164,16 @@ class BaseSensor(ABC):
         """
         pass
 
+    def plot(self):
+        """
+        Plot the sensor
+
+        Returns
+        -------
+        None.
+
+        """
+
 
 class MagnetometerLoop(BaseSensor):
     def __init__(self, dimensions, quad_scheme="dunavant_01"):
@@ -242,6 +252,9 @@ class MagnetometerLoop(BaseSensor):
     def afield_self(self, points):
         return self.line_conductor.vector_potential(points)
 
+    def plot(self):
+        self.line_conductor.plot_loops(figure=False)
+
 
 class GradiometerLoop(BaseSensor):
     def __init__(self, dimensions, baseline, quad_scheme="dunavant_01"):
@@ -291,7 +304,7 @@ def apply_transform(transform, points):
 
 
 class SensorArray:
-    def __init__(self, base_sensor, transforms, names, Nq):
+    def __init__(self, base_sensor, transforms, names):
         self.transforms = transforms
         self.names = names
         self.sensors = {}
@@ -304,7 +317,40 @@ class SensorArray:
         pass
 
     def bfields_self(self, points):
-        return np.array([s.bfield_r(points) for s in self.sensors])
+        return np.array([s.bfield_self(points) for s in self.sensors.values()])
 
     def afields_self(self, points):
-        return np.array([s.afield_r(points) for s in self.sensors])
+        return np.array([s.afield_self(points) for s in self.sensors.values()])
+
+    def plot(self):
+        for k in self.sensors.keys():
+            self.sensors[k].plot()
+
+
+def create_mag102():
+    from mne import read_evokeds
+    from mne.datasets import sample
+
+    data_path = sample.data_path()
+    fname = data_path + "/MEG/sample/sample_audvis-ave.fif"
+    # Reading
+    condition = "Left Auditory"
+    evoked = read_evokeds(fname, condition=condition, verbose=False)
+    evoked.pick_types(meg="mag")
+
+    def loc2mat(loc):
+        mat = np.eye(4)
+        mat[:3, 3] = loc[:3]
+        mat[:3, 0] = loc[3:6]
+        mat[:3, 1] = loc[6:9]
+        mat[:3, 2] = loc[9:]
+
+        return mat
+
+    names = [ch["ch_name"].replace(" ", "") for ch in evoked.info["chs"]]
+    locs = [ch["loc"] for ch in evoked.info["chs"]]
+    mats = [loc2mat(loc) for loc in locs]
+
+    bs = MagnetometerLoop((0.021, 0.021))
+
+    return SensorArray(bs, mats, names)
