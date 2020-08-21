@@ -340,43 +340,6 @@ class SensorArray:
             self.sensors[k].plot()
 
 
-def extract_array_info():
-    """
-    Extract array info from mne
-    
-    For this mne with sample_data needs to be installed
-
-    Returns
-    -------
-    dictionary of transformation matrices
-
-    """
-    from mne import read_evokeds
-    from mne.datasets import sample
-
-    data_path = sample.data_path()
-    fname = data_path + "/MEG/sample/sample_audvis-ave.fif"
-    # Reading
-    condition = "Left Auditory"
-    evoked = read_evokeds(fname, condition=condition, verbose=False)
-    evoked.pick_types(meg="mag")
-
-    def loc2mat(loc):
-        mat = np.eye(4)
-        mat[:3, 3] = loc[:3]
-        mat[:3, 0] = loc[3:6]
-        mat[:3, 1] = loc[6:9]
-        mat[:3, 2] = loc[9:]
-
-        return mat
-
-    names = [ch["ch_name"].replace(" ", "") for ch in evoked.info["chs"]]
-    locs = [ch["loc"] for ch in evoked.info["chs"]]
-    mats = [loc2mat(loc) for loc in locs]
-
-    return dict(zip(names, mats))
-
-
 def create_mag102():
     import pkg_resources
 
