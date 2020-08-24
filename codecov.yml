@@ -1,0 +1,2 @@
+ignore:
+  - "bfieldtools/sensor_data"  # ignore folders and all its contents
