@@ -27,6 +27,9 @@ def test_magnetometerloop():
     m2.measure_bfield(m1.bfield_self)
     m2.measure_afield(m1.afield_self)
 
+    A = m2.area
+    p = m2.integration_points
+
     # TODO test functionality with analytic stuff
 
 
