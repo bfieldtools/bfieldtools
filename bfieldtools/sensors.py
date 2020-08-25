@@ -190,7 +190,7 @@ class MagnetometerLoop(BaseSensor):
         points = np.zeros((4, 3))
         points[:, 0] = np.array([-r0, r0, r0, -r0])
         points[:, 1] = np.array([-r1, -r1, r1, r1])
-        self.bounding_points = points
+        self.loop_points = points
 
     def finalize(self, transform=np.eye(4)):
         t = transform
@@ -208,7 +208,7 @@ class MagnetometerLoop(BaseSensor):
     def update_position(self, transform=np.eye(4)):
         t = transform
         super().update_position(t)
-        points = apply_transform(t, self.bounding_points)
+        points = apply_transform(t, self.loop_points)
         self.line_conductor = LineConductor([points])
 
         self.bfield_points = apply_transform(t, self.area_points)
