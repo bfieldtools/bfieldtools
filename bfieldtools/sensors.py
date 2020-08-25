@@ -219,7 +219,7 @@ class MagnetometerLoop(BaseSensor):
         return np.prod(self.dimensions)
 
     @property
-    def integration_points():
+    def integration_points(self):
         return self.bfield_points
 
     @property
