@@ -36,15 +36,11 @@ def test_loop_sensors():
         # TODO test functionality with analytic stuff
 
 
-def test_sensor_array():
-    arr = create_mag102()
-
+def test_sensor_arrays():
     points = np.array([[0, 0, 0,], [0.1, 0, 0]])
-    b = arr.bfields_self(points)
-    a = arr.afields_self(points)
 
-    arr = create_grad204()
-
-    points = np.array([[0, 0, 0,], [0.1, 0, 0]])
-    b = arr.bfields_self(points)
-    a = arr.afields_self(points)
+    for func in (create_mag102, create_grad204, create_arr306):
+        arr = func()
+        b = arr.bfields_self(points)
+        a = arr.afields_self(points)
+        p = arr.integration_points

@@ -314,12 +314,12 @@ class GradiometerLoop(MagnetometerLoop):
         mlab.points3d(
             *self.bfield_points[mask].T,
             color=(1, 0, 0),
-            scale_factor=self.dimensions[0] / 5
+            scale_factor=self.dimensions[0] / 5,
         )
         mlab.points3d(
             *self.bfield_points[~mask].T,
             color=(0, 0, 1),
-            scale_factor=self.dimensions[0] / 5
+            scale_factor=self.dimensions[0] / 5,
         )
 
 
@@ -377,15 +377,49 @@ class SensorArray:
 
         self._integration_points = None
 
+    def __repr__(self):
+        sensor_type = list(self.sensors.values())[0].__class__.__name__
+        count = len(self.names)
+        return f"SensorArray: {count} sensors of type {sensor_type}"
+
     @property
     def integration_points(self):
-        if self.integration_points is None:
+        if self._integration_points is None:
             p = np.array([s.integration_points for s in self.sensors.values()])
             self._integration_points = p
         return self._integration_points
 
-    def fluxes(field_func):
-        pass
+    def fluxes(field_func, field_type="B"):
+        """
+        Measure the flux either based on the magnetic field (V)
+        or the vector potential (A)
+
+        Parameters
+        ----------
+        field_func : function
+            field function that takes points as (N, 3) ndarray as input
+        field_type : str, optional
+            'A' vector potential, 'B' magnetic field. The default is 'B'.
+
+        Raises
+        ------
+        ValueError
+            DESCRIPTION.
+
+        Returns
+        -------
+        ndarray
+            ndarray of fluxes in each sensor
+
+        """
+        if field_type == "A":
+            return np.array([s.measure_afield(points) for s in self.sensors.values()])
+        elif field_type == "B":
+            return np.array([s.measure_afield(points) for s in self.sensors.values()])
+        else:
+            raise ValueError(
+                "Field type must be either A (vector potential) or B (magnetic field)"
+            )
 
     def bfields_self(self, points):
         return np.array([s.bfield_self(points) for s in self.sensors.values()])
@@ -396,6 +430,55 @@ class SensorArray:
     def plot(self):
         for k in self.sensors.keys():
             self.sensors[k].plot()
+
+
+def call_subarrays(f):
+    name = f.__name__
+
+    def call_them(*args):
+        obj = args[0]
+        args = args[1:]
+        outlist = [arr.__getattribute__(name) for arr in obj.arrays]
+        # call with arguments if the attribute is a function
+        if hasattr(outlist[0], "__call__"):
+            outlist = [func(*args) for func in outlist]
+        if obj.concatenate:
+            try:
+                return np.concatenate(outlist, axis=0)
+            except ValueError:
+                print("Cannot concatenate, returning list of objects")
+                return outlist
+        else:
+            return outlist
+
+    return call_them
+
+
+class MixedArray:
+    def __init__(self, arrays, concatenate=True):
+        self.arrays = arrays
+        self.concatenate = concatenate
+
+    @property
+    @call_subarrays
+    def integration_points(self):
+        pass
+
+    @call_subarrays
+    def fluxes(self, field_func, field_type="B"):
+        pass
+
+    @call_subarrays
+    def bfields_self(self, points):
+        pass
+
+    @call_subarrays
+    def afields_self(self, points):
+        pass
+
+    @call_subarrays
+    def plot(self):
+        pass
 
 
 def create_mag102():
@@ -428,3 +511,10 @@ def create_grad204():
     bs = GradiometerLoop((0.007, 0.021), 0.014)
 
     return SensorArray(bs, mats, names)
+
+
+def create_arr306():
+    mags = create_mag102()
+    grads = create_grad204()
+
+    return MixedArray((mags, grads))
