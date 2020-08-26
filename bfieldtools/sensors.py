@@ -164,16 +164,6 @@ class BaseSensor(ABC):
         """
         pass
 
-    def plot(self):
-        """
-        Plot the sensor
-
-        Returns
-        -------
-        None.
-
-        """
-
 
 class MagnetometerLoop(BaseSensor):
     def __init__(self, dimensions, quad_scheme="dunavant_01"):
@@ -200,8 +190,8 @@ class MagnetometerLoop(BaseSensor):
 
         self.quad_weights = self.scheme.weights
         self.area_points = np.zeros((len(self.scheme.points), 3))
-        self.area_points[:, 0] = self.scheme.points[:, 0] * self.dimensions[0]
-        self.area_points[:, 1] = self.scheme.points[:, 1] * self.dimensions[1]
+        self.area_points[:, 0] = self.scheme.points[:, 0] * self.dimensions[0] / 2
+        self.area_points[:, 1] = self.scheme.points[:, 1] * self.dimensions[1] / 2
 
         self.update_position(t)
 
@@ -229,7 +219,7 @@ class MagnetometerLoop(BaseSensor):
     def measure_bfield(self, bfield_func):
         bfield = bfield_func(self.bfield_points)
         integral = np.einsum("ij,i,j->", bfield, self.quad_weights, self.normal)
-        return integral
+        return integral * self.area
 
     def measure_afield(self, afield_func, scheme_degree=1):
         scheme = quadpy.c1.gauss_patterson(scheme_degree)
@@ -256,24 +246,91 @@ class MagnetometerLoop(BaseSensor):
     def afield_self(self, points):
         return self.line_conductor.vector_potential(points)
 
-    def plot(self):
-        self.line_conductor.plot_loops(figure=False)
+    def plot_loop(self):
+        self.line_conductor.plot_loops(
+            figure=False, tube_radius=self.dimensions[0] / 50
+        )
+
+    def plot_quad_points(self):
+        from mayavi import mlab
+
+        mlab.points3d(
+            *self.bfield_points.T, color=(1, 0, 0), scale_factor=self.dimensions[0] / 5
+        )
 
 
-class GradiometerLoop(BaseSensor):
-    def __init__(self, dimensions, baseline, quad_scheme="dunavant_01"):
-        self.dimensions = dimensions
+class GradiometerLoop(MagnetometerLoop):
+    def __init__(
+        self, dimensions=(0.007, 0.021), baseline=0.014, quad_scheme="dunavant_01"
+    ):
         self.baseline = baseline
-        self.quad_scheme = quad_scheme
+        super().__init__(dimensions, quad_scheme)
+
+    def init_geometry(self):
+        """
+        Loop points for gradiometer measuring x-derivative
+
+        """
+        r0 = self.dimensions[0] / 2
+        r1 = self.dimensions[1] / 2
+        points = np.zeros((6, 3))
+        points[:, 0] = np.array([-r0, -r0, r0, r0, -r0, -r0])
+        points[:, 1] = np.array([0, -r1, -r1, r1, r1, 0])
+
+        points2 = points.copy()
+        points2[:, 0] *= -1
+
+        points[:, 0] += self.baseline / 2
+        points2[:, 0] -= self.baseline / 2
+
+        self.loop_points = np.vstack((points, points2))
+
+    def finalize(self, transform=np.eye(4)):
+        t = transform
+        super().finalize(t)
+
+        self.init_geometry()
+
+        w = self.scheme.weights
+        self.quad_weights = np.hstack((w, -w))
+        area_points = np.zeros((len(self.scheme.points), 3))
+        area_points[:, 0] = self.scheme.points[:, 0] * self.dimensions[0] / 2
+        area_points[:, 1] = self.scheme.points[:, 1] * self.dimensions[1] / 2
+
+        area_points2 = area_points.copy()
+        area_points2[:, 0] *= -1
+        area_points[:, 0] += self.baseline / 2
+        area_points2[:, 0] -= self.baseline / 2
+
+        self.area_points = np.vstack((area_points, area_points2))
+
+        self.update_position(t)
+
+    def plot_quad_points(self):
+        from mayavi import mlab
+
+        mask = self.quad_weights > 0
+        mlab.points3d(
+            *self.bfield_points[mask].T,
+            color=(1, 0, 0),
+            scale_factor=self.dimensions[0] / 5
+        )
+        mlab.points3d(
+            *self.bfield_points[~mask].T,
+            color=(0, 0, 1),
+            scale_factor=self.dimensions[0] / 5
+        )
 
 
 class MagnetometerOPM(BaseSensor):
-    def __init__(self, dimensions, scheme="hammer_stroud_1_3", Nq=None):
-        pass
+    """ OPM sensor modelled as a point
+    """
 
-    @property
-    def scheme(self):
-        return quadpy.c3.__dict__[self.quad_scheme]()
+    def __init__(self, axes=(0,)):
+        self.axes = axes
+
+    def finalize(transform):
+        pass
 
 
 class ThreeAxis(BaseSensor):
