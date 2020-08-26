@@ -1,5 +1,30 @@
 """
-Example of solving the field of a linearly polarizing material
+Solving linearly polarizing material in a homogenenous field
+------------------------------------------------------------
+
+The example is based on the following integral equation of 
+a piecewise harmonic potential :math:`U` on the boundary of the polarizing material
+
+.. math::
+    \\frac{\\mu_0 + \\mu}{2} U(\\vec{r}) = \\mu_0 U_\\infty(\\vec{r}) + \\frac{\\mu_0 - \\mu}{4\\pi}\\int_{S} U(\\vec{r}\\,') (\\hat{n}' \\cdot \\nabla') \\frac{1}{|\\vec{r}-\\vec{r}\\,'|} dS'\\,.
+                                    
+* :math:`U` is the magnetic scalar potential to be solved
+* :math:`\\mu_0` is the permeability of the free space
+* :math:`\\mu` is the permeability of the material
+* :math:`U_\\infty` is the magnetic scalar potential without the material
+* :math:`S` is the surface of the material
+
+After discretization :math:`U(\\vec{r})=\sum_n u_n h_n(\\vec{r})` and integrating the integral equation over every hat :math:`h_n(\\vec{r})`,
+a linear system of equations is obtained
+
+.. math::
+    \\mathbf{N}\\mathbf{u} = \\frac{2}{1+\\mu_\\mathrm{r}} \\mathbf{u}_\\infty + \\frac{1 - \\mu_\\mathrm{r}}{4\\pi(1 + \\mu_\\mathrm{r})}\\mathbf{D}\\mathbf{u}\,.
+
+* :math:`\\mathbf{u}` is :math:`U` at the mesh nodes
+* :math:`\\mathbf{u}_\\infty` is the potential :math:`U_\\infty` integrated over hat functions
+* :math:`\\mu_\\mathrm{r}` is the relative permeability of the material
+* :math:`\\mathbf{D}` is the double-layer coupling matrix
+* :math:`\\mathbf{N}` is the mesh mass matrix
 """
 
 
@@ -11,16 +36,15 @@ from bfieldtools.mesh_conductor import MeshConductor as Conductor
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
 from bfieldtools.mesh_magnetics import scalar_potential_coupling
 from bfieldtools.mesh_calculus import mass_matrix
+from bfieldtools.utils import load_example_mesh
 
 
 from trimesh.creation import icosphere
 
-mesh = icosphere(3, 1)
-# mesh2 = icosphere(3, 0.8)
+# Use a sphere
+# mesh = icosphere(3, 1)
 
-# Use a mesh cube
-from bfieldtools.utils import load_example_mesh
-
+# Use a cube
 mesh = load_example_mesh("cube")
 mesh.vertices -= mesh.vertices.mean(axis=0)
 mesh.apply_scale(0.2)
@@ -41,7 +65,7 @@ def Dmatrix(mesh1, mesh2, Nchunks=100):
     mesh1 : Trimesh object
     mesh2 : Trimesh object
     Nchunks : int, optional
-        Number of chunks in the potential calcuation. The default is 100.
+        Number of chunks in the potential calculation. The default is 100.
 
     Returns
     -------
@@ -99,8 +123,8 @@ def project_to_hats(mesh, func):
 
     Parameters
     ----------
-    mesh : TYPE
-        DESCRIPTION.
+    mesh : Trimesh object
+        the domain for hat functions
     func : function
         potential function for phi0, takes (N,3) array 
         of points as input
@@ -147,20 +171,13 @@ c1 = (1 - mu_r) / (1 + mu_r)
 u = np.linalg.solve(M - 1 / (2 * np.pi) * c1 * D, -2 * pp / (mu_r + 1))
 
 # Plot potential on the mesh
+mlab.figure("Potential on the boundary", bgcolor=(1, 1, 1))
 m = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=u, colormap="bwr")
 m.actor.mapper.interpolate_scalars_before_mapping = True
 m.module_manager.scalar_lut_manager.number_of_colors = 32
-#%%
-import pkg_resources
-from bfieldtools.mesh_calculus import gradient
-
-# Load simple plane mesh that is centered on the origin
-file_obj = pkg_resources.resource_filename(
-    "bfieldtools", "example_meshes/10x10_plane_hires.obj"
-)
-import trimesh
-
-plane = trimesh.load(file_obj, process=True)
+#%% Compute fields on a plane
+# Load plane for the visualization of the potential
+plane = load_example_mesh("10x10_plane_hires", process=True)
 t = np.eye(4)
 t[1:3, 1:3] = np.array([[0, 1], [-1, 0]])
 plane.apply_transform(t)
@@ -170,17 +187,18 @@ plane = plane.subdivide()
 Uplane = scalar_potential_coupling(
     mesh, plane.vertices, multiply_coeff=False, approx_far=True
 )
+
+uprim = phi0x(plane.vertices)
+usec = (mu_r - 1) / (4 * np.pi) * Uplane @ u
+uplane = uprim + usec
+
+# Meshgrid on the same plane for the bfield
 X, Y = np.meshgrid(
     np.linspace(-1.5, 1.5, 50), np.linspace(-1.5, 1.5, 50), indexing="ij"
 )
 pp = np.zeros((50 * 50, 3))
 pp[:, 0] = X.flatten()
 pp[:, 1] = Y.flatten()
-
-
-uprim = phi0_func(plane.vertices)
-usec = (mu_r - 1) / (4 * np.pi) * Uplane @ u
-uplane = uprim + usec
 
 Bplane = magnetic_field_coupling(mesh, pp, analytic=True)
 bprim = pp * 0  # copy pp
@@ -228,14 +246,14 @@ vecfield = mlab.pipeline.vector_field(
     *pp.T.reshape(3, 50, 50, 1), *bplane.T.reshape(3, 50, 50, 1)
 )
 vecnorm = mlab.pipeline.extract_vector_norm(vecfield)
-streams = []  # create a list to hold all our streamlines (or flows if you speak MayaVi)
+streams = []
 
 Nq = 40
 q = np.zeros((Nq, 3))
 q[:, 1] = np.linspace(-1.5, 1.5, Nq)
 q[:, 0] = 1.5
 extent = np.array([-1.5, 1.5, -1.5, 1.5, 0, 0])
-for qi in q:  # for each charge, create a streamline seed
+for qi in q:
     stream = mlab.pipeline.streamline(
         vecnorm,
         seed_scale=0.01,
@@ -243,14 +261,10 @@ for qi in q:  # for each charge, create a streamline seed
         integration_direction="both",
         extent=np.array([-1.5, 1.5, -1.5, 1.5, 0, 0]),
         colormap="viridis",
-    )  # the seed resolution is set to a minimum initially to avoid extra calculations
-    stream.stream_tracer.initial_integration_step = (
-        0.1  # the integration step for the runge kutta method
     )
-    stream.stream_tracer.maximum_propagation = 200.0  # the maximum length each step should reach - lowered to avoid messy output
+    stream.stream_tracer.initial_integration_step = 0.1
+    stream.stream_tracer.maximum_propagation = 200.0
     stream.seed.widget = stream.seed.widget_list[3]
-    stream.seed.widget.position = (
-        qi  # set the stream widget to the same position as the charge
-    )
+    stream.seed.widget.position = qi
     stream.seed.widget.enabled = False  # hide the widget itself
-    streams.append(stream)  # and eventually, add the stream to our list for convenience
+    streams.append(stream)

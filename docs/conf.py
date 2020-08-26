@@ -102,6 +102,7 @@ extensions = [
     "sphinx_gallery.gen_gallery",
     "sphinx_bootstrap_theme",
     "sphinxcontrib.bibtex",
+    "sphinx.ext.mathjax",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
