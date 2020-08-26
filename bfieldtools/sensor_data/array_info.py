@@ -28,7 +28,7 @@ def extract_array_info(sensor_type="mag"):
     # Reading
     condition = "Left Auditory"
     evoked = read_evokeds(fname, condition=condition, verbose=False)
-    evoked.pick_types(meg=sensor_type)
+    evoked.pick_types(meg=sensor_type, exclude=())
 
     def loc2mat(loc):
         mat = np.eye(4)

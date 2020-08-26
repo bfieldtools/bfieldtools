@@ -246,10 +246,11 @@ class MagnetometerLoop(BaseSensor):
     def afield_self(self, points):
         return self.line_conductor.vector_potential(points)
 
-    def plot_loop(self):
-        self.line_conductor.plot_loops(
-            figure=False, tube_radius=self.dimensions[0] / 50
-        )
+    def plot_loop(self, color=(0, 0, 1)):
+        self.line_conductor.plot_loops(figure=False, tube_radius=None, colors=color)
+
+    def plot(self):
+        self.plot_loop()
 
     def plot_quad_points(self):
         from mayavi import mlab
@@ -409,5 +410,21 @@ def create_mag102():
     mats = list(arr_info.values())
 
     bs = MagnetometerLoop((0.021, 0.021))
+
+    return SensorArray(bs, mats, names)
+
+
+def create_grad204():
+    import pkg_resources
+
+    fname = (
+        pkg_resources.resource_filename("bfieldtools", "sensor_data/grad204_trans.npz"),
+    )
+    arr_info = np.load(fname[0])
+
+    names = list(arr_info.keys())
+    mats = list(arr_info.values())
+
+    bs = GradiometerLoop((0.007, 0.021), 0.014)
 
     return SensorArray(bs, mats, names)

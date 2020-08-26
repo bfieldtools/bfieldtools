@@ -42,3 +42,9 @@ def test_sensor_array():
     points = np.array([[0, 0, 0,], [0.1, 0, 0]])
     b = arr.bfields_self(points)
     a = arr.afields_self(points)
+
+    arr = create_grad204()
+
+    points = np.array([[0, 0, 0,], [0.1, 0, 0]])
+    b = arr.bfields_self(points)
+    a = arr.afields_self(points)
