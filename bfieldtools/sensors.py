@@ -288,7 +288,7 @@ class GradiometerLoop(MagnetometerLoop):
 
     def finalize(self, transform=np.eye(4)):
         t = transform
-        super().finalize(t)
+        BaseSensor.finalize(self, t)
 
         self.init_geometry()
 
@@ -389,7 +389,7 @@ class SensorArray:
             self._integration_points = p
         return self._integration_points
 
-    def fluxes(field_func, field_type="B"):
+    def fluxes(self, field_func, field_type="B"):
         """
         Measure the flux either based on the magnetic field (V)
         or the vector potential (A)
@@ -413,9 +413,13 @@ class SensorArray:
 
         """
         if field_type == "A":
-            return np.array([s.measure_afield(points) for s in self.sensors.values()])
+            return np.array(
+                [s.measure_afield(field_func) for s in self.sensors.values()]
+            )
         elif field_type == "B":
-            return np.array([s.measure_afield(points) for s in self.sensors.values()])
+            return np.array(
+                [s.measure_bfield(field_func) for s in self.sensors.values()]
+            )
         else:
             raise ValueError(
                 "Field type must be either A (vector potential) or B (magnetic field)"
@@ -435,14 +439,14 @@ class SensorArray:
 def call_subarrays(f):
     name = f.__name__
 
-    def call_them(*args):
+    def call_them(*args, **kwargs):
         obj = args[0]
         args = args[1:]
         outlist = [arr.__getattribute__(name) for arr in obj.arrays]
         # call with arguments if the attribute is a function
         if hasattr(outlist[0], "__call__"):
-            outlist = [func(*args) for func in outlist]
-        if obj.concatenate:
+            outlist = [func(*args, **kwargs) for func in outlist]
+        if obj.concatenate and isinstance(outlist[0], np.ndarray):
             try:
                 return np.concatenate(outlist, axis=0)
             except ValueError:

@@ -44,3 +44,8 @@ def test_sensor_arrays():
         b = arr.bfields_self(points)
         a = arr.afields_self(points)
         p = arr.integration_points
+
+        m = MagnetometerLoop((0.01, 0.01))
+        m.finalize()
+        f = arr.fluxes(m.bfield_self, field_type="B")
+        f = arr.fluxes(m.afield_self, field_type="A")
