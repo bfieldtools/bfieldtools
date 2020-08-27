@@ -249,3 +249,16 @@ class LineConductor(Path3D):
             M = np.sum(M, axis=0)
 
         return M
+
+    def reverse(self):
+        """
+        Reverses loop direction in-place.
+
+        Returns
+        -------
+        None.
+
+        """
+
+        for l in self.entities:
+            l.points = l.points[::-1]

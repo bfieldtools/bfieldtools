@@ -163,7 +163,6 @@ def optimize_streamfunctions(
     objective="minimum_inductive_energy",
     solver=None,
     solver_opts={},
-    problem=None,
 ):
     """
     Quadratic optimization of coil stream function according to a specified objective.
@@ -187,9 +186,6 @@ def optimize_streamfunctions(
         string specifying which solver CVXPY will use
     solver_opt: dict
         dict containing solver options CVXPY will pass to the solver
-    problem: CVXPY problem object
-        If passed, will use already existing problem (**MUST BE SAME DIMENSIONS**) to
-        skip DCP processing/reformulation time.
 
     Returns
     -------
@@ -224,45 +220,23 @@ def optimize_streamfunctions(
     # Compute, scale constraint matrix according to largest singular value
     u, s, vt = svds(constraint_matrix, k=1)
 
-    # If no pre-constructed problem is passed, create it
-    if problem is None:
-        print("Pre-existing problem not passed, creating...")
-        # Symbolic variable for CVXPY
-        x = cp.Variable(shape=(len(quadratic_matrix),), name="x")
+    # Symbolic variable for CVXPY
+    x = cp.Variable(shape=(len(quadratic_matrix),), name="x")
 
-        # Parameters into which data is loaded
-        # P does not need to be PSD when in this formulation
-        # It should be full rank, however
-        P = cp.Parameter(shape=quadratic_matrix.shape, name="P")  # , PSD=True)
-        G = cp.Parameter(shape=constraint_matrix.shape, name="G")
-        lb = cp.Parameter(shape=lower_bounds.shape, name="lb")
-        ub = cp.Parameter(shape=upper_bounds.shape, name="ub")
+    # Assign data to final variables
+    PP = 0.5 * (quadratic_matrix + quadratic_matrix.T)
+    P = np.linalg.cholesky(PP).T
 
-        # Formulate problem and constraints
-        objective = cp.Minimize((1 / 2) * cp.sum_squares(P @ x))
+    G = constraint_matrix / s[0]
 
-        constraints = [G @ x >= lb, G @ x <= ub]
+    lb = lower_bounds
+    ub = upper_bounds
 
-        problem = cp.Problem(objective, constraints)
-    else:
-        print("Existing problem passed")
+    # Formulate problem and constraints
+    objective = cp.Minimize((1 / 2) * cp.sum_squares(P @ x))
+    constraints = [G @ x >= lb, G @ x <= ub]
 
-    # Assign values to parameters
-    print("Passing parameters to problem...")
-    for par in problem.parameters():
-        if par.name() == "P":
-            # Make sure that quadratic matrix is positive semi-definite, scale constraint matrix
-            # par.value = sqrtm(0.5 * (quadratic_matrix + quadratic_matrix.T))
-            PP = 0.5 * (quadratic_matrix + quadratic_matrix.T)
-            par.value = np.linalg.cholesky(PP).T
-        elif par.name() == "G":
-            par.value = constraint_matrix / s[0]
-        elif par.name() == "lb":
-            par.value = lower_bounds
-        elif par.name() == "ub":
-            par.value = upper_bounds
-        else:
-            print("Unknown parameter encountered")
+    problem = cp.Problem(objective, constraints)
 
     # Run solver
     print("Passing problem to solver...")

@@ -8,137 +8,131 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="612.58179mm"
-   height="497.53513mm"
-   viewBox="0 0 612.58178 497.53512"
-   version="1.1"
+   sodipodi:docname="field_interpolation.svg"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
    id="svg8"
-   inkscape:version="1.0rc1 (09960d6f05, 2020-04-09)"
-   sodipodi:docname="suh_interpolation.svg">
+   version="1.1"
+   viewBox="0 0 618.27282 497.53512"
+   height="497.53513mm"
+   width="618.27283mm">
   <defs
      id="defs2">
     <rect
-       x="-336.22507"
-       y="-115.19316"
-       width="39.555889"
+       id="rect1077"
        height="39.021351"
-       id="rect1077" />
+       width="39.555889"
+       y="-115.19316"
+       x="-336.22507" />
     <clipPath
-       clipPathUnits="userSpaceOnUse"
-       id="clipPath1065">
+       id="clipPath1065"
+       clipPathUnits="userSpaceOnUse">
       <rect
-         id="rect1067"
-         width="292.9274"
-         height="258.18237"
-         x="-338.89777"
-         y="-70.559151"
+         transform="rotate(-90)"
          style="opacity:0.487106;stroke-width:0.261356"
-         transform="rotate(-90)" />
+         y="-70.559151"
+         x="-338.89777"
+         height="258.18237"
+         width="292.9274"
+         id="rect1067" />
     </clipPath>
     <clipPath
-       clipPathUnits="userSpaceOnUse"
-       id="clipPath1071">
+       id="clipPath1071"
+       clipPathUnits="userSpaceOnUse">
       <rect
-         style="opacity:0.487106;stroke-width:0.264583"
-         id="rect1073"
-         width="269.40771"
-         height="288.65109"
+         y="-109.58051"
          x="-32.072342"
-         y="-109.58051" />
+         height="288.65109"
+         width="269.40771"
+         id="rect1073"
+         style="opacity:0.487106;stroke-width:0.264583" />
     </clipPath>
     <clipPath
-       clipPathUnits="userSpaceOnUse"
-       id="clipPath1471">
+       id="clipPath1471"
+       clipPathUnits="userSpaceOnUse">
       <rect
-         style="opacity:0.487106;stroke-width:0.263284"
-         id="rect1473"
-         width="223.93617"
-         height="200"
+         y="257.13629"
          x="-319.01862"
-         y="257.13629" />
-    </clipPath>
-    <clipPath
-       clipPathUnits="userSpaceOnUse"
-       id="clipPath1477">
-      <rect
-         y="315.56024"
-         x="-29.279751"
          height="200"
          width="223.93617"
-         id="rect1479"
+         id="rect1473"
          style="opacity:0.487106;stroke-width:0.263284" />
     </clipPath>
     <clipPath
-       clipPathUnits="userSpaceOnUse"
-       id="clipPath1481">
+       id="clipPath1477"
+       clipPathUnits="userSpaceOnUse">
       <rect
          style="opacity:0.487106;stroke-width:0.263284"
-         id="rect1483"
+         id="rect1479"
          width="223.93617"
          height="200"
-         x="239.04021"
-         y="308.35583" />
+         x="-29.279751"
+         y="315.56024" />
     </clipPath>
-    <rect
-       id="rect1489"
-       height="39.021351"
-       width="39.555889"
-       y="-115.19316"
-       x="-336.22507" />
-    <rect
-       x="-336.22507"
-       y="-115.19316"
-       width="72.162773"
-       height="42.228584"
-       id="rect1495" />
-    <rect
-       id="rect1501"
-       height="42.228584"
-       width="72.162773"
-       y="-115.19316"
-       x="-336.22507" />
-    <rect
-       x="-336.22507"
-       y="-115.19316"
-       width="108.24416"
-       height="31.537804"
-       id="rect1507" />
-    <rect
-       x="-336.22507"
-       y="-115.19316"
-       width="39.555889"
-       height="39.021351"
-       id="rect1513" />
     <clipPath
-       id="clipPath1211"
+       id="clipPath1481"
        clipPathUnits="userSpaceOnUse">
       <rect
-         id="rect1213"
-         width="625.41064"
-         height="568.74951"
-         x="13.898008"
-         y="318.85257"
-         style="opacity:0.269341;stroke-width:0.264583" />
+         y="308.35583"
+         x="239.04021"
+         height="200"
+         width="223.93617"
+         id="rect1483"
+         style="opacity:0.487106;stroke-width:0.263284" />
     </clipPath>
+    <rect
+       x="-336.22507"
+       y="-115.19316"
+       width="39.555889"
+       height="39.021351"
+       id="rect1489" />
+    <rect
+       id="rect1495"
+       height="42.228584"
+       width="72.162773"
+       y="-115.19316"
+       x="-336.22507" />
+    <rect
+       x="-336.22507"
+       y="-115.19316"
+       width="72.162773"
+       height="42.228584"
+       id="rect1501" />
+    <rect
+       id="rect1507"
+       height="31.537804"
+       width="108.24416"
+       y="-115.19316"
+       x="-336.22507" />
+    <rect
+       id="rect1513"
+       height="39.021351"
+       width="39.555889"
+       y="-115.19316"
+       x="-336.22507" />
     <clipPath
-       id="clipPath1215"
-       clipPathUnits="userSpaceOnUse">
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1211">
       <rect
          style="opacity:0.269341;stroke-width:0.264583"
-         y="336.49237"
-         x="-854.19336"
+         y="318.85257"
+         x="13.898008"
          height="568.74951"
          width="625.41064"
-         id="rect1217" />
+         id="rect1213" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1215">
+      <rect
+         id="rect1217"
+         width="625.41064"
+         height="568.74951"
+         x="-854.19336"
+         y="336.49237"
+         style="opacity:0.269341;stroke-width:0.264583" />
     </clipPath>
     <rect
-       x="-336.22507"
-       y="-115.19316"
-       width="39.555889"
-       height="39.021351"
-       id="rect1229" />
-    <rect
-       id="rect1235"
+       id="rect1229"
        height="39.021351"
        width="39.555889"
        y="-115.19316"
@@ -148,42 +142,90 @@
        y="-115.19316"
        width="39.555889"
        height="39.021351"
-       id="rect1241" />
+       id="rect1235" />
+    <rect
+       id="rect1241"
+       height="39.021351"
+       width="39.555889"
+       y="-115.19316"
+       x="-336.22507" />
     <clipPath
-       id="clipPath1244"
-       clipPathUnits="userSpaceOnUse">
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1244">
       <rect
-         id="rect1246"
-         width="625.41064"
-         height="568.74951"
-         x="924.21808"
+         style="opacity:0.269341;stroke-width:0.264583"
          y="358.94299"
-         style="opacity:0.269341;stroke-width:0.264583" />
+         x="924.21808"
+         height="568.74951"
+         width="625.41064"
+         id="rect1246" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1010">
+      <path
+         d="M 390.7584,17.7408 H 514.944 V 141.9264 H 390.7584 Z"
+         id="path1008" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1034">
+      <path
+         d="M -1021,-463 H 1794 V 1233 H -1021 Z"
+         id="path1032" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1078">
+      <path
+         d="M -1021,-463 H 1794 V 1233 H -1021 Z"
+         id="path1076" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1120">
+      <path
+         d="m 541.728,17.7408 h 6.20928 V 141.9264 H 541.728 Z"
+         id="path1118" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1146">
+      <path
+         d="M -1021,-463 H 1794 V 1233 H -1021 Z"
+         id="path1144" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1166">
+      <path
+         d="M -1021,-463 H 1794 V 1233 H -1021 Z"
+         id="path1164" />
     </clipPath>
   </defs>
   <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="0.7"
-     inkscape:cx="1368.6308"
-     inkscape:cy="1109.6309"
-     inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
-     inkscape:document-rotation="0"
-     showgrid="false"
-     inkscape:window-width="3840"
-     inkscape:window-height="2063"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
-     fit-margin-top="0"
-     fit-margin-left="0"
+     fit-margin-bottom="0"
      fit-margin-right="0"
-     fit-margin-bottom="0" />
+     fit-margin-left="0"
+     fit-margin-top="0"
+     inkscape:window-maximized="1"
+     inkscape:window-y="0"
+     inkscape:window-x="0"
+     inkscape:window-height="1044"
+     inkscape:window-width="1920"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="1091.1739"
+     inkscape:cx="906.24727"
+     inkscape:zoom="0.35"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -197,10 +239,10 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
+     transform="translate(338.89777,85.79351)"
      id="layer1"
-     transform="translate(338.89777,85.79351)">
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1">
     <image
        sodipodi:absref="/home/rzetter/Documents/bfieldtools/examples/publication_software/MNE interpolation/SUH_streamlines_lateral.png"
        xlink:href="SUH_streamlines_lateral.png"
@@ -224,26 +266,24 @@
        transform="rotate(90)"
        clip-path="url(#clipPath1065)" />
     <text
-       xml:space="preserve"
-       id="text1075"
+       transform="translate(0,29.399648)"
        style="font-style:normal;font-weight:normal;font-size:25.4px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1077);fill:#000000;fill-opacity:1;stroke:none;"
-       transform="translate(0,29.399648)"><tspan
-         sodipodi:role="line"
+       id="text1075"
+       xml:space="preserve"><tspan
          x="-336.22461"
          y="-92.720313"><tspan
            style="font-weight:bold">A</tspan></tspan></text>
     <text
-       transform="translate(0,321.25797)"
-       style="font-style:normal;font-weight:normal;font-size:25.4px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1489);fill:#000000;fill-opacity:1;stroke:none;"
+       xml:space="preserve"
        id="text1487"
-       xml:space="preserve"><tspan
-         sodipodi:role="line"
+       style="font-style:normal;font-weight:normal;font-size:25.4px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1489);fill:#000000;fill-opacity:1;stroke:none;"
+       transform="translate(0,321.25797)"><tspan
          x="-336.22461"
          y="-92.720313"><tspan
            style="font-weight:bold">B</tspan></tspan></text>
     <g
-       transform="matrix(1.0660845,0,0,1.0660845,21.124192,-15.371313)"
-       id="g1256">
+       id="g1256"
+       transform="matrix(1.0660845,0,0,1.0660845,-9.0693415,-15.371313)">
       <image
          sodipodi:absref="/home/rzetter/Documents/bfieldtools/examples/publication_software/MNE interpolation/suh_helmet_B.png"
          xlink:href="suh_helmet_B.png"
@@ -256,18 +296,17 @@
          x="-96.730003"
          y="209.52731" />
       <text
-         xml:space="preserve"
-         id="text1233"
+         transform="translate(268.41669,337.88892)"
          style="font-style:normal;font-weight:normal;font-size:25.4px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1235);fill:#000000;fill-opacity:1;stroke:none;"
-         transform="translate(268.41669,337.88892)"><tspan
-           sodipodi:role="line"
+         id="text1233"
+         xml:space="preserve"><tspan
            x="-336.22461"
            y="-92.720313"><tspan
              style="font-size:16.9333px">SUH</tspan></tspan></text>
     </g>
     <g
-       transform="matrix(1.0660845,0,0,1.0660845,21.124192,-15.371313)"
-       id="g1251">
+       id="g1251"
+       transform="matrix(1.0660845,0,0,1.0660845,2.2253825,-15.371313)">
       <image
          sodipodi:absref="/home/rzetter/Documents/bfieldtools/examples/publication_software/MNE interpolation/rbf_helmet_B.png"
          xlink:href="rbf_helmet_B.png"
@@ -280,18 +319,17 @@
          x="-964.82141"
          y="227.1671" />
       <text
-         transform="translate(87.181928,337.88892)"
-         style="font-style:normal;font-weight:normal;font-size:25.4px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1229);fill:#000000;fill-opacity:1;stroke:none;"
+         xml:space="preserve"
          id="text1227"
-         xml:space="preserve"><tspan
-           sodipodi:role="line"
+         style="font-style:normal;font-weight:normal;font-size:25.4px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1229);fill:#000000;fill-opacity:1;stroke:none;"
+         transform="translate(87.181928,337.88892)"><tspan
            x="-336.22461"
            y="-92.720313"><tspan
              style="font-size:16.9333px">RBF</tspan></tspan></text>
     </g>
     <g
-       transform="matrix(1.0660845,0,0,1.0660845,21.124192,-15.371313)"
-       id="g1261">
+       id="g1261"
+       transform="matrix(1.0660845,0,0,1.0660845,-24.988903,-15.371313)">
       <image
          sodipodi:absref="/home/rzetter/Documents/bfieldtools/examples/publication_software/MNE interpolation/sph_helmet_B.png"
          xlink:href="sph_helmet_B.png"
@@ -304,14 +342,138 @@
          x="813.59009"
          y="249.61772" />
       <text
-         transform="translate(451.50763,337.88892)"
-         style="font-style:normal;font-weight:normal;font-size:25.4px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1241);fill:#000000;fill-opacity:1;stroke:none;"
+         xml:space="preserve"
          id="text1239"
-         xml:space="preserve"><tspan
-           sodipodi:role="line"
+         style="font-style:normal;font-weight:normal;font-size:25.4px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1241);fill:#000000;fill-opacity:1;stroke:none;"
+         transform="translate(451.50763,337.88892)"><tspan
            x="-336.22461"
            y="-92.720313"><tspan
              style="font-size:16.9333px">SPH</tspan></tspan></text>
+    </g>
+    <g
+       transform="matrix(1.1240914,0,0,-1.1240914,-390.6556,412.92541)"
+       id="g1124">
+      <g
+         transform="matrix(6.48,0,0,123.84,541.44,18)"
+         id="g1126">
+        <image
+           id="image1128"
+           xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAACsCAYAAACpQIZNAAAABHNCSVQICAgIfAhkiAAAATdJREFUWIXt2MutwzAQQ1F989p5LaX/DmxLSgk6i4ERA8mauMPhUF4k9//3Sptfy6XuNKmV9tqLiFR7FKm0HkYSTzWKVMTTzWcpgWehCDKIaokiNSHlMJJtJ6LfdnEtaLJdFdIrjPQX6Em+vkSSxIl0ewRPJcnj7PRaRNQLedpqUmtUFSF1euZhOdHtLHHyJJ9DawF9WIVE40CTpASplURnARJY4ghkHJEsAhBRMykCIoEmsip5DhCtuRclISUh5XkFkdIA0mO3M9KM2g5zIk8wbl1nFGnI7WTcutn4GUaK8xS43SEkKN26gLSENA+obxxpSjPnKZ4GeBphpO/0JC+YPAW2QA4sntbc/nWY2pBxa0SR5hd6ujunkw4MJKyKeLqk4wtIB4W51zCJPMG4x253iuhmTzLuA2EN5Tw4uj8kAAAAAElFTkSuQmCC"
+           transform="matrix(1,0,0,-1,0,1)"
+           preserveAspectRatio="none"
+           style="image-rendering:optimizeSpeed"
+           height="1"
+           width="1" />
+      </g>
+      <path
+         id="path1130"
+         style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         d="m 547.93728,35.4816 h 3.5" />
+      <g
+         transform="translate(554.93728,31.684725)"
+         id="g1132">
+        <text
+           id="text1136"
+           style="font-variant:normal;font-weight:normal;font-size:10px;font-family:'DejaVu Sans';-inkscape-font-specification:DejaVuSans;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,8.3789063,0)"><tspan
+             id="tspan1134"
+             sodipodi:role="line"
+             y="0"
+             x="0 6.3600001 12.72">500</tspan></text>
+        <g
+           transform="scale(0.01)"
+           id="g1138">
+          <g
+             id="g1140">
+            <g
+               clip-path="url(#clipPath1146)"
+               id="g1142">
+              <path
+                 id="path1148"
+                 style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                 d="M 106,355 H 732 V 272 H 106 v 83" />
+            </g>
+          </g>
+        </g>
+      </g>
+      <path
+         id="path1150"
+         style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         d="m 547.93728,57.6576 h 3.5" />
+      <g
+         transform="translate(554.93728,53.860725)"
+         id="g1152">
+        <text
+           id="text1156"
+           style="font-variant:normal;font-weight:normal;font-size:10px;font-family:'DejaVu Sans';-inkscape-font-specification:DejaVuSans;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+           transform="matrix(1,0,0,-1,8.3789063,0)"><tspan
+             id="tspan1154"
+             sodipodi:role="line"
+             y="0"
+             x="0 6.3600001 12.72">250</tspan></text>
+        <g
+           transform="scale(0.01)"
+           id="g1158">
+          <g
+             id="g1160">
+            <g
+               clip-path="url(#clipPath1166)"
+               id="g1162">
+              <path
+                 id="path1168"
+                 style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                 d="M 106,355 H 732 V 272 H 106 v 83" />
+            </g>
+          </g>
+        </g>
+      </g>
+      <path
+         id="path1170"
+         style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         d="m 547.93728,79.8336 h 3.5" />
+      <text
+         id="text1174"
+         style="font-variant:normal;font-weight:normal;font-size:10px;font-family:'DejaVu Sans';-inkscape-font-specification:DejaVuSans;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         transform="matrix(1,0,0,-1,554.93728,76.036725)"><tspan
+           id="tspan1172"
+           y="0"
+           x="0">0</tspan></text>
+      <path
+         id="path1176"
+         style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         d="m 547.93728,102.0096 h 3.5" />
+      <text
+         id="text1180"
+         style="font-variant:normal;font-weight:normal;font-size:10px;font-family:'DejaVu Sans';-inkscape-font-specification:DejaVuSans;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         transform="matrix(1,0,0,-1,554.93728,98.212725)"><tspan
+           id="tspan1178"
+           sodipodi:role="line"
+           y="0"
+           x="0 6.3600001 12.72">250</tspan></text>
+      <path
+         id="path1182"
+         style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         d="m 547.93728,124.1856 h 3.5" />
+      <text
+         id="text1186"
+         style="font-variant:normal;font-weight:normal;font-size:10px;font-family:'DejaVu Sans';-inkscape-font-specification:DejaVuSans;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         transform="matrix(1,0,0,-1,554.93728,120.38872)"><tspan
+           id="tspan1184"
+           sodipodi:role="line"
+           y="0"
+           x="0 6.3600001 12.72">500</tspan></text>
+      <text
+         id="text1190"
+         style="font-variant:normal;font-weight:normal;font-size:10px;font-family:'DejaVu Sans';-inkscape-font-specification:DejaVuSans;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         transform="matrix(0,1,1,0,593.98415,34.23985)"><tspan
+           id="tspan1188"
+           sodipodi:role="line"
+           y="0"
+           x="0 8.6300001 14.76 21.110001 27.450001 33.599998 37.52 40.299999 45.799999 48.98 52.5 55.279999 61.43 64.209999 70.559998 73.739998 77.639999 81.160004 87.269997">Magnetic field (fT)</tspan></text>
+      <path
+         id="path1192"
+         style="fill:none;stroke:#000000;stroke-width:0.8;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         d="m 541.728,17.7408 v 0.4851 123.2154 0.4851 h 6.20928 V 141.4413 18.2259 17.7408 Z" />
     </g>
   </g>
 </svg>
