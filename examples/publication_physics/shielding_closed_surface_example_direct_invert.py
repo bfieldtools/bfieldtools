@@ -208,11 +208,7 @@ s1.actor.property.backface_culling = True
 w1 = mlab.triangular_mesh(
     *(mesh1.vertices.T + 0.009 * mesh1.vertex_normals.T),
     mesh1.faces,
-    color=(
-        1,
-        0,
-        0,
-    ),
+    color=(1, 0, 0,),
     representation="wireframe"
 )
 w1.actor.property.render_lines_as_tubes = True

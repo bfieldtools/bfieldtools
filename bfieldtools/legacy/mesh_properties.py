@@ -4,12 +4,7 @@ import numpy as np
 
 
 def self_inductance_matrix(
-    mesh,
-    Nchunks=None,
-    quad_degree=2,
-    approx_far=True,
-    margin=2,
-    chunk_clusters=False,
+    mesh, Nchunks=None, quad_degree=2, approx_far=True, margin=2, chunk_clusters=False,
 ):
     """Calculate a self inductance matrix for hat basis functions
     (stream functions) in the triangular mesh described by

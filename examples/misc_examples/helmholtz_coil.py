@@ -70,10 +70,7 @@ field = mlab.pipeline.vector_field(
     name="B-field",
 )
 
-vectors = mlab.pipeline.vectors(
-    field,
-    scale_factor=(X[1, 0, 0] - X[0, 0, 0]),
-)
+vectors = mlab.pipeline.vectors(field, scale_factor=(X[1, 0, 0] - X[0, 0, 0]),)
 
 
 vectors.glyph.mask_input_points = True

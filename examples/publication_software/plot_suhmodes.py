@@ -77,9 +77,7 @@ f.scene.camera.zoom(1.2)
 
 if SAVE:
     mlab.savefig(
-        SAVE_DIR + "surface_harmonics.png",
-        figure=f,
-        magnification=4,
+        SAVE_DIR + "surface_harmonics.png", figure=f, magnification=4,
     )
 
     mlab.close()
@@ -97,8 +95,6 @@ f.scene.z_plus_view()
 
 if SAVE:
     mlab.savefig(
-        SAVE_DIR + "suhmesh.png",
-        figure=f,
-        magnification=6,
+        SAVE_DIR + "suhmesh.png", figure=f, magnification=6,
     )
     mlab.close()
