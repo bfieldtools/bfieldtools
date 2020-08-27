@@ -28,7 +28,7 @@ jobs:
       - python -m pip install --upgrade pip
       - pip install vtk xvfbwrapper
       - pip install -r requirements.txt
-      - pip install black
+      - pip install black==19.10b0
       - black --check .
       - pip install --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
 
