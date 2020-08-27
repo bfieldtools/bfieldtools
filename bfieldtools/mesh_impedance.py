@@ -20,18 +20,18 @@ from .mesh_calculus import gradient_matrix, laplacian_matrix
 
 
 def resistance_matrix(mesh, sheet_resistance):
-    """ Resistance matrix of a mesh.
+    """Resistance matrix of a mesh.
 
-        Parameters
-        ----------
-        mesh: Trimesh mesh object
-        sheet_resistance: (N_faces) array or scalar
-            "1/(sigma*d)", constant resistance for each face (or all faces if scalar)
+    Parameters
+    ----------
+    mesh: Trimesh mesh object
+    sheet_resistance: (N_faces) array or scalar
+        "1/(sigma*d)", constant resistance for each face (or all faces if scalar)
 
-        Returns
-        -------
-        R: (Nvertices x Nvertices) array
-            resistance matrix of `mesh`
+    Returns
+    -------
+    R: (Nvertices x Nvertices) array
+        resistance matrix of `mesh`
     """
     return -laplacian_matrix(mesh, sheet_resistance)
 
@@ -46,34 +46,34 @@ def self_inductance_matrix(
     planar=False,
     analytic_self_coupling=True,
 ):
-    """ Calculate a self inductance matrix for hat basis functions
-        (stream functions) in a mesh.
+    """Calculate a self inductance matrix for hat basis functions
+    (stream functions) in a mesh.
 
-        Self-coupling terms are calculated anaytically.
+    Self-coupling terms are calculated anaytically.
 
-        Parameters
-        ----------
-        mesh: Trimesh mesh object
-        Nchunks: int
-            Number of serial chunks to divide the computation into
-        quad_degree: int >= 1
-            Quadrature degree (Dunavant scheme) to use. Self-inductance requires higher degree than mutual inductance
-        approx_far: Boolean (True)
-            If True, use approximate calculation for triangles that
-            far from the source triangles using a simple quadrature
-            (see integrals.triangle_potential_approx)
-        margin: float
-            Cut-off distance for "far" points measured in mean triangle side length
-        planar: boolean
-            This option is propagated to _triangle_coupling
-            for planar meshes the analytic calculations can be made faster
-        analytic_self_coupling: boolean
-            If True: the diagonal elements obtained from _triangle_coupling are
-            replaced with an analytic calculation
-        Returns
-        -------
-        M: (Nvertices x Nvertices) array
-            Self.inductance matrix of `mesh`
+    Parameters
+    ----------
+    mesh: Trimesh mesh object
+    Nchunks: int
+        Number of serial chunks to divide the computation into
+    quad_degree: int >= 1
+        Quadrature degree (Dunavant scheme) to use. Self-inductance requires higher degree than mutual inductance
+    approx_far: Boolean (True)
+        If True, use approximate calculation for triangles that
+        far from the source triangles using a simple quadrature
+        (see integrals.triangle_potential_approx)
+    margin: float
+        Cut-off distance for "far" points measured in mean triangle side length
+    planar: boolean
+        This option is propagated to _triangle_coupling
+        for planar meshes the analytic calculations can be made faster
+    analytic_self_coupling: boolean
+        If True: the diagonal elements obtained from _triangle_coupling are
+        replaced with an analytic calculation
+    Returns
+    -------
+    M: (Nvertices x Nvertices) array
+        Self.inductance matrix of `mesh`
     """
     from .mesh_magnetics import _triangle_coupling
 
@@ -128,29 +128,29 @@ def self_inductance_matrix(
 def mutual_inductance_matrix(
     mesh1, mesh2, Nchunks=None, quad_degree=1, approx_far=True, margin=2
 ):
-    """ Calculate a mutual inductance matrix for hat basis functions
-        (stream functions) between two surface meshes.
+    """Calculate a mutual inductance matrix for hat basis functions
+    (stream functions) between two surface meshes.
 
-        Parameters
-        ----------
+    Parameters
+    ----------
 
-        mesh1: Trimesh mesh object for mesh 1
-        mesh2: Trimesh mesh object for mesh 2
-        Nchunks: int
-            Number of serial chunks to divide the computation into
-        quad_degree: int >= 1
-            Quadrature degree (Dunavant scheme) to use. Self-inductance requires higher degree than mutual inductance
-        approx_far: Boolean (True)
-            If True, use approximate calculation for triangles that
-            far from the source triangles using a simple quadrature
-            (see integrals.triangle_potential_approx)
-        margin: float
-            Cut-off distance for "far" points measured in mean triangle side length
+    mesh1: Trimesh mesh object for mesh 1
+    mesh2: Trimesh mesh object for mesh 2
+    Nchunks: int
+        Number of serial chunks to divide the computation into
+    quad_degree: int >= 1
+        Quadrature degree (Dunavant scheme) to use. Self-inductance requires higher degree than mutual inductance
+    approx_far: Boolean (True)
+        If True, use approximate calculation for triangles that
+        far from the source triangles using a simple quadrature
+        (see integrals.triangle_potential_approx)
+    margin: float
+        Cut-off distance for "far" points measured in mean triangle side length
 
-        Returns
-        -------
-        M: (Nvertices1 x Nvertices2) array
-            Mutual inductance matrix between mesh1 and mesh2
+    Returns
+    -------
+    M: (Nvertices1 x Nvertices2) array
+        Mutual inductance matrix between mesh1 and mesh2
 
     """
 
@@ -188,8 +188,8 @@ def mutual_inductance_matrix(
 
 
 def _estimate_nchunks(mesh1, mesh2, approx_far):
-    """ Estimate the number of chunks for inductance calculations
-        based on available memory
+    """Estimate the number of chunks for inductance calculations
+    based on available memory
     """
     # Available RAM in megabytes
     mem = virtual_memory().available >> 20
@@ -222,7 +222,7 @@ def _estimate_nchunks(mesh1, mesh2, approx_far):
 def triangle_self_coupling(mesh):
     """
     Self-coupling integrated analytically.
-    
+
     Re-implemented based on some simplifications in the calculation presented in
 
     Poole, M.S., 2007. Improved equipment and techniques for dynamic

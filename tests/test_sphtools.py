@@ -157,7 +157,7 @@ def test_innerproduct():
 
 def test_mesh_coupling():
     """
-        Test compute_sphcoeffs_mesh with sphere
+    Test compute_sphcoeffs_mesh with sphere
     """
 
     from bfieldtools.sphtools import compute_sphcoeffs_mesh

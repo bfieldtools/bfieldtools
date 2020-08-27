@@ -604,17 +604,17 @@ def basis_potentials(p, lmax, normalization="default", R=1):
     normalization: string
         which normalization scheme to use
         "default": Integration over unit sphere <Y_lm,Y_l'm'> = delta_ll'mm' (default)
-        "energy": each term in inner/outer basis function with respect to 
+        "energy": each term in inner/outer basis function with respect to
         sphere with radius R is normalized to unit energy
     R: float
-        Sphere radius that separates inner/outer components            
-                  
+        Sphere radius that separates inner/outer components
+
     Returns
     -------
     pot1: Nxlmax*(lmax+2) array
         inner potential (alpha_lm) basis functions at p
     pot2: Nxlmax*(lmax+2) array
-        outer potential (beta_lm) basis functions at p     
+        outer potential (beta_lm) basis functions at p
 
     """
     mu0 = 1e-7 * 4 * np.pi
@@ -660,11 +660,11 @@ def potential(p, acoeffs, bcoeffs, lmax, normalization="default", R=1):
     normalization: string
         which normalization scheme to use
         "default": Integration over unit sphere <Y_lm,Y_l'm'> = delta_ll'mm' (default)
-        "energy": each term in inner/outer basis function with respect to 
+        "energy": each term in inner/outer basis function with respect to
         sphere with radius R is normalized to unit energy
     R: float
-        Sphere radius that separates inner/outer components   
-                  
+        Sphere radius that separates inner/outer components
+
     Returns
     -------
     pot1: Nx array
@@ -691,15 +691,15 @@ def field(p, acoeffs, bcoeffs, lmax, normalization="default", R=1):
     bcoeffs: lmax*(lmax+2)x1 array
         spectral coefficients of r**(-l) terms
     lmax: int
-        maximum degree l which is used in computing  
+        maximum degree l which is used in computing
     normalization: string
         "default": the fields correspond to normalized magnetic potential.
         "unit": the fields are normalized w.r.t integration over the unit sphere.
-        "energy": each term in inner/outer basis function with respect to 
-        sphere with radius R is normalized to unit energy 
+        "energy": each term in inner/outer basis function with respect to
+        sphere with radius R is normalized to unit energy
     R: float
-        Sphere radius that separates inner/outer components   
-                
+        Sphere radius that separates inner/outer components
+
     Returns
     -------
     B: Nx3 array
@@ -725,11 +725,11 @@ def basis_fields(p, lmax, normalization="default", R=1):
     normalization: string
         "default": the fields correspond to magnetic normalized potential.
         "unit": the fields are normalized w.r.t integration over the unit sphere.
-        "energy": each term in inner/outer basis function with respect to 
-            sphere with radius R is normalized to unit energy 
+        "energy": each term in inner/outer basis function with respect to
+            sphere with radius R is normalized to unit energy
     R: float
-        Sphere radius that separates inner/outer components   
-                
+        Sphere radius that separates inner/outer components
+
     Returns
     -------
     B1: N x 3 x N_lmax array
@@ -797,7 +797,7 @@ def compute_sphcoeffs_mesh(mesh, lmax, normalization="default", R=1):
     normalization: str
         'default' (Ylm**2 integrated over solid angle to 1)
         'energy' (field energy of basis fields normalized to 1 in R-ball)
-    R: float                           
+    R: float
         radius in the energy normalization
     Returns
     -------

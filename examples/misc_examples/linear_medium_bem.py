@@ -54,10 +54,10 @@ def Dmatrix(mesh1, mesh2, Nchunks=100):
     """
     "Double-layer potential" coupling between two meshes
     using a Galerkin method with hat basis
-    
+
     Discretize integral equations using hat functions
     on on both meshes. Potential from mesh1 hat functions
-    is calculated analytically and integrated over the 
+    is calculated analytically and integrated over the
     hat functions of mesh2 numerically
 
     Parameters
@@ -126,7 +126,7 @@ def project_to_hats(mesh, func):
     mesh : Trimesh object
         the domain for hat functions
     func : function
-        potential function for phi0, takes (N,3) array 
+        potential function for phi0, takes (N,3) array
         of points as input
 
     Returns

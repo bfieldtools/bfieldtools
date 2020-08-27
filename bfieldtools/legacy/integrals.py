@@ -18,8 +18,7 @@ def norm(vecs):
 
 
 def cross(r1, r2):
-    """ Cross product without overhead
-    """
+    """Cross product without overhead"""
     result = np.zeros(r1.shape)
     result[..., 0] = r1[..., 1] * r2[..., 2] - r1[..., 2] * r2[..., 1]
     result[..., 1] = r1[..., 2] * r2[..., 0] - r1[..., 0] * r2[..., 2]
@@ -28,19 +27,19 @@ def cross(r1, r2):
 
 
 def gamma0(R, reg=1e-13, symmetrize=True):
-    """ Integrals over the edges of a triangle called gamma_0 (line charge potentials).
+    """Integrals over the edges of a triangle called gamma_0 (line charge potentials).
 
-        **NOTE: MAY NOT BE VERY PRECISE FOR POINTS DIRECTLY AT TRIANGLE
-        EDGES.**
+    **NOTE: MAY NOT BE VERY PRECISE FOR POINTS DIRECTLY AT TRIANGLE
+    EDGES.**
 
-        Parameters
-        ----------
-        R : (N, 3, 3) array of points (Neval, Nverts, xyz)
+    Parameters
+    ----------
+    R : (N, 3, 3) array of points (Neval, Nverts, xyz)
 
-        Returns
-        -------
-        res: array (Neval, Nverts)
-            The analytic integrals for each vertex/edge
+    Returns
+    -------
+    res: array (Neval, Nverts)
+        The analytic integrals for each vertex/edge
 
     """
     edges = np.roll(R[0], 1, -2) - np.roll(R[0], 2, -2)
@@ -68,27 +67,27 @@ def gamma0(R, reg=1e-13, symmetrize=True):
 
 
 def omega(R):
-    """ Calculate the solid angle of a triangles
+    """Calculate the solid angle of a triangles
 
-        see
-        A. Van Oosterom and J. Strackee
-        IEEE TRANSACTIONS ON BIOMEDICAL ENGINEERING,
-        VOL. BME-30, NO. 2, 1983
+    see
+    A. Van Oosterom and J. Strackee
+    IEEE TRANSACTIONS ON BIOMEDICAL ENGINEERING,
+    VOL. BME-30, NO. 2, 1983
 
-        Parameters
-        ----------
-        R : array of points (Neval, (Ntri), Nverts, xyz)
-            Points correspond to relative coordinates (x,y,z) of
-            N triangles/evaluation points for
-            the 3 corners of the triangles/triangle.
+    Parameters
+    ----------
+    R : array of points (Neval, (Ntri), Nverts, xyz)
+        Points correspond to relative coordinates (x,y,z) of
+        N triangles/evaluation points for
+        the 3 corners of the triangles/triangle.
 
-            Neval can be number of evaluation points for the same triangle
-            or number of triangles for the same evaluation points
+        Neval can be number of evaluation points for the same triangle
+        or number of triangles for the same evaluation points
 
-        Returns
-        -------
-        sa: (Neval, (Ntri))
-            Solid angles of triangle(s) at evaluation points
+    Returns
+    -------
+    sa: (Neval, (Ntri))
+        Solid angles of triangle(s) at evaluation points
     """
     # Distances
     d = norm(R)
@@ -107,31 +106,31 @@ def omega(R):
 
 
 def triangle_potential_uniform(R, tn, planar=False):
-    """ 1/r potential of a uniform triangle
+    """1/r potential of a uniform triangle
 
-        see
-        A. S. Ferguson, Xu Zhang and G. Stroink,
-        "A complete linear discretization for calculating the magnetic field
-        using the boundary element method,"
-        in IEEE Transactions on Biomedical Engineering,
-        vol. 41, no. 5, pp. 455-460, May 1994.
-        doi: 10.1109/10.293220
+    see
+    A. S. Ferguson, Xu Zhang and G. Stroink,
+    "A complete linear discretization for calculating the magnetic field
+    using the boundary element method,"
+    in IEEE Transactions on Biomedical Engineering,
+    vol. 41, no. 5, pp. 455-460, May 1994.
+    doi: 10.1109/10.293220
 
-        Parameters
-        ----------
+    Parameters
+    ----------
 
-        R : (Neval, (Ntri), 3, 3) array
-            Displacement vectors (Neval, (Ntri), Ntri_verts, xyz)
-        tn : ((Ntri), 3) array
-            Triangle normals (Ntri, dir)
-        planar: boolean
-            If True, use planar geometry assumption for speed
+    R : (Neval, (Ntri), 3, 3) array
+        Displacement vectors (Neval, (Ntri), Ntri_verts, xyz)
+    tn : ((Ntri), 3) array
+        Triangle normals (Ntri, dir)
+    planar: boolean
+        If True, use planar geometry assumption for speed
 
-        Returns
-        -------
-        result: result:  ndarray (Neval, (Ntri))
-            Resultant 1/r potential for each triangle (Ntri)
-            at the field evaluation points (Neval)
+    Returns
+    -------
+    result: result:  ndarray (Neval, (Ntri))
+        Resultant 1/r potential for each triangle (Ntri)
+        at the field evaluation points (Neval)
 
     """
     if len(R.shape) > 3:
@@ -155,27 +154,27 @@ def triangle_potential_uniform(R, tn, planar=False):
 
 
 def triangle_potential_approx(R, ta, reg=1e-12):
-    """ 1/r potential of a uniform triangle using centroid approximation
+    """1/r potential of a uniform triangle using centroid approximation
 
-        Calculates 1/R potentials for triangle centroids
-        (The singularity at the centroid is handled with the very small
-        reg value, but anyway the values close to the centroid are inexact)
+    Calculates 1/R potentials for triangle centroids
+    (The singularity at the centroid is handled with the very small
+    reg value, but anyway the values close to the centroid are inexact)
 
-        Parameters
-        ----------
-        R : (N, (Ntri), 3, 3) array
-            Displacement vectors (Neval, ...., Ntri_verts, xyz)
-        ta : (Ntri) array
-            Triangle areas
+    Parameters
+    ----------
+    R : (N, (Ntri), 3, 3) array
+        Displacement vectors (Neval, ...., Ntri_verts, xyz)
+    ta : (Ntri) array
+        Triangle areas
 
-        reg: float
-            Regularization value used in approximation
+    reg: float
+        Regularization value used in approximation
 
-        Returns
-        -------
-        result: result:  ndarray (...., Ntri, Ntri_verts)
-            Resultant 1/r potential for each node (Ntri_verts)
-            in each triangle (Ntri) in the displacement vectors R
+    Returns
+    -------
+    result: result:  ndarray (...., Ntri, Ntri_verts)
+        Resultant 1/r potential for each node (Ntri_verts)
+        in each triangle (Ntri) in the displacement vectors R
 
     """
     result = 1 / (norm(np.mean(R, axis=-2)) + reg) * ta
@@ -183,7 +182,7 @@ def triangle_potential_approx(R, ta, reg=1e-12):
 
 
 def potential_dipoles(R, face_normals, face_areas):
-    """ Approximate the potential of linearly varying dipole density by
+    """Approximate the potential of linearly varying dipole density by
         by dipoles at each face
 
     Parameters
@@ -210,35 +209,35 @@ def potential_dipoles(R, face_normals, face_areas):
 
 
 def triangle_potential_dipole_linear(R, tn, ta, planar=False):
-    """ Potential of dipolar density with magnitude of a
-        linear shape function on a triangle, "omega_i" in de Munck's paper
+    """Potential of dipolar density with magnitude of a
+    linear shape function on a triangle, "omega_i" in de Munck's paper
 
-        see
-        J. C. de Munck, "A linear discretization of the volume conductor
-        boundary integral equation using analytically integrated elements
-        (electrophysiology application),"
-        in IEEE Transactions on Biomedical Engineering,
-        vol. 39, no. 9, pp. 986-990, Sept. 1992.
-        doi: 10.1109/10.256433
+    see
+    J. C. de Munck, "A linear discretization of the volume conductor
+    boundary integral equation using analytically integrated elements
+    (electrophysiology application),"
+    in IEEE Transactions on Biomedical Engineering,
+    vol. 39, no. 9, pp. 986-990, Sept. 1992.
+    doi: 10.1109/10.256433
 
-        Parameters
-        ----------
+    Parameters
+    ----------
 
-        R : (..., Ntri, 3, 3) array
-            Displacement vectors (...., Ntri, Ntri_verts, xyz)
-        tn : ((Ntri), 3) array
-            Triangle normals (Ntri, dir)
-        ta : (Ntri), array
-            Triangle areas (Ntri, dir)
-        planar: boolean
-            If True, use planar geometry assumption for speed
+    R : (..., Ntri, 3, 3) array
+        Displacement vectors (...., Ntri, Ntri_verts, xyz)
+    tn : ((Ntri), 3) array
+        Triangle normals (Ntri, dir)
+    ta : (Ntri), array
+        Triangle areas (Ntri, dir)
+    planar: boolean
+        If True, use planar geometry assumption for speed
 
-        Returns
-        -------
-        result:  ndarray (...., Ntri, Ntri_verts)
-            Resultant dipolar potential for each shape functions (Ntri_verts)
-            in each triangle (Ntri) at the points
-            corresponding to displacement vectors in R
+    Returns
+    -------
+    result:  ndarray (...., Ntri, Ntri_verts)
+        Resultant dipolar potential for each shape functions (Ntri_verts)
+        in each triangle (Ntri) at the points
+        corresponding to displacement vectors in R
 
     """
     if len(R.shape) > 3:

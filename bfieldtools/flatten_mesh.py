@@ -23,7 +23,7 @@ def A_matrix_complex(mesh):
     See this course:
     https://www.cs.cmu.edu/~kmcrane/Projects/DDG/
     section 7.4.
-    
+
     CURRENTLY ONLY FOR A MESH WITH A SINGLE BOUNDARY (no holes)
 
     Parameters
@@ -34,7 +34,7 @@ def A_matrix_complex(mesh):
     -------
     A : area matrix
         u.T.conj() @ A @ u is the area of the mesh
-        where u is the complex coordinates of the vertices 
+        where u is the complex coordinates of the vertices
         (complex parameterization)
 
     """
@@ -59,14 +59,14 @@ def eigen_complex_laplacian(mesh, Nc, _lambda):
 
 
 def flatten_mesh(mesh, _lambda=1.0):
-    """ Flatten the mesh, return uv coordinates and the mesh in 2D  
+    """Flatten the mesh, return uv coordinates and the mesh in 2D
 
     Parameters
     ----------
-    mesh : Trimesh object 
+    mesh : Trimesh object
         must have boundary
     _lambda : int <= 1.0
-        parameter for trading of area-distortion/angle-preservation. 
+        parameter for trading of area-distortion/angle-preservation.
         The default is 1.0
 
     Returns

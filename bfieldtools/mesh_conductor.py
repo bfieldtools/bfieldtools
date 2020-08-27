@@ -58,7 +58,7 @@ def matrixwrapper(func):
 class MeshConductor:
     """
     Class that is used for surface mesh field calculations.
-    
+
     Computation functions are typically external functions that are called
     using lazy properties.
 
@@ -72,7 +72,7 @@ class MeshConductor:
     The bases can include built-in boundary conditions for the data: inner and
     suh bases assume dirichlet boundary condition (equal value within each boundary),
     while vertex basis does not set a boundary condition.
-    
+
     """
 
     def __init__(
@@ -124,21 +124,21 @@ class MeshConductor:
                 'N_sph': 5
                 'approx_far': True
                 'approx_far_margin': 2
-             
-            
+
+
         Notes
         ------
-        
+
         **outer_boundaries**
-        int or array_like, indices of outer boundaries given by utils.find_boundaries(). 
-        One boundary index per mesh component. If None, outer_boundaries are set to 
+        int or array_like, indices of outer boundaries given by utils.find_boundaries().
+        One boundary index per mesh component. If None, outer_boundaries are set to
         the longest boundary in each mesh component. When using basis 'inner', the outer boundary
         vertex values are fixed to zero.
-        
+
         **resistance_full_rank** (Boolean)
         If True, applies inflation to the resistance matrix in order to increase
         the rank by one. By default, is False. Don't set to True without knowing what you are doing.
-        
+
         **inductance_nchunks** (int or None)
         Number of serial chunks to split self-inductance computation into, saving memory but taking more time.
         When approx_far is True, using more chunks is more efficient (multiply by 10-100x)
@@ -147,20 +147,20 @@ class MeshConductor:
 
         **N_suh**
         Number of surface harmonics to use if basis_name is 'suh'
-        
+
         **sph_normalization**
         'default' (Ylm**2 integrated over solid angle to 1) or
         'energy' (field energy of basis fields normalized to 1 in R-ball)
-        
+
         **sph_radius**
         If sph_normalization is 'energy', defines the radius of the inner expansion
-        
+
         **N_sph**
         Number of spherical harmonics degrees (l-degrees) to use for the spherical harmonics coupling computation
-        
+
         **approx_far** (Boolean)
         If True, usesimple quadrature for points far from the source triangles when computing self-inductance
-        
+
         **approx_far_margin** (non-negative float)
         Cut-off distance for "far" points measured in mean triangle side length.
 
@@ -254,12 +254,12 @@ class MeshConductor:
         self.set_basis(self.basis_name)
 
     def set_basis(self, basis_name):
-        """ The data is stored in vertex basis i.e. every
-            element corresponds to one vertex. The basis matrix changes basis
-            of the operators so that a coefficient vector in the desired
-            basis can be multiplied directly with the operator
+        """The data is stored in vertex basis i.e. every
+        element corresponds to one vertex. The basis matrix changes basis
+        of the operators so that a coefficient vector in the desired
+        basis can be multiplied directly with the operator
 
-            basis_names : str 'vertex', 'inner' or 'suh'
+        basis_names : str 'vertex', 'inner' or 'suh'
         """
         from scipy.sparse import spdiags
 
@@ -280,12 +280,12 @@ class MeshConductor:
             raise ValueError("streamfunction_basis must inner, vertex or suh")
 
     def set_holes(self, outer_boundaries=None):
-        """ Set indices of holes to self.holes
+        """Set indices of holes to self.holes
 
-            outer_boundaries: int or array_like, indices of outer boundaries in
-                    self.boundaries. One boundary index per mesh component.
-                    If None, outer_boundaries are set the longest
-                    boundary in each mesh component
+        outer_boundaries: int or array_like, indices of outer boundaries in
+                self.boundaries. One boundary index per mesh component.
+                If None, outer_boundaries are set the longest
+                boundary in each mesh component
         """
         if len(self.boundaries) == 0:
             # The mesh is watertight
@@ -445,15 +445,15 @@ class MeshConductor:
 
     def set_sph_options(self, **kwargs):
         """
-        Set or reset options related to the spherical harmonics (SPH) coupling of the 
-        MeshConductor object. If SPH couplings have already been computed, these will be 
+        Set or reset options related to the spherical harmonics (SPH) coupling of the
+        MeshConductor object. If SPH couplings have already been computed, these will be
         flushed.
-    
+
 
         Parameters
         ----------
-        **kwargs 
-            Any parameter related to sph, namely "N_sph", "sph_normalization", "sph_radius" 
+        **kwargs
+            Any parameter related to sph, namely "N_sph", "sph_normalization", "sph_radius"
 
         Returns
         -------
@@ -606,8 +606,7 @@ class CouplingMatrix:
         self.function = function
 
     def reset(self):
-        """ Reset the coupling matrix and points
-        """
+        """Reset the coupling matrix and points"""
         self.points = np.array([])
         self.matrix = np.array([])
 
@@ -622,7 +621,7 @@ class CouplingMatrix:
             points: (N_points, ... ) numpy array
                 Array containing query points
             s: (Nbasis,) numpy array
-                If None, return coupling matrix, 
+                If None, return coupling matrix,
                 if not None, return field, i.e, coupling_matrix @ s
                 default None
             *fun_args: additional arguments
@@ -701,21 +700,21 @@ class CouplingMatrix:
 
 
 class StreamFunction(np.ndarray):
-    """ Class for representing stream function(s) on a MeshConductor
+    """Class for representing stream function(s) on a MeshConductor
 
-        Handles the mapping between different bases, e.g. inner vertices <->
-        all vertices <-> surface harmonics
+    Handles the mapping between different bases, e.g. inner vertices <->
+    all vertices <-> surface harmonics
 
-        Parameters:
-            vals: array of shape (N,) or (N,M)
-                where N corresponds to
-                the number of inner vertices in the mesh_conductor or the
-                the number of all vertices in the MeshConductor.
+    Parameters:
+        vals: array of shape (N,) or (N,M)
+            where N corresponds to
+            the number of inner vertices in the mesh_conductor or the
+            the number of all vertices in the MeshConductor.
 
-                Multiple (M) stream functions can be stored in the object
-                by specifying vals with shape (N,M)
-            mesh_conductor:
-                MeshConductor object
+            Multiple (M) stream functions can be stored in the object
+            by specifying vals with shape (N,M)
+        mesh_conductor:
+            MeshConductor object
     """
 
     def __new__(cls, input_array, mesh_conductor=None):
@@ -813,7 +812,7 @@ class StreamFunction(np.ndarray):
 
     def coil_inductance(self, Nloops):
         """
-        
+
 
         Parameters
         ----------

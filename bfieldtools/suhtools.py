@@ -108,9 +108,9 @@ class SuhBasis:
         self.calculate_basis()
 
     def calculate_basis(self, shiftinvert=True, v0=None):
-        """ Calculate basis functions as eigenfunctions of matrices
+        """Calculate basis functions as eigenfunctions of matrices
         specified by the 'magnetic' parameter
-        
+
         Parameters
         ----------
         shiftinvert: Boolean (True)
@@ -118,8 +118,8 @@ class SuhBasis:
         v0: array (b, b)
             Intial value matrix for eigenvalue decomposition algorithm. Shape depends on BC: if neumann b=self.mesh_conductor.basis.shape[0],
             if dirichlet b=self.mesh_conductor.basis.shape[1]
-                        
-                    
+
+
         """
         print("Calculating surface harmonics expansion...")
 
@@ -190,33 +190,32 @@ class SuhBasis:
             self.eigenvals = u[N0:]
 
     def field(self, coeffs, points):
-        """ Calculate field at points
+        """Calculate field at points
 
-            Parameters
+        Parameters
 
-            coeffs : (self.Nc,) array of basis function coefficients
-            points : (N_points, 3) field evaluation points
+        coeffs : (self.Nc,) array of basis function coefficients
+        points : (N_points, 3) field evaluation points
 
-            Returns:
+        Returns:
 
-                field : (N_points, 3) magnetic field
+            field : (N_points, 3) magnetic field
         """
         return self.basis_fields(points) @ coeffs
 
     def basis_fields(self, points):
-        """ Calculate basis fields at points
+        """Calculate basis fields at points
 
-            Return:
+        Return:
 
-                Fields (3, N_points, self.Nc)
+            Fields (3, N_points, self.Nc)
         """
         B_coupling = self.mesh_conductor.B_coupling(points)
 
         return B_coupling @ self.basis
 
     def fit_coeffs(self, points, data):
-        """ Fit basis function coefficients to the data
-        """
+        """Fit basis function coefficients to the data"""
         assert len(data) > self.Nc
 
         A = self.basis_fields(points).reshape(-1, self.Nc)
@@ -230,27 +229,27 @@ class SuhBasis:
     def plot(
         self, Nfuncs, dist=0.5, Ncols=None, figure=None, figsize=(800, 800), **kwargs
     ):
-        """ Plot basis functions on the mesh
+        """Plot basis functions on the mesh
 
-            Nfuncs: int or array-like
-                 if int, the number functions starting from the first'Blm',
-                 if list/array: the indices of the functions
+        Nfuncs: int or array-like
+             if int, the number functions starting from the first'Blm',
+             if list/array: the indices of the functions
 
-            dist: float
-                distance between the plotted objects relative to their size
+        dist: float
+            distance between the plotted objects relative to their size
 
-            Ncols: int or None
-                the number of columns in the plot
-                If none automatically determined
+        Ncols: int or None
+            the number of columns in the plot
+            If none automatically determined
 
-            fig: handle for mlab figure
+        fig: handle for mlab figure
 
-            figsize: size of a new figure if 'fig' not given
+        figsize: size of a new figure if 'fig' not given
 
-            ncolors:
-                number of colors in the colormap
+        ncolors:
+            number of colors in the colormap
 
-            kwargs: keyword arguments passed to mayavi (colormap, etc.)
+        kwargs: keyword arguments passed to mayavi (colormap, etc.)
 
         """
         from mayavi import mlab

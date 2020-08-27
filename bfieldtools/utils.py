@@ -61,8 +61,8 @@ def combine_meshes(meshes):
 
 
 def tri_normals_and_areas(r, tri):
-    """ Get triangle normals and areas from vertices (r) and
-        triangle indices (tri)
+    """Get triangle normals and areas from vertices (r) and
+    triangle indices (tri)
     """
     n = np.cross(
         r[tri[:, 1], :] - r[tri[:, 0], :], r[tri[:, 2], :] - r[tri[:, 0], :], axis=1
@@ -76,20 +76,20 @@ def tri_normals_and_areas(r, tri):
 def get_quad_points(
     verts, tris, method="seven_point", index=None, return_ref_coords=False
 ):
-    """ Get quad points and weights from quadrature rules implemented in
-        quadpy
+    """Get quad points and weights from quadrature rules implemented in
+    quadpy
 
-        Parameters
-        ----------
-        verts: array-like [Nverts x 3]
-        tris: array-like [Ntris x 3]
+    Parameters
+    ----------
+    verts: array-like [Nverts x 3]
+    tris: array-like [Ntris x 3]
 
-        Returns
-        -------
-        w: array-like  (Nquad, )
-            quadrature weights
-        qp: array-like (Ntris, Nquad)
-            quadrature points in each triangle
+    Returns
+    -------
+    w: array-like  (Nquad, )
+        quadrature weights
+    qp: array-like (Ntris, Nquad)
+        quadrature points in each triangle
 
     """
     # methods = [k for k in quadpy.triangle.__dict__.keys()]# if k[0].isupper()]
@@ -130,20 +130,20 @@ def get_quad_points(
 
 
 def get_line_quad_points(line_vertices, method="midpoint", index=None):
-    """ Get quad points and weights from quadrature rules implemented in
-        quadpy
+    """Get quad points and weights from quadrature rules implemented in
+    quadpy
 
-        Parameters
-        ----------
-        line_vertices: array-like [Nverts x 3]
-            Assumes vertices are connected according to index, last index connects to first
+    Parameters
+    ----------
+    line_vertices: array-like [Nverts x 3]
+        Assumes vertices are connected according to index, last index connects to first
 
-        Returns
-        -------
-        w: array-like  (Nquad, )
-            quadrature weights
-        qp: array-like (Nverts, Nquad)
-            quadrature points for each edge connecting the vertices
+    Returns
+    -------
+    w: array-like  (Nquad, )
+        quadrature weights
+    qp: array-like (Nverts, Nquad)
+        quadrature points for each edge connecting the vertices
 
     """
     methods = [k for k in line_segment.__all__]  # if k[0].isupper()]
@@ -186,9 +186,9 @@ def get_line_quad_points(line_vertices, method="midpoint", index=None):
 
 
 def dual_areas(tris, ta):
-    """ Calculate (dual) areas for each node in inds
+    """Calculate (dual) areas for each node in inds
 
-        Dual area == area summed over the neighbouring triangles divided by 3
+    Dual area == area summed over the neighbouring triangles divided by 3
     """
     areas = np.zeros(np.max(tris) + 1)
     for i in range(tris.shape[0]):
@@ -228,17 +228,17 @@ def find_mesh_boundaries(mesh):
 
 
 def inner2vert(mesh, inner_vertices, holes):
-    """ Linear mapping of the inner (free) weights in the stream function
-        discretization to weights in all vertices
+    """Linear mapping of the inner (free) weights in the stream function
+    discretization to weights in all vertices
 
-        Parameters:
-            mesh: Trimesh object
-            inner_vertices: list of indices of the inner vertices of the mesh
-            holes: list of indices for holes in the mesh
+    Parameters:
+        mesh: Trimesh object
+        inner_vertices: list of indices of the inner vertices of the mesh
+        holes: list of indices for holes in the mesh
 
-        Returns:
-            NxM sparse array, where N==mesh.vertices.shape[0]
-            and M == len(inner_vertices) + len(holes)
+    Returns:
+        NxM sparse array, where N==mesh.vertices.shape[0]
+        and M == len(inner_vertices) + len(holes)
     """
     from scipy.sparse import csr_matrix
 
@@ -258,17 +258,17 @@ def inner2vert(mesh, inner_vertices, holes):
 
 
 def vert2inner(mesh, inner_vertices, holes):
-    """ Linear mapping of the all weights in the stream function
-        discretization to inner (free) weights
+    """Linear mapping of the all weights in the stream function
+    discretization to inner (free) weights
 
-        Parameters:
-            mesh: Trimesh object
-            inner_vertices: list of indices of the inner vertices of the mesh
-            holes: list of indices for holes in the mesh
+    Parameters:
+        mesh: Trimesh object
+        inner_vertices: list of indices of the inner vertices of the mesh
+        holes: list of indices for holes in the mesh
 
-        Returns:
-            MxN sparse array, where N==mesh.vertices.shape[0]
-            and M == len(inner_vertices) + len(holes)
+    Returns:
+        MxN sparse array, where N==mesh.vertices.shape[0]
+        and M == len(inner_vertices) + len(holes)
     """
     from scipy.sparse import csr_matrix
 
@@ -440,15 +440,15 @@ def load_example_mesh(mesh_name, process=True, **kwargs):
 
 
 class MeshProjection:
-    """ Class for constructing projection of an arbitrary function
-        to the hat functions of the given mesh
-        
-        The constructor initializes quadrature points, point weights
-        and vertex mappings 
-        
-        After the construction the method "hatfunc_innerproducts" can
-        be called to obtain inner products of the hat functions and 
-        a given function (func)
+    """Class for constructing projection of an arbitrary function
+    to the hat functions of the given mesh
+
+    The constructor initializes quadrature points, point weights
+    and vertex mappings
+
+    After the construction the method "hatfunc_innerproducts" can
+    be called to obtain inner products of the hat functions and
+    a given function (func)
     """
 
     def __init__(self, mesh, quad_degree):

@@ -387,9 +387,9 @@ def vector_potential_coupling(
 
 
 def get_chunks(r, Nchunks, clusters=True):
-    """ Chunk points in 'r' to Nchunks
+    """Chunk points in 'r' to Nchunks
 
-        r : ndarray (Npoints, 3)
+    r : ndarray (Npoints, 3)
     """
     if Nchunks is None:
         if r.shape[0] > 1000:
