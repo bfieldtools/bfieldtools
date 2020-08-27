@@ -20,7 +20,7 @@ class BaseSensor(ABC):
 
         Parameters
         ----------
-        transform : ndarray (4,4) 
+        transform : ndarray (4,4)
            transformation matrix
 
 
@@ -45,13 +45,13 @@ class BaseSensor(ABC):
         """
         Finalize the geometric information of the sensor
         and transform it using 'transform'
-        
+
         After finalize the object is ready for field measurements
         and reciprocal field calculations
 
         Parameters
         ----------
-        transform : ndarray (4,4) 
+        transform : ndarray (4,4)
            transformation matrix
 
 
@@ -72,13 +72,13 @@ class BaseSensor(ABC):
         """
         Update the geometric information of the sensor
         by transform
-        
+
         transform acts on the initial coordinates of the sensor
         (not on the transformed coordinates)
 
         Parameters
         ----------
-        transform : ndarray (4,4) 
+        transform : ndarray (4,4)
            transformation matrix. Transforms from sensor coordinate system
            to array coordinate system
 
@@ -101,7 +101,7 @@ class BaseSensor(ABC):
         Parameters
         ----------
         bfield_func : function
-            function taking (N, 3) array of points 
+            function taking (N, 3) array of points
             as parameter and outputting (N, 3) array of magnetic field
 
         Returns
@@ -120,7 +120,7 @@ class BaseSensor(ABC):
         Parameters
         ----------
         afield_func : function
-            function that takes (N, 3) array of points 
+            function that takes (N, 3) array of points
             as a parameter and outputs (N, 3) array of vector potential
 
         Returns
@@ -169,12 +169,12 @@ class BaseSensor(ABC):
 class MagnetometerLoop(BaseSensor):
     """
     A class for rectangular pickup-loop based magnetometers
-    
+
     Initialization
     --------------
-    
+
     dimensions : tuple/list of loop side lengths (float)
-    
+
     quad_scheme : quadrature scheme for bfield integration
                  Default: "dunavant_01"
                  for more schemes see quadpy.c2.__all__
@@ -277,14 +277,14 @@ class MagnetometerLoop(BaseSensor):
 class GradiometerLoop(MagnetometerLoop):
     """
     A class for rectangular pickup-loop based gradiometers
-    
+
     Initialization
     --------------
-    
+
     dimensions : tuple/list of loop side lengths (float)
-    
+
     baseline : float, distance of the loop centers in x direction
-    
+
     quad_scheme : quadrature scheme for bfield integration
                  Default: "dunavant_01"
                  for more schemes see quadpy.c2.__all__
@@ -353,8 +353,7 @@ class GradiometerLoop(MagnetometerLoop):
 
 
 class MagnetometerOPM(BaseSensor):
-    """ OPM sensor modelled as a point
-    """
+    """OPM sensor modelled as a point"""
 
     def __init__(self, axes=(0,)):
         self.axes = axes
@@ -395,17 +394,17 @@ def apply_transform(transform, points):
 
 
 class SensorArray:
-    """ A class for storing an array of sensors
-        
-        Initialization
-        --------------
-        base_sensor : a sensor object (child class of BaseSensor)
-                      that is copied for all the sensor positions
-        transforms : 4x4 transformation matrices for all the sensors
-                    these transforms map the sensor geometry from the
-                    sensor coordinate system to the array coordinate system
-        names : list of str. Names of the sensor channels
-            
+    """A class for storing an array of sensors
+
+    Initialization
+    --------------
+    base_sensor : a sensor object (child class of BaseSensor)
+                  that is copied for all the sensor positions
+    transforms : 4x4 transformation matrices for all the sensors
+                these transforms map the sensor geometry from the
+                sensor coordinate system to the array coordinate system
+    names : list of str. Names of the sensor channels
+
     """
 
     def __init__(self, base_sensor, transforms, names):
@@ -495,19 +494,19 @@ def call_subarrays(f):
 
 
 class MixedArray:
-    """ Array of mixed types of sensors
-    
-        Initialization
-        --------------
-            arrays : tuple/list of SensorArray-objects (subarrays)
-            
-            concatenate : boolean, concatenate output arrays (see below)
-    
-        The methods of this class call the subarrays
-        in stored in 'arrays' using the decorator 'call_subarrays'
-        
-        If the method output is a numpy ndarray, the outputs
-        can be automatically concetenated by having concatenate=True
+    """Array of mixed types of sensors
+
+    Initialization
+    --------------
+        arrays : tuple/list of SensorArray-objects (subarrays)
+
+        concatenate : boolean, concatenate output arrays (see below)
+
+    The methods of this class call the subarrays
+    in stored in 'arrays' using the decorator 'call_subarrays'
+
+    If the method output is a numpy ndarray, the outputs
+    can be automatically concetenated by having concatenate=True
     """
 
     def __init__(self, arrays, concatenate=True):

@@ -16,8 +16,8 @@ from bfieldtools.utils import load_example_mesh
 
 
 def field_disc(z, a):
-    """ Bfield z-component of streamfunction psi=r**2 z-axis
-        for a disk with radius "a" on the xy plane
+    """Bfield z-component of streamfunction psi=r**2 z-axis
+    for a disk with radius "a" on the xy plane
     """
 
     coeff = 1e-7

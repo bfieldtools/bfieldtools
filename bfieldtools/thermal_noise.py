@@ -32,7 +32,7 @@ def compute_current_modes(
 ):
     """
     Calculates the (AC or DC) Johnson noise current modes on the conducting surface.
-    
+
     Parameters
     ----------
     obj: Trimesh-object or MeshConductor-object
@@ -47,7 +47,7 @@ def compute_current_modes(
     mode: 'AC' or 'DC'
         Calculate modes as a function of frequency or just at DC?
     freqs: Nfreqs array
-        The frequencies at which the eddy-current modes are computed. Obsolete for 
+        The frequencies at which the eddy-current modes are computed. Obsolete for
         'DC' mode. In 'AC', calculate at DC in default.
     Nmodes: int
         How many modes are computed? If None, all Nvertices modes are computed
@@ -55,7 +55,7 @@ def compute_current_modes(
         Return also the eigenvalues (the inverse circuit time constants)?
     kwargs: dict
         Passed to Conductor creation if a Trimesh object is passed as 'obj'
-        
+
     Returns
     -------
     vl: (Nvertices x Nmodes x Nfreqs) (AC) or (Nvertices x Nmodes) (DC) array
@@ -128,9 +128,9 @@ def compute_current_modes(
 
 def noise_covar(B_coupling, vl, Nmodes=None):
     """
-    Calculates (AC or DC) magnetic noise covariance along x, y and z from the 
+    Calculates (AC or DC) magnetic noise covariance along x, y and z from the
     modes vl.
-    
+
     Parameters
     ----------
     B_coupling: ndarray (Np, 3, Nvertices)
@@ -160,9 +160,9 @@ def noise_covar(B_coupling, vl, Nmodes=None):
 
 def noise_var(B_coupling, vl, Nmodes=None):
     """
-    Calculates (AC or DC) magnetic noise variance along x, y and z from the 
+    Calculates (AC or DC) magnetic noise variance along x, y and z from the
     modes vl.
-    
+
     Parameters
     ----------
     B_coupling: ndarray (Np, 3, Nvertices)
@@ -194,7 +194,7 @@ def noise_covar_dir(B_coupling, vl, Nmodes=None):
     """
     Calculates (AC or DC) magnetic noise covariance between x, y and z directions
     from the modes vl.
-    
+
     Parameters
     ----------
     B_coupling: ndarray (Np, 3, Nvertices)
@@ -226,9 +226,9 @@ def sensornoise_covar(mesh, p, n, w, vl, Nmodes=None):
     """
     Calculates the upper diagonal of (AC or DC) magnetic noise covariance
     on a sensor array described by integration points.
-    
+
     Assumes same number of integration points for each sensor.
-    
+
     Parameters
     ----------
     mesh: Trimesh-object

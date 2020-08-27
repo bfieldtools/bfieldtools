@@ -9,10 +9,10 @@ Created on Fri Aug 21 14:22:27 2020
 def extract_array_info(sensor_type="mag"):
     """
     Extract array info from mne
-    
+
     For this mne with sample_data needs to be installed
-    
-    sensor_type value must be one of 
+
+    sensor_type value must be one of
     ['grad', 'mag', 'planar1', 'planar2'] or True (all channels)
 
     Returns

@@ -17,8 +17,7 @@ import trimesh
 
 
 def cross(r1, r2):
-    """ Cross product without overhead
-    """
+    """Cross product without overhead"""
     result = np.zeros(r1.shape)
     result[0] = r1[1] * r2[2] - r1[2] * r2[1]
     result[1] = r1[2] * r2[0] - r1[0] * r2[2]
@@ -27,24 +26,24 @@ def cross(r1, r2):
 
 
 def magnetic_field(vertices, points):
-    """ Compute B-field of a segmented line current.
-        See: Compact expressions for the Biot–Savart fields of a filamentary segments
-        by Hanson & Hirshman: https://doi.org/10.1063/1.1507589
+    """Compute B-field of a segmented line current.
+    See: Compact expressions for the Biot–Savart fields of a filamentary segments
+    by Hanson & Hirshman: https://doi.org/10.1063/1.1507589
 
 
-        Parameters
-        ----------
+    Parameters
+    ----------
 
-        vertices: (N_line, 3) array
-            Vertices of the line with N_line-1 segments
-            The first and last vertices should be the same to close the loop.
-        points:   (N_points, 3) array
-            Magnetic field evaluation points
+    vertices: (N_line, 3) array
+        Vertices of the line with N_line-1 segments
+        The first and last vertices should be the same to close the loop.
+    points:   (N_points, 3) array
+        Magnetic field evaluation points
 
-        Returns
-        -------
-        bfield: (N_points, 3) array
-            Magnetic field at evaluation points
+    Returns
+    -------
+    bfield: (N_points, 3) array
+        Magnetic field at evaluation points
 
     """
     field = np.zeros(points.T.shape)
@@ -72,26 +71,26 @@ def magnetic_field(vertices, points):
 
 
 def vector_potential(vertices, points, reg=1e-12, symmetrize=True):
-    """ Compute vector potential of a segmented line currents.
-        Based on straightforward integration of 1/r potential over a line
-        i.e. the gamma0 integral
+    """Compute vector potential of a segmented line currents.
+    Based on straightforward integration of 1/r potential over a line
+    i.e. the gamma0 integral
 
-        See: Compact expressions for the Biot–Savart fields of a filamentary segments
-        by Hanson & Hirshman: https://doi.org/10.1063/1.1507589
+    See: Compact expressions for the Biot–Savart fields of a filamentary segments
+    by Hanson & Hirshman: https://doi.org/10.1063/1.1507589
 
 
-        Parameters
-        ----------
-        vertices: (N_line, 3) array
-            Vertices of the line with N_line-1 segments
-            The first and last vertices should be the same to close the loop.
-        points: (N_points, 3) array
-            Evaluation points
+    Parameters
+    ----------
+    vertices: (N_line, 3) array
+        Vertices of the line with N_line-1 segments
+        The first and last vertices should be the same to close the loop.
+    points: (N_points, 3) array
+        Evaluation points
 
-        Returns
-        -------
-        A: array (Npoints, 3)
-            Vector potential
+    Returns
+    -------
+    A: array (Npoints, 3)
+        Vector potential
 
     """
 
@@ -124,23 +123,23 @@ def vector_potential(vertices, points, reg=1e-12, symmetrize=True):
 
 
 def scalar_potential(vertices, points):
-    """ Computes the scalar magnetic potential of a segmented current loop at given points.
-        This is equal to the solid angle spanned by the loop (polygon), times a constant.
+    """Computes the scalar magnetic potential of a segmented current loop at given points.
+    This is equal to the solid angle spanned by the loop (polygon), times a constant.
+    The first and last vertices should be the same to close the loop.
+
+
+    Parameters
+    ----------
+    vertices: (N_line, 3) array
+        Vertices of the line with N_line-1 segments
         The first and last vertices should be the same to close the loop.
+    points: (N_points, 3) array
+        Evaluation points
 
-
-        Parameters
-        ----------
-        vertices: (N_line, 3) array
-            Vertices of the line with N_line-1 segments
-            The first and last vertices should be the same to close the loop.
-        points: (N_points, 3) array
-            Evaluation points
-
-        Returns
-        -------
-        U: array (Npoints, )
-            Scalar magnetic potential
+    Returns
+    -------
+    U: array (Npoints, )
+        Scalar magnetic potential
 
     """
 
@@ -167,28 +166,28 @@ def scalar_potential(vertices, points):
 
 
 def mutual_inductance(path1, path2, Nquad=2, radius=1e-3):
-    """ Compute magnetic flux created by a segmented line current loops
-        (path1) on a another closed loop of segmented current
-        (path2). The other loop(s) is numerically integrated.
+    """Compute magnetic flux created by a segmented line current loops
+    (path1) on a another closed loop of segmented current
+    (path2). The other loop(s) is numerically integrated.
 
-        In other words, calculate mutual inductance of the current loops.
+    In other words, calculate mutual inductance of the current loops.
 
-        **SELF INDUCTANCE OF A LOOP IS BASED ON ROUND-WIRE APPROXIMATION**
-        
-        Parameters
-        ----------
-        path1: trimesh.Path3D-object
-        
-        path2: trimesh.Path3D-object
+    **SELF INDUCTANCE OF A LOOP IS BASED ON ROUND-WIRE APPROXIMATION**
 
-        Nquad: int, the number of quadrature points on line segments
-        
-        radius: float
-            radius of the wire, only used for self-inductance calcultion
-            self-inductance is dependent on the wire cross section
-        Returns
-        -------
-         flux in the other loop generated by loops (Nloops,)
+    Parameters
+    ----------
+    path1: trimesh.Path3D-object
+
+    path2: trimesh.Path3D-object
+
+    Nquad: int, the number of quadrature points on line segments
+
+    radius: float
+        radius of the wire, only used for self-inductance calcultion
+        self-inductance is dependent on the wire cross section
+    Returns
+    -------
+     flux in the other loop generated by loops (Nloops,)
 
 
     """
@@ -233,7 +232,7 @@ def self_inductance(path, loop, radius=1e-3):
     Calculate self inductance based on round-wire approximation
     http://www.thompsonrd.com/induct2.pdf
     section 5.
-    
+
 
     Parameters
     ----------

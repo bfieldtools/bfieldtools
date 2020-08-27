@@ -302,28 +302,28 @@ def plot_data_on_faces(
     vmax=None,
     **kwargs
 ):
-    """ Plot any data determined on the faces of a mesh
+    """Plot any data determined on the faces of a mesh
 
-        Parameters
-        ----------
-        mesh: Trimesh mesh object
-        data: (N_verts, ) array
-            Scalar data to plot on mesh faces
-        figure: existing mlab figure
-            Optional, if passed will plot to existing figure
-        figsize: (x, y) tuple
-            Optional, if plotting to new figure specifies the size (in pixels)
-        colormap: str
-            name of colormap to use for scalar data. If None (default), use viridis for
-            all-positive/-negative data and RdBu otherwise
-        colorbar: Boolean
-            If True, plot colorbar for scalar data
-        ncolors: int
-            Number of colors to use
+    Parameters
+    ----------
+    mesh: Trimesh mesh object
+    data: (N_verts, ) array
+        Scalar data to plot on mesh faces
+    figure: existing mlab figure
+        Optional, if passed will plot to existing figure
+    figsize: (x, y) tuple
+        Optional, if plotting to new figure specifies the size (in pixels)
+    colormap: str
+        name of colormap to use for scalar data. If None (default), use viridis for
+        all-positive/-negative data and RdBu otherwise
+    colorbar: Boolean
+        If True, plot colorbar for scalar data
+    ncolors: int
+        Number of colors to use
 
-        Returns
-        -------
-        fig: mlab figure
+    Returns
+    -------
+    fig: mlab figure
     """
     from mayavi import mlab
 

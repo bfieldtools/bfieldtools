@@ -19,7 +19,7 @@ def test_loop_sensors():
         t2[:3, 3] = np.array([3, 0, 0])
         m2 = m.new_from_transform(t2)
 
-        points = np.array([[1, 0, 1,], [2, 0, 0]])
+        points = np.array([[1, 0, 1,], [2, 0, 0],])
 
         b = m1.bfield_self(points)
         a = m1.afield_self(points)
@@ -37,7 +37,7 @@ def test_loop_sensors():
 
 
 def test_sensor_arrays():
-    points = np.array([[0, 0, 0,], [0.1, 0, 0]])
+    points = np.array([[0, 0, 0,], [0.1, 0, 0],])
 
     for func in (create_mag102, create_grad204, create_arr306):
         arr = func()

@@ -22,17 +22,17 @@ def laplacian_matrix(mesh, material_param=None):
     """
     Sparse Laplace-Beltrami operator.
 
-    This function returns the so-called cotangent-Laplacian L, which can be 
-    used to solve the Laplacian eigenvectors as L @ v_i = -k_i^2 M @ v_i, 
+    This function returns the so-called cotangent-Laplacian L, which can be
+    used to solve the Laplacian eigenvectors as L @ v_i = -k_i^2 M @ v_i,
     where M is the mass matrix of the mesh (see mass_matrix).
-    
+
     For meshes with boundaries, the matrix corresponds to zero-Neumann
     boundary conditions (the natural boundary condtion).
-    
+
     When solving something with zero-Dirichlet condition
     only the inner vertices should be free parameters and
     the associated elements of the matrix should be used.
-    
+
     For more discussion about the boundary conditions related
     to stream functions of divergence-free surface currents,
     see the associated publication about the physics (Makinen 2020).
@@ -47,7 +47,7 @@ def laplacian_matrix(mesh, material_param=None):
     -------
     sparse csr_matrix (N_vertices, N_vertices)
         non-diagonal elements L_ij = - 0.5* (cot(alpha) + cot(beta))
-        diagonal elements L_ii = - sum_{i!=j} L_ij 
+        diagonal elements L_ii = - sum_{i!=j} L_ij
 
     """
     if material_param is None:
@@ -213,7 +213,7 @@ def gradient(vals, mesh, rotated=False):
 
 
 def divergence_matrix(mesh):
-    """ 
+    """
     Divergence of tangential vector field on mesh faces as a linear mapping.
 
     Parameters
@@ -235,7 +235,7 @@ def divergence_matrix(mesh):
 
 
 def curl_matrix(mesh):
-    """ 
+    """
     Adjoint curl of tangential vector field.
 
     Parameters
@@ -257,7 +257,7 @@ def curl_matrix(mesh):
 
 
 def divergence(vecs, mesh):
-    """ 
+    """
     Divergence mapping applied to tangential vector field 'vecs'
 
     Parameters
@@ -277,7 +277,7 @@ def divergence(vecs, mesh):
 
 
 def curl(vecs, mesh):
-    """ 
+    """
     Curl applied to tangential vector field
 
     Parameters

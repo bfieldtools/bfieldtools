@@ -25,7 +25,7 @@ from .mesh_conductor import StreamFunction
 def cvxpy_solve_qp(P, G, h, solver=cp.MOSEK, tolerance=None):
     """
     Bare-bones quadratic programming solver function for CVXPY.
-    
+
     Minimizes
 
     .. math::
@@ -97,7 +97,7 @@ def cvxpy_solve_qp(P, G, h, solver=cp.MOSEK, tolerance=None):
 def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None, tolerance=1e-7, **kwargs):
     """
     Use cvxopt (without CVXPY wrapper) for quadratic programming.
-    
+
     Minimize
 
     .. math::
@@ -281,7 +281,7 @@ def optimize_lsq(
 ):
     """
     Optimization of coil stream function according to a specified objective using least-squares.
-    
+
     Parameters
     ----------
     mesh_conductor: MeshConductor object
@@ -429,9 +429,7 @@ def _construct_constraints(mesh_conductor, bfield_specification):
 
 
 def _construct_quadratic_objective(objective, mesh_conductor, deflate=True):
-    """
-
-    """
+    """"""
     # Construct quadratic objective matrix
     if objective == (1, 0):
 

@@ -20,22 +20,22 @@ def double_factorial(n):
 
 
 def bfield_iterative(x, y, z, x_c, y_c, z_c, r, I, n):
-    """ Compute b field of a current loop using an iterative method to estimate 
-        elliptic integrals.
-        
-        Parameters:
-            x, y, z: Evaluation points in 3D space. Accepts matrices and integers.
-            x_c, y_c, z_c: Coordinates of the center point of the current loop.
-            r: Radius of the current loop.
-            I: Current of the current loop.
-            n: Number of terms in the serie expansion.
-            
-        Returns:
-            bfiels (N_points, 3) at evaluation points.
-        
-        This calculation is based on paper by Robert A. Schill, Jr (General 
-        Relation for the Vector Magnetic Field of aCircular Current Loop: 
-        A Closer Look). DOI: 10.1109/TMAG.2003.808597 
+    """Compute b field of a current loop using an iterative method to estimate
+    elliptic integrals.
+
+    Parameters:
+        x, y, z: Evaluation points in 3D space. Accepts matrices and integers.
+        x_c, y_c, z_c: Coordinates of the center point of the current loop.
+        r: Radius of the current loop.
+        I: Current of the current loop.
+        n: Number of terms in the serie expansion.
+
+    Returns:
+        bfiels (N_points, 3) at evaluation points.
+
+    This calculation is based on paper by Robert A. Schill, Jr (General
+    Relation for the Vector Magnetic Field of aCircular Current Loop:
+    A Closer Look). DOI: 10.1109/TMAG.2003.808597
     """
 
     st2 = t.time()

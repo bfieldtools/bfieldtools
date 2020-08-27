@@ -38,7 +38,7 @@ class LineConductor(Path3D):
         kwargs: dict
             passed to scalar_contour if called. Relevant kw:s are N_contours
             and contours
-            
+
         """
         vertices = np.zeros((0, 3))
         entities = []
@@ -63,7 +63,7 @@ class LineConductor(Path3D):
     def simplify(self, min_edge=1e-3, angle_threshold=2e-2, smooth=True):
         """
         Simplifies contour paths.
-        
+
         Parameters
         ----------
         c: array-like
@@ -78,7 +78,7 @@ class LineConductor(Path3D):
         Returns
         -------
         simplified_linepath: LineConductor
-        
+
         """
         simplified_loops = [
             simplify_contour(
@@ -117,7 +117,7 @@ class LineConductor(Path3D):
         points: array (N_p, 3)
 
         separate_loops: Boolean
-            	If True, don't combine contributions of separate loops
+                If True, don't combine contributions of separate loops
 
         Returns
         -------
@@ -145,7 +145,7 @@ class LineConductor(Path3D):
         points: array (N_p, 3)
 
         separate_loops: Boolean
-            	If True, don't combine contributions of separate loops
+                If True, don't combine contributions of separate loops
 
         Returns
         -------
@@ -173,7 +173,7 @@ class LineConductor(Path3D):
         points: array (N_p, 3)
 
         separate_loops: Boolean
-            	If True, don't combine contributions of separate loops
+                If True, don't combine contributions of separate loops
 
         Returns
         -------
