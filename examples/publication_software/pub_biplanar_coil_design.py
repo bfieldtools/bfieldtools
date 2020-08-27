@@ -108,7 +108,9 @@ if PLOT:
 
     if SAVE_FIGURES:
         mlab.savefig(
-            SAVE_DIR + "biplanar_geometry.png", figure=f, magnification=4,
+            SAVE_DIR + "biplanar_geometry.png",
+            figure=f,
+            magnification=4,
         )
         mlab.close()
 
@@ -170,7 +172,9 @@ if PLOT:
     #    f.scene.camera.zoom(0.95)
     if SAVE_FIGURES:
         mlab.savefig(
-            SAVE_DIR + "biplanar_loops.png", figure=f, magnification=4,
+            SAVE_DIR + "biplanar_loops.png",
+            figure=f,
+            magnification=4,
         )
 
         mlab.close()
@@ -193,7 +197,9 @@ if PLOT:
 
     if SAVE_FIGURES:
         mlab.savefig(
-            SAVE_DIR + "biplanar_streamfunction.png", figure=f, magnification=4,
+            SAVE_DIR + "biplanar_streamfunction.png",
+            figure=f,
+            magnification=4,
         )
 
         mlab.close()

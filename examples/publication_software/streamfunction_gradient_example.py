@@ -145,5 +145,7 @@ module_manager2.scalar_lut_manager.title_text_property.bold = False
 
 if SAVE:
     mlab.savefig(
-        SAVE_DIR + "streamfunction_gradient.png", figure=f, magnification=4,
+        SAVE_DIR + "streamfunction_gradient.png",
+        figure=f,
+        magnification=4,
     )
