@@ -79,7 +79,8 @@ class BaseSensor(ABC):
         Parameters
         ----------
         transform : ndarray (4,4) 
-           transformation matrix
+           transformation matrix. Transforms from sensor coordinate system
+           to array coordinate system
 
         Returns
         -------
