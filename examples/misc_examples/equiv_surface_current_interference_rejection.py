@@ -199,23 +199,24 @@ for reg_exp in reg_exps:
 
 #%% Add outside interference to data and test fit
 
-from bfieldtools.line_magnetics import magnetic_field
+from bfieldtools.line_conductor import LineConductor
 
-line_start = np.array([-10, -0.1, 0])
-line_stop = np.array([-10, 0.1, 0])
+
+currentloop = LineConductor(
+    [np.array([[10, 1, 1], [10, 1, -1], [10, -1, -1], [10, -1, 1], [10, 1, 1]])]
+)
+
 
 CURRENT = 1e-4
 
 
-interference = np.einsum(
-    "ij,ij->i", (magnetic_field(np.vstack((line_start, line_stop)), p) * CURRENT), n
-)
+interference = np.einsum("ij,ij->i", (currentloop.magnetic_field(p) * CURRENT), n)
 
 dirtyfield = field + interference
 
 
-# reg_exps = [-1,0.5, 1, 2, 3, 4, 5, 6, 7, 8]
-reg_exps = [1]
+reg_exps = [-1, 0.5, 1, 2, 3, 4, 5, 6, 7, 8]
+# reg_exps = [1]
 rel_errors = []
 
 for reg_exp in reg_exps:
@@ -251,7 +252,7 @@ for reg_exp in reg_exps:
             *mesh2.vertices.T, mesh2.faces, scalars=s.vert[len(mesh.vertices) :]
         )
         surf2.enable_contours = True
-        mlab.plot3d(*np.vstack((line_start, line_stop)).T)
+        currentloop.plot_loops(figure=fig)
 
 
 #%%
