@@ -6,7 +6,7 @@ pyqt5-sip
 sip
 mayavi
 quadpy>=0.13,<=0.15.0
-cvxpy
+cvxpy>=1.1.5
 cvxopt
 trimesh
 shapely
