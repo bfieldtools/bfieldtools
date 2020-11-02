@@ -174,15 +174,15 @@ def mutual_inductance_matrix(
         Nchunks=Nchunks,
         approx_far=approx_far,
         margin=margin,
-    ).reshape(3, Nt, Nw, Nv)
+    ).reshape(Nt, Nw, 3, Nv)
 
     # Integrate over the triangles (current patterns are constant over triangles)
-    A = np.sum(A * weights[None, None, :, None], axis=2)
-    A *= mesh2.area_faces[None, :, None]
+    A = np.sum(A * weights[None, :, None, None], axis=1)
+    A *= mesh2.area_faces[:, None, None]
 
     Gx, Gy, Gz = gradient_matrix(mesh2, rotated=True)
     # Dot product with current patterns and sum over triangle neighbourhoods
-    M = A[0].T @ Gx + A[1].T @ Gy + A[2].T @ Gz
+    M = A[:, 0].T @ Gx + A[:, 1].T @ Gy + A[:, 2].T @ Gz
 
     return M
 
@@ -217,6 +217,8 @@ def _estimate_nchunks(mesh1, mesh2, approx_far):
             "Computing inductance matrix in %d chunks since %d MiB memory is available..."
             % (Nchunks, mem)
         )
+
+    return Nchunks
 
 
 def triangle_self_coupling(mesh):
@@ -286,13 +288,13 @@ def mesh2line_mutual_inductance(mesh, line_vertices, quad_degree=3):
     Nt = len(line_vertices)
     Nv = len(mesh.vertices)
     M = vector_potential_coupling(mesh, quadpoints.reshape(-1, 3)).reshape(
-        3, Nt, Nw, Nv
+        Nt, Nw, 3, Nv
     )
 
     # Integrate over quadrature points
-    M = np.sum(M * weights[None, None, :, None], axis=2)
+    M = np.sum(M * weights[None, :, None, None], axis=2)
 
     # Scale by segment lengths, integrate over xyz-axis and segments
-    M = np.sum(segments.T[:, :, None] * M, axis=(0, 1))
+    M = np.sum(segments[:, :, None] * M, axis=(0, 1))
 
     return M

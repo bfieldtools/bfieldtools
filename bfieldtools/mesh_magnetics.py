@@ -383,7 +383,7 @@ def vector_potential_coupling(
     # Accumulate the elements
     Av = np.array([Af @ Gx, Af @ Gy, Af @ Gz])
 
-    return Av * coeff
+    return np.swapaxes(Av * coeff, 0, 1)
 
 
 def get_chunks(r, Nchunks, clusters=True):
