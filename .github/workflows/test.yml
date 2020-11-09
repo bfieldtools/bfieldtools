@@ -33,19 +33,16 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.7
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install vtk xvfbwrapper
-        pip install -r requirements.txt
-        pip install --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
-    - name: Install bfieldtools
-      run: python setup.py install
-    - name: Run Pytest with xvfb
+    - name: Install dependencies and bfieldtools, run Pytest with xvfb
       uses: GabrielBB/xvfb-action@v1
       with:
         working-directory: ./ #optional
         run: |
+          python -m pip install --upgrade pip
+          pip install vtk xvfbwrapper
+          pip install -r requirements.txt
+          pip install --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
+          python setup.py install
           pytest ./tests
           pytest --cov=bfieldtools ./tests
           # Push coverage to codecov.io
