@@ -15,7 +15,7 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
-        python-version: 3.7
+        python-version: 3.8
     - name: Install Formatting checkers
       run: |
         python -m pip install --upgrade pip
@@ -32,18 +32,16 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
-        python-version: 3.7
+        python-version: 3.8
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install vtk xvfbwrapper
-        xvfb-run pip install -r requirements.txt
+        sudo apt-get install xvfb
+        pip install -r requirements.txt
         pip install --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
     - name: Install bfieldtools
       run: python setup.py install
     - name: Run Pytest with xvfb
       run: |
-        xvfb-run pytest ./tests
         xvfb-run pytest --cov=bfieldtools ./tests
         # Push coverage to codecov.io
         bash <(curl -s https://codecov.io/bash)
