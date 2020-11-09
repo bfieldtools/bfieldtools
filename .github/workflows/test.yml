@@ -35,7 +35,8 @@ jobs:
         python-version: 3.8
     - name: Install dependencies
       run: |
-        sudo systemctl start xvfb
+        export DISPLAY=':99.0'
+        Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
         pip install vtk xvfbwrapper
         pip install -r requirements.txt
         pip install --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
