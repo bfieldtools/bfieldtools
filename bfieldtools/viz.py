@@ -134,7 +134,7 @@ def plot_3d_current_loops(
         raise ValueError("Invalid parameter for colors")
 
     for loop_idx, loop in enumerate(current_loops):
-        mlab.plot3d(
+        p = mlab.plot3d(
             *loop[list(range(len(loop))) + [0]].T,
             color=colors[loop_idx],
             tube_radius=tube_radius
@@ -149,29 +149,29 @@ def plot_3d_current_loops(
                 axis=-1,
             )
         )
+        if tube_radius is not None:
+            if longest_idx == len(loop) - 1:
+                arrow1 = mlab.quiver3d(
+                    *loop[-1, :].T,
+                    *(loop[0, :] - loop[-1, :]).T,
+                    mode="cone",
+                    scale_mode="none",
+                    scale_factor=0.5 * tube_radius / 0.05,
+                    color=colors[loop_idx]
+                )
+            else:
+                arrow1 = mlab.quiver3d(
+                    *loop[longest_idx + 1, :].T,
+                    *(loop[longest_idx + 1, :] - loop[longest_idx, :]).T,
+                    mode="cone",
+                    scale_mode="none",
+                    scale_factor=0.5 * tube_radius / 0.05,
+                    color=colors[loop_idx]
+                )
 
-        if longest_idx == len(loop) - 1:
-            arrow1 = mlab.quiver3d(
-                *loop[-1, :].T,
-                *(loop[0, :] - loop[-1, :]).T,
-                mode="cone",
-                scale_mode="none",
-                scale_factor=0.5 * tube_radius / 0.05,
-                color=colors[loop_idx]
-            )
-        else:
-            arrow1 = mlab.quiver3d(
-                *loop[longest_idx + 1, :].T,
-                *(loop[longest_idx + 1, :] - loop[longest_idx, :]).T,
-                mode="cone",
-                scale_mode="none",
-                scale_factor=0.5 * tube_radius / 0.05,
-                color=colors[loop_idx]
-            )
-
-        arrow1.glyph.glyph_source.glyph_position = "center"
-        arrow1.glyph.glyph_source.glyph_source.radius = 0.3
-        arrow1.glyph.glyph_source.glyph_source.height = 0.5
+            arrow1.glyph.glyph_source.glyph_position = "center"
+            arrow1.glyph.glyph_source.glyph_source.radius = 0.3
+            arrow1.glyph.glyph_source.glyph_source.height = 0.5
 
     #        #Second arrow on the element "half away"
     #
@@ -193,7 +193,7 @@ def plot_3d_current_loops(
     #        arrow2.glyph.glyph_source.glyph_source.radius = 0.3
     #        arrow2.glyph.glyph_source.glyph_source.height = 0.5
 
-    figure.scene.isometric_view()
+    p.scene.isometric_view()
 
     return figure
 

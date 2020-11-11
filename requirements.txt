@@ -9,5 +9,6 @@ quadpy>=0.13,<=0.15.0
 cvxpy>=1.1.5
 cvxopt
 trimesh
+networkx
 shapely
 psutil
