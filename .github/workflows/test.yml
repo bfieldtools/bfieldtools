@@ -40,6 +40,8 @@ jobs:
         python-version: 3.9
     - name: 'Install dependencies'
       run: |
+        pip install numpy scipy
+        pip install vtk
         pip install -r requirements.txt
         pip install --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
     - name: 'Install bfieldtools'
