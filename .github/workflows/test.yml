@@ -1,4 +1,4 @@
-name: Run tests
+name: 'Run tests'
 
 on:
   push:
@@ -8,25 +8,27 @@ on:
 
 jobs:
   formatting:
-    name: Check Formatting using Black
+    name: 'Check Formatting using Black'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: 'Set up Python'
       uses: actions/setup-python@v1
       with:
         python-version: 3.9
-    - name: Install Formatting checkers
+    - name: 'Install Formatting checkers'
       run: |
         python -m pip install --upgrade pip
         pip install black==19.10b0
-    - name: Check Formatting using Black
+    - name: 'Check Formatting using Black'
       run: |
         black --check .
 
   tests:
-    name: Run tests
+    name: 'Run tests'
     runs-on: ubuntu-latest
+    env:
+      DISPLAY: ':99.0'
     steps:
     - uses: actions/checkout@v2
     - run: ./tools/setup_xvfb.sh
@@ -36,13 +38,13 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
-    - name: Install dependencies
+    - name: 'Install dependencies'
       run: |
         pip install -r requirements.txt
         pip install --upgrade "pytest<5.4" pytest-sugar pytest-cov pytest-mock pytest-timeout
-    - name: Install bfieldtools
+    - name: 'Install bfieldtools'
       run: python setup.py install
-    - name: Run Pytest with xvfb
+    - name: 'Run Pytest with xvfb'
       run: |
         pytest --cov=bfieldtools ./tests
         # Push coverage to codecov.io
