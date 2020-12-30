@@ -11,8 +11,8 @@
 .. |bfieldtools| image:: https://bfieldtools.github.io/_static/logo_simple_w_name.svg
 .. _bfieldtools: https://bfieldtools.github.io
 
-.. |Travis| image:: https://travis-ci.com/bfieldtools/bfieldtools.svg?token=zziPTxRYBYdrsGqgmpjH&branch=master
-.. _Travis: https://travis-ci.com/bfieldtools/bfieldtools
+.. |Travis| image:: ![Run tests](https://github.com/bfieldtools/bfieldtools/workflows/Run%20tests/badge.svg)
+.. _Travis: https://github.com/bfieldtools/bfieldtools/actions
 
 .. |Codecov| image:: https://codecov.io/gh/bfieldtools/bfieldtools/branch/master/graph/badge.svg?token=R6WGNQ4QBV
 .. _Codecov: https://codecov.io/gh/bfieldtools/bfieldtools
