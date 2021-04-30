@@ -62,7 +62,7 @@ def scalar_contour(mesh, scalars, N_contours=10, contours=None, return_values=Fa
 
     # Loop through
     for c in contours:
-
+        print(f'Processing contour, value: {c}')
         # Get edges that contain the contour values
         edge_inds = (edge_vals.min(axis=1) <= c) * (edge_vals.max(axis=1) >= c)
         c_edge_vals = edge_vals[edge_inds]
@@ -101,8 +101,8 @@ def scalar_contour(mesh, scalars, N_contours=10, contours=None, return_values=Fa
 
         # Vector between two edges in first face used for contour
         vec = (
-            points[c_edge_inds.index(c_edges_in_c_faces[0, 0])]
-            - points[c_edge_inds.index(c_edges_in_c_faces[0, 1])]
+            points[c_edge_inds.index(c_edges_in_c_faces[0, 1])]
+            - points[c_edge_inds.index(c_edges_in_c_faces[0, 0])]
         )
 
         # Create loop such that it is in the same direction as gradient
@@ -156,8 +156,8 @@ def scalar_contour(mesh, scalars, N_contours=10, contours=None, return_values=Fa
 
                     # once again, check winding direction
                     vec = (
-                        points[c_edge_inds.index(c_edges_in_c_faces[ii, 0])]
-                        - points[c_edge_inds.index(c_edges_in_c_faces[ii, 1])]
+                        points[c_edge_inds.index(c_edges_in_c_faces[ii, 1])]
+                        - points[c_edge_inds.index(c_edges_in_c_faces[ii, 0])]
                     )
 
                     if c_face_gradient.dot(vec) >= 0:
