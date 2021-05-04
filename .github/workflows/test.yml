@@ -25,7 +25,7 @@ jobs:
         black --check .
 
   tests:
-    name: 'Run tests'
+    name: 'Run tests and publish'
     runs-on: ubuntu-latest
     env:
       DISPLAY: ':99.0'
@@ -51,3 +51,9 @@ jobs:
         pytest --cov=bfieldtools ./tests
         # Push coverage to codecov.io
         bash <(curl -s https://codecov.io/bash)
+    - name: Publish package
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
