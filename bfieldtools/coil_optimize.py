@@ -164,7 +164,7 @@ def optimize_streamfunctions(
     solver=None,
     solver_opts={},
     problem=None,
-    DPP=False,
+    DPP=False
 ):
     """
     Quadratic optimization of coil stream function according to a specified objective.
@@ -506,6 +506,7 @@ def _construct_quadratic_objective(objective, mesh_conductor, deflate=True):
     if deflate:
         evals = eigh(quadratic_matrix, eigvals=(0, 1), eigvals_only=True)
         if abs(evals[0]) < 1e-8 * abs(evals[1]):
-            quadratic_matrix += np.ones / np.sqrt(quadratic_matrix.shape[0])
+            print('Smallest quadratic matrix eigenvalue is much smaller than the second-smallest, matrix probably from closed surface. Performing matrix inflation to compensate. ')
+            quadratic_matrix += np.ones(quadratic_matrix.shape) / np.sqrt(quadratic_matrix.shape[0])
 
     return quadratic_matrix
