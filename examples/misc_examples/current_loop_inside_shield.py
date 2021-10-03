@@ -40,7 +40,7 @@ loop_points = np.array([[width/2, ly, length/2], [width/2, ly, -length/2],
 # Loads the cylinder shield geometry from examples
 shield_mesh = load_example_mesh("closed_cylinder_remeshed")
 
-# Shrinks the shield and rotates it by 90 degrees rotation around y axis.
+# Shrinks the shield and rotates it by 90 degrees around the y axis.
 shield_mesh.apply_scale(0.17)
 shield_mesh.apply_transform([[0, 0, 1, 0],
                              [0, 1, 0, 0],
@@ -66,7 +66,7 @@ shield = MeshConductor(mesh_obj=shield_mesh, process=True, fix_normals=True)
 # In the following, we want to calculate scalar potentials on the surface of
 # the shield. Since the potential created by the surface shield currents is
 # discontinuous on the shield, we select the inner surface by taking a small
-# offset.
+# offset along the inner normal.
 d = 1e-5
 shield_inner_points = shield_mesh.vertices - d * shield_mesh.vertex_normals
 
@@ -75,14 +75,14 @@ shield_inner_points = shield_mesh.vertices - d * shield_mesh.vertex_normals
 U_cpl_ssurf = shield.U_coupling(shield_inner_points)
 
 # Takes the scalar potential created by the current loop at the shield and finds
-# the stream function of surface currents necessary to compensate it.
+# the stream function of surface currents that is necessary to compensate it.
 U_loop_ssurf = scalar_potential(loop_points, shield_inner_points)
 I_shield = np.linalg.solve(-U_cpl_ssurf, U_loop_ssurf)
 
-# Represent the stream function using a dedicated class
+# Represent the stream function using a dedicated class for visualization.
 s_shield = StreamFunction(I_shield, shield)
 
-# Visualize the stream function on the shield
+# Visualizes the stream function on the shield.
 f3 = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
                  size=(300, 300))
 mlab.view(roll=45, azimuth=45, elevation=60, figure=f3)
@@ -95,8 +95,7 @@ mlab.axes()
 # the contributions of the current loop and the shield.
 
 
-# Define grids for the calculation of magnetic field
-# yz plane cut
+# Defines a grid in the yz plane.
 x0 = 0
 ny = 50
 nz = 100
@@ -108,7 +107,7 @@ zz = np.linspace(-0.27/2, 0.27/2, nz)
 grid = create_3d_grid(xx, yy, zz)
 
 
-# Finds the scalarpotential produced by the loop in the absence of shield.
+# Finds the scalar potential produced by the loop in the absence of shield.
 U_loop1 = scalar_potential(loop_points, grid)
 U_loop_pl1 = U_loop1.reshape(ny, nz)  # Reshapes for plotting.
 
@@ -147,7 +146,7 @@ plt.colorbar()
 plt.show()
 
 
-# Finds the magnetic field created by the loop in the absence of shield
+# Finds the magnetic field created by the loop in the absence of shield.
 B_loop2 = magnetic_field(loop_points, grid)
 B_loop_pl2 = B_loop2.reshape(ny, nz, 3)  # Reshapes for plotting.
 
