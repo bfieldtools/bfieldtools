@@ -161,8 +161,8 @@ def scalar_potential(vertices, points):
 
     RR = R2[:, None, None, :] - R1[None, :, :, :]
 
-    # COMPUTE SOLID ANGLE, DIVIDE BY 4*PI*mu0
-    return np.sum(omega(RR), axis=1) * 1e-7
+    # COMPUTE SOLID ANGLE
+    return -1 * np.sum(omega(RR), axis=1) / (4 * np.pi)
 
 
 def mutual_inductance(path1, path2, Nquad=2, radius=1e-3):
