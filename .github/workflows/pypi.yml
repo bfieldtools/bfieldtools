@@ -6,9 +6,12 @@ on:
 
 jobs:
   release-job:
-    name: Releasing
-    if: github.event_name == 'release' && github.event.action == 'created'
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_API_TOKEN }}
+      name: 'Releasing'
+      runs-on: ubuntu-latest
+      steps:
+      - name: 'Publish on PyPI'
+        if: github.event_name == 'release' && github.event.action == 'created'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
