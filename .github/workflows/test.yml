@@ -51,8 +51,9 @@ jobs:
         pytest --cov=bfieldtools ./tests
         # Push coverage to codecov.io
         bash <(curl -s https://codecov.io/bash)
-    - name: Publish package
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+  release-job:
+    name: Publish to PyPI
+    if: github.event_name == 'release' && github.event.action == 'created'
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: __token__
