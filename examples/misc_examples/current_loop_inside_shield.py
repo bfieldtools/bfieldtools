@@ -16,7 +16,7 @@ from bfieldtools.utils import load_example_mesh
 
 
 def create_3d_grid(xx, yy, zz):
-    """Creates a direct product grid from three 1D arrays (xx, yy and zz) 
+    """Creates a direct product grid from three 1D arrays (xx, yy and zz)
     that is appropriately formated for `scalar_potential` and `magnetic_field`.
     """
     X, Y, Z = np.meshgrid(xx, yy, zz, indexing="ij")
@@ -32,9 +32,15 @@ def create_3d_grid(xx, yy, zz):
 length = 0.3  # (m)
 width = 6e-2  # (m)
 ly = 6e-2  # (m)
-loop_points = np.array([[width/2, ly, length/2], [width/2, ly, -length/2],
-                        [-width/2, ly, -length/2], [-width/2, ly, length/2],
-                        [width/2, ly, length/2]])
+loop_points = np.array(
+    [
+        [width / 2, ly, length / 2],
+        [width / 2, ly, -length / 2],
+        [-width / 2, ly, -length / 2],
+        [-width / 2, ly, length / 2],
+        [width / 2, ly, length / 2],
+    ]
+)
 
 
 # Loads the cylinder shield geometry from examples
@@ -42,22 +48,24 @@ shield_mesh = load_example_mesh("closed_cylinder_remeshed")
 
 # Shrinks the shield and rotates it by 90 degrees around the y axis.
 shield_mesh.apply_scale(0.17)
-shield_mesh.apply_transform([[0, 0, 1, 0],
-                             [0, 1, 0, 0],
-                             [1, 0, 0, 0],
-                             [0, 0, 0, 0]])
+shield_mesh.apply_transform([[0, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 0, 0]])
 
-shield = MeshConductor(mesh_obj=shield_mesh, process=True,
-                       fix_normals=True, basis_name="vertex")
+shield = MeshConductor(
+    mesh_obj=shield_mesh, process=True, fix_normals=True, basis_name="vertex"
+)
 
 # Plots the complete geometry.
-f1 = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                 size=(300, 300))
+f1 = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(300, 300))
 mlab.view(roll=45, azimuth=50, elevation=60, figure=f1)
 mlab.plot3d(*loop_points.T, tube_radius=1e-3, figure=f1)
-mlab.triangular_mesh(*shield_mesh.vertices.T, shield_mesh.faces,
-                     representation="wireframe", figure=f1, color=(0, 0, 0),
-                     opacity=0.05)
+mlab.triangular_mesh(
+    *shield_mesh.vertices.T,
+    shield_mesh.faces,
+    representation="wireframe",
+    figure=f1,
+    color=(0, 0, 0),
+    opacity=0.05
+)
 
 
 # Calculates the stream function on the surface of the shield
@@ -83,14 +91,13 @@ I_shield = np.linalg.solve(-U_cpl_ssurf, U_loop_ssurf)
 s_shield = StreamFunction(I_shield, shield)
 
 # Visualizes the stream function on the shield.
-f3 = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-                 size=(300, 300))
+f3 = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(300, 300))
 mlab.view(roll=45, azimuth=45, elevation=60, figure=f3)
-s_shield.plot(False, 256, figure=f3)
+s_shield.plot(False, 64, figure=f3)
 mlab.colorbar()
 mlab.axes()
 
-
+#%%
 # The rest of the code calculates magnetic field on a 2D grid and displays
 # the contributions of the current loop and the shield.
 
@@ -102,7 +109,7 @@ nz = 100
 
 xx = np.linspace(x0, x0, 1)
 yy = np.linspace(-0.9e-1, 0.9e-1, ny)
-zz = np.linspace(-0.27/2, 0.27/2, nz)
+zz = np.linspace(-0.34 / 2, 0.34 / 2, nz)
 
 grid = create_3d_grid(xx, yy, zz)
 
@@ -116,34 +123,35 @@ U_cpl_shield1 = shield.U_coupling(grid)
 U_shield1 = U_cpl_shield1 @ I_shield
 U_shield_pl1 = U_shield1.reshape(ny, nz)  # Reshapes for plotting.
 
-# Plots the scalar potential.
+#%% Plots the scalar potential.
 
+fig, axs = plt.subplots(2, 3)
+
+plt.sca(axs[0, 0])
 vmax = np.max(np.abs(U_loop1))
-plt.contourf(zz, yy, U_loop_pl1, cmap=plt.get_cmap('RdBu'),
-             vmax=vmax, vmin=-vmax)
-plt.title('U: Loop only')
-plt.xlabel('z (m)')
-plt.ylabel('y (m)')
+plt.contourf(zz, yy, U_loop_pl1, cmap=plt.get_cmap("RdBu"), vmax=vmax, vmin=-vmax)
+plt.title("U: Loop only")
+plt.xlabel("z (m)")
+plt.ylabel("y (m)")
 plt.colorbar()
-plt.show()
 
+plt.sca(axs[0, 1])
 vmax = np.max(np.abs(U_shield1))
-plt.contourf(zz, yy, U_shield_pl1, cmap=plt.get_cmap('RdBu'),
-             vmax=vmax, vmin=-vmax)
-plt.title('U: Shield only')
-plt.xlabel('z (m)')
-plt.ylabel('y (m)')
+plt.contourf(zz, yy, U_shield_pl1, cmap=plt.get_cmap("RdBu"), vmax=vmax, vmin=-vmax)
+plt.title("U: Shield only")
+plt.xlabel("z (m)")
+plt.ylabel("y (m)")
 plt.colorbar()
-plt.show()
 
+plt.sca(axs[0, 2])
 vmax = np.max(np.abs(U_loop1 + U_shield1))
-plt.contourf(zz, yy, U_shield_pl1 + U_loop_pl1, cmap=plt.get_cmap("RdBu"),
-             vmax=vmax, vmin=-vmax)
-plt.title('U: Total (loop+shield)')
-plt.xlabel('z (m)')
-plt.ylabel('y (m)')
+plt.contourf(
+    zz, yy, U_shield_pl1 + U_loop_pl1, cmap=plt.get_cmap("RdBu"), vmax=vmax, vmin=-vmax
+)
+plt.title("U: Total (loop+shield)")
+plt.xlabel("z (m)")
+plt.ylabel("y (m)")
 plt.colorbar()
-plt.show()
 
 
 # Finds the magnetic field created by the loop in the absence of shield.
@@ -156,30 +164,42 @@ B_shield2 = B_cpl_shield2 @ I_shield
 B_shield_pl2 = B_shield2.reshape(ny, nz, 3)  # Reshapes for plotting.
 
 # Plots the magnetic field.
-
-vmax = np.max(np.abs(B_loop_pl2[:, :, 1]))*1e4
-plt.contourf(zz, yy, B_loop_pl2[:, :, 1]*1e4, cmap=plt.get_cmap("RdBu"),
-             vmax=vmax, vmin=-vmax)
-plt.title('B_y (Gauss @ 1amp), loop only')
-plt.xlabel('z (m)')
-plt.ylabel('x (m)')
+plt.sca(axs[1, 0])
+vmax = np.max(np.abs(B_loop_pl2[:, :, 1])) * 1e4
+plt.contourf(
+    zz, yy, B_loop_pl2[:, :, 1] * 1e4, cmap=plt.get_cmap("RdBu"), vmax=vmax, vmin=-vmax
+)
+plt.title("B_y (Gauss @ 1amp), loop only")
+plt.xlabel("z (m)")
+plt.ylabel("x (m)")
 plt.colorbar()
-plt.show()
 
-vmax = np.max(np.abs(B_shield_pl2[:, :, 1]))*1e4
-plt.contourf(zz, yy, B_shield_pl2[:, :, 1]*1e4, cmap=plt.get_cmap("RdBu"),
-             vmax=vmax, vmin=-vmax)
-plt.title('B_y (Gauss @ 1amp), shield only')
-plt.xlabel('z (m)')
-plt.ylabel('x (m)')
+plt.sca(axs[1, 1])
+vmax = np.max(np.abs(B_shield_pl2[:, :, 1])) * 1e4
+plt.contourf(
+    zz,
+    yy,
+    B_shield_pl2[:, :, 1] * 1e4,
+    cmap=plt.get_cmap("RdBu"),
+    vmax=vmax,
+    vmin=-vmax,
+)
+plt.title("B_y (Gauss @ 1amp), shield only")
+plt.xlabel("z (m)")
+plt.ylabel("x (m)")
 plt.colorbar()
-plt.show()
 
-vmax = np.max(np.abs(B_loop_pl2[:, :, 1]))*1e4
-plt.contourf(zz, yy, (B_loop_pl2[:, :, 1] + B_shield_pl2[:, :, 1])*1e4,
-             cmap=plt.get_cmap("RdBu"), vmax=vmax, vmin=-vmax)
-plt.title('B_y (Gauss @ 1amp), loop+shield')
-plt.xlabel('z (m)')
-plt.ylabel('x (m)')
+plt.sca(axs[1, 2])
+vmax = np.max(np.abs(B_loop_pl2[:, :, 1])) * 1e4
+plt.contourf(
+    zz,
+    yy,
+    (B_loop_pl2[:, :, 1] + B_shield_pl2[:, :, 1]) * 1e4,
+    cmap=plt.get_cmap("RdBu"),
+    vmax=vmax,
+    vmin=-vmax,
+)
+plt.title("B_y (Gauss @ 1amp), loop+shield")
+plt.xlabel("z (m)")
+plt.ylabel("x (m)")
 plt.colorbar()
-plt.show()
