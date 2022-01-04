@@ -1,0 +1,14 @@
+name: 'Publish Release to PyPI'
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  release-job:
+    name: Releasing
+    if: github.event_name == 'release' && github.event.action == 'created'
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
