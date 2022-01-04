@@ -9,6 +9,16 @@ jobs:
       name: 'Releasing'
       runs-on: ubuntu-latest
       steps:
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: 'Install dependencies and build'
+        run: |
+          pip install numpy scipy
+          pip install vtk
+          pip install -r requirements.txt
+          python setup.py sdist bdist_wheel
       - name: 'Publish on PyPI'
         if: github.event_name == 'release' && github.event.action == 'created'
         uses: pypa/gh-action-pypi-publish@release/v1.4.2
