@@ -16,7 +16,7 @@ from bfieldtools.utils import load_example_mesh
 
 
 def create_3d_grid(xx, yy, zz):
-    """Creates a direct product grid from three 1D arrays (xx, yy and zz) 
+    """Creates a direct product grid from three 1D arrays (xx, yy and zz)
     that is appropriately formated for `scalar_potential` and `magnetic_field`.
     """
     X, Y, Z = np.meshgrid(xx, yy, zz, indexing="ij")

@@ -6,7 +6,7 @@ from bfieldtools.line_magnetics import vector_potential
 
 
 def create_3d_grid(xx, yy, zz):
-    """Creates a direct product grid from three 1D arrays (xx, yy and zz) 
+    """Creates a direct product grid from three 1D arrays (xx, yy and zz)
     that is appropriately formated for `scalar_potential` and `magnetic_field`.
     """
     X, Y, Z = np.meshgrid(xx, yy, zz, indexing="ij")
@@ -20,17 +20,17 @@ def create_3d_grid(xx, yy, zz):
 
 def test_field_calculations_in_grid():
     """
-    The test checks the relation B = -mu0*grad(U) between the scalar potential and 
-    the magnetic field, and B = rot(A) between the vector potential and the magnetic 
-    field produced by a rectangular current loop. It compares magnetic fields 
-    computed by three different methods and prints out a relative error and a 
+    The test checks the relation B = -mu0*grad(U) between the scalar potential and
+    the magnetic field, and B = rot(A) between the vector potential and the magnetic
+    field produced by a rectangular current loop. It compares magnetic fields
+    computed by three different methods and prints out a relative error and a
     warning if the error is too large.
-    
+
     magnetic_field, scalar_potential and vector_potential use independent analytic
     formulas and it is useful to check their consistency.
-    
+
     The test also compares the magnetic field of a rectangular loop to values
-    computed externally and prints a notification if the discrepancy is found 
+    computed externally and prints a notification if the discrepancy is found
     to be too large.
     """
     # Defines a rectangular current loop offset by ly from the xz plane
