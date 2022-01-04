@@ -39,7 +39,7 @@ def test_coil_optimize():
                 for solver in [
                     i
                     for i in cvxpy.solvers.defines.INSTALLED_CONIC_SOLVERS
-                    if i not in ("GLPK", "GLPK_MI", "SCS")
+                    if i not in ("GLPK", "GLPK_MI", "SCIPY")
                 ]:
                     results.append(
                         coil_optimize.optimize_streamfunctions(
