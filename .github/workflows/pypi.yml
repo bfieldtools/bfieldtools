@@ -8,7 +8,12 @@ jobs:
   release-job:
       name: 'Releasing'
       runs-on: ubuntu-latest
+      env:
+        DISPLAY: ':99.0'
       steps:      
+      - uses: actions/checkout@v2
+      - run: ./tools/setup_xvfb.sh
+        name: 'Setup xvfb'   
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
