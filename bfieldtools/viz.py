@@ -251,20 +251,18 @@ def plot_cross_section(
         else:
             cmap = "RdBu"
 
-    if log:
-        norm = c.LogNorm()
-    else:
-        norm = c.Normalize()
-
     if vmin is None:
         vmin = np.min(data)
 
     if vmax is None:
         vmax = np.max(data)
 
-    cont = axes.pcolormesh(
-        X, Y, data, cmap=cmap, vmin=vmin, vmax=vmax, norm=norm, shading="gouraud"
-    )
+    if log:
+        norm = c.LogNorm(vmin, vmax)
+    else:
+        norm = c.Normalize(vmin, vmax)
+
+    cont = axes.pcolormesh(X, Y, data, cmap=cmap, norm=norm, shading="gouraud")
 
     if colorbar:
         plt.colorbar(cont)
