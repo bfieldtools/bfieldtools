@@ -74,7 +74,7 @@ def tri_normals_and_areas(r, tri):
 
 
 def get_quad_points(
-    verts, tris, method="seven_point", index=None, return_ref_coords=False
+    verts, tris, methodWithNumber, method="seven_point", index=None, return_ref_coords=False
 ):
     """Get quad points and weights from quadrature rules implemented in
     quadpy
@@ -96,10 +96,10 @@ def get_quad_points(
     methods = [k for k in triangle.__all__]
     if method in methods:
         try:
-            rule = triangle.__dict__[method]()
+            rule = triangle.schemes[methodWithNumber]()
         except (TypeError) as error:
             if index is not None:
-                rule = triangle.__dict__[method](index)
+                rule = triangle.schemes[methodWithNumber]() 
             else:
                 print("The method requires index (check quadpy documentation)")
                 raise error

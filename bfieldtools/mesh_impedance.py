@@ -86,7 +86,7 @@ def self_inductance_matrix(
 
     # Calculate quadrature points
     weights, quadpoints = get_quad_points(
-        mesh.vertices, mesh.faces, "dunavant_0" + str(quad_degree)
+        mesh.vertices, mesh.faces, f"dunavant_0{quad_degree}", "_dunavant"
     )
 
     if Nchunks is None:
@@ -160,7 +160,7 @@ def mutual_inductance_matrix(
     # Calculate quadrature points
     # Nt x Nquad x  3 (x,y,z)
     weights, quadpoints = get_quad_points(
-        mesh2.vertices, mesh2.faces, "dunavant_0" + str(quad_degree)
+        mesh2.vertices, mesh2.faces, f"dunavant_0{quad_degree}", "_dunavant"
     )
 
     # Compute vector potential at quadrature points

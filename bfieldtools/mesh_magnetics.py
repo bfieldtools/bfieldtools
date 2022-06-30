@@ -24,7 +24,7 @@ from .integrals import (
 )
 
 
-def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False):
+def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=2, analytic=False):
     """
     Computes the coupling matrix which gives the magnetic field at
     target points due to currents (stream function) on a surface mesh.
@@ -63,7 +63,7 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
     start = time.time()
 
     w_quad, r_quad = get_quad_points(
-        mesh.vertices, mesh.faces, method="dunavant_0" + str(quad_degree)
+        mesh.vertices, mesh.faces, f"dunavant_0{quad_degree}", "_dunavant"
     )
 
     # Rotated gradients (currents)
