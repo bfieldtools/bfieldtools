@@ -905,8 +905,8 @@ class SphBasis:
         Default points are McLaren(10) so that we avoid singularities.
         """
 
-        self.qp = sphere.mclaren_10()
-        sp = cartesian2spherical(self.qp.points)
+        self.qp = sphere.schemes['mclaren_10']()
+        sp = cartesian2spherical(self.qp.points.T)
         self.sqp = sp
 
     def innerproduct(self, fun1, fun2):

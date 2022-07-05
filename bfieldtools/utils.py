@@ -74,8 +74,7 @@ def tri_normals_and_areas(r, tri):
 
 
 def get_quad_points(
-    verts, tris, methodWithNumber, method="seven_point", index=None, return_ref_coords=False
-):
+    verts, tris, method, return_ref_coords=False):
     """Get quad points and weights from quadrature rules implemented in
     quadpy
 
@@ -83,6 +82,7 @@ def get_quad_points(
     ----------
     verts: array-like [Nverts x 3]
     tris: array-like [Ntris x 3]
+    method: string
 
     Returns
     -------
@@ -92,26 +92,14 @@ def get_quad_points(
         quadrature points in each triangle
 
     """
-    # methods = [k for k in quadpy.triangle.__dict__.keys()]# if k[0].isupper()]
-    methods = [k for k in triangle.__all__]
-    if method in methods:
-        try:
-            rule = triangle.schemes[methodWithNumber]()
-        except (TypeError) as error:
-            if index is not None:
-                rule = triangle.schemes[methodWithNumber]() 
-            else:
-                print("The method requires index (check quadpy documentation)")
-                raise error
-    else:
-        # raise ValueError('method: '+method+' not in the available list of methods: ' + methods)
-        raise ValueError(
-            "method: "
-            + method
-            + " not in the available list of quadrature methods (check triangle.__all__)"
-        )
+    try:
+        rule = triangle.schemes[method]()
+    except (TypeError) as error:
 
-    x = rule.points[:, 0:2]
+        print("The quadrature method specified requires does not exist (check quadpy documentation)")
+        raise error
+
+    x = rule.points.T[:, 0:2]
     w = rule.weights
 
     qp = np.zeros((tris.shape[0], len(w), 3))
