@@ -47,16 +47,16 @@ def test_mesh_plotting():
 def test_plot_cross_section():
 
     X, Y = np.meshgrid(np.linspace(0, 1, 11), np.linspace(0, 1, 11))
-    Z = 3 - (X ** 2 + Y ** 2)
+    Z = 3 - (X**2 + Y**2)
 
-    viz.plot_cross_section(X, Y, Z ** 10, log=True, colorbar=True, cmap=None)
+    viz.plot_cross_section(X, Y, Z**10, log=True, colorbar=True, cmap=None)
     viz.plot_cross_section(X, Y, Z, log=False, cmap=None)
     viz.plot_cross_section(
         X, Y, Z, log=False, cmap="jet", vmin=-10, vmax=10, contours=False
     )
 
     X, Y = np.meshgrid(np.linspace(0, 1, 11), np.linspace(0, 1, 11))
-    Z = 3 - 9 * (X ** 2 + Y ** 2)
+    Z = 3 - 9 * (X**2 + Y**2)
 
     viz.plot_cross_section(X, Y, Z, log=False, cmap=None, contours=4)
 

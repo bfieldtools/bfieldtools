@@ -73,8 +73,7 @@ def tri_normals_and_areas(r, tri):
     return n, a
 
 
-def get_quad_points(
-    verts, tris, method, return_ref_coords=False):
+def get_quad_points(verts, tris, method, return_ref_coords=False):
     """Get quad points and weights from quadrature rules implemented in
     quadpy
 
@@ -96,7 +95,9 @@ def get_quad_points(
         rule = triangle.schemes[method]()
     except (TypeError) as error:
 
-        print("The quadrature method specified requires does not exist (check quadpy documentation)")
+        print(
+            "The quadrature method specified requires does not exist (check quadpy documentation)"
+        )
         raise error
 
     x = rule.points.T[:, 0:2]

@@ -4,7 +4,12 @@ import numpy as np
 
 
 def self_inductance_matrix(
-    mesh, Nchunks=None, quad_degree=2, approx_far=True, margin=2, chunk_clusters=False,
+    mesh,
+    Nchunks=None,
+    quad_degree=2,
+    approx_far=True,
+    margin=2,
+    chunk_clusters=False,
 ):
     """Calculate a self inductance matrix for hat basis functions
     (stream functions) in the triangular mesh described by
@@ -75,7 +80,7 @@ def triangle_self_coupling(mesh):
     ss = np.sqrt(a - 2 * b + c)
     sac = np.sqrt(a * c)
 
-    self_coupling = (1 * (4 * mesh.area_faces ** 2)) * (
+    self_coupling = (1 * (4 * mesh.area_faces**2)) * (
         1
         / (6 * sa)
         * np.log(((a - b + sa * ss) * (b + sac)) / ((-b + sac) * (-a + b + sa * ss)))

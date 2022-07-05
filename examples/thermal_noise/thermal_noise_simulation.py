@@ -77,8 +77,8 @@ B = np.sqrt(noise_var(B_coupling, vl))
 r = 1
 Ban = (
     mu0
-    * np.sqrt(sigma * d * kB * T / (8 * np.pi * z ** 2))
-    * (1 / (1 + z ** 2 / r ** 2))
+    * np.sqrt(sigma * d * kB * T / (8 * np.pi * z**2))
+    * (1 / (1 + z**2 / r**2))
 )
 
 plt.figure()
@@ -187,7 +187,7 @@ Gfact = (
     1
     / (8 * np.pi)
     * (
-        (3 * rat ** 5 + 5 * rat ** 3 + 2) / (rat ** 2 * (1 + rat ** 2) ** 2)
+        (3 * rat**5 + 5 * rat**3 + 2) / (rat**2 * (1 + rat**2) ** 2)
         + 3 * np.arctan(rat)
     )
 )

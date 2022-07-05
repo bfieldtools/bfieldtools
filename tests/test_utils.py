@@ -28,7 +28,9 @@ def test_quad_points():
     mesh = utils.load_example_mesh("unit_disc")
 
     w, qp = utils.get_quad_points(mesh.vertices, mesh.faces, "dunavant_02")
-    w, qp = utils.get_quad_points(mesh.vertices, mesh.faces, method="witherden_vincent_07")
+    w, qp = utils.get_quad_points(
+        mesh.vertices, mesh.faces, method="witherden_vincent_07"
+    )
 
 
 @pytest.mark.xfail

@@ -79,7 +79,7 @@ ff.tight_layout()
 #    L = 2*sf.magnetic_energy
 
 scaling = N_contours / (sf.max() - sf.min())
-L_approx = 2 * sf.magnetic_energy * (scaling ** 2)
+L_approx = 2 * sf.magnetic_energy * (scaling**2)
 
 print("Inductance based on the continuous current density", L_approx)
 print("Inductance based on r=1mm wire", np.sum(Mself))

@@ -21,7 +21,7 @@ def field_disc(z, a):
     """
 
     coeff = 1e-7
-    field = -2 * (a ** 2 + 2 * z ** 2) / np.sqrt((a ** 2 + z ** 2)) + 4 * abs(z)
+    field = -2 * (a**2 + 2 * z**2) / np.sqrt((a**2 + z**2)) + 4 * abs(z)
     field *= coeff * 2 * np.pi
 
     return field

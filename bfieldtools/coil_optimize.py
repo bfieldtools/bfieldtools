@@ -194,7 +194,7 @@ def optimize_streamfunctions(
     DPP: Boolean
         If True, use disciplined parametric programming, which has slower canonicalization,
         but the problem can be re-used for other data with the same dimensions.
-    
+
 
     Returns
     -------

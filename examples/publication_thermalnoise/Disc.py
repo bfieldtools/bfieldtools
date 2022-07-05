@@ -171,8 +171,8 @@ plt.tight_layout()
 r = 1
 Ban = (
     mu0
-    * np.sqrt(sigma * d * kB * T / (8 * np.pi * z ** 2))
-    * (1 / (1 + z ** 2 / r ** 2))
+    * np.sqrt(sigma * d * kB * T / (8 * np.pi * z**2))
+    * (1 / (1 + z**2 / r**2))
 )
 
 plt.figure(figsize=(figw, 5))
@@ -215,7 +215,7 @@ plt.figure(figsize=(figw, 5))
 Ban0 = (
     mu0
     * np.sqrt(sigma * d * kB * T / (8 * np.pi * z[0] ** 2))
-    * (1 / (1 + z[0] ** 2 / r ** 2))
+    * (1 / (1 + z[0] ** 2 / r**2))
 )
 plt.semilogy(
     Nmodes,
@@ -227,7 +227,7 @@ plt.semilogy(
 Ban0 = (
     mu0
     * np.sqrt(sigma * d * kB * T / (8 * np.pi * z[1] ** 2))
-    * (1 / (1 + z[1] ** 2 / r ** 2))
+    * (1 / (1 + z[1] ** 2 / r**2))
 )
 plt.semilogy(
     Nmodes,

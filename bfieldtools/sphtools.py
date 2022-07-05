@@ -522,7 +522,7 @@ def Wlm(l, m, theta, phi):
     """
 
     Wlm = l * Plm(l, m, theta, phi) + np.sqrt(l * (l + 1)) * Blm(l, m, theta, phi)
-    Wlm *= 1 / np.sqrt(2 * l ** 2 + l)
+    Wlm *= 1 / np.sqrt(2 * l**2 + l)
     return Wlm
 
 
@@ -754,9 +754,9 @@ def basis_fields(p, lmax, normalization="default", R=1):
             _Wlm[:, 2] *= sp[:, 0] ** (l - 1)
 
             if normalization == "default":
-                _Wlm *= np.sqrt(2 * l ** 2 + l) * mu0
+                _Wlm *= np.sqrt(2 * l**2 + l) * mu0
             if normalization == "energy":
-                _Wlm *= np.sqrt(2 * l ** 2 + l) * mu0
+                _Wlm *= np.sqrt(2 * l**2 + l) * mu0
                 _Wlm *= 1 / np.sqrt(R ** (2 * l + 1) * l * mu0)
 
             _Wlm = sphvec2cart(sp, _Wlm)
@@ -905,7 +905,7 @@ class SphBasis:
         Default points are McLaren(10) so that we avoid singularities.
         """
 
-        self.qp = sphere.schemes['mclaren_10']()
+        self.qp = sphere.schemes["mclaren_10"]()
         sp = cartesian2spherical(self.qp.points.T)
         self.sqp = sp
 
@@ -958,7 +958,7 @@ class SphBasis:
                 _Wlm = Wlm(l, m, self.sqp[:, 1], self.sqp[:, 2])
                 ctemp = self.innerproduct(fun, _Wlm)
                 ctemp /= self.sqp[0, 0] ** (l - 1) * np.sqrt(
-                    2 * l ** 2 + l
+                    2 * l**2 + l
                 )  # we use this normalization
                 #                ctemp /= (self.sqp[0,0]**(l-1))
                 coeffs.append(ctemp)
@@ -1158,7 +1158,7 @@ def plotBWlm_volume(sph, l, m, lim, Np, offset):
     sp = cartesian2spherical(p)
 
     _Wlm = Wlm(l, m, sp[:, 1], sp[:, 2])
-    _Wlm *= np.sqrt(2 * l ** 2 + l)
+    _Wlm *= np.sqrt(2 * l**2 + l)
     _Wlm[:, 0] *= sp[:, 0] ** (l - 1)
     _Wlm[:, 1] *= sp[:, 0] ** (l - 1)
     _Wlm[:, 2] *= sp[:, 0] ** (l - 1)

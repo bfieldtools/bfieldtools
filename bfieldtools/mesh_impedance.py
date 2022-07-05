@@ -86,7 +86,8 @@ def self_inductance_matrix(
 
     # Calculate quadrature points
     weights, quadpoints = get_quad_points(
-        mesh.vertices, mesh.faces, f"dunavant_0{quad_degree}")
+        mesh.vertices, mesh.faces, f"dunavant_0{quad_degree}"
+    )
 
     if Nchunks is None:
         Nchunks = _estimate_nchunks(mesh, mesh, approx_far)
@@ -159,7 +160,8 @@ def mutual_inductance_matrix(
     # Calculate quadrature points
     # Nt x Nquad x  3 (x,y,z)
     weights, quadpoints = get_quad_points(
-        mesh2.vertices, mesh2.faces, f"dunavant_0{quad_degree}")
+        mesh2.vertices, mesh2.faces, f"dunavant_0{quad_degree}"
+    )
 
     # Compute vector potential at quadrature points
     Nw = len(weights)
@@ -250,7 +252,7 @@ def triangle_self_coupling(mesh):
         logterm = np.log((a1 - d1) * (a2 - d2) / ((a1 + d1) * (a2 + d2)))
         integrals.append(logterm / enorms[:, i])
 
-    integral = ((4 / 6) * mesh.area_faces ** 2) * np.sum(integrals, axis=0)
+    integral = ((4 / 6) * mesh.area_faces**2) * np.sum(integrals, axis=0)
 
     return integral
 

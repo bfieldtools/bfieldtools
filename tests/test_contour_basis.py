@@ -14,8 +14,7 @@ import matplotlib.pyplot as plt
 
 
 def setup_contour_input():
-    """ Load example mesh and create scalars data
-    """
+    """Load example mesh and create scalars data"""
     from bfieldtools.utils import load_example_mesh
 
     mesh = load_example_mesh("unit_disc")
@@ -77,7 +76,7 @@ def contour_basis_matrix(polyline, basis_funcs):
 
 def fit_fourier_basis(polyline, basis_funcs, freqs, _lambda=0.01):
     M = contour_basis_matrix(polyline, basis_funcs)
-    DD = np.diag(freqs ** 4)
+    DD = np.diag(freqs**4)
     MM = M @ M.T
     m0 = np.linalg.eigvalsh(MM)[-1]
 

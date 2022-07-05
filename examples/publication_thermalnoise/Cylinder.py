@@ -72,7 +72,7 @@ Gfact = (
     1
     / (8 * np.pi)
     * (
-        (3 * rat ** 5 + 5 * rat ** 3 + 2) / (rat ** 2 * (1 + rat ** 2) ** 2)
+        (3 * rat**5 + 5 * rat**3 + 2) / (rat**2 * (1 + rat**2) ** 2)
         + 3 * np.arctan(rat)
     )
 )

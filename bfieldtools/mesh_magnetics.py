@@ -63,7 +63,8 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
     start = time.time()
 
     w_quad, r_quad = get_quad_points(
-        mesh.vertices, mesh.faces, f"dunavant_0{quad_degree}")
+        mesh.vertices, mesh.faces, f"dunavant_0{quad_degree}"
+    )
 
     # Rotated gradients (currents)
     Gx, Gy, Gz = gradient_matrix(mesh, rotated=True)
