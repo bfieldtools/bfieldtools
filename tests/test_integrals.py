@@ -38,19 +38,23 @@ def test_x_distance():
 
     import trimesh
 
-    vertices = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0], [-1, 0, 0]])
+    vertices = np.array([[0, 0, 0], [1.0, 0, 0], [0, 1.0, 0], [-1.0, 0, 0]])
 
     faces = np.array([[2, 1, 0], [0, 3, 2]])
 
     mesh = trimesh.Trimesh(vertices=vertices, faces=faces)
 
-    points = np.array([[0, 1, 0]])
+    points = np.array([[1, 0, 0]])
 
-    R = points[:, None, None, :] - mesh.vertices[faces][None, :, :, :]
+    R = points[:, None, None, :] - vertices[faces][None, :, :, :]
 
+    y = np.array([[[0.0, 1.0, 0.0], [2, -1.0, 0.0]]])
+    # Double areas are 1, so the result is the same with
+    # and without normalization
     x = integrals.x_distance(R, mesh.face_normals, mesh.area_faces)
-
-    assert_allclose(x, np.array([[[0.0, 1.0, 0.0], [2.0, -1.0, -1.0]]]))
+    assert_allclose(x, y)
+    x = integrals.x_distance(R, mesh.face_normals, None)
+    assert_allclose(x, y)
 
 
 def test_d_distance():
