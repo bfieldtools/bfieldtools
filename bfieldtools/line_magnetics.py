@@ -59,8 +59,8 @@ def magnetic_field(vertices, points):
         f = cross(a1, a2)
 
         # Vector lengths
-        d1 = np.sqrt(np.sum(a1**2, axis=0))
-        d2 = np.sqrt(np.sum(a2**2, axis=0))
+        d1 = np.sqrt(np.sum(a1 ** 2, axis=0))
+        d2 = np.sqrt(np.sum(a2 ** 2, axis=0))
 
         # Normalize direction field and divide by cylindrical distance
         f *= (d1 + d2) / (d1 * d2 * (d1 * d2 + np.sum(a1 * a2, axis=0)))

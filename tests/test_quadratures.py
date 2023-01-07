@@ -36,6 +36,12 @@ def test_line_quad_points():
     lp = _fake_line_conductor()
 
     w, qp = quadratures.get_line_quad_points(lp.vertices[lp.entities[0].points])
-    w, qp = quadratures.get_line_quad_points(lp.vertices[lp.entities[0].points], "midpoint")
-    w, qp = quadratures.get_line_quad_points(lp.vertices[lp.entities[0].points], "trapezoid")
-    w, qp = quadratures.get_line_quad_points(lp.vertices[lp.entities[0].points], "simpson")
+    w, qp = quadratures.get_line_quad_points(
+        lp.vertices[lp.entities[0].points], "midpoint"
+    )
+    w, qp = quadratures.get_line_quad_points(
+        lp.vertices[lp.entities[0].points], "trapezoid"
+    )
+    w, qp = quadratures.get_line_quad_points(
+        lp.vertices[lp.entities[0].points], "simpson"
+    )

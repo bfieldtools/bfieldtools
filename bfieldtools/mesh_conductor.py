@@ -824,7 +824,7 @@ class StreamFunction(np.ndarray):
 
         """
         scaling = Nloops / (self.vert.max() - self.vert.min())
-        L_approx = 2 * self.magnetic_energy * (scaling**2)
+        L_approx = 2 * self.magnetic_energy * (scaling ** 2)
 
         return L_approx
 

@@ -252,7 +252,7 @@ def triangle_self_coupling(mesh):
         logterm = np.log((a1 - d1) * (a2 - d2) / ((a1 + d1) * (a2 + d2)))
         integrals.append(logterm / enorms[:, i])
 
-    integral = ((4 / 6) * mesh.area_faces**2) * np.sum(integrals, axis=0)
+    integral = ((4 / 6) * mesh.area_faces ** 2) * np.sum(integrals, axis=0)
 
     return integral
 

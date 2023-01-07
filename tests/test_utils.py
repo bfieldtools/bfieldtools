@@ -4,6 +4,7 @@ import numpy as np
 
 import pytest
 
+
 def test_mesh_utils():
 
     mesh1 = utils.load_example_mesh("unit_disc")

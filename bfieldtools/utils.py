@@ -25,6 +25,7 @@ import trimesh
 
 from .quadratures import get_quad_points
 
+
 def combine_meshes(meshes):
     """
     Combine two or more non-overlapping Trimesh meshes without any dependency
