@@ -14,7 +14,7 @@ __all__ = [
 from psutil import virtual_memory
 import numpy as np
 
-from .utils import get_quad_points, get_line_quad_points
+from .quadratures import get_quad_points, get_line_quad_points
 from .mesh_magnetics import vector_potential_coupling
 from .mesh_calculus import gradient_matrix, laplacian_matrix
 
@@ -86,7 +86,7 @@ def self_inductance_matrix(
 
     # Calculate quadrature points
     weights, quadpoints = get_quad_points(
-        mesh.vertices, mesh.faces, f"dunavant_0{quad_degree}"
+        mesh.vertices, mesh.faces, ("dunavant", quad_degree)
     )
 
     if Nchunks is None:
@@ -160,7 +160,7 @@ def mutual_inductance_matrix(
     # Calculate quadrature points
     # Nt x Nquad x  3 (x,y,z)
     weights, quadpoints = get_quad_points(
-        mesh2.vertices, mesh2.faces, f"dunavant_0{quad_degree}"
+        mesh2.vertices, mesh2.faces, ("dunavant", quad_degree)
     )
 
     # Compute vector potential at quadrature points
