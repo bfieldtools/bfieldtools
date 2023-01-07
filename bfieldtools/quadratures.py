@@ -7,6 +7,7 @@ Quadrature rules for numerical integration
 import numpy as np
 from dataclasses import dataclass
 
+
 @dataclass
 class QuadratureRule:
     points: np.ndarray
@@ -17,37 +18,27 @@ class QuadratureRule:
         self.weights = np.asarray(weights)
 
 
-
 dunavant_rules = (
+    QuadratureRule([[1 / 3, 1 / 3, 1 / 3]], [1]),
     QuadratureRule(
-        [
-            [1/3, 1/3, 1/3]
-        ], 
-        [1]
+        [[2 / 3, 1 / 6, 1 / 6], [1 / 6, 2 / 3, 1 / 6], [1 / 6, 1 / 6, 2 / 3]],
+        [1 / 3] * 3,
     ),
     QuadratureRule(
         [
-            [2/3, 1/6, 1/6],
-            [1/6, 2/3, 1/6],
-            [1/6, 1/6, 2/3]
-        ], 
-        [1/3]*3
-    ),
-    QuadratureRule(
-        [
-            [1/3, 1/3, 1/3],
-            [3/5, 1/5, 1/5],
-            [1/5, 3/5, 1/5],
-            [1/5, 1/5, 3/5]
-        ], 
-        [-0.5625] + [0.520833333333333]*3
+            [1 / 3, 1 / 3, 1 / 3],
+            [3 / 5, 1 / 5, 1 / 5],
+            [1 / 5, 3 / 5, 1 / 5],
+            [1 / 5, 1 / 5, 3 / 5],
+        ],
+        [-0.5625] + [0.520833333333333] * 3,
     ),
 )
 
 
 def get_rule(method):
     name, degree = method
-    rules = {'dunavant': dunavant_rules}
+    rules = {"dunavant": dunavant_rules}
     return rules[name][degree]
 
 
@@ -71,18 +62,9 @@ def get_quad_points(verts, tris, method, return_ref_coords=False):
     """
 
     rule = get_rule(method)
-
-    #qp = np.zeros((tris.shape[0], len(w), 3))
-    #for i, t in enumerate(tris):
-    #    p0 = verts[t[0]]
-    #    p1 = verts[t[1]]
-    #    p2 = verts[t[2]]
-    #    B = np.array([p0, p1, p2])
-    #    qp[i] = x @ B + p0
-
-    qp = np.einsum('ij,kjl->kil', rule.points, verts[tris])
+    qp = np.einsum("ij,kjl->kil", rule.points, verts[tris])
 
     if return_ref_coords:
         return rule.weights, qp, rule.points
-    
+
     return rule.weights, qp
