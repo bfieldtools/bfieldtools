@@ -119,7 +119,6 @@ autodoc_mock_imports = [
     "scipy",
     "trimesh",
     "mayavi",
-    "quadpy",
     "cvxopt",
     "cvxpy",
     "numba",

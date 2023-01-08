@@ -44,7 +44,6 @@ Requires Python 3.6 or newer.
  - `Numpy <https://www.numpy.org/>`_
  - `Scipy <https://www.scipy.org/>`_
  - `Trimesh <https://github.com/mikedh/trimesh>`_
- - `Quadpy>=0.16 <https://github.com/nschloe/quadpy/tree/master/quadpy>`_
  - `CVXPY <https://cvxpy.org/>`_
  - `Matplotlib <https://matplotlib.org/>`_
  - `Mayavi <https://docs.enthought.com/mayavi/mayavi/>`_
