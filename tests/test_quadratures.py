@@ -59,7 +59,7 @@ def test_line_quad_points():
         lp.vertices[lp.entities[0].points], "midpoint"
     )
     w1, qp1 = quadratures.get_line_quad_points(
-        lp.vertices[lp.entities[0].points], ("gauss-legendre", 0)
+        lp.vertices[lp.entities[0].points], ("gauss_legendre", 0)
     )
 
     assert np.allclose(w0, w1)
@@ -72,5 +72,12 @@ def test_line_quad_points():
         lp.vertices[lp.entities[0].points], "simpson"
     )
     w, qp = quadratures.get_line_quad_points(
-        lp.vertices[lp.entities[0].points], ("gauss-legendre", 2)
+        lp.vertices[lp.entities[0].points], ("gauss_legendre", 2)
     )
+
+
+def test_spherical_quad_points():
+    qp = quadratures.get_spherical_quad_points()
+    assert np.allclose(sum(qp.weights), 1)
+    for coord in qp.points.T:
+        assert np.allclose(coord.sum(), 0, atol=1e-7)

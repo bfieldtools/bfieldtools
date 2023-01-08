@@ -49,10 +49,7 @@ __all__ = [
 import numpy as np
 from scipy.special import factorial, lpmn
 
-try:
-    from quadpy import sphere
-except ImportError:
-    from quadpy import u3 as sphere
+from .quadratures import get_spherical_quad_points
 
 from .mesh_calculus import gradient_matrix
 from .utils import tri_normals_and_areas
@@ -905,8 +902,8 @@ class SphBasis:
         Default points are McLaren(10) so that we avoid singularities.
         """
 
-        self.qp = sphere.schemes["mclaren_10"]()
-        sp = cartesian2spherical(self.qp.points.T)
+        self.qp = get_spherical_quad_points()
+        sp = cartesian2spherical(self.qp.points)
         self.sqp = sp
 
     def innerproduct(self, fun1, fun2):
