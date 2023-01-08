@@ -4,6 +4,7 @@ Quadrature rules for numerical integration
 
 Refs:
 D.A. Dunavant https://doi.org/10.1002/nme.1620210612
+https://en.wikipedia.org/wiki/Gauss%E2%80%93Legendre_quadrature
 
 """
 
@@ -19,6 +20,10 @@ class QuadratureRule:
     def __init__(self, points, weights):
         self.points = np.asarray(points)
         self.weights = np.asarray(weights)
+
+
+def symmetric_triangle_points(w):
+    return np.ones((3, 3)) * w + np.eye(3) * (1 - 3 * w)
 
 
 dunavant_rules = (
@@ -38,21 +43,41 @@ dunavant_rules = (
     ),
     QuadratureRule(
         [
-            [1 - 2 * 0.445948490915965, 0.445948490915965, 0.445948490915965],
-            [0.445948490915965, 1 - 2 * 0.445948490915965, 0.445948490915965],
-            [0.445948490915965, 0.445948490915965, 1 - 2 * 0.445948490915965],
-            [1 - 2 * 0.091576213509771, 0.091576213509771, 0.091576213509771],
-            [0.091576213509771, 1 - 2 * 0.091576213509771, 0.091576213509771],
-            [0.091576213509771, 0.091576213509771, 1 - 2 * 0.091576213509771],
+            *symmetric_triangle_points(0.445948490915965),
+            *symmetric_triangle_points(0.091576213509771),
         ],
         [0.223381589678011] * 3 + [0.109951743655322] * 3,
     ),
 )
 
+
+def gauss_legendre_points(root):
+    p = 0.5 * (1 - root)  # Map from [-1,1] to point weights
+    return [p, 1 - p]
+
+
+gauss_legendre_rules = (
+    QuadratureRule([gauss_legendre_points(0)], [1]),
+    QuadratureRule(
+        [gauss_legendre_points(1 / np.sqrt(3)), gauss_legendre_points(-1 / np.sqrt(3))],
+        [0.5, 0.5],
+    ),
+    QuadratureRule(
+        [
+            gauss_legendre_points(0),
+            gauss_legendre_points(3 / np.sqrt(5)),
+            gauss_legendre_points(-3 / np.sqrt(5)),
+        ],
+        [8 / 18, 5 / 18, 5 / 18],
+    ),
+)
+
+
 line_rules = {
     "midpoint": QuadratureRule([[0.5, 0.5]], [1]),
     "trapezoid": QuadratureRule([[1, 0], [0, 1]], [0.5, 0.5]),
     "simpson": QuadratureRule([[1, 0], [0.5, 0.5], [0, 1]], [1 / 6, 4 / 6, 1 / 6]),
+    "gauss_legendre": gauss_legendre_rules,
 }
 
 
@@ -63,7 +88,10 @@ def get_triangle_rule(method):
 
 
 def get_line_rule(method):
-    return line_rules[method]
+    if isinstance(method, str):
+        return line_rules[method]
+    name, degree = method
+    return line_rules[name][degree]
 
 
 def get_quad_points(verts, tris, method, return_ref_coords=False):
@@ -102,8 +130,9 @@ def get_line_quad_points(line_vertices, method="midpoint", index=None):
     ----------
     line_vertices: array-like [Nverts x 3]
         Assumes vertices are connected according to index, last index connects to first
-    method: str
-        One of 'midpoint', 'trapezoid', or 'simpson'
+    method: str | tuple(str, int)
+        One of 'midpoint', 'trapezoid',  'simpson'
+        or ('gauss_legendre', 0 | 1 | 2)
 
     Returns
     -------

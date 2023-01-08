@@ -257,7 +257,7 @@ def triangle_self_coupling(mesh):
     return integral
 
 
-def mesh2line_mutual_inductance(mesh, line_vertices, quad_degree=3):
+def mesh2line_mutual_inductance(mesh, line_vertices, quad_degree=2):
     """
     Mutual inductance of a closed line segment loop (last segment connecting to first)
     and a triangle mesh.
@@ -277,7 +277,7 @@ def mesh2line_mutual_inductance(mesh, line_vertices, quad_degree=3):
 
     # Calculate quadrature points
     weights, quadpoints = get_line_quad_points(
-        line_vertices, "gauss_legendre", quad_degree
+        line_vertices, ("gauss_legendre", quad_degree)
     )
     # Ne x Nquad x  3 (x,y,z)
 

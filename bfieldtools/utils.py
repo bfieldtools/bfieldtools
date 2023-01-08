@@ -9,8 +9,6 @@ __all__ = [
     "dual_areas",
     "find_mesh_boundaries",
     "fix_normals",
-    "get_line_quad_points",
-    "get_quad_points",
     "inner2vert",
     "load_example_mesh",
     "tri_normals_and_areas",
