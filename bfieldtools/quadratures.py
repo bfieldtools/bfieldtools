@@ -96,7 +96,7 @@ def get_line_rule(method):
 
 def get_quad_points(verts, tris, method, return_ref_coords=False):
     """Get quad points and weights from quadrature rules implemented in
-    quadpy  
+    quadpy
 
     Parameters
     ----------
