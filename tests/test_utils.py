@@ -4,8 +4,6 @@ import numpy as np
 
 import pytest
 
-from .test_line_conductor import _fake_line_conductor
-
 
 def test_mesh_utils():
 
@@ -22,51 +20,6 @@ def test_mesh_utils():
 @pytest.mark.xfail
 def test_load_mesh_fail():
     mesh = utils.load_example_mesh("this mesh does not exist")
-
-
-def test_quad_points():
-    mesh = utils.load_example_mesh("unit_disc")
-
-    w, qp = utils.get_quad_points(mesh.vertices, mesh.faces, "dunavant_02")
-    w, qp = utils.get_quad_points(
-        mesh.vertices, mesh.faces, method="witherden_vincent_07"
-    )
-
-
-@pytest.mark.xfail
-def test_quad_points_fail1():
-    mesh = utils.load_example_mesh("unit_disc")
-    w, qp = utils.get_quad_points(mesh.vertices, mesh.faces, method="lether")
-
-
-@pytest.mark.xfail
-def test_quad_points_fail2():
-    mesh = utils.load_example_mesh("unit_disc")
-    w, qp = utils.get_quad_points(mesh.vertices, mesh.faces, method="dunavant")
-
-
-def test_line_quad_points():
-    lp = _fake_line_conductor()
-
-    w, qp = utils.get_line_quad_points(lp.vertices[lp.entities[0].points])
-    w, qp = utils.get_line_quad_points(lp.vertices[lp.entities[0].points], "midpoint")
-    w, qp = utils.get_line_quad_points(lp.vertices[lp.entities[0].points], "fejer_1", 1)
-
-
-@pytest.mark.xfail
-def test_line_quad_points_fail1():
-    lp = _fake_line_conductor()
-
-    w, qp = utils.get_line_quad_points(lp.vertices[lp.entities[0].points], "fejer_1")
-
-
-@pytest.mark.xfail
-def test_line_quad_points_fail2():
-    lp = _fake_line_conductor()
-
-    w, qp = utils.get_line_quad_points(
-        lp.vertices[lp.entities[0].points], method="dunavant"
-    )
 
 
 def test_cylinder_points():
