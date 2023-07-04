@@ -242,22 +242,21 @@ class SuhBasis:
             the number of columns in the plot
             If none automatically determined
 
-        fig: handle for mlab figure
+        fig: handle for pyvista figure (Plotter)
 
         figsize: size of a new figure if 'fig' not given
 
         ncolors:
             number of colors in the colormap
 
-        kwargs: keyword arguments passed to mayavi (colormap, etc.)
+        kwargs: keyword arguments passed to pyvista (colormap, etc.)
 
         """
-        from mayavi import mlab
+        import pyvista as pv
 
         if figure is None:
-            figure = mlab.figure(
-                None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=figsize
-            )
+            figure = pv.Plotter(window_size=figsize)
+            figure.background_color = "white"
 
         if isinstance(Nfuncs, int):
             N = Nfuncs

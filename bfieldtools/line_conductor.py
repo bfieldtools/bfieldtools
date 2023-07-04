@@ -91,7 +91,7 @@ class LineConductor(Path3D):
 
     def plot_loops(self, **kwargs):
         """
-        Plots loops in 3D using mayavi, see viz.plot_3d_current_loops for more details
+        Plots loops in 3D, see viz.plot_3d_current_loops for more details
 
         Parameters
         ----------

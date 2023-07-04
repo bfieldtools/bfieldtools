@@ -1,6 +1,6 @@
 """
 Visualization functions tailored for bfieldtools.
-Mainly wrappers and convenience helpers around mayavi and matplotlib functions
+Mainly wrappers and convenience helpers around pyvista and matplotlib functions
 """
 
 __all__ = [
@@ -21,7 +21,7 @@ def plot_mesh(
     mesh, cull_front=False, cull_back=False, figure=None, figsize=(800, 800), **kwargs
 ):
     """
-    Plot the mesh surface in mayavi.
+    Plot the mesh surface in pyvista
 
     Parameters
     ----------
@@ -31,32 +31,46 @@ def plot_mesh(
         If True, cull front of mesh
     cull_back: Boolean (False)
         If True, cull back of mesh
-    figure: mayavi figure or None
+    figure: pyvista figure (Plotter) or None
         If passed, plot to existing figure
     figsize: tuple (x, y)
         Figure size (if figure is None)
 
     Returns
     -------
-    figure: mayavi figure
+    figure: PyVista figure
         Contains the plotted mesh
 
     """
-    from mayavi import mlab
+    import pyvista as pv
 
     if figure is None:
-        figure = mlab.figure(
-            None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=figsize
-        )
+        figure = pv.Plotter(window_size=figsize)
+        figure.background_color = "white"
 
-    meshviz = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, **kwargs)
-
-    meshviz.actor.mapper.scalar_visibility = False
-
-    meshviz.actor.property.frontface_culling = cull_front
-    meshviz.actor.property.backface_culling = cull_back
+    
+    meshviz = pv.PolyData(mesh.vertices, np.hstack((np.repeat(3, len(mesh.faces))[:, None], mesh.faces)))
+    figure.add_mesh(meshviz, **kwargs)
+    figure.show(interactive_update=True)
+    
+    
+    
+    prop = pv.Property()
+    if cull_back:
+        prop.culling = 'back'
+    elif cull_front:
+      prop.culling = 'front'  
     return figure
 
+
+def polyline_from_points(points):
+    import pyvista as pv
+    poly = pv.PolyData()
+    poly.points = points
+    the_cell = np.arange(0, len(points), dtype=np.int_)
+    the_cell = np.insert(the_cell, 0, len(points))
+    poly.lines = the_cell
+    return poly
 
 def plot_3d_current_loops(
     current_loops,
@@ -67,7 +81,7 @@ def plot_3d_current_loops(
     origin=np.array([0, 0, 0]),
 ):
     """
-    Plot current loops (e.g. contour_polys given by scalar_contour()) in 3D using mayavi.
+    Plot current loops (e.g. contour_polys given by scalar_contour()) in 3D using pyvista.
 
     Parameters
     ----------
@@ -83,38 +97,31 @@ def plot_3d_current_loops(
         Shifts the origin used to determine the 'auto' coloring.
     tune_radius: float
         radius of loops plotted
-    figure: existing mlab figure
+    figure: existing pyvista figure
         Optional, if passed will plot to existing figure
     figsize: (x, y) tuple
         Optional, if plotting to new figure specifies the size (in pixels)
 
     Returns
     -------
-    fig: mlab figure
+    fig: pyvista figure
 
     """
-    from mayavi import mlab
+    import pyvista as pv
 
     if figure is None:
-        figure = mlab.figure(
-            None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=figsize
-        )
+        figure = pv.Plotter(window_size=figsize)
+        figure.background_color = "white"
 
     if colors is None:
-        colors = [(0.5, 0.5, 0.5)] * len(current_loops)
-
-    elif isinstance(colors, tuple):
-        colors = [colors] * len(current_loops)
-
-    elif isinstance(colors, list):
-        assert len(colors) == len(current_loops)
-
+        colors = 'k' * len(current_loops)
+        
     elif colors == "auto":
         colors = []
 
-        palette = [(1, 0, 0), (0, 0, 1)]
+        palette = ['r', 'b']
         for loop_idx, loop in enumerate(current_loops):
-
+        
             # Compute each loop segment
             segments = np.vstack(
                 (loop[1:, :] - loop[0:-1, :], loop[0, :] - loop[-1, :])
@@ -130,15 +137,23 @@ def plot_3d_current_loops(
             colors.append(
                 palette[int((np.sign(centre_normal @ origin_vector) + 1) / 2)]
             )
+            
+    elif isinstance(colors, str):
+        colors = [colors] * len(current_loops)
+
+    elif isinstance(colors, list):
+        assert len(colors) == len(current_loops)
+
+
     else:
         raise ValueError("Invalid parameter for colors")
 
     for loop_idx, loop in enumerate(current_loops):
-        mlab.plot3d(
-            *loop[list(range(len(loop))) + [0]].T,
-            color=colors[loop_idx],
-            tube_radius=tube_radius
-        )
+        
+        polyline = polyline_from_points(loop[list(range(len(loop))) + [0]])
+        
+        tube = polyline.tube(radius=tube_radius)
+        figure.add_mesh(tube, smooth_shading=True, color=colors[loop_idx])
 
         # Put two arrows on loop
 
@@ -151,49 +166,27 @@ def plot_3d_current_loops(
         )
 
         if longest_idx == len(loop) - 1:
-            arrow1 = mlab.quiver3d(
-                *loop[-1, :].T,
-                *(loop[0, :] - loop[-1, :]).T,
-                mode="cone",
-                scale_mode="none",
-                scale_factor=0.5 * tube_radius / 0.05,
-                color=colors[loop_idx]
-            )
+            
+            cone = pv.Cone(center=loop[-1, :].T, 
+                           direction=(loop[0, :] - loop[-1, :]).T,
+                           height=0.5 * tube_radius / 0.05, 
+                           radius=0.5 * tube_radius / 0.05 / 3,
+                           resolution=12)
+            
+            figure.add_mesh(cone, color=colors[loop_idx])
+            
         else:
-            arrow1 = mlab.quiver3d(
-                *loop[longest_idx + 1, :].T,
-                *(loop[longest_idx + 1, :] - loop[longest_idx, :]).T,
-                mode="cone",
-                scale_mode="none",
-                scale_factor=0.5 * tube_radius / 0.05,
-                color=colors[loop_idx]
-            )
+            cone = pv.Cone(center=loop[longest_idx + 1, :].T, 
+                           direction=(loop[longest_idx + 1, :] - loop[longest_idx, :]).T,
+                           height=0.5 * tube_radius / 0.05, 
+                           radius=0.5 * tube_radius / 0.05 / 3,
+                           resolution=12)
+            
+            figure.add_mesh(cone, color=colors[loop_idx])
+            
 
-        arrow1.glyph.glyph_source.glyph_position = "center"
-        arrow1.glyph.glyph_source.glyph_source.radius = 0.3
-        arrow1.glyph.glyph_source.glyph_source.height = 0.5
-
-    #        #Second arrow on the element "half away"
-    #
-    #        opposite_idx = int((longest_idx + len(loop)/2) % len(loop))
-    #
-    #        if opposite_idx == len(loop)-1:
-    #            arrow1 = mlab.quiver3d(*loop[-1,:].T,
-    #                      *(loop[0,:] - loop[-1,:]).T,
-    #                      mode='cone', scale_mode='none',
-    #                      scale_factor=0.5 * tube_radius/0.05,
-    #                      color=colors[loop_idx])
-    #        else:
-    #            arrow2 = mlab.quiver3d(*loop[opposite_idx+1,:].T,
-    #                      *(loop[opposite_idx+1,:] - loop[opposite_idx,:]).T,
-    #                      mode='cone', scale_mode='none',
-    #                      scale_factor=0.5 * tube_radius/0.05,
-    #                      color=colors[loop_idx])
-    #        arrow2.glyph.glyph_source.glyph_position = 'center'
-    #        arrow2.glyph.glyph_source.glyph_source.radius = 0.3
-    #        arrow2.glyph.glyph_source.glyph_source.height = 0.5
-
-    figure.scene.isometric_view()
+    figure.view_isometric()
+    figure.show(interactive_update=True)
 
     return figure
 
@@ -295,7 +288,6 @@ def plot_data_on_faces(
     figure=None,
     figsize=(800, 800),
     colorbar=False,
-    ncolors=256,
     vmin=None,
     vmax=None,
     **kwargs
@@ -307,7 +299,7 @@ def plot_data_on_faces(
     mesh: Trimesh mesh object
     data: (N_verts, ) array
         Scalar data to plot on mesh faces
-    figure: existing mlab figure
+    figure: existing pyvista figure
         Optional, if passed will plot to existing figure
     figsize: (x, y) tuple
         Optional, if plotting to new figure specifies the size (in pixels)
@@ -316,19 +308,16 @@ def plot_data_on_faces(
         all-positive/-negative data and RdBu otherwise
     colorbar: Boolean
         If True, plot colorbar for scalar data
-    ncolors: int
-        Number of colors to use
 
     Returns
     -------
-    fig: mlab figure
+    fig: pyvista figure
     """
-    from mayavi import mlab
+    import pyvista as pv
 
     if figure is None:
-        figure = mlab.figure(
-            None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=figsize
-        )
+        figure = pv.Plotter(window_size=figsize)
+        figure.background_color = "white"
 
     # If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
     if "colormap" not in kwargs:
@@ -336,24 +325,10 @@ def plot_data_on_faces(
             kwargs["colormap"] = "viridis"
         else:
             kwargs["colormap"] = "RdBu"
-
-    v = mesh.vertices
-    f = mesh.faces
-
-    s = mlab.pipeline.triangular_mesh_source(*v.T, f)
-    s.mlab_source.dataset.cell_data.scalars = data
-
-    s.mlab_source.dataset.cell_data.scalars.name = "Cell data"
-
-    s.mlab_source.update()
-    s2 = mlab.pipeline.set_active_attribute(s, cell_scalars="Cell data")
-    surf = mlab.pipeline.surface(s2, **kwargs)
-
-    if colorbar:
-        mlab.colorbar(surf)
-
-    lutmanager = surf.parent.scalar_lut_manager
-    lutmanager.lut_mode = kwargs["colormap"]
+            
+    meshviz = pv.PolyData(mesh.vertices, np.hstack((np.repeat(3, len(mesh.faces))[:, None], mesh.faces)))
+    
+    
 
     if kwargs["colormap"] == "RdBu":
         rangemax = np.max(np.abs(data))
@@ -361,12 +336,13 @@ def plot_data_on_faces(
             vmin = -rangemax * 1.01
         if vmax is None:
             vmax = rangemax * 1.01
-        lutmanager.data_range = np.array([vmin, vmax])
-        lutmanager.use_default_range = False
+    
+    figure.add_mesh(meshviz, scalars=data, clim=[vmin, vmax], show_scalar_bar=colorbar, **kwargs)
 
-    lutmanager.number_of_colors = ncolors
+    
+    figure.show(interactive_update=True)
 
-    return surf
+    return figure
 
 
 def plot_data_on_vertices(
@@ -392,7 +368,7 @@ def plot_data_on_vertices(
     mesh: Trimesh mesh object
     data: (N_verts, ) array
         Scalar data to plot on mesh vertices
-    figure: existing mlab figure
+    figure: existing pyvista figure
         Optional, if passed will plot to existing figure
     figsize: (x, y) tuple
         Optional, if plotting to new figure specifies the size (in pixels)
@@ -405,20 +381,19 @@ def plot_data_on_vertices(
         Number of colors to use
     interpolate: Boolean
         If True, interpolate scalar data for smoother look
-    opacity: float
-        Opacity of rendered mesh
+
 
     Returns
     -------
-    fig: mlab figure
+    fig: pyvista figure
 
     """
-    from mayavi import mlab
+    
+    import pyvista as pv
 
     if figure is None:
-        figure = mlab.figure(
-            None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=figsize
-        )
+        figure = pv.Plotter(window_size=figsize)
+        figure.background_color = "white"
 
     # If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
     if "colormap" not in kwargs:
@@ -426,26 +401,33 @@ def plot_data_on_vertices(
             kwargs["colormap"] = "viridis"
         else:
             kwargs["colormap"] = "RdBu"
+            
+    meshviz = pv.PolyData(mesh.vertices, np.hstack((np.repeat(3, len(mesh.faces))[:, None], mesh.faces)))
+    
+    
 
-    surf = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=data, **kwargs)
-    surf.actor.property.frontface_culling = cull_front
-    surf.actor.property.backface_culling = cull_back
-    if colorbar:
-        mlab.colorbar(surf)
-    surf.actor.mapper.interpolate_scalars_before_mapping = interpolate
-
-    lutmanager = surf.module_manager.scalar_lut_manager
-    lutmanager.number_of_colors = ncolors
-
-    if (np.all(data > 0) or np.all(data < 0)) and autoscale:
+    if kwargs["colormap"] == "RdBu":
         rangemax = np.max(np.abs(data))
-        lutmanager.data_range = np.array([-rangemax * 1.01, rangemax * 1.01])
-        lutmanager.use_default_range = False
-    elif vmax is not None:
         if vmin is None:
-            lutmanager.data_range = np.array([-vmax, vmax])
-        else:
-            lutmanager.data_range = np.array([vmin, vmax])
-        lutmanager.use_default_range = False
+            vmin = -rangemax * 1.01
+        if vmax is None:
+            vmax = rangemax * 1.01
 
-    return surf
+    
+    figure.add_mesh(meshviz, scalars=data, 
+                    clim=[vmin, vmax], 
+                    show_scalar_bar=colorbar,
+                    interpolate_before_map=interpolate,
+                    **kwargs)
+
+    
+    prop = pv.Property()
+    if cull_back:
+        prop.culling = 'back'
+    elif cull_front:
+      prop.culling = 'front'  
+    
+
+    figure.show(interactive_update=True)
+
+    return figure
