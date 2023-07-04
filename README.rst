@@ -39,7 +39,7 @@ The software currently features
 Dependencies
 ^^^^^^^^^^^^
 
-Requires Python 3.8 or newer.
+Requires Python 3.8 or newer, preferably >3.10.
 
  - `Numpy <https://www.numpy.org/>`_
  - `Scipy <https://www.scipy.org/>`_
