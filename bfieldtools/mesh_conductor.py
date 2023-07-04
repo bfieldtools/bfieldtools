@@ -842,7 +842,7 @@ class StreamFunction(np.ndarray):
             kwargs["vmax"] = np.max(abs(scalars))
 
         s = plot_data_on_vertices(mesh, scalars, **kwargs)
-        
+
         if contours:
             meshactor = s.actors[[*s.actors.keys()][-1]]
             dataset = meshactor.mapper.dataset
@@ -850,8 +850,7 @@ class StreamFunction(np.ndarray):
             c = dataset.contour(isosurfaces=contours)
             s.add_mesh(c)
             if background == False:
-                meshactor.visibility=False
-                
+                meshactor.visibility = False
 
         return s
 

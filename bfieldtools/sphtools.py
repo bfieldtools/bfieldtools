@@ -1016,9 +1016,9 @@ def plotYlms(sph, lmax, polar=False):
     polar: boolean
         plot polar representation?
     """
-    
+
     import pyvista as pv
-    
+
     figure = pv.Plotter()
 
     theta = np.reshape(sph.sp[:, 1], (sph.Np, sph.Np))
@@ -1033,23 +1033,18 @@ def plotYlms(sph, lmax, polar=False):
             for m in range(l):
                 _ylm = ylm(l, m, theta.flatten(), phi.flatten())
                 _ylm = np.reshape(_ylm, (sph.Np, sph.Np))
-                
-                mesh =  pv.StructuredGrid(x - m, y - l, z)
+
+                mesh = pv.StructuredGrid(x - m, y - l, z)
                 figure.add_mesh(mesh, scalars=_ylm, colormap="bwr")
-                            
+
                 _ylm /= _ylm.max()
-                
-                mesh =  pv.StructuredGrid(
-                    _ylm * x - m,
-                    _ylm * y - l,
-                    _ylm * z + 1.3)
-                
-                figure.add_mesh(mesh, scalars=np.abs(_ylm),
-                          colormap="Spectral"
-                          )
+
+                mesh = pv.StructuredGrid(_ylm * x - m, _ylm * y - l, _ylm * z + 1.3)
+
+                figure.add_mesh(mesh, scalars=np.abs(_ylm), colormap="Spectral")
 
         figure.view_isometric()
-        
+
     else:
         for l in range(0, lmax + 1):
             for m in range(-l, l + 1):
@@ -1057,13 +1052,13 @@ def plotYlms(sph, lmax, polar=False):
                 _ylm = np.reshape(_ylm, (sph.Np, sph.Np))
 
                 mesh = pv.StructuredGrid(x - m, y - l, z)
-                          
+
                 figure.add_mesh(mesh, scalars=_ylm, colormap="bwr")
 
         figure.view_isometric()
-        
+
     figure.show(interactive_update=True)
-    
+
     return figure
 
 
@@ -1082,7 +1077,7 @@ def plotYlm(sph, l, m):
 
     """
     import pyvista as pv
-    
+
     figure = pv.Plotter()
 
     theta = np.reshape(sph.sp[:, 1], (sph.Np, sph.Np))
@@ -1095,24 +1090,23 @@ def plotYlm(sph, l, m):
     _ylm = ylm(l, m, theta.flatten(), phi.flatten())
     _ylm = np.reshape(_ylm, (sph.Np, sph.Np))
 
-    mesh =  pv.StructuredGrid(x - m, y - l, z)
-                              
+    mesh = pv.StructuredGrid(x - m, y - l, z)
+
     figure.add_mesh(mesh, scalars=_ylm, colormap="bwr")
 
     _ylm /= _ylm.max()
-    mesh = pv.StructuredGrid(
-        _ylm * x - m,
-        _ylm * y - l,
-        _ylm * z + 1.3)
-    figure.add_mesh(mesh,
-                    scalars=np.abs(_ylm),
-                    colormap="Spectral",
-                    )
+    mesh = pv.StructuredGrid(_ylm * x - m, _ylm * y - l, _ylm * z + 1.3)
+    figure.add_mesh(
+        mesh,
+        scalars=np.abs(_ylm),
+        colormap="Spectral",
+    )
     figure.view_isometric()
-        
+
     figure.show(interactive_update=True)
-    
+
     return figure
+
 
 def plotWlm(sph, l, m):
     """
@@ -1132,19 +1126,18 @@ def plotWlm(sph, l, m):
 
     """
     import pyvista as pv
-    
+
     figure = pv.Plotter()
 
     _Wlm = Wlm(l, m, sph.sp[:, 1], sph.sp[:, 2])
     _Wlm = sphvec2cart(sph.sp, _Wlm)
-    
-    figure.add_arrows(cent=sph.p,
-                   direction=_Wlm)
-    
+
+    figure.add_arrows(cent=sph.p, direction=_Wlm)
+
     figure.view_isometric()
-        
+
     figure.show(interactive_update=True)
-    
+
     return figure
 
 
@@ -1172,10 +1165,8 @@ def plotBWlm_volume(sph, l, m, lim, Np, offset):
 
     """
     import pyvista as pv
-    
+
     figure = pv.Plotter()
-    
-    
 
     x, y, z = np.meshgrid(
         np.linspace(-lim + offset[0], lim + offset[0], Np),
@@ -1193,14 +1184,13 @@ def plotBWlm_volume(sph, l, m, lim, Np, offset):
     _Wlm[:, 2] *= sp[:, 0] ** (l - 1)
 
     _Wlm = sphvec2cart(sp, _Wlm)
-    
-    figure.add_arrows(p,
-                      _Wlm)
-    
+
+    figure.add_arrows(p, _Wlm)
+
     figure.view_isometric()
-        
+
     figure.show(interactive_update=True)
-    
+
     return figure
 
 
@@ -1222,17 +1212,15 @@ def plotVlm(sph, l, m):
 
     """
     import pyvista as pv
-    
+
     figure = pv.Plotter()
-    
 
     _Vlm = Vlm(l, m, sph.sp[:, 1], sph.sp[:, 2])
     _Vlm = sphvec2cart(sph.sp, _Vlm)
-    
-    figure.add_arrows(sph.p,
-                      _Vlm)
+
+    figure.add_arrows(sph.p, _Vlm)
     figure.view_isometric()
-        
+
     figure.show(interactive_update=True)
     return figure
 
@@ -1278,17 +1266,16 @@ def plotBVlm_volume(sph, l, m, lim, Np, offset):
     _Vlm[:, 2] *= sp[:, 0] ** (-1 * (l + 2))
 
     _Vlm = sphvec2cart(sp, _Vlm)
-    
+
     import pyvista as pv
-    
+
     figure = pv.Plotter()
-    
-    figure.add_arrows(p,
-                      _Vlm)
+
+    figure.add_arrows(p, _Vlm)
     figure.view_isometric()
-        
+
     figure.show(interactive_update=True)
-    
+
     return figure
 
 
@@ -1314,13 +1301,12 @@ def plotXlm(sph, l, m):
     _Xlm = sphvec2cart(sph.sp, _Xlm)
 
     import pyvista as pv
-    
+
     figure = pv.Plotter()
-    
-    figure.add_arrows(sph.p,
-                      _Xlm)
+
+    figure.add_arrows(sph.p, _Xlm)
     figure.view_isometric()
-        
+
     figure.show(interactive_update=True)
-    
+
     return figure

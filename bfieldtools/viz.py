@@ -48,29 +48,30 @@ def plot_mesh(
         figure = pv.Plotter(window_size=figsize)
         figure.background_color = "white"
 
-    
-    meshviz = pv.PolyData(mesh.vertices, np.hstack((np.repeat(3, len(mesh.faces))[:, None], mesh.faces)))
+    meshviz = pv.PolyData(
+        mesh.vertices, np.hstack((np.repeat(3, len(mesh.faces))[:, None], mesh.faces))
+    )
     figure.add_mesh(meshviz, **kwargs)
     figure.show(interactive_update=True)
-    
-    
-    
+
     prop = pv.Property()
     if cull_back:
-        prop.culling = 'back'
+        prop.culling = "back"
     elif cull_front:
-      prop.culling = 'front'  
+        prop.culling = "front"
     return figure
 
 
 def polyline_from_points(points):
     import pyvista as pv
+
     poly = pv.PolyData()
     poly.points = points
     the_cell = np.arange(0, len(points), dtype=np.int_)
     the_cell = np.insert(the_cell, 0, len(points))
     poly.lines = the_cell
     return poly
+
 
 def plot_3d_current_loops(
     current_loops,
@@ -114,14 +115,14 @@ def plot_3d_current_loops(
         figure.background_color = "white"
 
     if colors is None:
-        colors = 'k' * len(current_loops)
-        
+        colors = "k" * len(current_loops)
+
     elif colors == "auto":
         colors = []
 
-        palette = ['r', 'b']
+        palette = ["r", "b"]
         for loop_idx, loop in enumerate(current_loops):
-        
+
             # Compute each loop segment
             segments = np.vstack(
                 (loop[1:, :] - loop[0:-1, :], loop[0, :] - loop[-1, :])
@@ -137,21 +138,20 @@ def plot_3d_current_loops(
             colors.append(
                 palette[int((np.sign(centre_normal @ origin_vector) + 1) / 2)]
             )
-            
+
     elif isinstance(colors, str):
         colors = [colors] * len(current_loops)
 
     elif isinstance(colors, list):
         assert len(colors) == len(current_loops)
 
-
     else:
         raise ValueError("Invalid parameter for colors")
 
     for loop_idx, loop in enumerate(current_loops):
-        
+
         polyline = polyline_from_points(loop[list(range(len(loop))) + [0]])
-        
+
         tube = polyline.tube(radius=tube_radius)
         figure.add_mesh(tube, smooth_shading=True, color=colors[loop_idx])
 
@@ -166,24 +166,27 @@ def plot_3d_current_loops(
         )
 
         if longest_idx == len(loop) - 1:
-            
-            cone = pv.Cone(center=loop[-1, :].T, 
-                           direction=(loop[0, :] - loop[-1, :]).T,
-                           height=0.5 * tube_radius / 0.05, 
-                           radius=0.5 * tube_radius / 0.05 / 3,
-                           resolution=12)
-            
+
+            cone = pv.Cone(
+                center=loop[-1, :].T,
+                direction=(loop[0, :] - loop[-1, :]).T,
+                height=0.5 * tube_radius / 0.05,
+                radius=0.5 * tube_radius / 0.05 / 3,
+                resolution=12,
+            )
+
             figure.add_mesh(cone, color=colors[loop_idx])
-            
+
         else:
-            cone = pv.Cone(center=loop[longest_idx + 1, :].T, 
-                           direction=(loop[longest_idx + 1, :] - loop[longest_idx, :]).T,
-                           height=0.5 * tube_radius / 0.05, 
-                           radius=0.5 * tube_radius / 0.05 / 3,
-                           resolution=12)
-            
+            cone = pv.Cone(
+                center=loop[longest_idx + 1, :].T,
+                direction=(loop[longest_idx + 1, :] - loop[longest_idx, :]).T,
+                height=0.5 * tube_radius / 0.05,
+                radius=0.5 * tube_radius / 0.05 / 3,
+                resolution=12,
+            )
+
             figure.add_mesh(cone, color=colors[loop_idx])
-            
 
     figure.view_isometric()
     figure.show(interactive_update=True)
@@ -325,10 +328,10 @@ def plot_data_on_faces(
             kwargs["colormap"] = "viridis"
         else:
             kwargs["colormap"] = "RdBu"
-            
-    meshviz = pv.PolyData(mesh.vertices, np.hstack((np.repeat(3, len(mesh.faces))[:, None], mesh.faces)))
-    
-    
+
+    meshviz = pv.PolyData(
+        mesh.vertices, np.hstack((np.repeat(3, len(mesh.faces))[:, None], mesh.faces))
+    )
 
     if kwargs["colormap"] == "RdBu":
         rangemax = np.max(np.abs(data))
@@ -336,10 +339,11 @@ def plot_data_on_faces(
             vmin = -rangemax * 1.01
         if vmax is None:
             vmax = rangemax * 1.01
-    
-    figure.add_mesh(meshviz, scalars=data, clim=[vmin, vmax], show_scalar_bar=colorbar, **kwargs)
 
-    
+    figure.add_mesh(
+        meshviz, scalars=data, clim=[vmin, vmax], show_scalar_bar=colorbar, **kwargs
+    )
+
     figure.show(interactive_update=True)
 
     return figure
@@ -388,7 +392,7 @@ def plot_data_on_vertices(
     fig: pyvista figure
 
     """
-    
+
     import pyvista as pv
 
     if figure is None:
@@ -401,10 +405,10 @@ def plot_data_on_vertices(
             kwargs["colormap"] = "viridis"
         else:
             kwargs["colormap"] = "RdBu"
-            
-    meshviz = pv.PolyData(mesh.vertices, np.hstack((np.repeat(3, len(mesh.faces))[:, None], mesh.faces)))
-    
-    
+
+    meshviz = pv.PolyData(
+        mesh.vertices, np.hstack((np.repeat(3, len(mesh.faces))[:, None], mesh.faces))
+    )
 
     if kwargs["colormap"] == "RdBu":
         rangemax = np.max(np.abs(data))
@@ -413,20 +417,20 @@ def plot_data_on_vertices(
         if vmax is None:
             vmax = rangemax * 1.01
 
-    
-    figure.add_mesh(meshviz, scalars=data, 
-                    clim=[vmin, vmax], 
-                    show_scalar_bar=colorbar,
-                    interpolate_before_map=interpolate,
-                    **kwargs)
+    figure.add_mesh(
+        meshviz,
+        scalars=data,
+        clim=[vmin, vmax],
+        show_scalar_bar=colorbar,
+        interpolate_before_map=interpolate,
+        **kwargs
+    )
 
-    
     prop = pv.Property()
     if cull_back:
-        prop.culling = 'back'
+        prop.culling = "back"
     elif cull_front:
-      prop.culling = 'front'  
-    
+        prop.culling = "front"
 
     figure.show(interactive_update=True)
 

@@ -32,7 +32,7 @@ def test_mesh_plotting():
 
     f = pv.Plotter()
     viz.plot_data_on_faces(mesh, f_scalars, figure=f, colormap="jet")
-    
+
     f = pv.Plotter()
     f_scalars = np.random.rand(len(mesh.faces)) - 0.5
     viz.plot_data_on_faces(mesh, f_scalars, figure=f, colorbar=True)
@@ -78,8 +78,8 @@ def test_plot_3d_current_loops():
     viz.plot_3d_current_loops(loops, tube_radius=0.01, figure=f)
 
     viz.plot_3d_current_loops(loops, tube_radius=0.01, colors=None)
-    viz.plot_3d_current_loops(loops, tube_radius=0.01, colors='b')
-    viz.plot_3d_current_loops(loops, tube_radius=0.01, colors=['b'] * 2)
+    viz.plot_3d_current_loops(loops, tube_radius=0.01, colors="b")
+    viz.plot_3d_current_loops(loops, tube_radius=0.01, colors=["b"] * 2)
 
     # Longest segment is the one closing the loop
     x = np.cos(np.linspace(0, 2 * np.pi))[:-1]

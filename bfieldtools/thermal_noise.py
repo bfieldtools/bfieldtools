@@ -312,7 +312,7 @@ def visualize_current_modes(
 
     """
     import pyvista as pv
-    
+
     figure = pv.Plotter()
     figure.background_color = "white"
 
@@ -327,27 +327,31 @@ def visualize_current_modes(
         points = mesh.vertices.copy()
         points[:, 0] += i * dx
         points[:, 1] += j * dy
-        
+
         limit = np.max(np.abs(vl[:, n]))
-        
+
         s = pv.PolyData()
-        
-        meshviz = pv.PolyData(points, np.hstack((np.repeat(3, len(mesh.faces))[:, None], mesh.faces)))
-        
-        s = figure.add_mesh(meshviz, scalars=vl[:, n], colormap=colormap, clim=[-limit, limit], interpolate_before_map=True)
-        
+
+        meshviz = pv.PolyData(
+            points, np.hstack((np.repeat(3, len(mesh.faces))[:, None], mesh.faces))
+        )
+
+        s = figure.add_mesh(
+            meshviz,
+            scalars=vl[:, n],
+            colormap=colormap,
+            clim=[-limit, limit],
+            interpolate_before_map=True,
+        )
+
         c = meshviz.contour()
         figure.add_mesh(c)
-        
-        
-
-    
 
         if i < N1:
             i += 1
         else:
             j += 1
             i = 0
-            
+
     figure.show(interactive_update=True)
     return figure
