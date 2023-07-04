@@ -9,7 +9,7 @@ region between the two coil planes.
 
 import numpy as np
 import matplotlib.pyplot as plt
-from mayavi import mlab
+# from mayavi import mlab
 import trimesh
 
 
@@ -101,14 +101,14 @@ bfield_specification = [target_spec, stray_spec]
 #%%
 ## Compute the optimal stream function, either using a numerical solver or regularized least squares
 
-import mosek
+# import mosek
 
 coil.s, prob = optimize_streamfunctions(
     coil,
     [target_spec, stray_spec],
     objective="minimum_ohmic_power",
-    solver="MOSEK",
-    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+    # solver="MOSEK",
+    # solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
 )
 
 
@@ -119,10 +119,13 @@ coil.s.plot()
 
 loops = coil.s.discretize(N_contours=10)
 
-loops.plot_loops()
+fig = loops.plot_loops()
 
 B_target = loops.magnetic_field(target_points)
-mlab.quiver3d(*target_points.T, *B_target.T)
+
+fig.add_arrows(target_points, B_target, mag=1e6)
+
+# mlab.quiver3d(*target_points.T, *B_target.T)
 
 
 #%%
@@ -144,10 +147,10 @@ coil.s2.plot()
 
 loops2 = coil.s2.discretize(N_contours=10)
 
-loops2.plot_loops()
+fig = loops2.plot_loops()
 
 B_target = loops2.magnetic_field(target_points)
-mlab.quiver3d(*target_points.T, *B_target.T)
+fig.add_arrows(target_points, B_target, mag=1e6)
 
 
 #%%

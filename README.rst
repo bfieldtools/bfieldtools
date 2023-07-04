@@ -46,7 +46,7 @@ Requires Python 3.6 or newer.
  - `Trimesh <https://github.com/mikedh/trimesh>`_
  - `CVXPY <https://cvxpy.org/>`_
  - `Matplotlib <https://matplotlib.org/>`_
- - `Mayavi <https://docs.enthought.com/mayavi/mayavi/>`_
+ - `Pyvista <https://docs.pyvista.org/>`_
 
 Documentation
 ^^^^^^^^^^^^^

@@ -47,6 +47,8 @@ def plot_mesh(
     if figure is None:
         figure = pv.Plotter(window_size=figsize)
         figure.background_color = "white"
+        pv.global_theme.font.color = 'black'
+        
 
     meshviz = pv.PolyData(
         mesh.vertices, np.hstack((np.repeat(3, len(mesh.faces))[:, None], mesh.faces))
@@ -113,6 +115,7 @@ def plot_3d_current_loops(
     if figure is None:
         figure = pv.Plotter(window_size=figsize)
         figure.background_color = "white"
+        pv.global_theme.font.color = 'black'
 
     if colors is None:
         colors = "k" * len(current_loops)
@@ -321,6 +324,7 @@ def plot_data_on_faces(
     if figure is None:
         figure = pv.Plotter(window_size=figsize)
         figure.background_color = "white"
+        pv.global_theme.font.color = 'black'
 
     # If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
     if "colormap" not in kwargs:
@@ -398,6 +402,7 @@ def plot_data_on_vertices(
     if figure is None:
         figure = pv.Plotter(window_size=figsize)
         figure.background_color = "white"
+        pv.global_theme.font.color = 'black'
 
     # If data is all-positive or all-negative, use viridis. Otherwise, use Red-Blue colormap
     if "colormap" not in kwargs:
