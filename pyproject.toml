@@ -22,7 +22,13 @@ classifiers = [
 dynamic = ["version"]
 
 dependencies = [
+    # Locked NumPy 2.2.6 can emit spurious matmul divide/overflow/invalid warnings
+    # with Apple Accelerate on newer Apple Silicon, even for correct results.
+    # Upstream issue: https://github.com/numpy/numpy/issues/28687
     "numpy",
+    # SciPy 1.13.x requires NumPy <2.3, blocking the newer NumPy with the fix.
+    # Upgrade both in a separate PR after migrating scipy.special.lpmn
+    # (deprecated in SciPy 1.15 and removed in 1.17).
     "scipy<1.14.0",
     "matplotlib",
     "sip",
