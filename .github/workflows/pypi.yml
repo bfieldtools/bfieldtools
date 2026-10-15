@@ -8,27 +8,18 @@ jobs:
   release-job:
       name: 'Releasing'
       runs-on: ubuntu-latest
-      env:
-        DISPLAY: ':99.0'
-      steps:      
-      - uses: actions/checkout@v2
-      - run: ./tools/setup_xvfb.sh
-        name: 'Setup xvfb'   
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+      steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.8
-      - name: 'Install dependencies and build'
+          python-version: '3.11'
+      - name: 'Install build tools and build'
         run: |
-          pip install setuptools wheel twine
-          pip install numpy scipy
-          pip install vtk
-          pip install -r requirements.txt
-          python setup.py sdist bdist_wheel
+          pip install build
+          python -m build
       - name: 'Publish on PyPI'
         if: github.event_name == 'release' && github.event.action == 'created'
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: __token__
           password: ${{ secrets.PYPI_API_TOKEN }}

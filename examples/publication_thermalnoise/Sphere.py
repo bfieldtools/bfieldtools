@@ -10,7 +10,7 @@ from bfieldtools.thermal_noise import (
 )
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
 
-import pkg_resources
+from bfieldtools import resources
 
 
 font = {"family": "normal", "weight": "normal", "size": 16}
@@ -40,7 +40,7 @@ fp = np.zeros((1, 3))
 B = np.zeros((Np, 3))
 for i in range(Np):
     mesh = trimesh.load(
-        pkg_resources.resource_filename("bfieldtools", "example_meshes/unit_sphere.stl")
+        resources.files("bfieldtools", "example_meshes/unit_sphere.stl")
     )
     mesh.apply_scale(radius[i])
 

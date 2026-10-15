@@ -10,7 +10,7 @@ from bfieldtools.thermal_noise import (
 )
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
 
-import pkg_resources
+from bfieldtools import resources
 
 
 font = {"family": "normal", "weight": "normal", "size": 16}
@@ -30,7 +30,7 @@ quad_degree = 2
 
 
 mesh = trimesh.load(
-    pkg_resources.resource_filename("bfieldtools", "example_meshes/closed_cylinder.stl")
+    resources.files("bfieldtools", "example_meshes/closed_cylinder.stl")
 )
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 

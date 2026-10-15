@@ -15,7 +15,7 @@ from bfieldtools.mesh_magnetics import magnetic_field_coupling
 
 from bfieldtools import utils
 
-import pkg_resources
+from bfieldtools import resources
 
 font = {"family": "normal", "weight": "normal", "size": 16}
 plt.rc("font", **font)
@@ -49,22 +49,16 @@ quad_degree = 4
 for i in range(Niters):
     if i == 0:
         mesh = trimesh.load(
-            pkg_resources.resource_filename(
-                "bfieldtools", "example_meshes/disc_finer.stl"
-            )
+            resources.files("bfieldtools", "example_meshes/disc_finer.stl")
         )
 
     if i == 1:
         mesh = trimesh.load(
-            pkg_resources.resource_filename(
-                "bfieldtools", "example_meshes/disc_extrafine.stl"
-            )
+            resources.files("bfieldtools", "example_meshes/disc_extrafine.stl")
         )
     if i == 2:
         mesh = trimesh.load(
-            pkg_resources.resource_filename(
-                "bfieldtools", "example_meshes/disc_extremelyfine.stl"
-            )
+            resources.files("bfieldtools", "example_meshes/disc_extremelyfine.stl")
         )
     B_coupling = magnetic_field_coupling(mesh, fp, analytic=True)
 

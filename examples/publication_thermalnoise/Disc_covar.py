@@ -11,7 +11,7 @@ from bfieldtools.thermal_noise import (
 )
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
 
-import pkg_resources
+from bfieldtools import resources
 
 
 font = {"family": "normal", "weight": "normal", "size": 18}
@@ -40,9 +40,7 @@ Nchunks = 4
 quad_degree = 2
 
 mesh = trimesh.load(
-    pkg_resources.resource_filename(
-        "bfieldtools", "example_meshes/unitdisc_extremelyfine.stl"
-    )
+    resources.files("bfieldtools", "example_meshes/unitdisc_extremelyfine.stl")
 )
 
 B_coupling = magnetic_field_coupling(mesh, fp, analytic=True)

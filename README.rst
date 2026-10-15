@@ -66,6 +66,8 @@ To install bfieldtools using pip, simply run:
     
 For advanced installation instructions, see the online `installation instructions`_.
 
+For development with uv, see `UV_USAGE.md <UV_USAGE.md>`_.
+
 .. _installation instructions: https://bfieldtools.github.io/installation.html
 
 

@@ -748,7 +748,7 @@ class StreamFunction(np.ndarray):
 
         self.mesh_conductor = getattr(obj, "mesh_conductor", None)
 
-    def __array_wrap__(self, out_arr, context=None):
+    def __array_wrap__(self, out_arr, context=None, return_scalar=False):
         """
         Return a ndarray for all ufuncs, since the StreamFunction attributes no longer apply
         when e.g. changing shape etc

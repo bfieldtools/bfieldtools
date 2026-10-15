@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mayavi import mlab
 import trimesh
-import pkg_resources
+from bfieldtools import resources
 from pyface.api import GUI
 
 _gui = GUI()
@@ -104,7 +104,7 @@ scene.scene.light_manager.lights[2].intensity = 0.2
 # from bfieldtools.mesh_magnetics import scalar_potential_coupling
 # scaling_factor = 0.02
 ##Load simple plane mesh that is centered on the origin
-# file_obj=pkg_resources.resource_filename('bfieldtools', 'example_meshes/10x10_plane_hires.obj')
+# file_obj=resources.files('bfieldtools', 'example_meshes/10x10_plane_hires.obj')
 # plane = trimesh.load(file_obj=file_obj, process=False)
 # plane.apply_scale(scaling_factor)
 ## Rotate to x-plane

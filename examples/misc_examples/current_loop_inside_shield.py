@@ -1,4 +1,7 @@
 """
+Current loop inside a cylindrical magnetic shield
+=================================================
+
 This example calculates the magnetic field produced by a rectangular current 
 loop inside a cylindrical magnetic shield.
 """
