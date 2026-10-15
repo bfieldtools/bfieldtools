@@ -23,6 +23,7 @@ dynamic = ["version"]
 
 dependencies = [
     "numpy",
+    # SciPy 1.14 removed the eigvals argument used by our eigensolvers.
     "scipy<1.14.0",
     "matplotlib",
     "sip",
@@ -69,3 +70,7 @@ bfieldtools = ["example_meshes/*"]
 [tool.setuptools_scm]
 write_to = "bfieldtools/version.py"
 write_to_template = '__version__ = "{version}"'
+
+[tool.uv]
+# Use SciPy wheels instead of requiring a local BLAS/LAPACK toolchain.
+no-build-package = ["scipy"]

@@ -1,59 +1,51 @@
-# Using UV Package Manager with bfieldtools
+# Using uv with bfieldtools
 
-## Quick Start
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then run
+these commands from the repository root.
 
-### Main Development Environment
+## Development
+
 ```bash
-uv venv .venv --python 3.11
-source .venv/bin/activate
-uv pip install -e .
+uv sync --locked --extra dev
+uv run --locked --extra dev pytest tests/
+uv run --locked --extra dev black --check .
 ```
 
-### Development Environment (with testing & formatting)
+`uv sync` creates `.venv`, installs Python 3.11 as specified in
+`.python-version` if needed, and installs bfieldtools in editable mode.
+`--locked` uses the committed `uv.lock` and reports an error if it is out of
+date. No manual environment creation or activation is needed.
+
+For the package without development tools, use `uv sync --locked`.
+
+## Documentation
+
 ```bash
-uv venv .venv --python 3.11
-source .venv/bin/activate
-uv pip install -e ".[dev]"
+uv sync --locked --extra docs
+uv run --locked --extra docs make -C docs html
 ```
 
-This installs the package with dev dependencies including:
-- `black==22.3.0` - Code formatting (matches CI)
-- `pytest` - Testing framework
-- Other testing utilities
+To keep both development and documentation tools installed, pass
+`--extra dev --extra docs` to `uv sync` and `uv run`.
 
-### Documentation Environment
+## Updating dependencies
+
+Edit `dependencies` or `project.optional-dependencies` in `pyproject.toml`, then:
+
 ```bash
-uv venv .venv-docs --python 3.11
-source .venv-docs/bin/activate
-uv pip install -e ".[docs]"
+uv lock
+uv sync --locked --extra dev
 ```
 
-## What Changed
+Commit both `pyproject.toml` and `uv.lock`. To upgrade all dependencies within
+the declared constraints, use `uv lock --upgrade`.
 
-- **pyproject.toml**: Modern Python packaging standard (replaces setup.py)
-  - Main dependencies defined in `[project.dependencies]`
-  - Documentation dependencies in `[project.optional-dependencies.docs]`
-  
-- **.python-version**: Specifies Python 3.10 for uv to use automatically
+## SciPy installation
 
-- **Old files preserved**: `requirements.txt`, `requirements_docs.txt`, and `setup.py` remain for backward compatibility but are not needed with uv
+The project configures uv to install SciPy from a prebuilt wheel, avoiding
+source builds that require BLAS/LAPACK libraries. Use the default Python 3.11
+environment; overriding it with a newer Python can leave no compatible wheel
+for the project's `scipy<1.14.0` constraint.
 
-## Common Tasks
-
-### Installing new dependencies
-Edit `pyproject.toml` under `[project.dependencies]`, then:
-```bash
-uv pip install -e .
-```
-
-### Running tests
-```bash
-source .venv/bin/activate
-python -m pytest tests/
-```
-
-### Building documentation
-```bash
-source .venv-docs/bin/activate
-cd docs && make html
-```
+`uv pip install -e ".[dev]"` also respects this wheel setting, but does not use
+`uv.lock`. Prefer `uv sync --locked --extra dev` for reproducible installation.

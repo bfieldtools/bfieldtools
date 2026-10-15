@@ -12,17 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: 'Set up Python'
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+    - name: 'Set up uv'
+      uses: astral-sh/setup-uv@v7
     - name: 'Install Formatting checkers'
       run: |
-        python -m pip install --upgrade pip
-        pip install -e ".[dev]"
+        uv sync --locked --extra dev
     - name: 'Check Formatting using Black'
       run: |
-        black --check .
+        uv run --locked --extra dev black --check .
 
   tests:
     name: 'Run tests and publish'
@@ -33,17 +30,13 @@ jobs:
     - uses: actions/checkout@v2
     - run: ./tools/setup_xvfb.sh
       name: 'Setup xvfb'   
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v7
     - name: 'Install dependencies'
       run: |
-        python -m pip install --upgrade pip
-        pip install -e ".[dev]"
+        uv sync --locked --extra dev
     - name: 'Run Pytest with xvfb'
       run: |
-        pytest --cov=bfieldtools ./tests
+        uv run --locked --extra dev pytest --cov=bfieldtools ./tests
         # Push coverage to codecov.io
         bash <(curl -s https://codecov.io/bash)
