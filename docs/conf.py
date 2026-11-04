@@ -92,6 +92,8 @@ class MyStyle(UnsrtStyle):
 
 register_plugin("pybtex.style.formatting", "mystyle", MyStyle)
 
+bibtex_bibfiles = ["references.bib"]
+
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
@@ -155,7 +157,7 @@ sphinx_gallery_conf = {
     "filename_pattern": ".py",  # which examples are executed for plots etc
     "image_scrapers": scrapers,
     "abort_on_example_error": False,
-    "download_section_examples": False,
+    "download_all_examples": False,
     "show_memory": True,
     "reference_url": {
         # The module you locally document uses None

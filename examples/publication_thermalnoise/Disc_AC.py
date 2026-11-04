@@ -10,7 +10,7 @@ from bfieldtools.thermal_noise import (
 )
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
 
-import pkg_resources
+from bfieldtools import resources
 
 
 font = {"family": "normal", "weight": "normal", "size": 20}
@@ -33,9 +33,7 @@ freqs = np.linspace(0, 200, Nfreqs)
 
 #%%
 mesh = trimesh.load(
-    pkg_resources.resource_filename(
-        "bfieldtools", "example_meshes/unitdisc_extremelyfine.stl"
-    )
+    resources.files("bfieldtools", "example_meshes/unitdisc_extremelyfine.stl")
 )
 
 vl = compute_current_modes(

@@ -16,7 +16,7 @@ from bfieldtools.coil_optimize import optimize_streamfunctions
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
 
-import pkg_resources
+from bfieldtools import resources
 
 from pyface.api import GUI
 
@@ -30,9 +30,7 @@ scaling_factor = 1
 
 # Load example coil mesh that is centered on the origin
 coilmesh = trimesh.load(
-    file_obj=pkg_resources.resource_filename(
-        "bfieldtools", "example_meshes/open_cylinder.stl"
-    ),
+    file_obj=resources.files("bfieldtools", "example_meshes/open_cylinder.stl"),
     process=True,
 )
 

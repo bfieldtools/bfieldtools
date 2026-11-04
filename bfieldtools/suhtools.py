@@ -179,12 +179,12 @@ class SuhBasis:
                 L = L.toarray()
                 M = M.toarray()
 
-                u, v = eigh(L, M, eigvals=(0, N - 1))
+                u, v = eigh(L, M, subset_by_index=(0, N - 1))
             else:
                 if self.magnetic == "DC":
                     M = M.toarray()
 
-                u, v = eigh(L, M, eigvals=(0, N - 1))
+                u, v = eigh(L, M, subset_by_index=(0, N - 1))
 
             self.basis = v[:, N0:]
             self.eigenvals = u[N0:]

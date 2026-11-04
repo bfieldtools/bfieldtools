@@ -18,7 +18,7 @@ __all__ = [
 
 import os
 import numpy as np
-import pkg_resources
+from bfieldtools import resources
 import trimesh
 
 from .quadratures import get_quad_points
@@ -293,17 +293,15 @@ def load_example_mesh(mesh_name, process=True, **kwargs):
     -------
     Trimesh object
     """
-    existing_files = pkg_resources.resource_listdir("bfieldtools", "example_meshes")
-
     # Filter according to file extension
     existing_files = [
         file
-        for file in existing_files
-        if file.lower().endswith(tuple(trimesh.exchange.load.mesh_formats()))
+        for file in resources.files("bfieldtools", "example_meshes").iterdir()
+        if file.suffix[1:].lower() in trimesh.exchange.load.mesh_formats()
     ]
 
     # Remove file extension to get name
-    existing_names = [os.path.splitext(file)[0] for file in existing_files]
+    existing_names = [file.name.split(".")[0] for file in existing_files]
 
     # Check if name exists
     if mesh_name not in existing_names:
@@ -313,11 +311,7 @@ def load_example_mesh(mesh_name, process=True, **kwargs):
 
     filename = existing_files[existing_names.index(mesh_name)]
 
-    return trimesh.load(
-        pkg_resources.resource_filename("bfieldtools", "example_meshes/" + filename),
-        process=process,
-        **kwargs
-    )
+    return trimesh.load(filename, process=process, **kwargs)
 
 
 class MeshProjection:

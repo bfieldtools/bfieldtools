@@ -383,7 +383,7 @@ def optimize_lsq(
     ss_max = eigvalsh(
         constraint_matrix.T @ constraint_matrix,
         quadratic_matrix,
-        eigvals=[quadratic_matrix.shape[1] - 1, quadratic_matrix.shape[1] - 1],
+        subset_by_index=[quadratic_matrix.shape[1] - 1, quadratic_matrix.shape[1] - 1],
     )
 
     S = np.linalg.solve(
@@ -485,8 +485,8 @@ def _construct_quadratic_objective(objective, mesh_conductor, deflate=True):
               This requires eigenvalue computation, hold on."
         )
 
-        max_eval_L = eigh(L, eigvals=(L.shape[0] - 1, L.shape[0] - 1))[0][0]
-        max_eval_R = eigh(R, eigvals=(L.shape[0] - 1, L.shape[0] - 1))[0][0]
+        max_eval_L = eigh(L, subset_by_index=(L.shape[0] - 1, L.shape[0] - 1))[0][0]
+        max_eval_R = eigh(R, subset_by_index=(L.shape[0] - 1, L.shape[0] - 1))[0][0]
 
         scaled_R = max_eval_L / max_eval_R * R
 
@@ -498,13 +498,13 @@ def _construct_quadratic_objective(objective, mesh_conductor, deflate=True):
     # Scale whole quadratic term according to largest eigenvalue
     max_eval_quad = eigh(
         quadratic_matrix,
-        eigvals=(quadratic_matrix.shape[0] - 1, quadratic_matrix.shape[0] - 1),
+        subset_by_index=(quadratic_matrix.shape[0] - 1, quadratic_matrix.shape[0] - 1),
     )[0][0]
 
     quadratic_matrix /= max_eval_quad
 
     if deflate:
-        evals = eigh(quadratic_matrix, eigvals=(0, 1), eigvals_only=True)
+        evals = eigh(quadratic_matrix, subset_by_index=(0, 1), eigvals_only=True)
         if abs(evals[0]) < 1e-8 * abs(evals[1]):
             print(
                 "Smallest quadratic matrix eigenvalue is much smaller than the second-smallest, matrix probably from closed surface. Performing matrix inflation to compensate. "

@@ -1,0 +1,81 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bfieldtools"
+description = "Open-source Python software for magnetic field modeling"
+readme = "README.rst"
+requires-python = ">=3.7"
+license = {text = "BSD-3-Clause"}
+maintainers = [
+    {name = "Rasmus Zetter", email = "rasmus.zetter@aalto.fi"},
+    {name = "Antti Mäkinen", email = "makinen.antti.j@gmail.com"}
+]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Topic :: Software Development",
+    "Topic :: Scientific/Engineering",
+]
+dynamic = ["version"]
+
+dependencies = [
+    # Locked NumPy 2.2.6 can emit spurious matmul divide/overflow/invalid warnings
+    # with Apple Accelerate on newer Apple Silicon, even for correct results.
+    # Upstream issue: https://github.com/numpy/numpy/issues/28687
+    "numpy",
+    # SciPy 1.13.x requires NumPy <2.3, blocking the newer NumPy with the fix.
+    # Upgrade both in a separate PR after migrating scipy.special.lpmn
+    # (deprecated in SciPy 1.15 and removed in 1.17).
+    "scipy<1.14.0",
+    "matplotlib",
+    "sip",
+    "pyvista",
+    "cvxpy>=1.1.14",
+    "cvxopt",
+    "trimesh",
+    "shapely",
+    "psutil",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black==22.3.0",
+    "pytest>=7.2.0,<9.0",
+    "pytest-sugar>=1.1.1",
+    "pytest-cov",
+    "pytest-mock",
+    "pytest-timeout",
+]
+docs = [
+    "mne",
+    "sphinx",
+    "sphinx-gallery",
+    "sphinxcontrib-bibtex",
+    "sphinx_bootstrap_theme",
+    "sphinx-fontawesome",
+    "numpydoc",
+    "pybtex",
+    "pillow",
+]
+
+[project.urls]
+Homepage = "https://bfieldtools.github.io/"
+Download = "https://github.com/bfieldtools/bfieldtools"
+
+[tool.setuptools]
+packages = ["bfieldtools"]
+zip-safe = false
+
+[tool.setuptools.package-data]
+bfieldtools = ["example_meshes/*"]
+
+[tool.setuptools_scm]
+write_to = "bfieldtools/version.py"
+write_to_template = '__version__ = "{version}"'
+
+[tool.uv]
+# Use SciPy wheels instead of requiring a local BLAS/LAPACK toolchain.
+no-build-package = ["scipy"]

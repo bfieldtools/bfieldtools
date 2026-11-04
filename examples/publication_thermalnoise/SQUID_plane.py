@@ -14,7 +14,7 @@ from bfieldtools.thermal_noise import (
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
 
 
-import pkg_resources
+from bfieldtools import resources
 
 import mne
 
@@ -60,9 +60,7 @@ for i in range(len(coils)):
 
 #%%
 
-mesh = trimesh.load(
-    pkg_resources.resource_filename("bfieldtools", "example_meshes/10x10_plane.obj")
-)
+mesh = trimesh.load(resources.files("bfieldtools", "example_meshes/10x10_plane.obj"))
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 
 mesh.apply_scale(1e-1)

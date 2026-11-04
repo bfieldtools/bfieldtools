@@ -18,7 +18,7 @@ from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
 from bfieldtools.utils import combine_meshes
 
-import pkg_resources
+from bfieldtools import resources
 
 
 # Set unit, e.g. meter or millimeter.
@@ -28,9 +28,7 @@ scaling_factor = 1
 
 # Load simple plane mesh that is centered on the origin
 planemesh = trimesh.load(
-    file_obj=pkg_resources.resource_filename(
-        "bfieldtools", "example_meshes/10x10_plane_hires.obj"
-    ),
+    file_obj=resources.files("bfieldtools", "example_meshes/10x10_plane_hires.obj"),
     process=False,
 )
 
@@ -57,7 +55,7 @@ coil = MeshConductor(mesh_obj=joined_planes, fix_normals=True, basis_name="inner
 
 # Separate object for shield geometry
 shieldmesh = trimesh.load(
-    file_obj=pkg_resources.resource_filename(
+    file_obj=resources.files(
         "bfieldtools", "example_meshes/closed_cylinder_remeshed.stl"
     ),
     process=True,

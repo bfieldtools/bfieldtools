@@ -151,7 +151,7 @@ def scalar_potential(vertices, points):
     vertices = np.vstack((vertices, mass_center))
 
     # CREATE TRIANGLE FAN
-    faces = np.full(shape=(N_verts - 1, 3), fill_value=np.nan, dtype=int)
+    faces = np.empty((N_verts - 1, 3), dtype=int)
 
     for i in range(N_verts - 1):
         faces[i] = np.array([i, i + 1, N_verts])
@@ -256,7 +256,7 @@ def self_inductance(path, loop, radius=1e-3):
     N_verts = len(vertices)
     mass_center = np.mean(vertices, axis=0)
     vertices = np.vstack((vertices, mass_center))
-    faces = np.full(shape=(N_verts - 1, 3), fill_value=np.nan, dtype=int)
+    faces = np.empty((N_verts - 1, 3), dtype=int)
     for i in range(N_verts - 1):
         faces[i] = np.array([i, i + 1, N_verts])
     mesh = trimesh.Trimesh(vertices, faces)
