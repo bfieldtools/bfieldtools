@@ -8,6 +8,41 @@ import numpy as np
 from numpy.testing import assert_allclose
 
 
+@pytest.mark.parametrize("l", range(7))
+def test_associated_legendre_values_and_derivatives(l):
+    """Check both order signs against derivatives of ordinary polynomials."""
+    from math import factorial
+    from numpy.polynomial import Legendre, Polynomial
+
+    x = np.array([-0.999999, -0.7, 0.0, 0.3, 0.999999])
+    polynomial = Legendre.basis(l).convert(kind=Polynomial)
+    for m in range(-l, l + 1):
+        order = abs(m)
+        derivative = polynomial.deriv(order)
+        base = 1 - x**2
+        factor = (-1) ** order
+        if m < 0:
+            factor = factorial(l - order) / factorial(l + order)
+        expected = factor * base ** (order / 2) * derivative(x)
+        expected_derivative = factor * base ** (order / 2) * derivative.deriv()(x)
+        if order:
+            expected_derivative -= (
+                factor * order * x * base ** (order / 2 - 1) * derivative(x)
+            )
+        assert_allclose(sphtools.lpmn_em(l, m, x), expected, rtol=1e-9, atol=1e-11)
+        assert_allclose(
+            sphtools.derlpmn_em(l, m, x), expected_derivative, rtol=1e-9, atol=1e-11
+        )
+
+
+@pytest.mark.parametrize("shape", [(0,), (3,), (3, 1), (2, 3)])
+def test_associated_legendre_array_shapes(shape):
+    x = np.full(shape, 0.3)
+    for m in [-2, 0, 2]:
+        assert sphtools.lpmn_em(4, m, x).shape == shape
+        assert sphtools.derlpmn_em(4, m, x).shape == shape
+
+
 def test_coord_changes():
 
     point = np.array([[0.4, 0.4, 1]])
@@ -26,13 +61,11 @@ def test_sph_eval():
 
     l = 4
 
-    x = np.array([0.4, 0.4, 1])
+    x = np.array([0.4, 0.4, 0.9])
     theta = np.array([0.4, 0.4, 1])
     phi = np.array([0.4, 0.4, 1])
 
     for m in [-2, 0, 2]:
-        m = 2
-
         assert sphtools.lpmn_em(l, m, x).shape == (3,)
         assert sphtools.derlpmn_em(l, m, x).shape == (3,)
 
@@ -46,7 +79,10 @@ def test_sph_eval():
 
         assert sphtools.dthylm(l, m, theta, phi).shape == (3,)
 
-        assert sphtools.dphiylm(l, m, theta, phi).shape == (3,)
+        if m == 0:
+            assert sphtools.dphiylm(l, m, theta, phi) == 0
+        else:
+            assert sphtools.dphiylm(l, m, theta, phi).shape == (3,)
 
         assert sphtools.Plm(l, m, theta, phi).shape == (3, 3)
 
