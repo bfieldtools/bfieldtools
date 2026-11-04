@@ -106,7 +106,24 @@ When using the software package in a publication, please cite the following arti
 		eprint = {https://doi.org/10.1063/5.0016087}
 	}    
     
-When using the thermal noise computations, please cite this `preprint <https://arxiv.org/abs/2007.08963>`__ in arXiv.
+When using the thermal noise computations, please cite this one:
+
+.. code-block:: BiBTeX
+
+	@article{10.1063/5.0050371,
+	    author = {Iivanainen, Joonas and Mäkinen, Antti J. and Zetter, Rasmus and Zevenhoven, Koos C. J. and Ilmoniemi, Risto J. and Parkkonen, Lauri},
+	    title = {A general method for computing thermal magnetic noise arising from thin conducting objects},
+	    journal = {Journal of Applied Physics},
+	    volume = {130},
+	    number = {4},
+	    pages = {043901},
+	    year = {2021},
+	    month = {07},
+	    issn = {0021-8979},
+	    doi = {10.1063/5.0050371},
+	    url = {https://doi.org/10.1063/5.0050371},
+	    eprint = {https://pubs.aip.org/aip/jap/article-pdf/doi/10.1063/5.0050371/19790942/043901_1_online.pdf},
+	}
 
 Contributing
 ^^^^^^^^^^^^
