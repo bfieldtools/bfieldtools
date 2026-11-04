@@ -44,8 +44,8 @@ the declared constraints, use `uv lock --upgrade`.
 
 The project configures uv to install SciPy from a prebuilt wheel, avoiding
 source builds that require BLAS/LAPACK libraries. Use the default Python 3.11
-environment; overriding it with a newer Python can leave no compatible wheel
-for the project's `scipy<1.14.0` constraint.
+environment. The package requires Python 3.10 or later and SciPy 1.15 or later
+for the associated Legendre polynomial API.
 
 `uv pip install -e ".[dev]"` also respects this wheel setting, but does not use
 `uv.lock`. Prefer `uv sync --locked --extra dev` for reproducible installation.
