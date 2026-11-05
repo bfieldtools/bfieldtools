@@ -3,10 +3,15 @@ SUH-SPH interpolation comparison
 ==================================
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import mesh_actor
+from bfieldtools._example_plots import point_cloud
+
+pv.set_plot_theme("document")
+
 
 import numpy as np
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
-from mayavi import mlab
 import trimesh
 import matplotlib.pyplot as plt
 
@@ -151,10 +156,9 @@ print(
     np.linalg.norm(reco_suh - field) / np.linalg.norm(field),
 )
 
-f = mlab.figure(bgcolor=(1, 1, 1))
-surf = s.plot(False, figure=f)
-surf.actor.mapper.interpolate_scalars_before_mapping = True
-surf.module_manager.scalar_lut_manager.number_of_colors = 16
+plotter = surf = s.plot(False, figure=f)
+mesh_actor(surf).mapper.interpolate_before_map = True
+mesh_actor(surf).mapper.lookup_table.n_values = 16
 
 #%% Plot the evoked and the reconsctructions
 # evoked1 = evoked.copy()
@@ -217,7 +221,6 @@ helmet.vertices = helmet.vertices @ rotmat
 helmet.vertices[:, 1] += 0.005
 
 # plot_mesh(helmet)
-# mlab.points3d(*p.T, scale_factor=0.01)
 
 
 B_sph_helmet = sph_field_eval(
@@ -249,20 +252,32 @@ rbf_field = rbf_f(helmet2d.vertices[:, 0], helmet2d.vertices[:, 1])
 
 vmin = -7e-13
 vmax = 7e-13
-f = plot_data_on_vertices(helmet2d, rbf_field, ncolors=15, vmin=vmin, vmax=vmax)
-mlab.points3d(puv[:, 0], puv[:, 1], 0 * puv[:, 0], scale_factor=0.1, color=(0, 0, 0))
-f.scene.z_plus_view()
-mlab.savefig(SAVE_DIR + "rbf_helmet_B.png", figure=f, magnification=4)
+plotter = f = plot_data_on_vertices(helmet2d, rbf_field, ncolors=15, vmin=vmin, vmax=vmax)
+plotter.add_mesh(
+    point_cloud(puv[:, 0], puv[:, 1], 0 * puv[:, 0]).glyph(
+        scale=False, geom=pv.Sphere(radius=0.1 / 2)
+    ),
+    color=(0, 0, 0),
+    show_scalar_bar=False,
+)
+f.view_xy()
+f.screenshot(SAVE_DIR + "rbf_helmet_B.png", scale=4)
 
 suh_field = (
     np.einsum("ijk,ij->ik", c.B_coupling(helmet.vertices), helmet.vertex_normals) @ s
 )
 
 
-f = plot_data_on_vertices(helmet2d, suh_field, ncolors=15, vmin=vmin, vmax=vmax)
-mlab.points3d(puv[:, 0], puv[:, 1], 0 * puv[:, 0], scale_factor=0.1, color=(0, 0, 0))
-f.scene.z_plus_view()
-mlab.savefig(SAVE_DIR + "suh_helmet_B.png", figure=f, magnification=4)
+plotter = f = plot_data_on_vertices(helmet2d, suh_field, ncolors=15, vmin=vmin, vmax=vmax)
+plotter.add_mesh(
+    point_cloud(puv[:, 0], puv[:, 1], 0 * puv[:, 0]).glyph(
+        scale=False, geom=pv.Sphere(radius=0.1 / 2)
+    ),
+    color=(0, 0, 0),
+    show_scalar_bar=False,
+)
+f.view_xy()
+f.screenshot(SAVE_DIR + "suh_helmet_B.png", scale=4)
 
 
 Bca, Bcb = sphfield(helmet.vertices, lmax, normalization="energy", R=R)
@@ -271,10 +286,16 @@ Bca, Bcb = sphfield(helmet.vertices, lmax, normalization="energy", R=R)
 sph_field = np.einsum("ijk,ij->ik", Bca, helmet.vertex_normals) @ alpha
 
 
-f = plot_data_on_vertices(helmet2d, sph_field, ncolors=15, vmin=vmin, vmax=vmax)
-mlab.points3d(puv[:, 0], puv[:, 1], 0 * puv[:, 0], scale_factor=0.1, color=(0, 0, 0))
-f.scene.z_plus_view()
-mlab.savefig(SAVE_DIR + "sph_helmet_B.png", figure=f, magnification=4)
+plotter = f = plot_data_on_vertices(helmet2d, sph_field, ncolors=15, vmin=vmin, vmax=vmax)
+plotter.add_mesh(
+    point_cloud(puv[:, 0], puv[:, 1], 0 * puv[:, 0]).glyph(
+        scale=False, geom=pv.Sphere(radius=0.1 / 2)
+    ),
+    color=(0, 0, 0),
+    show_scalar_bar=False,
+)
+f.view_xy()
+f.screenshot(SAVE_DIR + "sph_helmet_B.png", scale=4)
 
 #%% MNE interpolates using splines or something
 #%% Compute potential
@@ -326,9 +347,13 @@ U_sph = potential(
 
 # Mask inside/outside using solid angle
 mask = abs(c.U_coupling.matrix.sum(axis=1)) < 1e-6
-f = plot_data_on_vertices(plane, U_suh * mask, ncolors=15)
+plotter = f = plot_data_on_vertices(plane, U_suh * mask, ncolors=15)
 # plot_mesh(mesh, figure=f)
-f = plot_data_on_vertices(plane, U_sph * mask, ncolors=15)
+plotter = f = plot_data_on_vertices(plane, U_sph * mask, ncolors=15)
 # plot_mesh(mesh, figure=f)
-f = plot_data_on_vertices(plane, (U_suh - U_sph) * mask, ncolors=15)
-plot_mesh(mesh, figure=f)
+plotter = f = plot_data_on_vertices(plane, (U_suh - U_sph) * mask, ncolors=15)
+plotter = plot_mesh(mesh, figure=f)
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

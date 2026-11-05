@@ -11,6 +11,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.abspath(".."))
@@ -105,6 +106,8 @@ extensions = [
     "sphinx_bootstrap_theme",
     "sphinxcontrib.bibtex",
     "sphinx.ext.mathjax",
+    "pyvista.ext.viewer_directive",
+    "sphinx_design",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -116,16 +119,7 @@ templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # External imports
-autodoc_mock_imports = [
-    "numpy",
-    "scipy",
-    "trimesh",
-    "mayavi",
-    "cvxopt",
-    "cvxpy",
-    "numba",
-    "psutil",
-]
+autodoc_mock_imports = []
 
 # Autodoc config
 
@@ -136,29 +130,53 @@ autodoc_member_order = "bysource"
 
 # Configure sphinx-gallery
 
-scrapers = ("matplotlib",)
-try:
-    from mayavi import mlab
+import pyvista
+from pyvista.plotting.utilities.sphinx_gallery import DynamicScraper
 
-    # Do not pop up any mayavi windows while running the
-    # examples. These are very annoying since they steal the focus.
-    mlab.options.offscreen = True
-    # hack to initialize the Mayavi Engine
-    mlab.test_plot3d()
-    mlab.close()
-except Exception:
-    pass
-else:
-    scrapers += ("mayavi",)
+pyvista.OFF_SCREEN = True
+pyvista.BUILDING_GALLERY = True
+pyvista.set_plot_theme("document")
+
+
+def pyvista_scraper(block, block_vars, gallery_conf):
+    # Export the final scene after all actors and camera settings in the block.
+    # Some helpers display their plotter before later actors are added.
+    for plotter in list(pyvista.plotting.plotter._ALL_PLOTTERS.values()):
+        if not plotter._closed:
+            plotter.show(auto_close=False)
+    return DynamicScraper()(block, block_vars, gallery_conf)
+
+
+scrapers = ("matplotlib", pyvista_scraper)
+
+# Keep the default local build bounded. These examples need external data or
+# an optional memory profiler. Large solver-dependent examples are opt-in.
+source_only_examples = [
+    "mne_interpolation.py",
+    "equiv_surface_current_interference_rejection.py",
+    "suh_sph_interpolation.py",
+    "mumetal_shield_example.py",
+    "computation_time.py",
+    "validate_suh_shift_invert.py",
+]
+if os.environ.get("BFIELDTOOLS_DOCS_FULL_GALLERY") != "1":
+    source_only_examples += [
+        "coil_with_holes.py",
+        "self-shielded_biplanar_coil_design.py",
+        "magnetically_shielded_biplanar_coil_design.py",
+        "pub_magnetically_shielded_biplanar_coil_design.py",
+        "pub_minimal_eddy_current_cylindrical_coil_design.py",
+    ]
+source_only_pattern = "|".join(re.escape(name) for name in source_only_examples)
 
 sphinx_gallery_conf = {
     "examples_dirs": "../examples",  # path to your example scripts
     "gallery_dirs": "auto_examples",  # path where to save gallery generated examples
-    "filename_pattern": ".py",  # which examples are executed for plots etc
+    "filename_pattern": rf"^(?!.*(?:{source_only_pattern})$).*\.py$",
     "image_scrapers": scrapers,
     "abort_on_example_error": False,
     "download_all_examples": False,
-    "show_memory": True,
+    "show_memory": False,
     "reference_url": {
         # The module you locally document uses None
         "sphinx_gallery": None,
@@ -174,9 +192,9 @@ intersphinx_mapping = {
     "numpy": ("https://numpy.org/devdocs", None),
     "scipy": ("https://scipy.github.io/devdocs", None),
     "matplotlib": ("https://matplotlib.org", None),
-    "numba": ("https://numba.pydata.org/numba-doc/latest", None),
+    "numba": ("https://numba.readthedocs.io/en/stable", None),
     "joblib": ("https://joblib.readthedocs.io/en/latest", None),
-    "mayavi": ("http://docs.enthought.com/mayavi/mayavi", None),
+    "pyvista": ("https://docs.pyvista.org/", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
 }
 

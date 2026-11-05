@@ -7,6 +7,7 @@ region between the two coil planes. The coil planes have holes in them,
 
 """
 
+
 import numpy as np
 import trimesh
 
@@ -97,6 +98,8 @@ bfield_specification = [target_spec]
 
 #%%
 # Run QP solver
+
+# This optimization requires a licensed MOSEK installation.
 import mosek
 
 coil.s, prob = optimize_streamfunctions(

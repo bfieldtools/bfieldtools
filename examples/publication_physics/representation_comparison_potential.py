@@ -5,15 +5,15 @@ Compare SUH and SPH basis functions for the magnetic scalar potential
 
 """
 
+import pyvista as pv
+
+pv.set_plot_theme("document")
+
 
 import numpy as np
 import matplotlib.pyplot as plt
-from mayavi import mlab
 import trimesh
 from bfieldtools import resources
-from pyface.api import GUI
-
-_gui = GUI()
 
 
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
@@ -50,23 +50,12 @@ mesh_field.vertices += 0.001 * mesh_field.vertex_normals
 #         p[:, 0] += i * d
 #         p2[:, 0] += i * d
 #         m = np.max(np.linalg.norm(C[:, :, n], axis=0))
-#         vectors = mlab.quiver3d(
 #             *p.T, *C[:, :, n].T, mode="arrow", colormap="Greys", vmin=0, vmax=m
 #         )
-#         vectors.glyph.mask_input_points = True
-#         vectors.glyph.mask_points.maximum_number_of_points = 1800
-#         vectors.glyph.mask_points.random_mode_type = 1
-#         vectors.glyph.glyph_source.glyph_position = "center"
-#         vectors.glyph.glyph_source.glyph_source.shaft_radius = 0.02
-#         vectors.glyph.glyph_source.glyph_source.tip_radius = 0.06
-#         vectors.glyph.glyph.scale_factor = 0.03
 #         #        m = np.max(abs((C[:,:,n].T*mesh_field.vertex_normals.T).sum(axis=0)))
-#         #        s =mlab.triangular_mesh(*p.T, mesh_field.faces,
 #         #                             scalars=(C[:,:,n].T*mesh_field.vertex_normals.T).sum(axis=0),
 #         #                             colormap='seismic', vmin=-m, vmax=m, opacity=0.7)
-#         #        s.actor.property.backface_culling = True
 #         m = np.max(abs((C[:, :, n].T * mesh_field.vertex_normals.T).sum(axis=0)))
-#         s = mlab.triangular_mesh(
 #             *p2.T,
 #             mesh.faces,
 #             scalars=(C[:, :, n].T * mesh_field.vertex_normals.T).sum(axis=0),
@@ -74,30 +63,16 @@ mesh_field.vertices += 0.001 * mesh_field.vertex_normals
 #             vmin=-m,
 #             vmax=m
 #         )
-#         s.actor.mapper.interpolate_scalars_before_mapping = True
-#         s.module_manager.scalar_lut_manager.number_of_colors = 15
 #         i += 1
 
 
 # comps = [0, 4, 10, 15]
-# scene = mlab.figure(bgcolor=(1, 1, 1), size=(1200, 350))
 # plot_basis_fields(Ca, comps)
-# scene.scene.parallel_projection = True
-# scene.scene.z_plus_view()
-# scene.scene.camera.zoom(4)
-# while scene.scene.light_manager is None:
 #     _gui.process_events()
-# scene.scene.light_manager.lights[2].intensity = 0.2
 
 
-# scene = mlab.figure(bgcolor=(1, 1, 1), size=(1200, 350))
 # plot_basis_fields(Csuh, comps)
-# scene.scene.parallel_projection = True
-# scene.scene.z_plus_view()
-# scene.scene.camera.zoom(4)
-# while scene.scene.light_manager is None:
 #     _gui.process_events()
-# scene.scene.light_manager.lights[2].intensity = 0.2
 
 
 #%% test representation
@@ -143,7 +118,7 @@ from bfieldtools.viz import plot_mesh
 
 # Plot suh
 i = 0
-fig = mlab.figure(bgcolor=(1, 1, 1), size=(600, 190))
+plotter = fig = pv.Plotter(window_size=(600, 190))
 for n in comps:
     p = plane.copy()
     p.vertices[:, 0] += i * d
@@ -154,18 +129,18 @@ for n in comps:
     scalars2 = bsuh.basis[:, n]
     m = np.max(abs(scalars))
     m2 = np.max(abs(scalars2))
-    plot_data_on_vertices(p, scalars, figure=fig, ncolors=15, vmax=m, colormap="bwr")
-    plot_data_on_vertices(
+    plotter = plot_data_on_vertices(p, scalars, figure=fig, ncolors=15, vmax=m, colormap="bwr")
+    plotter = plot_data_on_vertices(
         p2, scalars2, figure=fig, ncolors=15, vmax=m2, colormap="BrBG"
     )
     i += 1
-fig.scene.parallel_projection = True
-fig.scene.z_plus_view()
-fig.scene.camera.parallel_scale = 0.11
+fig.parallel_projection = True
+fig.view_xy()
+fig.camera.parallel_scale = 0.11
 
 #%% Plot SPH
 i = 0
-fig = mlab.figure(bgcolor=(1, 1, 1), size=(600, 190))
+plotter = fig = pv.Plotter(window_size=(600, 190))
 for n in comps:
     p = plane.copy()
     p.vertices[:, 0] += i * d
@@ -176,14 +151,18 @@ for n in comps:
     scalars2 = Ua_mesh[:, n]
     m = np.max(abs(scalars))
     m2 = np.max(abs(scalars2))
-    plot_data_on_vertices(p, scalars, figure=fig, ncolors=15, vmax=m, colormap="bwr")
-    plot_data_on_vertices(
+    plotter = plot_data_on_vertices(p, scalars, figure=fig, ncolors=15, vmax=m, colormap="bwr")
+    plotter = plot_data_on_vertices(
         p2, scalars2, figure=fig, ncolors=15, vmax=m2, colormap="BrBG"
     )
     p3 = mesh.copy()
     p3.vertices[:, 0] += i * d
-    plot_mesh(p3, opacity=0.3, figure=fig)
+    plotter = plot_mesh(p3, opacity=0.3, figure=fig)
     i += 1
-fig.scene.parallel_projection = True
-fig.scene.z_plus_view()
-fig.scene.camera.parallel_scale = 0.11
+fig.parallel_projection = True
+fig.view_xy()
+fig.camera.parallel_scale = 0.11
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

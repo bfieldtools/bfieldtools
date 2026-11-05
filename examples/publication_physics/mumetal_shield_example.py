@@ -3,9 +3,15 @@ Field distortion by a perfect mu-metal shield
 ===========================================================
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import mesh_actor
+from bfieldtools._example_plots import triangle_mesh, vector_glyphs
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
 import trimesh
-from mayavi import mlab
 
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
 from bfieldtools.mesh_calculus import gradient
@@ -56,58 +62,54 @@ points[:, 2] += planemesh.vertices.mean(axis=0)[2]
 
 
 def plot_plane():
-    mlab.triangular_mesh(
-        [X.min(), X.max(), X.max(), X.min()],
-        [Y.min(), Y.min(), Y.max(), Y.max()],
-        np.zeros(4),
-        np.array([[0, 1, 2], [2, 3, 0]]),
+    plotter.add_mesh(
+        triangle_mesh(
+            [X.min(), X.max(), X.max(), X.min()],
+            [Y.min(), Y.min(), Y.max(), Y.max()],
+            np.zeros(4),
+            np.array([[0, 1, 2], [2, 3, 0]]),
+        ),
         color=(0.1, 0.1, 0.1),
         opacity=0.6,
+        show_scalar_bar=False,
     )
 
 
 #%%
-fig = mlab.figure(bgcolor=(1, 1, 1))
-s0 = mlab.triangular_mesh(
-    *shieldmesh.vertices.T, shieldmesh.faces, color=(0.5, 0.5, 0.5), opacity=0.3
+plotter = fig = pv.Plotter()
+s0 = plotter.add_mesh(
+    triangle_mesh(*shieldmesh.vertices.T, shieldmesh.faces),
+    color=(0.5, 0.5, 0.5),
+    opacity=0.3,
+    show_scalar_bar=False,
 )
-s0.actor.property.backface_culling = False
-s0.actor.property.ambient = 0.5
+mesh_actor(s0).prop.backface_culling = False
+mesh_actor(s0).prop.ambient = 0.5
 
 I_prim = np.load("../publication_software/Shielded coil/biplanar_streamfunction.npy")
 sprim = StreamFunction(coil.vert2inner @ I_prim, coil)
 m = max(abs(sprim))
-s1 = sprim.plot(False, 16, vmin=-m, vmax=m)
-s2 = sprim.plot(True, 20)
-s2.actor.mapper.scalar_visibility = False
-s2.actor.property.line_width = 1.2
-# s2 = mlab.triangular_mesh(*planemesh.vertices.T, planemesh.faces, scalars=I_prim,
+plotter = s1 = sprim.plot(False, 16, vmin=-m, vmax=m)
+plotter = s2 = sprim.plot(True, 20)
+mesh_actor(s2).mapper.scalar_visibility = False
+mesh_actor(s2).prop.line_width = 1.2
 #                          colormap='RdBu')
 # s2.enable_contours = True
 # s2.contour.filled_contours = True
 # s2.contour.number_of_contours = 20
-s2.actor.property.render_lines_as_tubes = True
+mesh_actor(s2).prop.render_lines_as_tubes = True
 plot_plane()
-scene = s0.module_manager
-scene.scene.camera.position = [
-    39.154871143623325,
-    -40.509425675368334,
-    26.56155776567048,
-]
-scene.scene.camera.focal_point = [
+scene = plotter
+scene.camera.position = [39.154871143623325, -40.509425675368334, 26.56155776567048]
+scene.camera.focal_point = [
     4.239945673839333,
     1.041549923485209,
     -0.0005302515738243585,
 ]
-scene.scene.camera.view_angle = 30.0
-scene.scene.camera.view_up = [
-    -0.28276020498745635,
-    0.33658483701858727,
-    0.898196701154387,
-]
-scene.scene.camera.clipping_range = [16.139073445910277, 116.31572537292347]
-scene.scene.camera.compute_view_plane_normal()
-scene.scene.render()
+scene.camera.view_angle = 30.0
+scene.camera.up = [-0.28276020498745635, 0.33658483701858727, 0.898196701154387]
+scene.camera.clipping_range = [16.139073445910277, 116.31572537292347]
+scene.render()
 
 
 #%%
@@ -118,13 +120,14 @@ P_prim = coil.U_coupling(shieldmesh.vertices - d * shieldmesh.vertex_normals)
 
 
 #%% Plot the resulting primary potential
-mlab.figure()
-s = mlab.triangular_mesh(
-    *shieldmesh.vertices.T, shieldmesh.faces, scalars=P_prim @ sprim, opacity=1.0
+plotter = pv.Plotter()
+s = plotter.add_mesh(
+    triangle_mesh(*shieldmesh.vertices.T, shieldmesh.faces),
+    scalars=P_prim @ sprim,
+    opacity=1.0,
+    show_scalar_bar=False,
 )
-s.enable_contours = True
-s.contour.filled_contours = True
-s.contour.number_of_contours = 30
+mesh_actor(s).mapper.dataset = mesh_actor(s).mapper.dataset.contour(10)
 
 #%%
 #%% Calculate linear collocation BEM matrix
@@ -138,49 +141,43 @@ s_shield = StreamFunction(I_shield, shield)
 g = gradient(s_shield, shieldmesh, rotated=True)
 
 #%% Plot the result
-fig = mlab.figure(bgcolor=(1, 1, 1))
-s0 = mlab.triangular_mesh(
-    *shieldmesh.vertices.T, shieldmesh.faces, color=(0.5, 0.5, 0.5), opacity=0.3
+plotter = fig = pv.Plotter()
+s0 = plotter.add_mesh(
+    triangle_mesh(*shieldmesh.vertices.T, shieldmesh.faces),
+    color=(0.5, 0.5, 0.5),
+    opacity=0.3,
+    show_scalar_bar=False,
 )
-s0.actor.property.backface_culling = False
-s1 = s_shield.plot(False, 256)
-# s1.actor.property.opacity=0.8
-s1.actor.property.backface_culling = False
+mesh_actor(s0).prop.backface_culling = False
+plotter = s1 = s_shield.plot(False, 256)
+mesh_actor(s1).prop.backface_culling = False
 # s2 = s_shield.plot(True, 10)
-mlab.quiver3d(
-    *shieldmesh.triangles_center.T,
-    *g,
+plotter.add_mesh(
+    vector_glyphs(
+        *shieldmesh.triangles_center.T,
+        *g,
+        scale_factor=8e-07,
+        mode="arrow",
+        scale_mode="vector"
+    ),
     color=(1, 1, 1),
-    mode="arrow",
-    scale_factor=0.0000008,
-    scale_mode="vector"
+    show_scalar_bar=False,
 )
 # s1.contour.filled_contours = True
 # s1.contour.number_of_contours = 30
-# s2.actor.property.render_lines_as_tubes = True
-# s1.actor.property.ambient = 0.2
 
-scene = s1.module_manager
+scene = plotter
 plot_plane()
-scene.scene.camera.position = [
-    39.154871143623325,
-    -40.509425675368334,
-    26.56155776567048,
-]
-scene.scene.camera.focal_point = [
+scene.camera.position = [39.154871143623325, -40.509425675368334, 26.56155776567048]
+scene.camera.focal_point = [
     4.239945673839333,
     1.041549923485209,
     -0.0005302515738243585,
 ]
-scene.scene.camera.view_angle = 30.0
-scene.scene.camera.view_up = [
-    -0.28276020498745635,
-    0.33658483701858727,
-    0.898196701154387,
-]
-scene.scene.camera.clipping_range = [16.139073445910277, 116.31572537292347]
-scene.scene.camera.compute_view_plane_normal()
-scene.scene.render()
+scene.camera.view_angle = 30.0
+scene.camera.up = [-0.28276020498745635, 0.33658483701858727, 0.898196701154387]
+scene.camera.clipping_range = [16.139073445910277, 116.31572537292347]
+scene.render()
 
 
 #%%
@@ -277,3 +274,7 @@ plt.plot(cc2[:, 0], cc2[:, 1], linewidth=3, color="gray")
 plt.axis("image")
 plt.axis("off")
 p.ax.set_xlim(xlims)
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

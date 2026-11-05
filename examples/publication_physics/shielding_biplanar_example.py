@@ -3,9 +3,15 @@ Example of designing a shielded biplanar coil
 ===============================================
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import mesh_actor
+from bfieldtools._example_plots import triangle_mesh
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
 import matplotlib.pyplot as plt
-from mayavi import mlab
 import trimesh
 
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
@@ -81,7 +87,7 @@ M = M11 + M21.T @ P
 
 from scipy.linalg import eigvalsh
 
-ssmax = eigvalsh(C.T @ C, M, eigvals=[M.shape[1] - 1, M.shape[1] - 1])
+ssmax = eigvalsh(C.T @ C, M, subset_by_index=[M.shape[1] - 1, M.shape[1] - 1])
 
 #%% Specify spherical harmonic and calculate corresponding shielded field
 beta = np.zeros(Beta1.shape[0])
@@ -99,9 +105,7 @@ I2inner = P @ I1inner
 s1 = StreamFunction(I1inner, coil1)
 s2 = StreamFunction(I2inner, coil2)
 
-# s = mlab.triangular_mesh(*mesh1.vertices.T, mesh1.faces, scalars=I1)
 # s.enable_contours=True
-# s = mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces, scalars=I2)
 # s.enable_contours=True
 
 B1 = CB1 @ s1
@@ -184,86 +188,107 @@ contours1 = scalar_contour(mesh1, s1.vert, contours=contour_vals1)
 contours2 = scalar_contour(mesh2, s2.vert, contours=contour_vals2)
 
 
-def setscene(scene1, coil):
-    scene1.actor.mapper.interpolate_scalars_before_mapping = True
-    scene1.module_manager.scalar_lut_manager.number_of_colors = 32
-    scene1.scene.y_plus_view()
+def setscene(scene1, surface, coil):
+    mesh_actor(surface).mapper.interpolate_before_map = True
+    mesh_actor(surface).mapper.lookup_table.n_values = 32
+    scene1.view_xz()
     if coil == 1:
-        scene1.scene.camera.position = [
+        scene1.camera.position = [
             4.7267030067743576e-08,
             2.660205137153174,
             8.52196480605194e-08,
         ]
-        scene1.scene.camera.focal_point = [
+        scene1.camera.focal_point = [
             4.7267030067743576e-08,
             0.4000000059604645,
             8.52196480605194e-08,
         ]
-        scene1.scene.camera.view_angle = 30.0
-        scene1.scene.camera.view_up = [1.0, 0.0, 0.0]
-        scene1.scene.camera.clipping_range = [1.116284842928313, 2.4468228732691104]
-        scene1.scene.camera.compute_view_plane_normal()
+        scene1.camera.view_angle = 30.0
+        scene1.camera.up = [1.0, 0.0, 0.0]
+        scene1.camera.clipping_range = [1.116284842928313, 2.4468228732691104]
     else:
-        scene1.scene.camera.position = [
+        scene1.camera.position = [
             4.7267030067743576e-08,
             3.7091663385397116,
             8.52196480605194e-08,
         ]
-        scene1.scene.camera.focal_point = [
+        scene1.camera.focal_point = [
             4.7267030067743576e-08,
             0.4000000059604645,
             8.52196480605194e-08,
         ]
-        scene1.scene.camera.view_angle = 30.0
-        scene1.scene.camera.view_up = [1.0, 0.0, 0.0]
-        scene1.scene.camera.clipping_range = [2.948955346473114, 3.40878670176758]
-        scene1.scene.camera.compute_view_plane_normal()
-    scene1.scene.render()
-    scene1.scene.anti_aliasing_frames = 20
-    scene1.scene.magnification = 2
+        scene1.camera.view_angle = 30.0
+        scene1.camera.up = [1.0, 0.0, 0.0]
+        scene1.camera.clipping_range = [2.948955346473114, 3.40878670176758]
+    scene1.render()
+    scene1.enable_anti_aliasing("ssaa")
+    scene1.image_scale = 2
 
 
-fig = mlab.figure(bgcolor=(1, 1, 1), size=(400, 400))
-fig = plot_3d_current_loops(
+plotter = fig = pv.Plotter(window_size=(400, 400))
+plotter = fig = plot_3d_current_loops(
     contours1, tube_radius=0.005, colors=(0.9, 0.9, 0.9), figure=fig
 )
 m = abs(s1).max()
 mask = mesh1.triangles_center[:, 1] > 0
 faces1 = mesh1.faces[mask]
-surf = mlab.triangular_mesh(
-    *mesh1.vertices.T, faces1, scalars=s1.vert, vmin=-m, vmax=m, colormap="seismic"
+surf = plotter.add_mesh(
+    triangle_mesh(*mesh1.vertices.T, faces1),
+    scalars=s1.vert,
+    cmap="seismic",
+    clim=[-m, m],
+    show_scalar_bar=False,
 )
-setscene(surf, 1)
+setscene(fig, surf, 1)
 
-fig = mlab.figure(bgcolor=(1, 1, 1), size=(400, 400))
-fig = plot_3d_current_loops(
+plotter = fig = pv.Plotter(window_size=(400, 400))
+plotter = fig = plot_3d_current_loops(
     contours2, tube_radius=0.005, colors=(0.9, 0.9, 0.9), figure=fig
 )
 faces2 = mesh2.faces[mesh2.triangles_center[:, 1] > 0]
-surf = mlab.triangular_mesh(
-    *mesh2.vertices.T, faces2, scalars=s2.vert, vmin=-m, vmax=m, colormap="seismic"
+surf = plotter.add_mesh(
+    triangle_mesh(*mesh2.vertices.T, faces2),
+    scalars=s2.vert,
+    cmap="seismic",
+    clim=[-m, m],
+    show_scalar_bar=False,
 )
-setscene(surf, 2)
+setscene(fig, surf, 2)
 
 
 #%% Plot the coil surface and the field plane
-fig = mlab.figure(bgcolor=(1, 1, 1))
-surf = mlab.triangular_mesh(*mesh1.vertices.T, mesh1.faces, color=(0.8, 0.2, 0.2))
-surf.actor.property.edge_visibility = True
-surf.actor.property.render_lines_as_tubes = True
-surf.actor.property.line_width = 1.2
+plotter = fig = pv.Plotter()
+surf = plotter.add_mesh(
+    triangle_mesh(*mesh1.vertices.T, mesh1.faces),
+    color=(0.8, 0.2, 0.2),
+    show_scalar_bar=False,
+)
+mesh_actor(surf).prop.edge_visibility = True
+mesh_actor(surf).prop.render_lines_as_tubes = True
+mesh_actor(surf).prop.line_width = 1.2
 
 
-surf = mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces, color=(0.2, 0.2, 0.8))
-surf.actor.property.edge_visibility = True
-surf.actor.property.render_lines_as_tubes = True
-surf.actor.property.line_width = 1.2
+surf = plotter.add_mesh(
+    triangle_mesh(*mesh2.vertices.T, mesh2.faces),
+    color=(0.2, 0.2, 0.8),
+    show_scalar_bar=False,
+)
+mesh_actor(surf).prop.edge_visibility = True
+mesh_actor(surf).prop.render_lines_as_tubes = True
+mesh_actor(surf).prop.line_width = 1.2
 # Plot plane
-plane = mlab.triangular_mesh(
-    np.array([x[0], x[-1], x[-1], x[0]]),
-    np.array([x[0], x[0], x[-1], x[-1]]),
-    np.zeros(4),
-    np.array([[0, 1, 2], [2, 3, 0]]),
+plane = plotter.add_mesh(
+    triangle_mesh(
+        np.array([x[0], x[-1], x[-1], x[0]]),
+        np.array([x[0], x[0], x[-1], x[-1]]),
+        np.zeros(4),
+        np.array([[0, 1, 2], [2, 3, 0]]),
+    ),
     color=(0.7, 0.7, 0.7),
     opacity=0.7,
+    show_scalar_bar=False,
 )
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

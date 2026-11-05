@@ -5,15 +5,17 @@ Compare SUH and SPH basis functions for the magnetic field
 
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import mesh_actor
+from bfieldtools._example_plots import triangle_mesh, vector_glyphs
+
+pv.set_plot_theme("document")
+
 
 import numpy as np
 import matplotlib.pyplot as plt
-from mayavi import mlab
 import trimesh
 from bfieldtools import resources
-from pyface.api import GUI
-
-_gui = GUI()
 
 
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
@@ -45,59 +47,41 @@ def plot_basis_fields(C, comps):
     for n in comps:
         p = 1.05 * mesh_field.vertices.copy()
         p2 = mesh_field.vertices.copy()
-        #        p[:,1] -= i*d
-        #        p2[:,1] -= i*d
         p[:, 0] += i * d
         p2[:, 0] += i * d
         m = np.max(np.linalg.norm(C[:, :, n], axis=0))
-        vectors = mlab.quiver3d(
-            *p.T, *C[:, :, n].T, mode="arrow", colormap="Greys", vmin=0, vmax=m
+        vectors = plotter.add_mesh(
+            vector_glyphs(*p.T, *C[:, :, n].T, mode="arrow"),
+            cmap="Greys",
+            clim=[0, m],
+            show_scalar_bar=False,
         )
-        vectors.glyph.mask_input_points = True
-        vectors.glyph.mask_points.maximum_number_of_points = 1800
-        vectors.glyph.mask_points.random_mode_type = 1
-        vectors.glyph.glyph_source.glyph_position = "center"
-        vectors.glyph.glyph_source.glyph_source.shaft_radius = 0.02
-        vectors.glyph.glyph_source.glyph_source.tip_radius = 0.06
-        vectors.glyph.glyph.scale_factor = 0.03
-        #        m = np.max(abs((C[:,:,n].T*mesh_field.vertex_normals.T).sum(axis=0)))
-        #        s =mlab.triangular_mesh(*p.T, mesh_field.faces,
-        #                             scalars=(C[:,:,n].T*mesh_field.vertex_normals.T).sum(axis=0),
-        #                             colormap='seismic', vmin=-m, vmax=m, opacity=0.7)
-        #        s.actor.property.backface_culling = True
         m = np.max(abs((C[:, :, n].T * mesh_field.vertex_normals.T).sum(axis=0)))
-        s = mlab.triangular_mesh(
-            *p2.T,
-            mesh.faces,
+        s = plotter.add_mesh(
+            triangle_mesh(*p2.T, mesh.faces),
             scalars=(C[:, :, n].T * mesh_field.vertex_normals.T).sum(axis=0),
-            colormap="bwr",
-            vmin=-m,
-            vmax=m
+            cmap="bwr",
+            clim=[-m, m],
+            show_scalar_bar=False,
         )
-        s.actor.mapper.interpolate_scalars_before_mapping = True
-        s.module_manager.scalar_lut_manager.number_of_colors = 15
+        mesh_actor(s).mapper.interpolate_before_map = True
+        mesh_actor(s).mapper.lookup_table.n_values = 15
         i += 1
 
 
 comps = [0, 4, 10, 15]
-scene = mlab.figure(bgcolor=(1, 1, 1), size=(1200, 350))
+plotter = scene = pv.Plotter(window_size=(1200, 350))
 plot_basis_fields(Ca, comps)
-scene.scene.parallel_projection = True
-scene.scene.z_plus_view()
-scene.scene.camera.zoom(4)
-while scene.scene.light_manager is None:
-    _gui.process_events()
-scene.scene.light_manager.lights[2].intensity = 0.2
+scene.parallel_projection = True
+scene.view_xy()
+scene.camera.zoom(4)
 
 
-scene = mlab.figure(bgcolor=(1, 1, 1), size=(1200, 350))
+plotter = scene = pv.Plotter(window_size=(1200, 350))
 plot_basis_fields(Csuh, comps)
-scene.scene.parallel_projection = True
-scene.scene.z_plus_view()
-scene.scene.camera.zoom(4)
-while scene.scene.light_manager is None:
-    _gui.process_events()
-scene.scene.light_manager.lights[2].intensity = 0.2
+scene.parallel_projection = True
+scene.view_xy()
+scene.camera.zoom(4)
 
 
 #%% test representation
@@ -130,22 +114,12 @@ scene.scene.light_manager.lights[2].intensity = 0.2
 # ind=1932
 # scalars = np.zeros(mesh.vertices.shape[0])
 # scalars[ind] = 1
-# mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars, colormap='Blues')
-# surf= mlab.triangular_mesh(*plane.vertices.T, plane.faces, colormap='viridis',
 #                     scalars = mask*np.linalg.norm(CB[:,:,ind], axis=1))
-# surf.actor.mapper.interpolate_scalars_before_mapping = True
-# surf.module_manager.scalar_lut_manager.number_of_colors = 16
 #
-# mlab.figure()
-# mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars, colormap='Blues')
-# surf = mlab.triangular_mesh(*plane.vertices.T, plane.faces, colormap='viridis',
 #                     scalars = mask*np.linalg.norm(b1[:,:,ind], axis=0))
-# surf.actor.mapper.interpolate_scalars_before_mapping = True
-# surf.module_manager.scalar_lut_manager.number_of_colors = 16
 #
-# mlab.figure()
-# mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=scalars, colormap='Blues')
-# surf = mlab.triangular_mesh(*plane.vertices.T, plane.faces, colormap='viridis',
 #                     scalars = mask*np.linalg.norm(b2[:,:,ind], axis=0))
-# surf.actor.mapper.interpolate_scalars_before_mapping = True
-# surf.module_manager.scalar_lut_manager.number_of_colors = 16
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

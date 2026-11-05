@@ -3,9 +3,15 @@ Design a field enclosed in a volume
 ================================================
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import mesh_actor
+from bfieldtools._example_plots import triangle_mesh
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
 import matplotlib.pyplot as plt
-from mayavi import mlab
 
 # import trimesh
 
@@ -105,50 +111,40 @@ b2 = N @ np.sum(bf[:, :, 3] * mesh1.vertex_normals, axis=1)
 
 
 def plot_plane(opacity=0.8):
-    mlab.triangular_mesh(
-        np.array([x[0], x[-1], x[-1], x[0]]),
-        np.array([x[0], x[0], x[-1], x[-1]]),
-        np.zeros(4),
-        np.array([[0, 1, 2], [2, 3, 0]]),
+    plotter.add_mesh(
+        triangle_mesh(
+            np.array([x[0], x[-1], x[-1], x[0]]),
+            np.array([x[0], x[0], x[-1], x[-1]]),
+            np.zeros(4),
+            np.array([[0, 1, 2], [2, 3, 0]]),
+        ),
         color=(0.7, 0.7, 0.7),
         opacity=opacity,
+        show_scalar_bar=False,
     )
 
 
 for bi in (b1, b2):
-
     bb = np.zeros(M.shape[1])
     bb[: M11.shape[1]] = bi
     I = np.linalg.solve(M, bb)
     I1 = I[: M11.shape[1]]
     I2 = I[M11.shape[1] :]
-
     B1 = CB1 @ I1
     B2 = CB2 @ I2
-
     U1 = CU1 @ I1
     U2 = CU2 @ I2
-
-    # Plot
-    # Extract the cross-sections of the plane and the surfaces
     cc1 = scalar_contour(mesh1, mesh1.vertices[:, 2], contours=[-0.001])[0]
     cc2 = scalar_contour(mesh2, mesh2.vertices[:, 2], contours=[-0.001])[0]
-
     B = (B1.T + B2.T)[:2].reshape(2, x.shape[0], y.shape[0])
     lw = np.sqrt(B[0] ** 2 + B[1] ** 2)
     lw = 2 * lw / np.max(lw)
     xx = np.linspace(-1, 1, 16)
-    # seed_points = 0.51*np.array([xx, -np.sqrt(1-xx**2)])
-    # seed_points = np.hstack([seed_points, (0.51*np.array([xx, np.sqrt(1-xx**2)]))])
     seed_points = np.array([cc1[:, 0], cc1[:, 1]]) * 1.01
-    # plt.streamplot(x,y, B[1], B[0], density=2, linewidth=lw, color='k',
-    #               start_points=seed_points.T, integration_direction='both')
     U = (U1 + U2).reshape(x.shape[0], y.shape[0])
     U /= np.max(U)
     plt.figure()
     plt.contourf(X, Y, U.T, cmap="seismic", levels=40)
-    # plt.imshow(U, vmin=-1.0, vmax=1.0, cmap='seismic', interpolation='bicubic',
-    #           extent=(x.min(), x.max(), y.min(), y.max()))
     plt.streamplot(
         x,
         y,
@@ -160,73 +156,73 @@ for bi in (b1, b2):
         start_points=seed_points.T,
         integration_direction="both",
     )
-
     plt.plot(cc1[:, 1], cc1[:, 0], linewidth=3.0, color="gray")
     plt.plot(cc2[:, 1], cc2[:, 0], linewidth=3.0, color="gray")
-
     plt.xticks([])
     plt.yticks([])
-
     plt.axis("image")
-
-    # Plot "coils"
-    mlab.figure(bgcolor=(1, 1, 1))
+    plotter = pv.Plotter()
     contours1 = scalar_contour(mesh1, I1, 12)
     contours2 = scalar_contour(mesh2, I2, 12)
-
-    #    fig = plot_3d_current_loops(contours1, tube_radius=0.005, colors=(1,1,1))
-    surf = mlab.triangular_mesh(
-        *mesh1.vertices.T, mesh1.faces, scalars=I1, colormap="BrBG"
+    surf = plotter.add_mesh(
+        triangle_mesh(*mesh1.vertices.T, mesh1.faces),
+        scalars=I1,
+        cmap="BrBG",
+        show_scalar_bar=False,
     )
-    surf.actor.mapper.interpolate_scalars_before_mapping = True
-    surf.module_manager.scalar_lut_manager.number_of_colors = 16
-
-    #    plot_3d_current_loops(contours2, tube_radius=0.005, figure=fig, colors=(0,0,0))
+    mesh_actor(surf).mapper.interpolate_before_map = True
+    mesh_actor(surf).mapper.lookup_table.n_values = 16
     faces2_masked = mesh2.faces[
         np.linalg.norm(mesh2.triangles_center - np.array([0.75, 0.75, 0.75]), axis=1)
         > 1.2
     ]
-    surf = mlab.triangular_mesh(
-        *(mesh2.vertices * 0.99).T,
-        faces2_masked,
+    surf = plotter.add_mesh(
+        triangle_mesh(*(mesh2.vertices * 0.99).T, faces2_masked),
         scalars=I2,
-        colormap="BrBG",
-        opacity=1.0
+        opacity=1.0,
+        cmap="BrBG",
+        show_scalar_bar=False,
     )
-    surf.actor.mapper.interpolate_scalars_before_mapping = True
-    surf.module_manager.scalar_lut_manager.number_of_colors = 16
+    mesh_actor(surf).mapper.interpolate_before_map = True
+    mesh_actor(surf).mapper.lookup_table.n_values = 16
     plot_plane(0.5)
 
 
 #%% Plot meshes
 
-mlab.figure(bgcolor=(1, 1, 1))
-s1 = mlab.triangular_mesh(
-    *mesh1.vertices.T, mesh1.faces[:, ::-1], color=(0.5, 0.5, 0.5), opacity=1.0
+plotter = pv.Plotter()
+s1 = plotter.add_mesh(
+    triangle_mesh(*mesh1.vertices.T, mesh1.faces[:, ::-1]),
+    color=(0.5, 0.5, 0.5),
+    opacity=1.0,
+    show_scalar_bar=False,
 )
-s1.actor.property.backface_culling = True
-w1 = mlab.triangular_mesh(
-    *(mesh1.vertices.T + 0.009 * mesh1.vertex_normals.T),
-    mesh1.faces,
-    color=(
-        1,
-        0,
-        0,
-    ),
-    representation="wireframe"
+mesh_actor(s1).prop.backface_culling = True
+w1 = plotter.add_mesh(
+    triangle_mesh(*mesh1.vertices.T + 0.009 * mesh1.vertex_normals.T, mesh1.faces),
+    color=(1, 0, 0),
+    style="wireframe",
+    show_scalar_bar=False,
 )
-w1.actor.property.render_lines_as_tubes = True
+mesh_actor(w1).prop.render_lines_as_tubes = True
 
-s2 = mlab.triangular_mesh(
-    *mesh2.vertices.T, mesh2.faces[:, ::-1], color=(0.5, 0.5, 0.5), opacity=1.0
+s2 = plotter.add_mesh(
+    triangle_mesh(*mesh2.vertices.T, mesh2.faces[:, ::-1]),
+    color=(0.5, 0.5, 0.5),
+    opacity=1.0,
+    show_scalar_bar=False,
 )
-s2.actor.property.backface_culling = True
+mesh_actor(s2).prop.backface_culling = True
 faces2_masked = mesh2.faces[(mesh2.triangles_center @ np.array([1, 1, 1])) < 1]
-w2 = mlab.triangular_mesh(
-    *(mesh2.vertices.T + +0.009 * mesh2.vertex_normals.T),
-    faces2_masked,
-    representation="wireframe",
-    color=(0, 0, 1)
+w2 = plotter.add_mesh(
+    triangle_mesh(*mesh2.vertices.T + +0.009 * mesh2.vertex_normals.T, faces2_masked),
+    color=(0, 0, 1),
+    style="wireframe",
+    show_scalar_bar=False,
 )
-w2.actor.property.render_lines_as_tubes = True
+mesh_actor(w2).prop.render_lines_as_tubes = True
 plot_plane()
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

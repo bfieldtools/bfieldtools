@@ -1,5 +1,5 @@
 """
-Field of a Helmholtz coils pair 
+Field of a Helmholtz coils pair
 ==========================================================
 
 Example on how to compute the magnetic field from current line segments forming a Helmholtz coil pair.
@@ -7,7 +7,13 @@ Example on how to compute the magnetic field from current line segments forming 
 Visualization of the 3D field using Mayavi
 """
 
-from mayavi import mlab
+import pyvista as pv
+from bfieldtools._example_plots import mesh_actor
+from bfieldtools._example_plots import polyline, structured_field
+
+pv.set_plot_theme("document")
+
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -27,9 +33,9 @@ c_points = np.vstack((c_points, c_points[0, :]))
 c1_points = c_points - np.array([0, R / 2, 0])
 c2_points = c_points + np.array([0, R / 2, 0])
 
-mlab.figure(bgcolor=(1, 1, 1))
-mlab.plot3d(*c1_points.T)
-mlab.plot3d(*c2_points.T)
+plotter = pv.Plotter()
+plotter.add_mesh(polyline(*c1_points.T).tube(radius=0.01), show_scalar_bar=False)
+plotter.add_mesh(polyline(*c2_points.T).tube(radius=0.01), show_scalar_bar=False)
 
 box = 3 * R
 n = 50
@@ -55,11 +61,11 @@ B_matrix = B.reshape((n, n, n, 3))
 
 B_matrix_norm = np.linalg.norm(B_matrix, axis=-1)
 
-#%% Visualization using mayavi
+#%% Visualization using PyVista
 
-mlab.figure(bgcolor=(1, 1, 1))
+plotter = pv.Plotter()
 
-field = mlab.pipeline.vector_field(
+field = structured_field(
     X,
     Y,
     Z,
@@ -67,32 +73,32 @@ field = mlab.pipeline.vector_field(
     B_matrix[:, :, :, 1],
     B_matrix[:, :, :, 2],
     scalars=B_matrix_norm,
-    name="B-field",
 )
 
-vectors = mlab.pipeline.vectors(
-    field,
-    scale_factor=(X[1, 0, 0] - X[0, 0, 0]),
+vectors = plotter.add_mesh(
+    field.glyph(orient="vectors", scale="magnitude", factor=X[1, 0, 0] - X[0, 0, 0]),
+    show_scalar_bar=False,
 )
 
 
-vectors.glyph.mask_input_points = True
-vectors.glyph.mask_points.on_ratio = 2
-
-vcp = mlab.pipeline.vector_cut_plane(field)
-vcp.glyph.glyph.scale_factor = 10 * (X[1, 0, 0] - X[0, 0, 0])
+vcp = plotter.add_mesh(
+    field.slice(normal="y").glyph(orient="vectors", scale="magnitude"),
+    show_scalar_bar=False,
+)
 # For prettier picture:
-vcp.implicit_plane.widget.enabled = True
 
-iso = mlab.pipeline.iso_surface(field, contours=10, opacity=0.2, colormap="viridis")
+iso = plotter.add_mesh(
+    field.contour(10, scalars="magnitude"),
+    opacity=0.2,
+    cmap="viridis",
+    show_scalar_bar=False,
+)
 
 
 # A trick to make transparency look better: cull the front face
-iso.actor.property.frontface_culling = True
+mesh_actor(iso).prop.frontface_culling = True
 
 # Settings
-iso.contour.maximum_contour = 1e-07
-vcp.implicit_plane.widget.normal_to_y_axis = True
 
 
 #%% Plot field magnitude on x and y axes using matplotlib
@@ -140,3 +146,7 @@ plt.grid(True, which="major", axis="y", color="k")
 plt.grid(True, which="major", axis="x")
 
 plt.legend()
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

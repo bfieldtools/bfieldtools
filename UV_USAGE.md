@@ -25,6 +25,18 @@ uv sync --locked --extra docs
 uv run --locked --extra docs make -C docs html
 ```
 
+The HTML output is in `docs/_build/html/index.html`. PyVista renders off screen
+and Sphinx-Gallery generates a static PNG and an interactive browser scene for
+3D figures. A working VTK/OpenGL environment is required even for offscreen
+screenshots. The docs extra includes the trame viewer dependencies.
+
+External-data examples, the numerical benchmarks, and five large numerical
+optimizations are source-only pages in the default build. Set
+`BFIELDTOOLS_DOCS_FULL_GALLERY=1` to execute the large optimizations as well;
+some require a licensed MOSEK installation and can take hours. See
+`source_only_examples` in `docs/conf.py` for the full list. Smaller coil-design
+examples use open-source solvers bundled with CVXPY.
+
 To keep both development and documentation tools installed, pass
 `--extra dev --extra docs` to `uv sync` and `uv run`.
 

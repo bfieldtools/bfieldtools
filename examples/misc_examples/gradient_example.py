@@ -6,8 +6,13 @@ Minimal example visualizing the gradient of a scalar function on a mesh
 
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import vector_glyphs
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
-from mayavi import mlab
 import trimesh
 
 from bfieldtools.viz import plot_data_on_vertices
@@ -15,7 +20,7 @@ from bfieldtools.mesh_calculus import gradient
 from bfieldtools import resources
 
 # Load simple plane mesh that is centered on the origin
-file_obj = file_obj = resources.files("bfieldtools", "example_meshes/10x10_plane.obj")
+file_obj = resources.files("bfieldtools", "example_meshes/10x10_plane.obj")
 planemesh = trimesh.load(file_obj, process=False)
 
 # Generate a simple scalar function
@@ -32,19 +37,29 @@ g = gradient(vals, planemesh, rotated=False)
 
 # Plot function and its gradient as arrows
 
-scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
+plotter = scene = pv.Plotter(window_size=(800, 800))
 
-plot_data_on_vertices(planemesh, vals, ncolors=15, figure=scene)
-vecs = mlab.quiver3d(*tri_centers, *g, color=(1, 1, 1), mode="arrow", scale_factor=5)
-vecs.glyph.glyph_source.glyph_position = "center"
+plotter = plot_data_on_vertices(planemesh, vals, ncolors=15, figure=scene)
+vecs = plotter.add_mesh(
+    vector_glyphs(*tri_centers, *g, scale_factor=5, mode="arrow"),
+    color=(1, 1, 1),
+    show_scalar_bar=False,
+)
 
 #%%
 # The same but rotated (e.g. current density from a stream function)
 g = gradient(vals, planemesh, rotated=True)
 
 # Plot function and its gradient as arrows
-scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
+plotter = scene = pv.Plotter(window_size=(800, 800))
 
-plot_data_on_vertices(planemesh, vals, ncolors=15, figure=scene)
-vecs = mlab.quiver3d(*tri_centers, *g, color=(1, 1, 1), mode="arrow", scale_factor=5)
-vecs.glyph.glyph_source.glyph_position = "center"
+plotter = plot_data_on_vertices(planemesh, vals, ncolors=15, figure=scene)
+vecs = plotter.add_mesh(
+    vector_glyphs(*tri_centers, *g, scale_factor=5, mode="arrow"),
+    color=(1, 1, 1),
+    show_scalar_bar=False,
+)
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

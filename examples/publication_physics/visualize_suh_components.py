@@ -3,9 +3,14 @@ Visualize SUH components on 3 surfaces
 =====================================================
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import triangle_mesh
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
 import matplotlib.pyplot as plt
-from mayavi import mlab
 import trimesh
 
 from bfieldtools.suhtools import SuhBasis
@@ -32,12 +37,15 @@ plane.apply_transform(t)
 bunny = load_example_mesh("bunny_repaired")
 bunny.vertices -= bunny.vertices.mean(axis=0)
 
-mlab.figure(bgcolor=(1, 1, 1))
+plotter = pv.Plotter()
 for mesh in (sphere, plane, bunny):
-    s = mlab.triangular_mesh(
-        *mesh.vertices.T, mesh.faces, color=(0.5, 0.5, 0.5), opacity=0.2
+    s = plotter.add_mesh(
+        triangle_mesh(*mesh.vertices.T, mesh.faces),
+        color=(0.5, 0.5, 0.5),
+        opacity=0.2,
+        show_scalar_bar=False,
     )
-s.scene.z_plus_view()
+plotter.view_xy()
 
 Nc = 20
 basis_sphere = SuhBasis(sphere, Nc)
@@ -52,18 +60,22 @@ A = [mesh.area for mesh in (bunny, sphere, plane)]
 Nfuncs = [0, 1, 2, 3, 4, 5]
 kwargs = {"colormap": "RdBu", "ncolors": 15}
 plt.figure(figsize=(3.5, 2.5))
-for i, b in enumerate((basis_bunny, basis_sphere, basis_plane)):
-    fig = mlab.figure(bgcolor=(1, 1, 1), size=(550, 150))
+for (i, b) in enumerate((basis_bunny, basis_sphere, basis_plane)):
+    plotter = fig = pv.Plotter(window_size=(550, 150))
     s = b.plot(Nfuncs, 0.1, Ncols=6, figure=fig, **kwargs)
-    s[0].scene.parallel_projection = True
-    s[0].scene.z_plus_view()
+    plotter.parallel_projection = True
+    plotter.view_xy()
     if i == 0:
-        s[0].scene.camera.parallel_scale = 0.1
+        plotter.camera.parallel_scale = 0.1
     else:
-        s[0].scene.camera.parallel_scale = 0.13
+        plotter.camera.parallel_scale = 0.13
     plt.plot(np.sqrt(b.eigenvals * A[i]), ".-")
 
 plt.legend(("bunny", "sphere", "square"), loc="lower right")
 plt.xlabel("component index $n$")
 plt.ylabel("$\sqrt{A}k_n$")
 plt.tight_layout()
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

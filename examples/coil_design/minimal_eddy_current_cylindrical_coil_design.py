@@ -5,8 +5,13 @@ Compact example of design of a cylindrical coil surrounded by a RF shield, i.e. 
 The effects of eddy currents due to inductive interaction with the shield is minimized
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import vector_glyphs, point_cloud
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
-from mayavi import mlab
 import trimesh
 
 
@@ -17,10 +22,6 @@ from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
 
 from bfieldtools import resources
-
-from pyface.api import GUI
-
-_gui = GUI()
 
 
 # Set unit, e.g. meter or millimeter.
@@ -112,10 +113,13 @@ target_points = (
 
 
 # Plot coil, shield and target points
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-coil.plot_mesh(figure=f, opacity=0.2)
-shield.plot_mesh(figure=f, opacity=0.2)
-mlab.points3d(*target_points.T)
+plotter = f = pv.Plotter(window_size=(800, 800))
+plotter = coil.plot_mesh(figure=f, opacity=0.2)
+plotter = shield.plot_mesh(figure=f, opacity=0.2)
+plotter.add_mesh(
+    point_cloud(*target_points.T).glyph(scale=False, geom=pv.Sphere(radius=0.05 / 2)),
+    show_scalar_bar=False,
+)
 
 
 #%%
@@ -148,7 +152,7 @@ target_spec = {
 
 from scipy.linalg import eigh
 
-l, U = eigh(shield.resistance, shield.inductance, eigvals=(0, 500))
+l, U = eigh(shield.resistance, shield.inductance, subset_by_index=(0, 500))
 
 
 time = [0.001, 0.003, 0.005]
@@ -178,14 +182,12 @@ for idx, t in enumerate(time):
 #%%
 # Run QP solver to optimize stream function
 
-import mosek
 
 coil.s, prob = optimize_streamfunctions(
     coil,
     [target_spec] + induction_spec,
     objective="minimum_inductive_energy",
-    solver="MOSEK",
-    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+    solver="CLARABEL",
 )
 
 from bfieldtools.mesh_conductor import StreamFunction
@@ -199,33 +201,33 @@ shield.induced_s = StreamFunction(shield.M_coupling @ coil.s, shield)
 loops = scalar_contour(coil.mesh, coil.s.vert, N_contours=6)
 
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(600, 500))
-mlab.clf()
+plotter = f = pv.Plotter(window_size=(600, 500))
+plotter.clear()
 
-plot_3d_current_loops(loops, colors="auto", figure=f, tube_radius=0.005)
+plotter = plot_3d_current_loops(loops, colors="auto", figure=f, tube_radius=0.005)
 
 B_target = coil.B_coupling(target_points) @ coil.s
 
-mlab.quiver3d(*target_points.T, *B_target.T)
+plotter.add_mesh(vector_glyphs(*target_points.T, *B_target.T), show_scalar_bar=False)
 
-shield.plot_mesh(
-    representation="surface",
+plotter = shield.plot_mesh(
+    style="surface",
     opacity=0.5,
     cull_back=True,
     color=(0.8, 0.8, 0.8),
     figure=f,
 )
-shield.plot_mesh(
-    representation="surface",
+plotter = shield.plot_mesh(
+    style="surface",
     opacity=1,
     cull_front=True,
     color=(0.8, 0.8, 0.8),
     figure=f,
 )
 
-f.scene.camera.parallel_projection = 1
+f.camera.parallel_projection = 1
 
-f.scene.camera.zoom(1.4)
+f.camera.zoom(1.4)
 
 #%%
 # For comparison, let's see how the coils look when we ignore the conducting shield
@@ -235,8 +237,7 @@ coil.unshielded_s, coil.unshielded_prob = optimize_streamfunctions(
     coil,
     [target_spec],
     objective="minimum_inductive_energy",
-    solver="MOSEK",
-    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+    solver="CLARABEL",
 )
 
 shield.unshielded_induced_s = StreamFunction(
@@ -245,33 +246,35 @@ shield.unshielded_induced_s = StreamFunction(
 
 loops = scalar_contour(coil.mesh, coil.unshielded_s.vert, N_contours=6)
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(600, 500))
-mlab.clf()
+plotter = f = pv.Plotter(window_size=(600, 500))
+plotter.clear()
 
-plot_3d_current_loops(loops, colors="auto", figure=f, tube_radius=0.005)
+plotter = plot_3d_current_loops(loops, colors="auto", figure=f, tube_radius=0.005)
 
 B_target_unshielded = coil.B_coupling(target_points) @ coil.unshielded_s
 
-mlab.quiver3d(*target_points.T, *B_target_unshielded.T)
+plotter.add_mesh(
+    vector_glyphs(*target_points.T, *B_target_unshielded.T), show_scalar_bar=False
+)
 
-shield.plot_mesh(
-    representation="surface",
+plotter = shield.plot_mesh(
+    style="surface",
     opacity=0.5,
     cull_back=True,
     color=(0.8, 0.8, 0.8),
     figure=f,
 )
-shield.plot_mesh(
-    representation="surface",
+plotter = shield.plot_mesh(
+    style="surface",
     opacity=1,
     cull_front=True,
     color=(0.8, 0.8, 0.8),
     figure=f,
 )
 
-f.scene.camera.parallel_projection = 1
+f.camera.parallel_projection = 1
 
-f.scene.camera.zoom(1.4)
+f.camera.zoom(1.4)
 
 
 #%%
@@ -330,3 +333,7 @@ plt.legend()
 fig.tight_layout()
 
 ax.vlines([1, 5, 10, 20], 1e-4, 0.5, alpha=0.1, linewidth=3, color="r")
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

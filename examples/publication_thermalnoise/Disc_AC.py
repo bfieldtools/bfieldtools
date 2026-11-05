@@ -1,7 +1,10 @@
+import pyvista as pv
+
+pv.set_plot_theme("document")
+
 import numpy as np
 import matplotlib.pyplot as plt
 import trimesh
-from mayavi import mlab
 from bfieldtools.thermal_noise import (
     compute_current_modes,
     noise_covar,
@@ -86,3 +89,7 @@ plt.legend(frameon=False, loc=3)
 plt.xlabel("Distance (z/R)")
 plt.ylabel("3-dB cutoff frequency (Hz)")
 plt.tight_layout()
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

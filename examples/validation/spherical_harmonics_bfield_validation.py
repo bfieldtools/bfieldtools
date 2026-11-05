@@ -6,9 +6,15 @@ Spherical harmonics B-field computation validation
 
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import mesh_actor
+from bfieldtools._example_plots import triangle_mesh, vector_glyphs
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
 import trimesh
-from mayavi import mlab
 
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
 from bfieldtools.mesh_conductor import MeshConductor
@@ -44,24 +50,37 @@ alms = np.zeros_like(alms)
 B0 = (magnetic_field_coupling(coilmesh, test_points) @ weights).T
 B1 = sphtools.field(test_points, alms, blms, lmax).T
 
-mlab.figure(bgcolor=(1, 1, 1))
+plotter = pv.Plotter()
 
-s = mlab.triangular_mesh(
-    *coilmesh.vertices.T, coilmesh.faces, scalars=weights, colormap="viridis"
+s = plotter.add_mesh(
+    triangle_mesh(*coilmesh.vertices.T, coilmesh.faces),
+    scalars=weights,
+    cmap="viridis",
+    show_scalar_bar=False,
 )
-s.enable_contours = True
-s.actor.property.render_lines_as_tubes = True
-s.actor.property.line_width = 3.0
+mesh_actor(s).mapper.dataset = mesh_actor(s).mapper.dataset.contour(10)
+mesh_actor(s).prop.render_lines_as_tubes = True
+mesh_actor(s).prop.line_width = 3.0
 
-mlab.quiver3d(
-    *test_points.T, *B0, color=(1, 0, 0), scale_factor=0.5e7, vmin=0, vmax=2e-7
+plotter.add_mesh(
+    vector_glyphs(*test_points.T, *B0, scale_factor=5000000.0),
+    color=(1, 0, 0),
+    clim=[0, 2e-07],
+    show_scalar_bar=False,
 )
-mlab.quiver3d(
-    *test_points.T, *B1, color=(0, 0, 1), scale_factor=0.5e7, vmin=0, vmax=2e-7
+plotter.add_mesh(
+    vector_glyphs(*test_points.T, *B1, scale_factor=5000000.0),
+    color=(0, 0, 1),
+    clim=[0, 2e-07],
+    show_scalar_bar=False,
 )
-s.scene.isometric_view()
+plotter.view_isometric()
 
 
 print(
     "Relative RMS error", np.sqrt(np.mean((B1 - B0) ** 2)) / np.sqrt(np.mean((B0) ** 2))
 )
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

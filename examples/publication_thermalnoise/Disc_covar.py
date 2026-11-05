@@ -1,7 +1,10 @@
+import pyvista as pv
+
+pv.set_plot_theme("document")
+
 import numpy as np
 import matplotlib.pyplot as plt
 import trimesh
-from mayavi import mlab
 from bfieldtools.thermal_noise import (
     compute_current_modes,
     noise_covar,
@@ -124,3 +127,7 @@ plt.legend(frameon=False)
 plt.xlabel("x (m)")
 plt.ylabel("Noise covariance (fT$^2$/Hz)")
 plt.tight_layout()
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

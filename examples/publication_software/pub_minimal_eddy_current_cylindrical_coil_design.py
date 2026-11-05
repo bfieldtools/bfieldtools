@@ -4,13 +4,20 @@ Coil with minimal eddy currents
 Compact example of design of a cylindrical coil surrounded by a RF shield, i.e. a conductive surface.
 The effects of eddy currents due to inductive interaction with the shield is minimized
 """
+
+
+import pyvista as pv
+from bfieldtools._example_plots import mesh_actor
+from bfieldtools._example_plots import vector_glyphs, point_cloud
+
+pv.set_plot_theme("document")
+
 PLOT = True
 SAVE_FIGURES = False
 SAVE_PATH = "./Minimal eddy current coil/"
 
 
 import numpy as np
-from mayavi import mlab
 import trimesh
 
 
@@ -21,10 +28,6 @@ from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops, plot_data_on_vertices
 
 from bfieldtools import resources
-
-from pyface.api import GUI
-
-_gui = GUI()
 
 
 # Set unit, e.g. meter or millimeter.
@@ -136,10 +139,15 @@ target_points = (
 
 # Plot coil, shield and target points
 if PLOT:
-    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-    coil.plot_mesh(figure=f, opacity=0.2)
-    shield.plot_mesh(figure=f, opacity=0.2)
-    mlab.points3d(*target_points.T)
+    plotter = f = pv.Plotter(window_size=(800, 800))
+    plotter = coil.plot_mesh(figure=f, opacity=0.2)
+    plotter = shield.plot_mesh(figure=f, opacity=0.2)
+    plotter.add_mesh(
+        point_cloud(*target_points.T).glyph(
+            scale=False, geom=pv.Sphere(radius=0.05 / 2)
+        ),
+        show_scalar_bar=False,
+    )
 
 
 #%%
@@ -172,7 +180,7 @@ target_spec = {
 
 from scipy.linalg import eigh
 
-l, U = eigh(shield.resistance, shield.inductance, eigvals=(0, 500))
+l, U = eigh(shield.resistance, shield.inductance, subset_by_index=(0, 500))
 #
 # U = np.zeros((shield.inductance.shape[0], len(li)))
 # U[shield.inner_verts, :] = Ui
@@ -218,6 +226,8 @@ for idx, t in enumerate(time):
 #%%
 # Run QP solver
 
+
+# This optimization requires a licensed MOSEK installation.
 import mosek
 
 coil.s, prob = optimize_streamfunctions(
@@ -242,46 +252,32 @@ loops = scalar_contour(coil.mesh, coil.s.vert, N_contours=6)
 
 # loops = [loop for loop in loops if loop is not None]
 if PLOT:
-    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(600, 500))
-    mlab.clf()
-
-    plot_3d_current_loops(loops, colors="auto", figure=f, tube_radius=0.005)
-
+    plotter = f = pv.Plotter(window_size=(600, 500))
+    plotter.clear()
+    plotter = plot_3d_current_loops(loops, colors="auto", figure=f, tube_radius=0.005)
     B_target = coil.B_coupling(target_points) @ coil.s
-
-    mlab.quiver3d(*target_points.T, *B_target.T)
-
-    #    plot_data_on_vertices(shield.mesh, shield.induced_s.vert, ncolors=256, figure=f, opacity=0.5, cull_back=True)
-    #    plot_data_on_vertices(shield.mesh, shield.induced_s.vert, ncolors=256, figure=f, opacity=1, cull_front=True)
-
-    shield.plot_mesh(
-        representation="surface",
+    plotter.add_mesh(
+        vector_glyphs(*target_points.T, *B_target.T), show_scalar_bar=False
+    )
+    plotter = shield.plot_mesh(
+        style="surface",
         opacity=0.5,
         cull_back=True,
         color=(0.8, 0.8, 0.8),
         figure=f,
     )
-    shield.plot_mesh(
-        representation="surface",
+    plotter = shield.plot_mesh(
+        style="surface",
         opacity=1,
         cull_front=True,
         color=(0.8, 0.8, 0.8),
         figure=f,
     )
-
-    f.scene.camera.parallel_projection = 1
-
-    f.scene.camera.zoom(1.4)
-
-    while f.scene.light_manager is None:
-        _gui.process_events()
-
+    f.camera.parallel_projection = 1
+    f.camera.zoom(1.4)
     if SAVE_FIGURES:
-        mlab.savefig(SAVE_PATH + "eddy_yes.png", figure=f, magnification=4)
-        mlab.close()
-# mlab.triangular_mesh(*shield.mesh.vertices.T, shield.mesh.faces, scalars=shield.induced_I)
-
-# mlab.title('Coils which minimize the transient effects of conductive shield')
+        f.screenshot(SAVE_PATH + "eddy_yes.png", scale=4)
+        plotter.close()
 
 
 #%%
@@ -304,7 +300,7 @@ points[:, 1] = Y.flatten()
 B = coil.B_coupling(points) @ coil.s
 
 
-mlab.quiver3d(*points.T, *B.T)
+plotter.add_mesh(vector_glyphs(*points.T, *B.T), show_scalar_bar=False)
 
 # U = U.reshape(x.shape[0], y.shape[0])
 # B = B.T[:2].reshape(2, x.shape[0], y.shape[0])
@@ -352,43 +348,32 @@ shield.unshielded_induced_s = StreamFunction(
 
 loops = scalar_contour(coil.mesh, coil.unshielded_s.vert, N_contours=6)
 if PLOT:
-    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(600, 500))
-    mlab.clf()
-
-    plot_3d_current_loops(loops, colors="auto", figure=f, tube_radius=0.005)
-
+    plotter = f = pv.Plotter(window_size=(600, 500))
+    plotter.clear()
+    plotter = plot_3d_current_loops(loops, colors="auto", figure=f, tube_radius=0.005)
     B_target_unshielded = coil.B_coupling(target_points) @ coil.unshielded_s
-
-    mlab.quiver3d(*target_points.T, *B_target_unshielded.T)
-    #
-    #    plot_data_on_vertices(shield.mesh, shield.unshielded_induced_s.vert,  ncolors=256, figure=f, opacity=0.5, cull_back=True)
-    #    plot_data_on_vertices(shield.mesh, shield.unshielded_induced_s.vert, ncolors=256, figure=f, opacity=1, cull_front=True)
-
-    shield.plot_mesh(
-        representation="surface",
+    plotter.add_mesh(
+        vector_glyphs(*target_points.T, *B_target_unshielded.T), show_scalar_bar=False
+    )
+    plotter = shield.plot_mesh(
+        style="surface",
         opacity=0.5,
         cull_back=True,
         color=(0.8, 0.8, 0.8),
         figure=f,
     )
-    shield.plot_mesh(
-        representation="surface",
+    plotter = shield.plot_mesh(
+        style="surface",
         opacity=1,
         cull_front=True,
         color=(0.8, 0.8, 0.8),
         figure=f,
     )
-
-    f.scene.camera.parallel_projection = 1
-
-    f.scene.camera.zoom(1.4)
-
-    while f.scene.light_manager is None:
-        _gui.process_events()
-
+    f.camera.parallel_projection = 1
+    f.camera.zoom(1.4)
     if SAVE_FIGURES:
-        mlab.savefig(SAVE_PATH + "eddy_no.png", figure=f, magnification=4)
-        mlab.close()
+        f.screenshot(SAVE_PATH + "eddy_no.png", scale=4)
+        plotter.close()
 
 
 #%%
@@ -406,7 +391,7 @@ points[:, 1] = Y.flatten()
 B = coil.B_coupling(points) @ coil.unshielded_s
 
 
-mlab.quiver3d(*points.T, *B.T)
+plotter.add_mesh(vector_glyphs(*points.T, *B.T), show_scalar_bar=False)
 
 #%%
 # Finally, let's compare the time-courses
@@ -476,33 +461,17 @@ if PLOT and SAVE_FIGURES:
 
 from bfieldtools.mesh_calculus import gradient
 
-from mayavi.api import Engine
-
-engine = Engine()
-engine.start()
-
 
 if PLOT and SAVE_FIGURES:
-
     for plot_time_idx in [2, 10, 20, 40]:
-        # EDDY CURRENTS MINIMIZED
-        f = mlab.figure(
-            None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(600, 500)
+        plotter = f = pv.Plotter(window_size=(600, 500))
+        plotter.clear()
+        plotter = shield.plot_mesh(
+            style="surface", color=(0.8, 0.8, 0.8), opacity=1, figure=f
         )
-
-        mlab.test_points3d()
-        mlab.clf()
-
-        shield.plot_mesh(
-            representation="surface", color=(0.8, 0.8, 0.8), opacity=1, figure=f
-        )
-
         s = np.zeros((shield.mesh.vertices.shape[0],))
         s[shield.inner_vertices] = time_decay[plot_time_idx] @ shield.induced_s
-
-        #        mlab.quiver3d(*shield.mesh.triangles_center.T, *gradient(s, shield.mesh, rotated=True), colormap='viridis')
-
-        plot_data_on_vertices(
+        plotter = plot_data_on_vertices(
             shield.mesh,
             s,
             ncolors=256,
@@ -511,49 +480,28 @@ if PLOT and SAVE_FIGURES:
             cull_back=False,
             colormap="RdBu",
         )
-
         surface1 = engine.scenes[0].children[1].children[0].children[0].children[0]
-        surface1.enable_contours = True
-        surface1.contour.number_of_contours = 20
-        surface1.actor.property.line_width = 10.0
-
-        f.scene.camera.parallel_projection = 1
-        f.scene.isometric_view()
-
-        #        mlab.view(90,0)
-        #        mlab.roll(180)
-        f.scene.camera.zoom(1.4)
-
-        while f.scene.light_manager is None:
-            _gui.process_events()
-
-        f.scene.light_manager.light_mode = "raymond"
-
-        mlab.savefig(
-            SAVE_PATH + "shield_eddy_yes_time_%.3f.png" % time[plot_time_idx],
-            figure=f,
-            magnification=2,
+        mesh_actor(surface1).mapper.dataset = mesh_actor(
+            surface1
+        ).mapper.dataset.contour(10)
+        mesh_actor(surface1).prop.line_width = 10.0
+        f.camera.parallel_projection = 1
+        f.view_isometric()
+        f.camera.zoom(1.4)
+        f.screenshot(
+            SAVE_PATH + "shield_eddy_yes_time_%.3f.png" % time[plot_time_idx], scale=2
         )
-        mlab.close()
-
+        plotter.close()
     for plot_time_idx in [2, 10, 20, 40]:
-        # EDDY CURRENTS IGNORED
-        f = mlab.figure(
-            None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(600, 500)
+        plotter = f = pv.Plotter(window_size=(600, 500))
+        plotter = shield.plot_mesh(
+            style="surface", color=(0.8, 0.8, 0.8), opacity=1, figure=f
         )
-
-        shield.plot_mesh(
-            representation="surface", color=(0.8, 0.8, 0.8), opacity=1, figure=f
-        )
-
         s_u = np.zeros((shield.mesh.vertices.shape[0],))
         s_u[shield.inner_vertices] = (
             time_decay[plot_time_idx] @ shield.unshielded_induced_s
         )
-
-        #        mlab.quiver3d(*shield.mesh.triangles_center.T, *gradient(s_u, shield.mesh, rotated=True), colormap='viridis')
-
-        plot_data_on_vertices(
+        plotter = plot_data_on_vertices(
             shield.mesh,
             s_u,
             ncolors=256,
@@ -562,27 +510,19 @@ if PLOT and SAVE_FIGURES:
             cull_back=False,
             colormap="RdBu",
         )
-
         surface1 = engine.scenes[0].children[1].children[0].children[0].children[0]
-        surface1.enable_contours = True
-        surface1.contour.number_of_contours = 20
-        surface1.actor.property.line_width = 10.0
-
-        f.scene.camera.parallel_projection = 1
-        f.scene.isometric_view()
-
-        #        mlab.view(90,0)
-        #        mlab.roll(180)
-        f.scene.camera.zoom(1.4)
-
-        while f.scene.light_manager is None:
-            _gui.process_events()
-
-        f.scene.light_manager.light_mode = "raymond"
-
-        mlab.savefig(
-            SAVE_PATH + "shield_eddy_no_time_%.3f.png" % time[plot_time_idx],
-            figure=f,
-            magnification=2,
+        mesh_actor(surface1).mapper.dataset = mesh_actor(
+            surface1
+        ).mapper.dataset.contour(10)
+        mesh_actor(surface1).prop.line_width = 10.0
+        f.camera.parallel_projection = 1
+        f.view_isometric()
+        f.camera.zoom(1.4)
+        f.screenshot(
+            SAVE_PATH + "shield_eddy_no_time_%.3f.png" % time[plot_time_idx], scale=2
         )
-        mlab.close()
+        plotter.close()
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

@@ -7,10 +7,14 @@ region between the two coil planes.
 
 """
 
+import pyvista as pv
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 
-# from mayavi import mlab
 import trimesh
 
 
@@ -108,7 +112,7 @@ coil.s, prob = optimize_streamfunctions(
     coil,
     [target_spec, stray_spec],
     objective="minimum_ohmic_power",
-    # solver="MOSEK",
+    # solver="CLARABEL",
     # solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
 )
 
@@ -116,7 +120,7 @@ coil.s, prob = optimize_streamfunctions(
 #%%
 # Plot the optimized stream function, then discretize it and plot coil windings and the resultant magnetic field
 
-coil.s.plot()
+plotter = coil.s.plot()
 
 loops = coil.s.discretize(N_contours=10)
 
@@ -125,8 +129,6 @@ fig = loops.plot_loops()
 B_target = loops.magnetic_field(target_points)
 
 fig.add_arrows(target_points, B_target, mag=1e6)
-
-# mlab.quiver3d(*target_points.T, *B_target.T)
 
 
 #%%
@@ -144,7 +146,7 @@ coil.s2 = optimize_lsq(
 #%%
 # Plot the optimized stream function, then discretize it and plot coil windings and the resultant magnetic field
 
-coil.s2.plot()
+plotter = coil.s2.plot()
 
 loops2 = coil.s2.discretize(N_contours=10)
 
@@ -197,3 +199,7 @@ plt.plot([-5, 5], [-3, -3], "k", linewidth=3, alpha=1)
 plt.plot([-5, 5], [3, 3], "k", linewidth=3, alpha=1)
 
 plt.tight_layout()
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

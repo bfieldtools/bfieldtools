@@ -1,8 +1,13 @@
+import pyvista as pv
+from bfieldtools._example_plots import mesh_actor
+from bfieldtools._example_plots import triangle_mesh
+
+pv.set_plot_theme("document")
+
 #%%
 import numpy as np
 import matplotlib.pyplot as plt
 import trimesh
-from mayavi import mlab
 from scipy.linalg import eigh
 
 from bfieldtools.thermal_noise import (
@@ -51,7 +56,6 @@ for i in range(Niters):
         mesh = trimesh.load(
             resources.files("bfieldtools", "example_meshes/disc_finer.stl")
         )
-
     if i == 1:
         mesh = trimesh.load(
             resources.files("bfieldtools", "example_meshes/disc_extrafine.stl")
@@ -61,10 +65,8 @@ for i in range(Niters):
             resources.files("bfieldtools", "example_meshes/disc_extremelyfine.stl")
         )
     B_coupling = magnetic_field_coupling(mesh, fp, analytic=True)
-
     Nfaces[i] = mesh.faces.shape[0]
-
-    vl, u = compute_current_modes(
+    (vl, u) = compute_current_modes(
         obj=mesh,
         T=T,
         resistivity=1 / sigma,
@@ -72,78 +74,57 @@ for i in range(Niters):
         mode="AC",
         return_eigenvals=True,
     )
-
-    scene = mlab.figure(
-        None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800)
-    )
-
+    plotter = scene = pv.Plotter(window_size=(800, 800))
     visualize_current_modes(mesh, vl[:, :, 0], 20, 5, contours=True)
-
     for m in range(Nmods):
-        scene = mlab.figure(
-            figure=m, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800)
-        )
-
-        s = mlab.triangular_mesh(
-            *mesh.vertices.T,
-            mesh.faces,
+        plotter = scene = pv.Plotter(window_size=(800, 800))
+        s = plotter.add_mesh(
+            triangle_mesh(*mesh.vertices.T, mesh.faces),
             scalars=vl[:, modinds[m], 0],
-            colormap="bwr",
-            line_width=12
+            line_width=12,
+            cmap="bwr",
+            show_scalar_bar=False,
         )
         limit = np.max(np.abs(vl[:, modinds[m], 0]))
-        s.module_manager.scalar_lut_manager.data_range = np.array([-limit, limit])
-        s.enable_contours = True
+        mesh_actor(s).mapper.scalar_range = np.array([-limit, limit])
+        mesh_actor(s).mapper.dataset = mesh_actor(s).mapper.dataset.contour(10)
         surface = scene.children[0].children[0].children[0].children[0]
-        surface.contour.number_of_contours = 10
-        scene.scene.z_plus_view()
-        scene.scene.camera.position = [
+        scene.view_xy()
+        scene.camera.position = [
             -5.513350804725592e-05,
             -1.691800821806977e-05,
             4.020380431659883,
         ]
-        scene.scene.camera.focal_point = [
-            -5.513350804725592e-05,
-            -1.691800821806977e-05,
-            0.0,
-        ]
-        scene.scene.camera.view_angle = 30.0
-        scene.scene.camera.view_up = [0.0, 1.0, 0.0]
-        scene.scene.camera.clipping_range = [3.7658023470473827, 4.350539189462033]
-        scene.scene.camera.compute_view_plane_normal()
-        scene.scene.render()
-
+        scene.camera.focal_point = [-5.513350804725592e-05, -1.691800821806977e-05, 0.0]
+        scene.camera.view_angle = 30.0
+        scene.camera.up = [0.0, 1.0, 0.0]
+        scene.camera.clipping_range = [3.7658023470473827, 4.350539189462033]
+        scene.render()
     for m in range(Nmods):
-        mlab.figure(m)
-
-    mlab.close(all=True)
-
-    scene = mlab.figure(
-        None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800)
+        plotter = m
+    pv.close_all()
+    plotter = scene = pv.Plotter(window_size=(800, 800))
+    s = plotter.add_mesh(
+        triangle_mesh(*mesh.vertices.T, mesh.faces), show_scalar_bar=False
     )
-    s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
-    scene.scene.z_minus_view()
+    scene.view_xy(negative=True)
     surface = scene.children[0].children[0].children[0].children[0]
-    surface.actor.property.representation = "wireframe"
-    surface.actor.mapper.scalar_visibility = False
-    scene.scene.camera.position = [0.0, 0.0, -4.515786458791532]
-    scene.scene.camera.focal_point = [0.0, 0.0, 0.0]
-    scene.scene.camera.view_angle = 30.0
-    scene.scene.camera.view_up = [0.0, 1.0, 0.0]
-    scene.scene.camera.clipping_range = [4.229838328573525, 4.886628590046963]
-    scene.scene.camera.compute_view_plane_normal()
-    scene.scene.render()
-
+    mesh_actor(surface).prop.representation = "wireframe"
+    mesh_actor(surface).mapper.scalar_visibility = False
+    scene.camera.position = [0.0, 0.0, -4.515786458791532]
+    scene.camera.focal_point = [0.0, 0.0, 0.0]
+    scene.camera.view_angle = 30.0
+    scene.camera.up = [0.0, 1.0, 0.0]
+    scene.camera.clipping_range = [4.229838328573525, 4.886628590046963]
+    scene.render()
     Bvar = noise_var(B_coupling, vl)
     Bn[i] = np.sqrt(Bvar[:, 2, 0])
-
     if i == 0:
         u0 = u
     if i == 1:
         u1 = u
     if i == 2:
         u2 = u
-
     print(i)
 
 figw = 3.75
@@ -237,3 +218,7 @@ plt.xlabel("Number of modes")
 plt.ylabel("Relative error (%)")
 plt.legend(frameon=False)
 plt.tight_layout()
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()
