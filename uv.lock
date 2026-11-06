@@ -534,7 +534,7 @@ requires-dist = [
     { name = "black", marker = "extra == 'dev'", specifier = "==22.3.0" },
     { name = "cvxopt" },
     { name = "cvxpy", specifier = ">=1.1.14" },
-    { name = "matplotlib" },
+    { name = "matplotlib", specifier = ">=3.3" },
     { name = "mne", marker = "extra == 'docs'" },
     { name = "numpy" },
     { name = "numpydoc", marker = "extra == 'docs'" },

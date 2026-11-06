@@ -234,7 +234,7 @@ plt.plot(cc1a[:, 0], cc1a[:, 1], linewidth=3, color="gray")
 plt.plot(cc1b[:, 0], cc1b[:, 1], linewidth=3, color="gray")
 plt.axis("image")
 plt.axis("off")
-xlims = p.ax.get_xlim()
+xlims = p.axes.get_xlim()
 plt.figure()
 p = plt.contourf(
     X,
@@ -251,7 +251,7 @@ plt.plot(cc1b[:, 0], cc1b[:, 1], linewidth=3, color="gray")
 plt.plot(cc2[:, 0], cc2[:, 1], linewidth=3, color="gray")
 plt.axis("image")
 plt.axis("off")
-p.ax.set_xlim(xlims)
+p.axes.set_xlim(xlims)
 plt.figure()
 p = plt.contourf(
     X,
@@ -268,7 +268,7 @@ plt.plot(cc1b[:, 0], cc1b[:, 1], linewidth=3, color="gray")
 plt.plot(cc2[:, 0], cc2[:, 1], linewidth=3, color="gray")
 plt.axis("image")
 plt.axis("off")
-p.ax.set_xlim(xlims)
+p.axes.set_xlim(xlims)
 
 # Display the assembled scene (Sphinx-Gallery captures it during docs builds).
 if "plotter" in globals() and not plotter._closed:
