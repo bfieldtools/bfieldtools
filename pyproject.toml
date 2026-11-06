@@ -54,6 +54,7 @@ docs = [
     "pyvista[jupyter]>=0.48,<0.49; python_version >= '3.10'",
     "sphinx-design",
     "rtree",
+    "seaborn",
     "mne",
     "sphinx",
     "sphinx-gallery",

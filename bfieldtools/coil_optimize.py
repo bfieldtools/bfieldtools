@@ -286,7 +286,6 @@ def optimize_streamfunctions(
 
         # Assign data to final variables
         PP = 0.5 * (quadratic_matrix + quadratic_matrix.T)
-        P = np.linalg.cholesky(PP).T
 
         G = constraint_matrix / s[0]
 
@@ -294,7 +293,8 @@ def optimize_streamfunctions(
         ub = upper_bounds
 
         # Formulate problem and constraints
-        objective = cp.Minimize((1 / 2) * cp.sum_squares(P @ x))
+        # Pass the quadratic matrix directly, avoiding auxiliary residual variables.
+        objective = cp.Minimize((1 / 2) * cp.quad_form(x, PP))
         constraints = [G @ x >= lb, G @ x <= ub]
 
         problem = cp.Problem(objective, constraints)

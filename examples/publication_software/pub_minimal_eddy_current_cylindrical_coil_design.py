@@ -227,15 +227,11 @@ for idx, t in enumerate(time):
 # Run QP solver
 
 
-# This optimization requires a licensed MOSEK installation.
-import mosek
-
 coil.s, prob = optimize_streamfunctions(
     coil,
     [target_spec] + induction_spec,
     objective="minimum_inductive_energy",
-    solver="MOSEK",
-    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+    solver="CLARABEL",
 )
 
 from bfieldtools.mesh_conductor import StreamFunction
@@ -338,8 +334,7 @@ coil.unshielded_s, coil.unshielded_prob = optimize_streamfunctions(
     coil,
     [target_spec],
     objective="minimum_inductive_energy",
-    solver="MOSEK",
-    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+    solver="CLARABEL",
 )
 
 shield.unshielded_induced_s = StreamFunction(

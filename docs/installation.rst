@@ -48,8 +48,8 @@ The output is in ``docs/_build/html``. The documentation build renders plots
 off screen and needs a working VTK/OpenGL rendering environment. External-data
 examples, the numerical benchmarks, and large solver-dependent optimizations are
 included as source-only pages in the default build. Set
-``BFIELDTOOLS_DOCS_FULL_GALLERY=1`` to run the large optimizations (some require
-MOSEK); see ``source_only_examples`` in ``docs/conf.py``.
+``BFIELDTOOLS_DOCS_FULL_GALLERY=1`` to run the large optimizations using
+open-source solvers; see ``source_only_examples`` in ``docs/conf.py``.
 
 From source
 -----------
