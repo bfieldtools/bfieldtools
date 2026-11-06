@@ -1,3 +1,11 @@
+"""
+Frequency dependence of disc thermal noise
+==========================================
+
+Compute thermal magnetic noise spectra and cutoff frequencies
+above a thin conducting disc.
+"""
+
 import pyvista as pv
 
 pv.set_plot_theme("document")

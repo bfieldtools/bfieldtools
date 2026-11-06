@@ -1,3 +1,13 @@
+"""
+SQUID noise from a conducting cylinder
+======================================
+
+Compute thermal noise in SQUID pickup loops near a conducting cylinder.
+
+This example requires ``left_auditory-ave.fif`` from the MNE example results.
+Set ``SAVE_DIR`` to its directory before running the script.
+"""
+
 import pyvista as pv
 from bfieldtools._example_plots import triangle_mesh, vector_glyphs, set_view
 

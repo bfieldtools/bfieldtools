@@ -1,3 +1,11 @@
+"""
+Thermal noise inside conducting spheres
+=======================================
+
+Compare thermal magnetic noise at the center of conducting spheres
+with an analytical result over a range of radii.
+"""
+
 import pyvista as pv
 from bfieldtools._example_plots import triangle_mesh
 
@@ -63,7 +71,7 @@ for i in range(Np):
 plotter = scene = pv.Plotter(window_size=(800, 800))
 s = plotter.add_mesh(triangle_mesh(*mesh.vertices.T, mesh.faces), show_scalar_bar=False)
 scene.view_xy(negative=True)
-s.prop.representation = "wireframe"
+s.prop.style = "wireframe"
 s.mapper.scalar_visibility = False
 scene.camera.position = [0.0, 0.0, -5.530686305704514]
 scene.camera.focal_point = [0.0, 0.0, 0.0]

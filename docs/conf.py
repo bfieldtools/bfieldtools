@@ -15,6 +15,7 @@ import re
 import sys
 
 sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath("_ext"))
 
 
 # -- Project information -----------------------------------------------------
@@ -107,6 +108,7 @@ extensions = [
     "sphinxcontrib.bibtex",
     "sphinx.ext.mathjax",
     "pyvista.ext.viewer_directive",
+    "standalone_viewer",
     "sphinx_design",
 ]
 
@@ -155,6 +157,8 @@ source_only_examples = [
     "mne_interpolation.py",
     "equiv_surface_current_interference_rejection.py",
     "suh_sph_interpolation.py",
+    "SQUID_cylinder.py",
+    "SQUID_plane.py",
     "mumetal_shield_example.py",
     "computation_time.py",
     "validate_suh_shift_invert.py",

@@ -1,3 +1,11 @@
+"""
+Spatial covariance of disc thermal noise
+========================================
+
+Compute the spatial covariance of thermal magnetic noise
+above a conducting disc at several frequencies.
+"""
+
 import pyvista as pv
 
 pv.set_plot_theme("document")

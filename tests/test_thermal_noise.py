@@ -17,6 +17,24 @@ from numpy.testing import (
 from .test_mesh_conductor import _fake_mesh_conductor
 
 
+@pytest.mark.parametrize("contours", [False, True])
+def test_visualize_zero_current_mode(monkeypatch, contours):
+    import pyvista as pv
+
+    monkeypatch.setattr(pv.Plotter, "show", lambda *args, **kwargs: None)
+    mesh = trimesh.creation.icosphere(subdivisions=0)
+    modes = np.zeros((len(mesh.vertices), 1))
+    figure = thermal_noise.visualize_current_modes(
+        mesh, modes, Nmodes=1, scale=1, contours=contours
+    )
+    try:
+        actors = [a for a in figure.actors.values() if isinstance(a, pv.Actor)]
+        assert len(actors) == 1
+        assert actors[0].mapper.dataset.n_points == len(mesh.vertices)
+    finally:
+        figure.close()
+
+
 def test_compute_modes():
 
     obj = _fake_mesh_conductor("unit_disc")

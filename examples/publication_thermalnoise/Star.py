@@ -1,3 +1,11 @@
+"""
+Thermal noise of a star-shaped conductor
+========================================
+
+Visualize current modes and compute thermal magnetic noise
+for a star-shaped conducting surface.
+"""
+
 import pyvista as pv
 from bfieldtools._example_plots import mesh_actor
 from bfieldtools._example_plots import triangle_mesh
@@ -74,7 +82,7 @@ for n in range(Nmodes):
             show_scalar_bar=False,
         )
         scene.view_xy(negative=True)
-        s.prop.representation = "wireframe"
+        s.prop.style = "wireframe"
     else:
         s = plotter.add_mesh(
             triangle_mesh(*points.T, mesh.faces),
@@ -166,9 +174,7 @@ for ax_idx in range(5):
         Y[:, :, ax_idx],
         Bgrid[:, :, ax_idx],
         cmap=cmap,
-        vmin=vmin,
-        vmax=vmax,
-        norm=colors.LogNorm(),
+        norm=colors.LogNorm(vmin=vmin, vmax=vmax),
         shading="gouraud",
     )
     ax.axis("equal")
@@ -193,9 +199,7 @@ for ax_idx in range(5):
         Y[:, :, ax_idx],
         Bgrid[:, :, ax_idx],
         cmap=cmap,
-        vmin=vmin,
-        vmax=vmax,
-        norm=colors.LogNorm(),
+        norm=colors.LogNorm(vmin=vmin, vmax=vmax),
         shading="gouraud",
     )
     ax.axis("equal")
@@ -220,9 +224,7 @@ for ax_idx in range(5):
         Y[:, :, ax_idx],
         Bgrid[:, :, ax_idx],
         cmap=cmap,
-        vmin=vmin,
-        vmax=vmax,
-        norm=colors.LogNorm(),
+        norm=colors.LogNorm(vmin=vmin, vmax=vmax),
         shading="gouraud",
     )
     ax.axis("equal")
@@ -247,9 +249,7 @@ for ax_idx in range(5):
         Y[:, :, ax_idx],
         Bgrid[:, :, ax_idx],
         cmap=cmap,
-        vmin=vmin,
-        vmax=vmax,
-        norm=colors.LogNorm(),
+        norm=colors.LogNorm(vmin=vmin, vmax=vmax),
         shading="gouraud",
     )
     ax.axis("equal")

@@ -29,6 +29,8 @@ The HTML output is in `docs/_build/html/index.html`. PyVista renders off screen
 and Sphinx-Gallery generates a static PNG and an interactive browser scene for
 3D figures. A working VTK/OpenGL environment is required even for offscreen
 screenshots. The docs extra includes the trame viewer dependencies.
+Scene data is embedded in standalone viewer pages, so the interactive scenes
+also work when opening the built HTML files directly without a local web server.
 
 External-data examples, the numerical benchmarks, and five large numerical
 optimizations are source-only pages in the default build. Set

@@ -1,3 +1,11 @@
+"""
+Thermal noise above a conducting disc
+=====================================
+
+Study mesh convergence and current modes for thermal magnetic noise
+above a thin conducting disc.
+"""
+
 import pyvista as pv
 from bfieldtools._example_plots import mesh_actor
 from bfieldtools._example_plots import triangle_mesh
@@ -105,7 +113,7 @@ for i in range(Niters):
         triangle_mesh(*mesh.vertices.T, mesh.faces), show_scalar_bar=False
     )
     scene.view_xy(negative=True)
-    s.prop.representation = "wireframe"
+    s.prop.style = "wireframe"
     s.mapper.scalar_visibility = False
     scene.camera.position = [0.0, 0.0, -4.515786458791532]
     scene.camera.focal_point = [0.0, 0.0, 0.0]

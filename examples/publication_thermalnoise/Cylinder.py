@@ -1,3 +1,11 @@
+"""
+Thermal noise inside a conducting cylinder
+==========================================
+
+Compare numerical thermal magnetic noise inside a thin conducting cylinder
+with an analytical result.
+"""
+
 import pyvista as pv
 from bfieldtools._example_plots import triangle_mesh
 
@@ -54,7 +62,7 @@ visualize_current_modes(mesh, vl[:, :, 0], 8, 1)
 plotter = scene = pv.Plotter(window_size=(800, 800))
 s = plotter.add_mesh(triangle_mesh(*mesh.vertices.T, mesh.faces), show_scalar_bar=False)
 scene.view_xy(negative=True)
-s.prop.representation = "wireframe"
+s.prop.style = "wireframe"
 s.mapper.scalar_visibility = False
 scene.view_isometric()
 scene.render()
