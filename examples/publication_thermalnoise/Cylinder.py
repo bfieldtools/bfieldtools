@@ -1,5 +1,4 @@
 import pyvista as pv
-from bfieldtools._example_plots import mesh_actor
 from bfieldtools._example_plots import triangle_mesh
 
 pv.set_plot_theme("document")
@@ -55,9 +54,8 @@ visualize_current_modes(mesh, vl[:, :, 0], 8, 1)
 plotter = scene = pv.Plotter(window_size=(800, 800))
 s = plotter.add_mesh(triangle_mesh(*mesh.vertices.T, mesh.faces), show_scalar_bar=False)
 scene.view_xy(negative=True)
-surface = scene.children[0].children[0].children[0].children[0]
-mesh_actor(surface).prop.representation = "wireframe"
-mesh_actor(surface).mapper.scalar_visibility = False
+s.prop.representation = "wireframe"
+s.mapper.scalar_visibility = False
 scene.view_isometric()
 scene.render()
 

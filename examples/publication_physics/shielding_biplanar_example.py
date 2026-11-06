@@ -105,8 +105,6 @@ I2inner = P @ I1inner
 s1 = StreamFunction(I1inner, coil1)
 s2 = StreamFunction(I2inner, coil2)
 
-# s.enable_contours=True
-# s.enable_contours=True
 
 B1 = CB1 @ s1
 B2 = CB2 @ s2

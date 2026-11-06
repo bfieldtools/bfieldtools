@@ -475,11 +475,9 @@ if PLOT and SAVE_FIGURES:
             cull_back=False,
             colormap="RdBu",
         )
-        surface1 = engine.scenes[0].children[1].children[0].children[0].children[0]
-        mesh_actor(surface1).mapper.dataset = mesh_actor(
-            surface1
-        ).mapper.dataset.contour(10)
-        mesh_actor(surface1).prop.line_width = 10.0
+        surface1 = mesh_actor(plotter)
+        surface1.mapper.dataset = surface1.mapper.dataset.contour(10)
+        surface1.prop.line_width = 10.0
         f.camera.parallel_projection = 1
         f.view_isometric()
         f.camera.zoom(1.4)
@@ -505,11 +503,9 @@ if PLOT and SAVE_FIGURES:
             cull_back=False,
             colormap="RdBu",
         )
-        surface1 = engine.scenes[0].children[1].children[0].children[0].children[0]
-        mesh_actor(surface1).mapper.dataset = mesh_actor(
-            surface1
-        ).mapper.dataset.contour(10)
-        mesh_actor(surface1).prop.line_width = 10.0
+        surface1 = mesh_actor(plotter)
+        surface1.mapper.dataset = surface1.mapper.dataset.contour(10)
+        surface1.prop.line_width = 10.0
         f.camera.parallel_projection = 1
         f.view_isometric()
         f.camera.zoom(1.4)

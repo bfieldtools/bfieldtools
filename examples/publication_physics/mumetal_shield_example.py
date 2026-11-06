@@ -94,9 +94,6 @@ plotter = s2 = sprim.plot(True, 20)
 mesh_actor(s2).mapper.scalar_visibility = False
 mesh_actor(s2).prop.line_width = 1.2
 #                          colormap='RdBu')
-# s2.enable_contours = True
-# s2.contour.filled_contours = True
-# s2.contour.number_of_contours = 20
 mesh_actor(s2).prop.render_lines_as_tubes = True
 plot_plane()
 scene = plotter
@@ -163,8 +160,6 @@ plotter.add_mesh(
     color=(1, 1, 1),
     show_scalar_bar=False,
 )
-# s1.contour.filled_contours = True
-# s1.contour.number_of_contours = 30
 
 scene = plotter
 plot_plane()

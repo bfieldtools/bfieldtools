@@ -74,8 +74,7 @@ for n in range(Nmodes):
             show_scalar_bar=False,
         )
         scene.view_xy(negative=True)
-        surface = scene.children[0].children[0].children[0].children[0]
-        mesh_actor(surface).prop.representation = "wireframe"
+        s.prop.representation = "wireframe"
     else:
         s = plotter.add_mesh(
             triangle_mesh(*points.T, mesh.faces),

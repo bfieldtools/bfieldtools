@@ -252,7 +252,9 @@ rbf_field = rbf_f(helmet2d.vertices[:, 0], helmet2d.vertices[:, 1])
 
 vmin = -7e-13
 vmax = 7e-13
-plotter = f = plot_data_on_vertices(helmet2d, rbf_field, ncolors=15, vmin=vmin, vmax=vmax)
+plotter = f = plot_data_on_vertices(
+    helmet2d, rbf_field, ncolors=15, vmin=vmin, vmax=vmax
+)
 plotter.add_mesh(
     point_cloud(puv[:, 0], puv[:, 1], 0 * puv[:, 0]).glyph(
         scale=False, geom=pv.Sphere(radius=0.1 / 2)
@@ -268,7 +270,9 @@ suh_field = (
 )
 
 
-plotter = f = plot_data_on_vertices(helmet2d, suh_field, ncolors=15, vmin=vmin, vmax=vmax)
+plotter = f = plot_data_on_vertices(
+    helmet2d, suh_field, ncolors=15, vmin=vmin, vmax=vmax
+)
 plotter.add_mesh(
     point_cloud(puv[:, 0], puv[:, 1], 0 * puv[:, 0]).glyph(
         scale=False, geom=pv.Sphere(radius=0.1 / 2)
@@ -286,7 +290,9 @@ Bca, Bcb = sphfield(helmet.vertices, lmax, normalization="energy", R=R)
 sph_field = np.einsum("ijk,ij->ik", Bca, helmet.vertex_normals) @ alpha
 
 
-plotter = f = plot_data_on_vertices(helmet2d, sph_field, ncolors=15, vmin=vmin, vmax=vmax)
+plotter = f = plot_data_on_vertices(
+    helmet2d, sph_field, ncolors=15, vmin=vmin, vmax=vmax
+)
 plotter.add_mesh(
     point_cloud(puv[:, 0], puv[:, 1], 0 * puv[:, 0]).glyph(
         scale=False, geom=pv.Sphere(radius=0.1 / 2)

@@ -88,7 +88,6 @@ for i in range(Niters):
         limit = np.max(np.abs(vl[:, modinds[m], 0]))
         mesh_actor(s).mapper.scalar_range = np.array([-limit, limit])
         mesh_actor(s).mapper.dataset = mesh_actor(s).mapper.dataset.contour(10)
-        surface = scene.children[0].children[0].children[0].children[0]
         scene.view_xy()
         scene.camera.position = [
             -5.513350804725592e-05,
@@ -100,17 +99,14 @@ for i in range(Niters):
         scene.camera.up = [0.0, 1.0, 0.0]
         scene.camera.clipping_range = [3.7658023470473827, 4.350539189462033]
         scene.render()
-    for m in range(Nmods):
-        plotter = m
     pv.close_all()
     plotter = scene = pv.Plotter(window_size=(800, 800))
     s = plotter.add_mesh(
         triangle_mesh(*mesh.vertices.T, mesh.faces), show_scalar_bar=False
     )
     scene.view_xy(negative=True)
-    surface = scene.children[0].children[0].children[0].children[0]
-    mesh_actor(surface).prop.representation = "wireframe"
-    mesh_actor(surface).mapper.scalar_visibility = False
+    s.prop.representation = "wireframe"
+    s.mapper.scalar_visibility = False
     scene.camera.position = [0.0, 0.0, -4.515786458791532]
     scene.camera.focal_point = [0.0, 0.0, 0.0]
     scene.camera.view_angle = 30.0

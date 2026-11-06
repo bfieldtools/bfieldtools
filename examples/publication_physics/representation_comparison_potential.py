@@ -68,11 +68,9 @@ mesh_field.vertices += 0.001 * mesh_field.vertex_normals
 
 # comps = [0, 4, 10, 15]
 # plot_basis_fields(Ca, comps)
-#     _gui.process_events()
 
 
 # plot_basis_fields(Csuh, comps)
-#     _gui.process_events()
 
 
 #%% test representation
@@ -129,7 +127,9 @@ for n in comps:
     scalars2 = bsuh.basis[:, n]
     m = np.max(abs(scalars))
     m2 = np.max(abs(scalars2))
-    plotter = plot_data_on_vertices(p, scalars, figure=fig, ncolors=15, vmax=m, colormap="bwr")
+    plotter = plot_data_on_vertices(
+        p, scalars, figure=fig, ncolors=15, vmax=m, colormap="bwr"
+    )
     plotter = plot_data_on_vertices(
         p2, scalars2, figure=fig, ncolors=15, vmax=m2, colormap="BrBG"
     )
@@ -151,7 +151,9 @@ for n in comps:
     scalars2 = Ua_mesh[:, n]
     m = np.max(abs(scalars))
     m2 = np.max(abs(scalars2))
-    plotter = plot_data_on_vertices(p, scalars, figure=fig, ncolors=15, vmax=m, colormap="bwr")
+    plotter = plot_data_on_vertices(
+        p, scalars, figure=fig, ncolors=15, vmax=m, colormap="bwr"
+    )
     plotter = plot_data_on_vertices(
         p2, scalars2, figure=fig, ncolors=15, vmax=m2, colormap="BrBG"
     )
