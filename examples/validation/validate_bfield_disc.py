@@ -3,13 +3,19 @@ B-field on the symmetry axis of a disc
 ===========================================
 
 Compare a analytic expression and the numerical computation of
-the B-field of a symmetric current distribution 
+the B-field of a symmetric current distribution
 """
+
+import pyvista as pv
+from bfieldtools._example_plots import triangle_mesh, point_cloud
+
+pv.set_plot_theme("document")
+plotter = pv.Plotter()
+
 
 import numpy as np
 import matplotlib.pyplot as plt
 import trimesh
-from mayavi import mlab
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
 from bfieldtools.utils import load_example_mesh
@@ -41,8 +47,16 @@ Np = 50
 z = np.linspace(-1, 10, Np) + 0.001
 points = np.zeros((Np, 3))
 points[:, 2] = z
-mlab.triangular_mesh(*disc.vertices.T, disc.faces, scalars=s, colormap="viridis")
-mlab.points3d(*points.T, scale_factor=0.1)
+plotter.add_mesh(
+    triangle_mesh(*disc.vertices.T, disc.faces),
+    scalars=s,
+    cmap="viridis",
+    show_scalar_bar=False,
+)
+plotter.add_mesh(
+    point_cloud(*points.T).glyph(scale=False, geom=pv.Sphere(radius=0.1 / 2)),
+    show_scalar_bar=False,
+)
 
 bfield_mesh = magnetic_field_coupling(disc, points, analytic=True) @ s
 
@@ -77,3 +91,7 @@ plt.figure()
 plt.plot(z, (abs(bfield_mesh[:, 2] - field_disc(z, 1 + dr0)) / field_disc(z, 1 + dr0)))
 plt.xlabel("$z$")
 plt.ylabel("relative error")
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

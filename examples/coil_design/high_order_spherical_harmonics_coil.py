@@ -7,8 +7,13 @@ in a specific target region between the two coil planes.
 
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import vector_glyphs
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
-from mayavi import mlab
 import trimesh
 
 
@@ -85,8 +90,8 @@ sphfield = sphtools.field(target_points, alm, blm, lmax)
 target_field = sphfield / np.max(sphfield[:, 0])
 
 
-coil.plot_mesh(opacity=0.2)
-mlab.quiver3d(*target_points.T, *sphfield.T)
+plotter = coil.plot_mesh(opacity=0.2)
+plotter.add_mesh(vector_glyphs(*target_points.T, *sphfield.T), show_scalar_bar=False)
 
 
 target_spec = {
@@ -98,16 +103,18 @@ target_spec = {
 
 #%%
 # Run QP solver
-import mosek
 
 coil.s, prob = optimize_streamfunctions(
     coil,
     [target_spec],
     objective="minimum_inductive_energy",
-    solver="MOSEK",
-    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+    solver="CLARABEL",
 )
 
 #%%
 # Plot coil windings and target points
 coil.s.discretize(N_contours=10).plot_loops()
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

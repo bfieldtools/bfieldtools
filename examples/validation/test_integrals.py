@@ -4,12 +4,17 @@ Integrals testing
 
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import triangle_mesh, vector_glyphs, polyline
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
 
 import matplotlib.pyplot as plt
 
 import trimesh
-from mayavi import mlab
 
 #%%
 # Test potential shape slightly above the surface
@@ -58,23 +63,45 @@ p2 = t2(RR, mesh.face_normals, mesh.area_faces)
 assert np.allclose(p1, p2)
 
 
-mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces, scalars=p1[:, :, 0].sum(axis=1))
-mlab.colorbar()
-mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, representation="wireframe")
-mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
-
-mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces, scalars=p2[:, :, 0].sum(axis=1))
-mlab.colorbar()
-mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, representation="wireframe")
-mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
-
-mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-mlab.triangular_mesh(
-    *mesh2.vertices.T, mesh2.faces, scalars=(p1 - p2)[:, :, 0].sum(axis=1)
+plotter = pv.Plotter(window_size=(800, 800))
+plotter.add_mesh(
+    triangle_mesh(*mesh2.vertices.T, mesh2.faces),
+    scalars=p1[:, :, 0].sum(axis=1),
+    show_scalar_bar=False,
 )
-mlab.colorbar()
+plotter.add_scalar_bar()
+plotter.add_mesh(
+    triangle_mesh(*mesh.vertices.T, mesh.faces),
+    style="wireframe",
+    show_scalar_bar=False,
+)
+plotter.add_mesh(
+    vector_glyphs(*mesh.triangles_center.T, *mesh.face_normals.T), show_scalar_bar=False
+)
+
+plotter = pv.Plotter(window_size=(800, 800))
+plotter.add_mesh(
+    triangle_mesh(*mesh2.vertices.T, mesh2.faces),
+    scalars=p2[:, :, 0].sum(axis=1),
+    show_scalar_bar=False,
+)
+plotter.add_scalar_bar()
+plotter.add_mesh(
+    triangle_mesh(*mesh.vertices.T, mesh.faces),
+    style="wireframe",
+    show_scalar_bar=False,
+)
+plotter.add_mesh(
+    vector_glyphs(*mesh.triangles_center.T, *mesh.face_normals.T), show_scalar_bar=False
+)
+
+plotter = pv.Plotter(window_size=(800, 800))
+plotter.add_mesh(
+    triangle_mesh(*mesh2.vertices.T, mesh2.faces),
+    scalars=(p1 - p2)[:, :, 0].sum(axis=1),
+    show_scalar_bar=False,
+)
+plotter.add_scalar_bar()
 
 #%%
 #
@@ -91,8 +118,14 @@ assert np.allclose(o1, -o2)
 
 plt.plot(o1)
 plt.plot(o2)
-mlab.plot3d(*points.T, points[:, 2], colormap="seismic")
-mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
+plotter.add_mesh(
+    polyline(*points.T, points[:, 2]).tube(radius=0.01),
+    cmap="seismic",
+    show_scalar_bar=False,
+)
+plotter.add_mesh(
+    vector_glyphs(*mesh.triangles_center.T, *mesh.face_normals.T), show_scalar_bar=False
+)
 
 #%%
 # Plot x_i
@@ -101,17 +134,22 @@ from bfieldtools.integrals import x_distance
 
 RR = mesh2.vertices[:, None, None, :] - mesh.vertices[None, mesh.faces]
 xdist = x_distance(RR, mesh.face_normals)
-mlab.triangular_mesh(
-    *mesh2.vertices.T,
-    mesh2.faces,
+plotter.add_mesh(
+    triangle_mesh(*mesh2.vertices.T, mesh2.faces),
     scalars=xdist[:, 1, 0],
-    vmin=-1,
-    vmax=1,
-    colormap="seismic"
+    cmap="seismic",
+    clim=[-1, 1],
+    show_scalar_bar=False,
 )
-mlab.colorbar()
-mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, representation="wireframe")
-mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
+plotter.add_scalar_bar()
+plotter.add_mesh(
+    triangle_mesh(*mesh.vertices.T, mesh.faces),
+    style="wireframe",
+    show_scalar_bar=False,
+)
+plotter.add_mesh(
+    vector_glyphs(*mesh.triangles_center.T, *mesh.face_normals.T), show_scalar_bar=False
+)
 
 #%%
 # Uniform charge density
@@ -125,16 +163,36 @@ p2 = u2(RR, mesh.face_normals, planar=False)
 assert np.allclose(p1, p2)
 
 
-mlab.figure("uniform charge density (old)")
-mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces, scalars=p1.sum(axis=1))
-mlab.colorbar()
-mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, representation="wireframe")
-mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
-mlab.figure("uniform charge density (new)")
-mlab.triangular_mesh(*mesh2.vertices.T, mesh2.faces, scalars=p2.sum(axis=1))
-mlab.colorbar()
-mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, representation="wireframe")
-mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
+plotter = pv.Plotter()
+plotter.add_mesh(
+    triangle_mesh(*mesh2.vertices.T, mesh2.faces),
+    scalars=p1.sum(axis=1),
+    show_scalar_bar=False,
+)
+plotter.add_scalar_bar()
+plotter.add_mesh(
+    triangle_mesh(*mesh.vertices.T, mesh.faces),
+    style="wireframe",
+    show_scalar_bar=False,
+)
+plotter.add_mesh(
+    vector_glyphs(*mesh.triangles_center.T, *mesh.face_normals.T), show_scalar_bar=False
+)
+plotter = pv.Plotter()
+plotter.add_mesh(
+    triangle_mesh(*mesh2.vertices.T, mesh2.faces),
+    scalars=p2.sum(axis=1),
+    show_scalar_bar=False,
+)
+plotter.add_scalar_bar()
+plotter.add_mesh(
+    triangle_mesh(*mesh.vertices.T, mesh.faces),
+    style="wireframe",
+    show_scalar_bar=False,
+)
+plotter.add_mesh(
+    vector_glyphs(*mesh.triangles_center.T, *mesh.face_normals.T), show_scalar_bar=False
+)
 
 #%%
 #
@@ -142,18 +200,23 @@ from bfieldtools.integrals import d_distance
 
 RR = mesh2.vertices[:, None, None, :] - mesh.vertices[None, mesh.faces]
 ddist = d_distance(RR, mesh.face_normals)
-mlab.figure("d distance")
-mlab.triangular_mesh(
-    *mesh2.vertices.T,
-    mesh2.faces,
+plotter = pv.Plotter()
+plotter.add_mesh(
+    triangle_mesh(*mesh2.vertices.T, mesh2.faces),
     scalars=ddist[:, 0],
-    vmin=-1,
-    vmax=1,
-    colormap="seismic"
+    cmap="seismic",
+    clim=[-1, 1],
+    show_scalar_bar=False,
 )
-mlab.colorbar()
-mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, representation="wireframe")
-mlab.quiver3d(*mesh.triangles_center.T, *mesh.face_normals.T)
+plotter.add_scalar_bar()
+plotter.add_mesh(
+    triangle_mesh(*mesh.vertices.T, mesh.faces),
+    style="wireframe",
+    show_scalar_bar=False,
+)
+plotter.add_mesh(
+    vector_glyphs(*mesh.triangles_center.T, *mesh.face_normals.T), show_scalar_bar=False
+)
 
 #%%
 #
@@ -167,9 +230,13 @@ b2 = magnetic_field_coupling_analytic(mesh, mesh2.vertices)
 
 assert np.allclose(b1, b2)
 
-mlab.figure("b field")
-mlab.quiver3d(*mesh2.vertices.T, *b1[:, :, 0].T)
-mlab.quiver3d(*mesh2.vertices.T, *b2[:, :, 0].T)
+plotter = pv.Plotter()
+plotter.add_mesh(
+    vector_glyphs(*mesh2.vertices.T, *b1[:, :, 0].T), show_scalar_bar=False
+)
+plotter.add_mesh(
+    vector_glyphs(*mesh2.vertices.T, *b2[:, :, 0].T), show_scalar_bar=False
+)
 
 #%%
 # Gammma
@@ -194,3 +261,7 @@ plt.figure()
 plt.plot(p1[:, 0, :])
 plt.figure()
 plt.plot(p2[:, 0, :])
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

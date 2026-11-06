@@ -98,3 +98,35 @@ def test_plot_3d_current_loops_fail():
     loops = [np.array([x, y, z]).T, 2 * np.array([x, y, z]).T]
 
     viz.plot_3d_current_loops(loops, tube_radius=0.01, colors="boop")
+
+
+@pytest.mark.parametrize("on_faces", [False, True])
+@pytest.mark.parametrize(
+    "vmin,vmax,expected", [(None, 3.0, (-1.0, 3.0)), (-2.0, None, (-2.0, 2.0))]
+)
+def test_partial_colour_limits(on_faces, vmin, vmax, expected):
+    mesh = load_example_mesh("unit_disc")
+    plotter = pv.Plotter(off_screen=True)
+    try:
+        count = len(mesh.faces) if on_faces else len(mesh.vertices)
+        data = np.linspace(-1.0, 2.0, count)
+        plot = viz.plot_data_on_faces if on_faces else viz.plot_data_on_vertices
+        plot(mesh, data, figure=plotter, colormap="bwr", vmin=vmin, vmax=vmax)
+        actor = next(a for a in plotter.actors.values() if isinstance(a, pv.Actor))
+        np.testing.assert_allclose(actor.mapper.scalar_range, expected)
+    finally:
+        plotter.close()
+
+
+def test_current_loops_single_rgb_colour():
+    angle = np.linspace(0, 2 * np.pi, 20)
+    loop = np.column_stack((np.cos(angle), np.sin(angle), np.zeros_like(angle)))
+    plotter = pv.Plotter(off_screen=True)
+    try:
+        viz.plot_3d_current_loops([loop], figure=plotter, colors=(0.9, 0.8, 0.7))
+        actor = next(a for a in plotter.actors.values() if isinstance(a, pv.Actor))
+        np.testing.assert_allclose(
+            actor.prop.color.float_rgb, (0.9, 0.8, 0.7), atol=1 / 255
+        )
+    finally:
+        plotter.close()

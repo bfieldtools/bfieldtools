@@ -1,7 +1,21 @@
+"""
+SQUID noise from a conducting plane
+===================================
+
+Compute thermal noise in SQUID pickup loops near a conducting plane.
+
+This example requires ``left_auditory-ave.fif`` from the MNE example results.
+Set ``SAVE_DIR`` to its directory before running the script.
+"""
+
+import pyvista as pv
+from bfieldtools._example_plots import triangle_mesh, vector_glyphs, set_view
+
+pv.set_plot_theme("document")
+
 import numpy as np
 import matplotlib.pyplot as plt
 import trimesh
-from mayavi import mlab
 from scipy.linalg import eigh
 
 from bfieldtools.thermal_noise import (
@@ -78,20 +92,33 @@ mesh.apply_translation((40e-2, 0, 0))
 
 
 #%%
-scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, color=(0, 0, 0), opacity=0.5)
-
-mlab.quiver3d(
-    *p.reshape(p.shape[0] * p.shape[1], p.shape[2]).T,
-    *n.reshape(n.shape[0] * n.shape[1], n.shape[2]).T,
-    mode="arrow"
+plotter = scene = pv.Plotter(window_size=(800, 800))
+s = plotter.add_mesh(
+    triangle_mesh(*mesh.vertices.T, mesh.faces),
+    color=(0, 0, 0),
+    opacity=0.5,
+    show_scalar_bar=False,
 )
-mlab.view(azimuth=90, elevation=90, distance=2.5)
 
-scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, color=(0, 0, 0), opacity=0.5)
-mlab.quiver3d(*p.T, *n.T, mode="arrow")
-mlab.view(azimuth=180, elevation=90, distance=2.5)
+plotter.add_mesh(
+    vector_glyphs(
+        *p.reshape(p.shape[0] * p.shape[1], p.shape[2]).T,
+        *n.reshape(n.shape[0] * n.shape[1], n.shape[2]).T,
+        mode="arrow"
+    ),
+    show_scalar_bar=False,
+)
+set_view(plotter, azimuth=90, elevation=90, distance=2.5)
+
+plotter = scene = pv.Plotter(window_size=(800, 800))
+s = plotter.add_mesh(
+    triangle_mesh(*mesh.vertices.T, mesh.faces),
+    color=(0, 0, 0),
+    opacity=0.5,
+    show_scalar_bar=False,
+)
+plotter.add_mesh(vector_glyphs(*p.T, *n.T, mode="arrow"), show_scalar_bar=False)
+set_view(plotter, azimuth=180, elevation=90, distance=2.5)
 
 #%%
 
@@ -117,3 +144,7 @@ plt.tight_layout()
 evoked1 = evoked.copy()
 evoked1.data = np.tile(np.sqrt(np.diag(noisecov)), (evoked.times.shape[0], 1)).T
 evoked1.plot_topomap(times=0.080, ch_type="mag", vmin=5, vmax=18)
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

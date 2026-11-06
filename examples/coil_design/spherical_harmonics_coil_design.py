@@ -87,14 +87,12 @@ target_spec = {
 
 #%%
 # Run QP solver
-import mosek
 
 coil.s, prob = optimize_streamfunctions(
     coil,
     [target_spec],
     objective="minimum_ohmic_power",
-    solver="MOSEK",
-    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+    solver="CLARABEL",
 )
 
 #%%
@@ -123,14 +121,12 @@ target_spec = {
 
 #%%
 # Run QP solver
-import mosek
 
 coil.s2, prob = optimize_streamfunctions(
     coil,
     [target_spec],
     objective="minimum_ohmic_power",
-    solver="MOSEK",
-    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+    solver="CLARABEL",
 )
 
 #%%

@@ -1,7 +1,19 @@
+"""
+Thermal noise inside a conducting cylinder
+==========================================
+
+Compare numerical thermal magnetic noise inside a thin conducting cylinder
+with an analytical result.
+"""
+
+import pyvista as pv
+from bfieldtools._example_plots import triangle_mesh
+
+pv.set_plot_theme("document")
+
 import numpy as np
 import matplotlib.pyplot as plt
 import trimesh
-from mayavi import mlab
 from bfieldtools.thermal_noise import (
     compute_current_modes,
     noise_covar,
@@ -42,19 +54,18 @@ vl = compute_current_modes(
 
 vl[:, 0] = np.zeros(vl[:, 0].shape)  # fix DC-component
 
-scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
+plotter = scene = pv.Plotter(window_size=(800, 800))
 
 visualize_current_modes(mesh, vl[:, :, 0], 8, 1)
 
 
-scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
-scene.scene.z_minus_view()
-surface = scene.children[0].children[0].children[0].children[0]
-surface.actor.property.representation = "wireframe"
-surface.actor.mapper.scalar_visibility = False
-scene.scene.isometric_view()
-scene.scene.render()
+plotter = scene = pv.Plotter(window_size=(800, 800))
+s = plotter.add_mesh(triangle_mesh(*mesh.vertices.T, mesh.faces), show_scalar_bar=False)
+scene.view_xy(negative=True)
+s.prop.style = "wireframe"
+s.mapper.scalar_visibility = False
+scene.view_isometric()
+scene.render()
 
 
 Np = 30
@@ -103,3 +114,7 @@ plt.semilogy(x, np.sqrt(B[:, 2]), "--", label="z")
 plt.legend()
 plt.xlabel("z (m)")
 plt.ylabel("DC noise (T/rHz)")
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

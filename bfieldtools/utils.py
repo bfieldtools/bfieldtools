@@ -334,11 +334,9 @@ class MeshProjection:
         )
         # Mapping from coordinates of a reference triangle to barycentric coordinates
         self.M = np.array([[-1.0, -1.0, 1.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]])
-        # Solve barycentric coordinates for the quad points
-        # These are the shape function values for the quad points
-        self.bary_coords = (
-            np.hstack((ref_coords, np.ones((ref_coords.shape[0], 1)))) @ self.M.T
-        )
+        # The quadrature rules already return barycentric coordinates, which
+        # are the linear hat-function values on the reference triangle.
+        self.bary_coords = ref_coords
         # Weight the shape function values by quadrature weights
         self.weights = self.bary_coords * weights[:, None]
         from scipy.sparse import csc_matrix

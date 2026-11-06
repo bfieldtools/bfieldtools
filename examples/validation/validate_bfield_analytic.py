@@ -4,9 +4,15 @@ Analytic B-field computation
 Validation of analytic mesh operator for magnetic field computation.
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import mesh_actor
+from bfieldtools._example_plots import triangle_mesh, vector_glyphs, point_cloud
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
 import trimesh
-from mayavi import mlab
 import matplotlib.pyplot as plt
 
 from bfieldtools.mesh_calculus import gradient
@@ -31,17 +37,24 @@ B0 = magnetic_field_coupling(coilmesh, test_points) @ weights
 B1 = magnetic_field_coupling_analytic(coilmesh, test_points) @ weights
 
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
+plotter = f = pv.Plotter(window_size=(800, 800))
 
-s = mlab.triangular_mesh(
-    *coilmesh.vertices.T, coilmesh.faces, scalars=weights, colormap="viridis"
+s = plotter.add_mesh(
+    triangle_mesh(*coilmesh.vertices.T, coilmesh.faces),
+    scalars=weights,
+    cmap="viridis",
+    show_scalar_bar=False,
 )
-s.enable_contours = True
-s.actor.property.render_lines_as_tubes = True
-s.actor.property.line_width = 3.0
+mesh_actor(s).mapper.dataset = mesh_actor(s).mapper.dataset.contour(10)
+mesh_actor(s).prop.render_lines_as_tubes = True
+mesh_actor(s).prop.line_width = 3.0
 
-mlab.quiver3d(*test_points.T, *B0.T, color=(1, 0, 0))
-mlab.quiver3d(*test_points.T, *B1.T, color=(0, 0, 1))
+plotter.add_mesh(
+    vector_glyphs(*test_points.T, *B0.T), color=(1, 0, 0), show_scalar_bar=False
+)
+plotter.add_mesh(
+    vector_glyphs(*test_points.T, *B1.T), color=(0, 0, 1), show_scalar_bar=False
+)
 
 print(
     "Relative RMS error", np.sqrt(np.mean((B1 - B0) ** 2)) / np.sqrt(np.mean((B0) ** 2))
@@ -56,16 +69,25 @@ for ii in range(3):
 disc = MeshConductor(mesh_obj=discmesh)
 weights = np.zeros(discmesh.vertices.shape[0])
 weights[disc.inner_vertices] = 1
-mlab.figure()
-s = mlab.triangular_mesh(
-    *discmesh.vertices.T, discmesh.faces, scalars=weights, colormap="viridis"
+plotter = pv.Plotter()
+s = plotter.add_mesh(
+    triangle_mesh(*discmesh.vertices.T, discmesh.faces),
+    scalars=weights,
+    cmap="viridis",
+    show_scalar_bar=False,
 )
 g = gradient(weights, discmesh, rotated=True)
-mlab.quiver3d(*discmesh.vertices[discmesh.faces].mean(axis=1).T, *g)
+plotter.add_mesh(
+    vector_glyphs(*discmesh.vertices[discmesh.faces].mean(axis=1).T, *g),
+    show_scalar_bar=False,
+)
 
 test_points = np.zeros((100, 3))
 test_points[:, 2] = np.linspace(0.0, 5, 100)
-mlab.points3d(*test_points.T, scale_factor=0.1)
+plotter.add_mesh(
+    point_cloud(*test_points.T).glyph(scale=False, geom=pv.Sphere(radius=0.1 / 2)),
+    show_scalar_bar=False,
+)
 
 # Bfield for 1 Ampere current
 B0 = magnetic_field_coupling(discmesh, test_points) @ weights
@@ -80,3 +102,7 @@ plt.plot(np.linalg.norm(B1, axis=1))
 plt.legend(("Analytic", "Quadrature mesh", "Analytic mesh"))
 plt.xlabel("Distance, z [m]")
 plt.ylabel("B [T]")
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

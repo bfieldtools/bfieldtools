@@ -13,9 +13,13 @@ NB. The secondary coil current is entirely a function of the primary coil curren
 and the geometry.
 """
 
+import pyvista as pv
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
 import matplotlib.pyplot as plt
-from mayavi import mlab
 import trimesh
 
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
@@ -47,9 +51,9 @@ shieldcoil = MeshConductor(mesh_obj=mesh2, basis_name="inner", N_sph=4)
 
 #%%
 # Plot geometry
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-coil.plot_mesh(opacity=0.2, figure=f)
-shieldcoil.plot_mesh(opacity=0.2, figure=f)
+plotter = f = pv.Plotter(window_size=(800, 800))
+plotter = coil.plot_mesh(opacity=0.2, figure=f)
+plotter = shieldcoil.plot_mesh(opacity=0.2, figure=f)
 
 #%%
 # Compute inductances and coupling
@@ -76,7 +80,7 @@ M = M11 + M21.T @ P
 # Regularization
 from scipy.linalg import eigvalsh
 
-ssmax = eigvalsh(C.T @ C, M, eigvals=[M.shape[1] - 1, M.shape[1] - 1])
+ssmax = eigvalsh(C.T @ C, M, subset_by_index=[M.shape[1] - 1, M.shape[1] - 1])
 
 #%%
 # Specify spherical harmonic and calculate corresponding shielded field
@@ -99,10 +103,10 @@ shieldcoil.s = StreamFunction(I2inner, shieldcoil)
 #%%
 # Do a quick 3D plot
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
+plotter = f = pv.Plotter(window_size=(800, 800))
 
-coil.s.plot(figure=f, contours=20)
-shieldcoil.s.plot(figure=f, contours=20)
+plotter = coil.s.plot(figure=f, contours=20)
+plotter = shieldcoil.s.plot(figure=f, contours=20)
 
 #%%
 # Compute the field and scalar potential on an XY-plane
@@ -183,3 +187,7 @@ plt.axis("image")
 
 plt.xticks([])
 plt.yticks([])
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

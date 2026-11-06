@@ -11,11 +11,14 @@ Different examples:
 Analytic formulas are from Lee and Romalis (2008)
 """
 
+import pyvista as pv
+
+pv.set_plot_theme("document")
+
 
 import numpy as np
 import matplotlib.pyplot as plt
 import trimesh
-from mayavi import mlab
 
 from bfieldtools.mesh_impedance import self_inductance_matrix, resistance_matrix
 from bfieldtools.thermal_noise import (
@@ -29,7 +32,7 @@ from bfieldtools.mesh_magnetics import magnetic_field_coupling
 from bfieldtools import resources
 
 
-font = {"family": "normal", "weight": "normal", "size": 16}
+font = {"family": "sans-serif", "weight": "normal", "size": 16}
 plt.rc("font", **font)
 
 # Fix the simulation parameters
@@ -58,8 +61,7 @@ vl, u = compute_current_modes(
     obj=mesh, T=T, resistivity=res, thickness=d, mode="AC", return_eigenvals=True
 )
 
-scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-visualize_current_modes(mesh, vl[:, :, 0], 42, 5, contours=True)
+plotter = visualize_current_modes(mesh, vl[:, :, 0], 42, 5, contours=True)
 
 # Define field points on z axis
 Np = 30
@@ -166,8 +168,7 @@ mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 vl = compute_current_modes(obj=mesh, T=T, resistivity=res, thickness=d, mode="DC")
 
 # Visualize the current modes
-scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-visualize_current_modes(mesh, vl, 8, 1)
+plotter = visualize_current_modes(mesh, vl, 8, 1)
 
 # Calculate field noise along long axis of the cylinder
 Np = 30
@@ -252,3 +253,7 @@ plt.legend(frameon=False)
 plt.xlabel("Frequency (Hz)")
 plt.ylabel(r"$B_z$ noise (fT/rHz)")
 plt.tight_layout()
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

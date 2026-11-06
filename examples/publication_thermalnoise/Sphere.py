@@ -1,7 +1,19 @@
+"""
+Thermal noise inside conducting spheres
+=======================================
+
+Compare thermal magnetic noise at the center of conducting spheres
+with an analytical result over a range of radii.
+"""
+
+import pyvista as pv
+from bfieldtools._example_plots import triangle_mesh
+
+pv.set_plot_theme("document")
+
 import numpy as np
 import matplotlib.pyplot as plt
 import trimesh
-from mayavi import mlab
 from bfieldtools.thermal_noise import (
     compute_current_modes,
     noise_covar,
@@ -43,9 +55,7 @@ for i in range(Np):
         resources.files("bfieldtools", "example_meshes/unit_sphere.stl")
     )
     mesh.apply_scale(radius[i])
-
     B_coupling = magnetic_field_coupling(mesh, fp, analytic=True)
-
     vl = compute_current_modes(
         obj=mesh,
         T=T,
@@ -54,37 +64,27 @@ for i in range(Np):
         mode="AC",
         return_eigenvals=False,
     )
-
-    #    scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5),
-    #               size=(800, 800))
-    #    visualize_current_modes(mesh,vl[:,:,0], 8, 1)
-
-    vl[:, 0] = np.zeros(vl[:, 0].shape)  # fix DC-component
-
+    vl[:, 0] = np.zeros(vl[:, 0].shape)
     Btemp = noise_var(B_coupling, vl)
-
     B[i] = Btemp[:, :, 0]
 
-scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-s = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces)
-scene.scene.z_minus_view()
-surface = scene.children[0].children[0].children[0].children[0]
-surface.actor.property.representation = "wireframe"
-surface.actor.mapper.scalar_visibility = False
-scene.scene.camera.position = [0.0, 0.0, -5.530686305704514]
-scene.scene.camera.focal_point = [0.0, 0.0, 0.0]
-scene.scene.camera.view_angle = 30.0
-scene.scene.camera.view_up = [0.0, 1.0, 0.0]
-scene.scene.camera.clipping_range = [3.485379442647469, 8.118646600290083]
-scene.scene.camera.compute_view_plane_normal()
-scene.scene.render()
-scene.scene.camera.position = [0.0, 0.0, -4.570815128681416]
-scene.scene.camera.focal_point = [0.0, 0.0, 0.0]
-scene.scene.camera.view_angle = 30.0
-scene.scene.camera.view_up = [0.0, 1.0, 0.0]
-scene.scene.camera.clipping_range = [2.535106977394602, 7.1443773556116374]
-scene.scene.camera.compute_view_plane_normal()
-scene.scene.render()
+plotter = scene = pv.Plotter(window_size=(800, 800))
+s = plotter.add_mesh(triangle_mesh(*mesh.vertices.T, mesh.faces), show_scalar_bar=False)
+scene.view_xy(negative=True)
+s.prop.style = "wireframe"
+s.mapper.scalar_visibility = False
+scene.camera.position = [0.0, 0.0, -5.530686305704514]
+scene.camera.focal_point = [0.0, 0.0, 0.0]
+scene.camera.view_angle = 30.0
+scene.camera.up = [0.0, 1.0, 0.0]
+scene.camera.clipping_range = [3.485379442647469, 8.118646600290083]
+scene.render()
+scene.camera.position = [0.0, 0.0, -4.570815128681416]
+scene.camera.focal_point = [0.0, 0.0, 0.0]
+scene.camera.view_angle = 30.0
+scene.camera.up = [0.0, 1.0, 0.0]
+scene.camera.clipping_range = [2.535106977394602, 7.1443773556116374]
+scene.render()
 
 
 Ban = mu0 * np.sqrt(2 * sigma * d * kB * T / (3 * np.pi * (radius) ** 2))
@@ -114,3 +114,7 @@ plt.figure()
 plt.plot(radius, RE)
 plt.xlabel("Sphere radius")
 plt.ylabel("Relative error (%)")
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

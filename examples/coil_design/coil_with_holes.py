@@ -7,6 +7,7 @@ region between the two coil planes. The coil planes have holes in them,
 
 """
 
+
 import numpy as np
 import trimesh
 
@@ -97,14 +98,12 @@ bfield_specification = [target_spec]
 
 #%%
 # Run QP solver
-import mosek
 
 coil.s, prob = optimize_streamfunctions(
     coil,
     bfield_specification,
     objective="minimum_inductive_energy",
-    solver="MOSEK",
-    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+    solver="CLARABEL",
 )
 
 #%%
