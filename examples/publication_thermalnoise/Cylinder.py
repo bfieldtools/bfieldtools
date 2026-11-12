@@ -25,7 +25,7 @@ from bfieldtools.mesh_magnetics import magnetic_field_coupling
 from bfieldtools import resources
 
 
-font = {"family": "normal", "weight": "normal", "size": 16}
+font = {"family": "sans-serif", "weight": "normal", "size": 16}
 plt.rc("font", **font)
 
 # Fix the simulation parameters
