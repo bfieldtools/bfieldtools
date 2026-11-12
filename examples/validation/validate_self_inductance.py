@@ -28,24 +28,24 @@ vv2 = []
 M = mass_matrix(mesh)
 
 for q in range(4):
-    L = self_inductance_matrix(mesh, analytic_self_coupling=True, quad_degree=q + 1)
-    uu, vv = eigh(L, M.toarray(), eigvals=(0, Nvals - 1))
+    L = self_inductance_matrix(mesh, analytic_self_coupling=True, quad_degree=q)
+    uu, vv = eigh(L, M.toarray(), subset_by_index=(0, Nvals - 1))
     uu1.append(uu)
     vv1.append(vv)
 
     # L = self_inductance_matrix(mesh, analytic_self_coupling=False,
     # quad_degree=q+1)
-    L = mutual_inductance_matrix(mesh, mesh, quad_degree=q + 1)
-    uu, vv = eigh(L, M.toarray(), eigvals=(0, Nvals - 1))
+    L = mutual_inductance_matrix(mesh, mesh, quad_degree=q)
+    uu, vv = eigh(L, M.toarray(), subset_by_index=(0, Nvals - 1))
     uu2.append(uu)
     vv2.append(vv)
 
 
 #%%
-""" 
+"""
  Spherical harmonics are the eigenfunctions of self-inductance operator
  The correct eigenvalues derived using Taulu 2005 Eqs. (22, 23, A1, A5, A6)
- By considering the normal component of the magnetic field produced by 
+ By considering the normal component of the magnetic field produced by
  a single Y_lm. The result is
  e = mu_0*(l*(l+1)/(2*l+1))/R
 """
@@ -80,7 +80,7 @@ ylm_on_hats = []
 i1 = 0
 vv1_projs = np.zeros((len(vv1), vv1[0].shape[1]))
 vv2_projs = np.zeros((len(vv2), vv2[0].shape[1]))
-mp = MeshProjection(mesh, 4)
+mp = MeshProjection(mesh, 3)
 
 
 for l in range(0, 13):

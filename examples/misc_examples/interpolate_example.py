@@ -7,8 +7,12 @@ defined on that mesh to match.
 
 """
 
-from tvtk.api import tvtk
-from mayavi import mlab
+import pyvista as pv
+from bfieldtools._example_plots import triangle_mesh, point_cloud
+
+pv.set_plot_theme("document")
+
+
 import trimesh
 
 import numpy as np
@@ -45,13 +49,13 @@ original_mesh = mesh.copy()
 #%%
 # Plot original scalars and mesh
 
-scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
+plotter = scene = pv.Plotter(window_size=(800, 800))
 
-mlab.triangular_mesh(
-    *original_mesh.vertices.T,
-    original_mesh.faces,
+plotter.add_mesh(
+    triangle_mesh(*original_mesh.vertices.T, original_mesh.faces),
     scalars=original_scalars,
-    representation="wireframe"
+    style="wireframe",
+    show_scalar_bar=False,
 )
 
 
@@ -59,22 +63,26 @@ mlab.triangular_mesh(
 # Now, interpolate scalars
 
 
-ug = tvtk.UnstructuredGrid(points=mesh.vertices)
-
-ug.set_cells(tvtk.Triangle().cell_type, mesh.faces)
-ug.point_data.scalars = scalars
-ug.point_data.scalars.name = "scalars"
+ug = triangle_mesh(*mesh.vertices.T, mesh.faces)
+ug["scalars"] = scalars
 
 
 mesh = original_mesh.subdivide().subdivide()
-scalars = mlab.pipeline.probe_data(ug, *mesh.vertices.T)
+scalars = point_cloud(*mesh.vertices.T).sample(ug)["scalars"]
 
 
 #%%
 # Plot subdivided mesh and interpolated scalars
 
-scene = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
+plotter = scene = pv.Plotter(window_size=(800, 800))
 
-mlab.triangular_mesh(
-    *mesh.vertices.T, mesh.faces, scalars=scalars, representation="wireframe"
+plotter.add_mesh(
+    triangle_mesh(*mesh.vertices.T, mesh.faces),
+    scalars=scalars,
+    style="wireframe",
+    show_scalar_bar=False,
 )
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

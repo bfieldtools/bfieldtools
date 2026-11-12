@@ -296,7 +296,6 @@ Utilities
    
    combine_meshes
    get_quad_points
-   get_line_quad_points
    dual_areas
    find_mesh_boundaries
    load_example_mesh

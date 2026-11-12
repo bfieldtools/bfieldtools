@@ -5,9 +5,13 @@ Head gradient coil
 Example showing a gradient coil designed on the surface of a MEG system helmet
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import vector_glyphs
+
+pv.set_plot_theme("document")
+
 
 import numpy as np
-from mayavi import mlab
 
 from bfieldtools.mesh_conductor import MeshConductor
 from bfieldtools.coil_optimize import optimize_streamfunctions
@@ -68,9 +72,9 @@ target_field = sphfield / np.max(sphfield[:, 0])
 
 target_field[:, 2] = 0
 
-coil.plot_mesh(opacity=0.5)
-mlab.quiver3d(*target_points.T, *sphfield.T)
-mlab.gcf().scene.isometric_view()
+plotter = coil.plot_mesh(opacity=0.5)
+plotter.add_mesh(vector_glyphs(*target_points.T, *sphfield.T), show_scalar_bar=False)
+plotter.view_isometric()
 
 abs_error = np.zeros_like(target_field)
 abs_error[:, 0] += 0.05
@@ -84,14 +88,12 @@ target_spec = {
 }
 
 #%%
-import mosek
 
 coil.s, prob = optimize_streamfunctions(
     coil,
     [target_spec],
     objective="minimum_inductive_energy",
-    solver="MOSEK",
-    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+    solver="CLARABEL",
 )
 
 #%%
@@ -100,3 +102,7 @@ coil.s, prob = optimize_streamfunctions(
 
 loops = coil.s.discretize(N_contours=10)
 loops.plot_loops()
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

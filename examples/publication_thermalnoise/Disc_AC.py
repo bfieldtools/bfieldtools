@@ -1,7 +1,18 @@
+"""
+Frequency dependence of disc thermal noise
+==========================================
+
+Compute thermal magnetic noise spectra and cutoff frequencies
+above a thin conducting disc.
+"""
+
+import pyvista as pv
+
+pv.set_plot_theme("document")
+
 import numpy as np
 import matplotlib.pyplot as plt
 import trimesh
-from mayavi import mlab
 from bfieldtools.thermal_noise import (
     compute_current_modes,
     noise_covar,
@@ -13,7 +24,7 @@ from bfieldtools.mesh_magnetics import magnetic_field_coupling
 from bfieldtools import resources
 
 
-font = {"family": "normal", "weight": "normal", "size": 20}
+font = {"family": "sans-serif", "weight": "normal", "size": 20}
 plt.rc("font", **font)
 
 # Fix the simulation parameters
@@ -86,3 +97,7 @@ plt.legend(frameon=False, loc=3)
 plt.xlabel("Distance (z/R)")
 plt.ylabel("3-dB cutoff frequency (Hz)")
 plt.tight_layout()
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

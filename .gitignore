@@ -23,3 +23,6 @@ docs/auto_examples/
 docs/generated/
 
 .coverage
+
+# Generated Sphinx-Gallery execution report
+docs/sg_execution_times.rst

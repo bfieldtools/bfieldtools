@@ -6,6 +6,10 @@ In this example, we demonstrate how to compute the mutual inductance between two
 
 """
 
+import pyvista as pv
+
+pv.set_plot_theme("document")
+
 
 from bfieldtools.line_conductor import LineConductor
 from bfieldtools.mesh_conductor import StreamFunction
@@ -13,7 +17,6 @@ from bfieldtools.suhtools import SuhBasis
 from bfieldtools.utils import load_example_mesh
 
 import numpy as np
-from mayavi import mlab
 
 #%%
 # We create a set of wire loops by picking a single (arbitrary) surface-harmonic mode
@@ -83,3 +86,7 @@ L_approx = 2 * sf.magnetic_energy * (scaling**2)
 
 print("Inductance based on the continuous current density", L_approx)
 print("Inductance based on r=1mm wire", np.sum(Mself))
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

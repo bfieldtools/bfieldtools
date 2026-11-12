@@ -15,20 +15,20 @@ coilmesh = load_example_mesh("10x10_plane")
 from bfieldtools.mesh_impedance import self_inductance_matrix, mutual_inductance_matrix
 
 
-M5 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=5)
-M6 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=6)
-M7 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=7)
+M1 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=1)
+M2 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=2)
+M3 = mutual_inductance_matrix(coilmesh, coilmesh, quad_degree=3)
 
 plt.figure()
-for m in (M5, M6, M7):
+for m in (M1, M2, M3):
     plt.plot(np.diag(m))
 
-MM5 = self_inductance_matrix(coilmesh, quad_degree=5, analytic_self_coupling=True)
-MM6 = self_inductance_matrix(coilmesh, quad_degree=6, analytic_self_coupling=True)
-MM7 = self_inductance_matrix(coilmesh, quad_degree=7, analytic_self_coupling=True)
+MM1 = self_inductance_matrix(coilmesh, quad_degree=1, analytic_self_coupling=True)
+MM2 = self_inductance_matrix(coilmesh, quad_degree=2, analytic_self_coupling=True)
+MM3 = self_inductance_matrix(coilmesh, quad_degree=3, analytic_self_coupling=True)
 
 #%% Plot the diagonals
 
 plt.gca().set_prop_cycle(None)
-for m in (MM5, MM6, MM7):
+for m in (MM1, MM2, MM3):
     plt.plot(np.diag(m), "--")

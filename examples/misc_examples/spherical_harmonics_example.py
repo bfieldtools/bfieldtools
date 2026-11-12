@@ -3,8 +3,12 @@ Example of spherical harmonics tools and visualization
 ============================================================
 """
 
+import pyvista as pv
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
-from mayavi import mlab
 import matplotlib.pyplot as plt
 
 from bfieldtools.sphtools import SphBasis
@@ -16,30 +20,25 @@ sph = SphBasis(40)
 #%%
 # Plot Spherical harmonics Ylms on the sphere
 # Plot Ylms up to l = 4
-mlab.figure(bgcolor=(1, 1, 1))
-obj = sphtools.plotYlms(sph, lmax=4)
+plotter = sphtools.plotYlms(sph, lmax=4)
 
 # Plot Ylm with l=3, m=3
-mlab.figure(bgcolor=(1, 1, 1))
-obj = sphtools.plotYlm(sph, l=3, m=3)
+plotter = sphtools.plotYlm(sph, l=3, m=3)
 
 #%%
 # Plot vector spherical harmonics Vlms / Wlms / Xlms on the sphere
 
 # Plot Vlm with l=2, m=2
-mlab.figure(bgcolor=(1, 1, 1))
-obj = sphtools.plotVlm(sph, l=2, m=2)
-obj.scene.z_plus_view()
+plotter = sphtools.plotVlm(sph, l=2, m=2)
+plotter.view_xy()
 
 # Plot Wlm with the same order and degree, l=2, m=2
-mlab.figure(bgcolor=(1, 1, 1))
-obj = sphtools.plotWlm(sph, l=2, m=2)
-obj.scene.z_plus_view()
+plotter = sphtools.plotWlm(sph, l=2, m=2)
+plotter.view_xy()
 
 # Plot Xlm with the same order and degree, l=2, m=2
-mlab.figure(bgcolor=(1, 1, 1))
-obj = sphtools.plotXlm(sph, l=2, m=2)
-obj.scene.z_plus_view()
+plotter = sphtools.plotXlm(sph, l=2, m=2)
+plotter.view_xy()
 
 
 #%%
@@ -47,13 +46,11 @@ obj.scene.z_plus_view()
 
 # Plot BVlm with l=2, m=2
 offset = np.array((0, 0, 3))  # add offset due to divergence in origin
-mlab.figure(bgcolor=(1, 1, 1))
-obj = sphtools.plotBVlm_volume(sph, l=2, m=2, lim=1, Np=10, offset=offset)
+plotter = sphtools.plotBVlm_volume(sph, l=2, m=2, lim=1, Np=10, offset=offset)
 
 # Plot BWlm with l=2, m=2
 offset = np.array((0, 0, 0))  # include origin
-mlab.figure(bgcolor=(1, 1, 1))
-obj = sphtools.plotBWlm_volume(sph, l=2, m=2, lim=1, Np=10, offset=offset)
+plotter = sphtools.plotBWlm_volume(sph, l=2, m=2, lim=1, Np=10, offset=offset)
 
 #%%
 # Test inner products in quadrature points defined in sph-object
@@ -107,3 +104,7 @@ coeffs = sph.avsphspectra(B, 7)  # calculate spectra of the r**l terms
 # Plot the spectra
 plt.figure()
 plt.semilogy(coeffs**2)
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()
