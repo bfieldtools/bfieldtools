@@ -2,11 +2,15 @@
 Current loop inside a cylindrical magnetic shield
 =================================================
 
-This example calculates the magnetic field produced by a rectangular current 
+This example calculates the magnetic field produced by a rectangular current
 loop inside a cylindrical magnetic shield.
 """
 
-from mayavi import mlab
+import pyvista as pv
+from bfieldtools._example_plots import triangle_mesh, polyline, set_view
+
+pv.set_plot_theme("document")
+
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -58,16 +62,15 @@ shield = MeshConductor(
 )
 
 # Plots the complete geometry.
-f1 = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(300, 300))
-mlab.view(roll=45, azimuth=50, elevation=60, figure=f1)
-mlab.plot3d(*loop_points.T, tube_radius=1e-3, figure=f1)
-mlab.triangular_mesh(
-    *shield_mesh.vertices.T,
-    shield_mesh.faces,
-    representation="wireframe",
-    figure=f1,
+plotter = f1 = pv.Plotter(window_size=(300, 300))
+set_view(f1, roll=45, azimuth=50, elevation=60)
+f1.add_mesh(polyline(*loop_points.T).tube(radius=0.001), show_scalar_bar=False)
+f1.add_mesh(
+    triangle_mesh(*shield_mesh.vertices.T, shield_mesh.faces),
     color=(0, 0, 0),
-    opacity=0.05
+    opacity=0.05,
+    style="wireframe",
+    show_scalar_bar=False,
 )
 
 
@@ -94,11 +97,11 @@ I_shield = np.linalg.solve(-U_cpl_ssurf, U_loop_ssurf)
 s_shield = StreamFunction(I_shield, shield)
 
 # Visualizes the stream function on the shield.
-f3 = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(300, 300))
-mlab.view(roll=45, azimuth=45, elevation=60, figure=f3)
-s_shield.plot(False, 64, figure=f3)
-mlab.colorbar()
-mlab.axes()
+plotter = f3 = pv.Plotter(window_size=(300, 300))
+set_view(f3, roll=45, azimuth=45, elevation=60)
+plotter = s_shield.plot(False, 64, figure=f3)
+plotter.add_scalar_bar()
+plotter.show_bounds()
 
 #%%
 # The rest of the code calculates magnetic field on a 2D grid and displays
@@ -206,3 +209,7 @@ plt.title("B_y (Gauss @ 1amp), loop+shield")
 plt.xlabel("z (m)")
 plt.ylabel("x (m)")
 plt.colorbar()
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

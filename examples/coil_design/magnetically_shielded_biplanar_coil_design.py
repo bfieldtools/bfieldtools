@@ -7,8 +7,13 @@ The coil is positioned close to the end of the shield to demonstrate the effect
 """
 
 
+import pyvista as pv
+from bfieldtools._example_plots import vector_glyphs, point_cloud
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
-from mayavi import mlab
 import trimesh
 
 
@@ -93,14 +98,17 @@ target_points = (
 
 # Plot coil, shield and target points
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
+plotter = f = pv.Plotter(window_size=(800, 800))
 
-coil.plot_mesh(representation="surface", figure=f, opacity=0.5)
-shield.plot_mesh(representation="surface", opacity=0.2, figure=f)
-mlab.points3d(*target_points.T)
+plotter = coil.plot_mesh(style="surface", figure=f, opacity=0.5)
+plotter = shield.plot_mesh(style="surface", opacity=0.2, figure=f)
+plotter.add_mesh(
+    point_cloud(*target_points.T).glyph(scale=False, geom=pv.Sphere(radius=0.05 / 2)),
+    show_scalar_bar=False,
+)
 
-f.scene.isometric_view()
-f.scene.camera.zoom(1.1)
+f.view_isometric()
+f.camera.zoom(1.1)
 
 
 #%%
@@ -123,14 +131,12 @@ target_spec = {
     "target": target_field,
 }
 
-import mosek
 
 coil.s, coil.prob = optimize_streamfunctions(
     coil,
     [target_spec],
     objective="minimum_inductive_energy",
-    solver="MOSEK",
-    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+    solver="CLARABEL",
 )
 
 
@@ -139,17 +145,20 @@ coil.s, coil.prob = optimize_streamfunctions(
 
 loops = scalar_contour(coil.mesh, coil.s.vert, N_contours=10)
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-mlab.clf()
+plotter = f = pv.Plotter(window_size=(800, 800))
+plotter.clear()
 
-plot_3d_current_loops(loops, colors="auto", figure=f)
+plotter = plot_3d_current_loops(loops, colors="auto", figure=f)
 
 B_target = coil.B_coupling(target_points) @ coil.s
 
-mlab.quiver3d(*target_points.T, *B_target.T, mode="arrow", scale_factor=0.75)
+plotter.add_mesh(
+    vector_glyphs(*target_points.T, *B_target.T, scale_factor=0.75, mode="arrow"),
+    show_scalar_bar=False,
+)
 
-f.scene.isometric_view()
-f.scene.camera.zoom(0.95)
+f.view_isometric()
+f.camera.zoom(0.95)
 
 #%%
 # Now, let's compute the effect of the shield on the field produced by the coil
@@ -172,8 +181,8 @@ shield.s = StreamFunction(
 #%%
 # Plot the difference in field when taking the shield into account
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-mlab.clf()
+plotter = f = pv.Plotter(window_size=(800, 800))
+plotter.clear()
 
 B_target = coil.B_coupling(target_points) @ coil.s
 
@@ -182,14 +191,13 @@ B_target_w_shield = (
     + shield.B_coupling(target_points) @ shield.s
 )
 
-B_quiver = mlab.quiver3d(
-    *target_points.T,
-    *(B_target_w_shield - B_target).T,
-    colormap="viridis",
-    mode="arrow"
+B_quiver = plotter.add_mesh(
+    vector_glyphs(*target_points.T, *(B_target_w_shield - B_target).T, mode="arrow"),
+    cmap="viridis",
+    show_scalar_bar=False,
 )
-f.scene.isometric_view()
-mlab.colorbar(B_quiver, title="Difference in magnetic field (a.u.)")
+f.view_isometric()
+plotter.add_scalar_bar(title="Difference in magnetic field (a.u.)")
 
 #%%
 # Let's redesign the coil taking the shield into account prospectively
@@ -212,8 +220,7 @@ coil.s2, coil.prob2 = optimize_streamfunctions(
     coil,
     [target_spec_w_shield],
     objective="minimum_inductive_energy",
-    solver="MOSEK",
-    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+    solver="CLARABEL",
 )
 
 #%%
@@ -221,17 +228,20 @@ coil.s2, coil.prob2 = optimize_streamfunctions(
 
 loops = scalar_contour(coil.mesh, coil.s2.vert, N_contours=10)
 
-f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-mlab.clf()
+plotter = f = pv.Plotter(window_size=(800, 800))
+plotter.clear()
 
-plot_3d_current_loops(loops, colors="auto", figure=f)
+plotter = plot_3d_current_loops(loops, colors="auto", figure=f)
 
 B_target2 = total_C @ coil.s2
-mlab.quiver3d(*target_points.T, *B_target2.T, mode="arrow", scale_factor=0.75)
+plotter.add_mesh(
+    vector_glyphs(*target_points.T, *B_target2.T, scale_factor=0.75, mode="arrow"),
+    show_scalar_bar=False,
+)
 
 
-f.scene.isometric_view()
-f.scene.camera.zoom(0.95)
+f.view_isometric()
+f.camera.zoom(0.95)
 
 
 #%%
@@ -283,3 +293,7 @@ for ax_idx, ax in enumerate(axes):
         ax.legend()
 
 fig.tight_layout(rect=[0, 0.03, 1, 0.95])
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

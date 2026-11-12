@@ -57,6 +57,33 @@ def test_coil_optimize():
                     )
 
 
+def test_quadratic_objective_matches_factorized_objective():
+    """The direct and parameterized objectives give the same constrained optimum."""
+    c = _fake_mesh_conductor(mesh_name="unit_disc", basis_name="suh", N_suh=10)
+    rng = np.random.default_rng(42)
+    n = c.basis.shape[1]
+    quadratic = c.resistance.copy()
+    coupling = rng.normal(size=(6, n))
+    target = coupling @ rng.normal(size=n)
+    spec = dict(coupling=coupling, target=target, abs_error=0.01)
+
+    direct, direct_problem = coil_optimize.optimize_streamfunctions(
+        c, [spec], "minimum_ohmic_power", solver="CLARABEL"
+    )
+    factorized, factorized_problem = coil_optimize.optimize_streamfunctions(
+        c, [spec], "minimum_ohmic_power", solver="CLARABEL", DPP=True
+    )
+
+    assert direct_problem.status == factorized_problem.status == "optimal"
+    assert_allclose(direct, factorized, rtol=1e-5, atol=1e-6)
+    assert np.max(np.abs(coupling @ direct - target)) <= 0.01 + 1e-7
+    assert_allclose(
+        direct @ quadratic @ direct,
+        factorized @ quadratic @ factorized,
+        rtol=1e-6,
+    )
+
+
 def test_standalone_functions():
     """
     Tests standalone functions in coil_optimize

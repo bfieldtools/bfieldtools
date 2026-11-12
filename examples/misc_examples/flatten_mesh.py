@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Flatten mesh using conformal mapping
 =============================================
@@ -11,6 +10,12 @@ section 7.4.
 
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import vector_glyphs, point_cloud
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
 from bfieldtools.flatten_mesh import flatten_mesh
 from bfieldtools.flatten_mesh import mesh2plane
@@ -18,14 +23,13 @@ from bfieldtools.flatten_mesh import plane2mesh
 from bfieldtools.utils import load_example_mesh
 
 #%% Determine 2D parameterization and plot coordinate function on the 3D mesh
-from mayavi import mlab
 from bfieldtools.viz import plot_data_on_vertices, plot_mesh, plot_data_on_faces
 
 mesh = load_example_mesh("meg_helmet", process=False)
 u, v, mesh2d = flatten_mesh(mesh, _lambda=0.80)
 
-plot_data_on_vertices(mesh, u, ncolors=15)
-plot_data_on_vertices(mesh, v, ncolors=15)
+plotter = plot_data_on_vertices(mesh, u, ncolors=15)
+plotter = plot_data_on_vertices(mesh, v, ncolors=15)
 
 #%% Determine lambda with smallest area distortion
 # lls = np.linspace(0.01,1.0, 100)
@@ -38,7 +42,7 @@ plot_data_on_vertices(mesh, v, ncolors=15)
 # plt.plot(lls, mm)
 
 #%% Plot flattened mesh and area distortion on faces
-plot_data_on_faces(mesh2d, mesh2d.area_faces / mesh.area_faces)
+plotter = plot_data_on_faces(mesh2d, mesh2d.area_faces / mesh.area_faces)
 
 #%% Plot gradient of the two coordinate functions and the cosine of the angle between the gradients
 from bfieldtools.mesh_calculus import gradient
@@ -48,10 +52,18 @@ gy = gradient(v, mesh)
 cos = np.sum(gx * gy, axis=0) / (
     np.linalg.norm(gx, axis=0) * np.linalg.norm(gy, axis=0)
 )
-plot_data_on_faces(mesh, cos, vmin=-1, vmax=1)
-mlab.quiver3d(*mesh.triangles_center.T, *gx, color=(1, 0, 0), mode="arrow")
-q = mlab.quiver3d(*mesh.triangles_center.T, *gy, color=(0, 0, 1), mode="arrow")
-q.scene.isometric_view()
+plotter = plot_data_on_faces(mesh, cos, vmin=-1, vmax=1)
+plotter.add_mesh(
+    vector_glyphs(*mesh.triangles_center.T, *gx, mode="arrow"),
+    color=(1, 0, 0),
+    show_scalar_bar=False,
+)
+q = plotter.add_mesh(
+    vector_glyphs(*mesh.triangles_center.T, *gy, mode="arrow"),
+    color=(0, 0, 1),
+    show_scalar_bar=False,
+)
+plotter.view_isometric()
 
 #%% Map hexagonal grid from 2d to the 3D mesh
 d = np.sqrt(3 / 4)
@@ -66,5 +78,12 @@ p = p.reshape(3, -1).T
 
 pp = plane2mesh(p, mesh, u, v)
 
-plot_data_on_vertices(mesh, u, ncolors=15)
-mlab.points3d(*pp.T, scale_factor=0.01)
+plotter = plot_data_on_vertices(mesh, u, ncolors=15)
+plotter.add_mesh(
+    point_cloud(*pp.T).glyph(scale=False, geom=pv.Sphere(radius=0.01 / 2)),
+    show_scalar_bar=False,
+)
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

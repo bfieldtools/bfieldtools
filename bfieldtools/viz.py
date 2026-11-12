@@ -119,6 +119,9 @@ def plot_3d_current_loops(
     if colors is None:
         colors = "k" * len(current_loops)
 
+    elif isinstance(colors, tuple) and len(colors) in (3, 4):
+        colors = [colors] * len(current_loops)
+
     elif colors == "auto":
         colors = []
 
@@ -343,6 +346,11 @@ def plot_data_on_faces(
         if vmax is None:
             vmax = rangemax * 1.01
 
+    if vmin is None:
+        vmin = np.nanmin(data)
+    if vmax is None:
+        vmax = np.nanmax(data)
+
     figure.add_mesh(
         meshviz, scalars=data, clim=[vmin, vmax], show_scalar_bar=colorbar, **kwargs
     )
@@ -421,12 +429,18 @@ def plot_data_on_vertices(
         if vmax is None:
             vmax = rangemax * 1.01
 
+    if vmin is None:
+        vmin = np.nanmin(data)
+    if vmax is None:
+        vmax = np.nanmax(data)
+
     figure.add_mesh(
         meshviz,
         scalars=data,
         clim=[vmin, vmax],
         show_scalar_bar=colorbar,
         interpolate_before_map=interpolate,
+        n_colors=ncolors,
         **kwargs
     )
 

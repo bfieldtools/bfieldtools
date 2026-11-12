@@ -2,12 +2,12 @@
 Solving linearly polarizing material in a homogenenous field
 ------------------------------------------------------------
 
-The example is based on the following integral equation of 
+The example is based on the following integral equation of
 a piecewise harmonic potential :math:`U` on the boundary of the polarizing material
 
 .. math::
     \\frac{\\mu_0 + \\mu}{2} U(\\vec{r}) = \\mu_0 U_\\infty(\\vec{r}) + \\frac{\\mu_0 - \\mu}{4\\pi}\\int_{S} U(\\vec{r}\\,') (\\hat{n}' \\cdot \\nabla') \\frac{1}{|\\vec{r}-\\vec{r}\\,'|} dS'\\,.
-                                    
+
 * :math:`U` is the magnetic scalar potential to be solved
 * :math:`\\mu_0` is the permeability of the free space
 * :math:`\\mu` is the permeability of the material
@@ -27,10 +27,15 @@ a linear system of equations is obtained
 * :math:`\\mathbf{N}` is the mesh mass matrix
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import mesh_actor
+from bfieldtools._example_plots import triangle_mesh, vector_glyphs, structured_field
+
+pv.set_plot_theme("document")
+
 
 import numpy as np
 import matplotlib.pyplot as plt
-from mayavi import mlab
 
 from bfieldtools.mesh_conductor import MeshConductor as Conductor
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
@@ -171,10 +176,15 @@ c1 = (1 - mu_r) / (1 + mu_r)
 u = np.linalg.solve(M - 1 / (2 * np.pi) * c1 * D, -2 * pp / (mu_r + 1))
 
 # Plot potential on the mesh
-mlab.figure("Potential on the boundary", bgcolor=(1, 1, 1))
-m = mlab.triangular_mesh(*mesh.vertices.T, mesh.faces, scalars=u, colormap="bwr")
-m.actor.mapper.interpolate_scalars_before_mapping = True
-m.module_manager.scalar_lut_manager.number_of_colors = 32
+plotter = pv.Plotter()
+m = plotter.add_mesh(
+    triangle_mesh(*mesh.vertices.T, mesh.faces),
+    scalars=u,
+    cmap="bwr",
+    show_scalar_bar=False,
+)
+mesh_actor(m).mapper.interpolate_before_map = True
+mesh_actor(m).mapper.lookup_table.n_values = 32
 #%% Compute fields on a plane
 # Load plane for the visualization of the potential
 plane = load_example_mesh("10x10_plane_hires", process=True)
@@ -211,41 +221,35 @@ bplane = (mu_r - 1) / (4 * np.pi) / mu0 * Bplane @ u + bprim
 # uplane[Uplane.sum(axis=1)]
 
 #%% Plot the results
-mlab.figure("Potential for B", bgcolor=(1, 1, 1), size=(1000, 1000))
-m = mlab.triangular_mesh(*plane.vertices.T, plane.faces, scalars=uplane, colormap="bwr")
-m.actor.mapper.interpolate_scalars_before_mapping = True
-m.module_manager.scalar_lut_manager.number_of_colors = 32
-# vectors = mlab.quiver3d(*(plane.triangles_center + np.array([0,0,0.001])).T,
+plotter = pv.Plotter(window_size=(1000, 1000))
+m = plotter.add_mesh(
+    triangle_mesh(*plane.vertices.T, plane.faces),
+    scalars=uplane,
+    cmap="bwr",
+    show_scalar_bar=False,
+)
+mesh_actor(m).mapper.interpolate_before_map = True
+mesh_actor(m).mapper.lookup_table.n_values = 32
 #                         *(-gradient(uplane, plane)), color=(0,0,0),
 #               scale_mode='none', scale_factor=0.01, mode='arrow')
-# vectors.glyph.mask_input_points = True
-# vectors.glyph.mask_points.random_mode_type = 0
-# vectors.glyph.mask_points.on_ratio = 4
-# vectors.glyph.glyph_source.glyph_position = 'center'
-m.scene.z_plus_view()
+plotter.view_xy()
 
-mlab.figure("B field", bgcolor=(1, 1, 1), size=(1000, 1000))
-vectors2 = mlab.quiver3d(
-    *pp.T,
-    *bplane.T,
+plotter = pv.Plotter(window_size=(1000, 1000))
+vectors2 = plotter.add_mesh(
+    vector_glyphs(
+        *pp.T, *bplane.T, scale_factor=0.02, mode="arrow", scale_mode="vector"
+    ),
     color=(1, 0, 0),
-    scale_mode="vector",
-    scale_factor=0.02,
-    mode="arrow"
+    show_scalar_bar=False,
 )
-vectors2.glyph.glyph.scale_factor = 0.08
-vectors2.glyph.mask_input_points = True
-vectors2.glyph.mask_points.random_mode_type = 0
-vectors2.glyph.mask_points.on_ratio = 4
-vectors2.glyph.glyph_source.glyph_position = "center"
-vectors2.scene.z_plus_view()
+plotter.view_xy()
 
 # Streamline plot for the cube
 bplane[:, 2] = 0
-vecfield = mlab.pipeline.vector_field(
+vecfield = structured_field(
     *pp.T.reshape(3, 50, 50, 1), *bplane.T.reshape(3, 50, 50, 1)
 )
-vecnorm = mlab.pipeline.extract_vector_norm(vecfield)
+vecnorm = vecfield
 streams = []
 
 Nq = 40
@@ -254,17 +258,19 @@ q[:, 1] = np.linspace(-1.5, 1.5, Nq)
 q[:, 0] = 1.5
 extent = np.array([-1.5, 1.5, -1.5, 1.5, 0, 0])
 for qi in q:
-    stream = mlab.pipeline.streamline(
-        vecnorm,
-        seed_scale=0.01,
-        seedtype="point",
-        integration_direction="both",
-        extent=np.array([-1.5, 1.5, -1.5, 1.5, 0, 0]),
-        colormap="viridis",
+    stream = plotter.add_mesh(
+        vecnorm.streamlines_from_source(
+            pv.PolyData(qi.reshape(1, 3)),
+            vectors="vectors",
+            integration_direction="both",
+            terminal_speed=1e-13,
+            max_length=6.0,
+        ),
+        cmap="viridis",
+        show_scalar_bar=False,
     )
-    stream.stream_tracer.initial_integration_step = 0.1
-    stream.stream_tracer.maximum_propagation = 200.0
-    stream.seed.widget = stream.seed.widget_list[3]
-    stream.seed.widget.position = qi
-    stream.seed.widget.enabled = False  # hide the widget itself
     streams.append(stream)
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

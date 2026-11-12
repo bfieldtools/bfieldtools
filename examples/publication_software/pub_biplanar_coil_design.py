@@ -6,6 +6,12 @@ First example in the paper, showing a basic biplanar coil producing homogeneous 
 region between the two coil planes.
 
 """
+
+import pyvista as pv
+from bfieldtools._example_plots import point_cloud, set_view
+
+pv.set_plot_theme("document")
+
 PLOT = True
 SAVE_FIGURES = False
 
@@ -13,7 +19,6 @@ SAVE_DIR = "./Biplanar coil/"
 
 
 import numpy as np
-from mayavi import mlab
 import trimesh
 
 from bfieldtools.mesh_conductor import MeshConductor
@@ -96,23 +101,26 @@ n_stray_points = len(stray_points)
 #%%
 # Plot geometry
 if PLOT:
-    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-
-    coil.plot_mesh(representation="wireframe", opacity=0.1, color=(0, 0, 0), figure=f)
-    coil.plot_mesh(representation="surface", opacity=0.1, color=(0, 0, 0), figure=f)
-    mlab.points3d(*target_points.T, color=(0, 0, 1))
-    mlab.points3d(*stray_points.T, scale_factor=0.3, color=(1, 0, 0))
-
-    f.scene.isometric_view()
-    f.scene.camera.zoom(1.5)
-
+    plotter = f = pv.Plotter(window_size=(800, 800))
+    plotter = coil.plot_mesh(style="wireframe", opacity=0.1, color=(0, 0, 0), figure=f)
+    plotter = coil.plot_mesh(style="surface", opacity=0.1, color=(0, 0, 0), figure=f)
+    plotter.add_mesh(
+        point_cloud(*target_points.T).glyph(
+            scale=False, geom=pv.Sphere(radius=0.05 / 2)
+        ),
+        color=(0, 0, 1),
+        show_scalar_bar=False,
+    )
+    plotter.add_mesh(
+        point_cloud(*stray_points.T).glyph(scale=False, geom=pv.Sphere(radius=0.3 / 2)),
+        color=(1, 0, 0),
+        show_scalar_bar=False,
+    )
+    f.view_isometric()
+    f.camera.zoom(1.5)
     if SAVE_FIGURES:
-        mlab.savefig(
-            SAVE_DIR + "biplanar_geometry.png",
-            figure=f,
-            magnification=4,
-        )
-        mlab.close()
+        f.screenshot(SAVE_DIR + "biplanar_geometry.png", scale=4)
+        plotter.close()
 
 
 #%%
@@ -140,14 +148,12 @@ bfield_specification = [target_spec, stray_spec]
 
 #%%
 # Run QP solver
-import mosek
 
 coil.s, prob = optimize_streamfunctions(
     coil,
     [target_spec, stray_spec],
     objective=(0, 1),
-    solver="MOSEK",
-    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+    solver="CLARABEL",
 )
 
 #%%
@@ -159,25 +165,13 @@ N_contours = 6
 loops = scalar_contour(coil.mesh, coil.s.vert, N_contours=N_contours)
 
 if PLOT:
-    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(650, 750))
-    mlab.clf()
-
-    plot_3d_current_loops(loops, colors="auto", figure=f)
-
-    # B_target = coil.B_coupling(target_points) @ coil.s
-
-    # mlab.quiver3d(*target_points.T, *B_target.T, mode="arrow", scale_factor=1)
-
-    f.scene.isometric_view()
-    #    f.scene.camera.zoom(0.95)
+    plotter = f = pv.Plotter(window_size=(650, 750))
+    plotter.clear()
+    plotter = plot_3d_current_loops(loops, colors="auto", figure=f)
+    f.view_isometric()
     if SAVE_FIGURES:
-        mlab.savefig(
-            SAVE_DIR + "biplanar_loops.png",
-            figure=f,
-            magnification=4,
-        )
-
-        mlab.close()
+        f.screenshot(SAVE_DIR + "biplanar_loops.png", scale=4)
+        plotter.close()
 
 
 #%%
@@ -186,20 +180,16 @@ if PLOT:
 if PLOT:
     from bfieldtools.viz import plot_data_on_vertices
 
-    f = mlab.figure(None, bgcolor=(1, 1, 1), fgcolor=(0.5, 0.5, 0.5), size=(800, 800))
-    mlab.clf()
-
-    plot_data_on_vertices(coil.mesh, coil.s.vert, figure=f, ncolors=256)
-
-    f.scene.camera.parallel_projection = 1
-    mlab.view(90, 90)
-    f.scene.camera.zoom(1.5)
-
+    plotter = f = pv.Plotter(window_size=(800, 800))
+    plotter.clear()
+    plotter = plot_data_on_vertices(coil.mesh, coil.s.vert, figure=f, ncolors=256)
+    f.camera.parallel_projection = 1
+    set_view(plotter, 90, 90)
+    f.camera.zoom(1.5)
     if SAVE_FIGURES:
-        mlab.savefig(
-            SAVE_DIR + "biplanar_streamfunction.png",
-            figure=f,
-            magnification=4,
-        )
+        f.screenshot(SAVE_DIR + "biplanar_streamfunction.png", scale=4)
+        plotter.close()
 
-        mlab.close()
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

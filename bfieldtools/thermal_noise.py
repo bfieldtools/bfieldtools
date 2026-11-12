@@ -344,8 +344,10 @@ def visualize_current_modes(
             interpolate_before_map=True,
         )
 
-        c = meshviz.contour()
-        figure.add_mesh(c)
+        if contours:
+            c = meshviz.contour()
+            if c.n_points:
+                figure.add_mesh(c)
 
         if i < N1:
             i += 1

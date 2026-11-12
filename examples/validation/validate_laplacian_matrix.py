@@ -32,7 +32,7 @@ vv1.append(vv)
 
 
 #%%
-""" 
+"""
  Spherical harmonics are the eigenfunctions of the LB operator
  The correct eigenvalues are l*(l+1)
 """
@@ -57,7 +57,7 @@ from bfieldtools.sphtools import cartesian2spherical
 ylm_on_hats = []
 i1 = 0
 vv1_projs = np.zeros((len(vv1), vv1[0].shape[1]))
-mp = MeshProjection(mesh, 4)
+mp = MeshProjection(mesh, 3)
 
 # N < L*(L+2)
 for l in range(0, 13):

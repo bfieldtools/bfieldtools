@@ -3,6 +3,12 @@ Validate calculation bfield calculation from line segments
 =================================================================
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import vector_glyphs, polyline
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 import time as t
@@ -137,17 +143,14 @@ BE = berr.T[2]  # By changing the index, errors in different components can be o
 ind = np.where(np.abs(BE) > 0.1)  # The limit for significant error is set to 0.1%
 bpoints = points.T[ind]
 
-from mayavi import mlab
 
-mlab.figure(1)
-q = mlab.quiver3d(*points, *b1.T)
-q.glyph.glyph_source.glyph_position = "center"
-mlab.plot3d(*vertices.T)
+plotter = pv.Plotter()
+q = plotter.add_mesh(vector_glyphs(*points, *b1.T), show_scalar_bar=False)
+plotter.add_mesh(polyline(*vertices.T).tube(radius=0.01), show_scalar_bar=False)
 
-mlab.figure(2)
-q = mlab.quiver3d(*points, *b2.T)
-q.glyph.glyph_source.glyph_position = "center"
-mlab.plot3d(*vertices.T)
+plotter = pv.Plotter()
+q = plotter.add_mesh(vector_glyphs(*points, *b2.T), show_scalar_bar=False)
+plotter.add_mesh(polyline(*vertices.T).tube(radius=0.01), show_scalar_bar=False)
 
 plt.figure(3)
 plt.hist(berr.T[2], bins=50, density=True, histtype="bar")
@@ -156,13 +159,11 @@ plt.xlabel("%")
 
 #%% Plot the b-field vectors exceeding the error limit
 if len(bpoints > 0):
+    plotter = pv.Plotter()
+    q = plotter.add_mesh(vector_glyphs(*bpoints.T, *b1[ind].T), show_scalar_bar=False)
+    plotter.add_mesh(polyline(*vertices.T).tube(radius=0.01), show_scalar_bar=False)
+    q = plotter.add_mesh(vector_glyphs(*bpoints.T, *b2[ind].T), show_scalar_bar=False)
 
-    from mayavi import mlab
-
-    mlab.figure(3)
-    q = mlab.quiver3d(*bpoints.T, *b1[ind].T)
-    q.glyph.glyph_source.glyph_position = "center"
-    mlab.plot3d(*vertices.T)
-
-    q = mlab.quiver3d(*bpoints.T, *b2[ind].T)
-    q.glyph.glyph_source.glyph_position = "center"
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

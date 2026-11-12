@@ -3,14 +3,18 @@ MAMBA coil
 ==========
 
 Compact example of a biplanar coil producing homogeneous field in a number of target
-regions arranged in a grid. Meant to demonstrate the flexibility in target choice, inspired by the 
+regions arranged in a grid. Meant to demonstrate the flexibility in target choice, inspired by the
 technique "multiple-acquisition micro B(0) array" (MAMBA) technique, see https://doi.org/10.1002/mrm.10464
 
 """
 
+import pyvista as pv
+from bfieldtools._example_plots import vector_glyphs
+
+pv.set_plot_theme("document")
+
 
 import numpy as np
-from mayavi import mlab
 import trimesh
 
 
@@ -91,8 +95,10 @@ target_abs_error[:, 0::2] += 0.1
 
 #%%
 # Plot target points and mesh
-coil.plot_mesh(opacity=0.1)
-mlab.quiver3d(*target_points.T, *target_field.T)
+plotter = coil.plot_mesh(opacity=0.1)
+plotter.add_mesh(
+    vector_glyphs(*target_points.T, *target_field.T), show_scalar_bar=False
+)
 
 
 #%%
@@ -108,17 +114,19 @@ target_spec = {
 #%%
 # Run QP solver, plot result
 
-import mosek
 
 coil.s, prob = optimize_streamfunctions(
     coil,
     [target_spec],
     objective="minimum_inductive_energy",
-    solver="MOSEK",
-    solver_opts={"mosek_params": {mosek.iparam.num_threads: 8}},
+    solver="CLARABEL",
 )
 
 
-coil.s.plot()
+plotter = coil.s.plot()
 
 coil.s.discretize(N_contours=10).plot_loops()
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()

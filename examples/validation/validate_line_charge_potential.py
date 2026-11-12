@@ -14,10 +14,14 @@ For the math see:
 
 """
 
+import pyvista as pv
+
+pv.set_plot_theme("document")
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
-from mayavi import mlab
 
 path = "/m/home/home8/80/makinea1/unix/pythonstuff/bfieldtools"
 if path not in sys.path:
@@ -99,3 +103,7 @@ plt.legend(("reg + sym", "sym", "neither"))
 plt.figure()
 plt.title("Relative error")
 plt.plot(x, abs(pot0 - pot1) / pot1)
+
+# Display the assembled scene (Sphinx-Gallery captures it during docs builds).
+if "plotter" in globals() and not plotter._closed:
+    plotter.show()
