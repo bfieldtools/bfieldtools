@@ -47,7 +47,7 @@ __all__ = [
 ]
 
 import numpy as np
-from scipy.special import factorial, lpmn
+from scipy.special import assoc_legendre_p, factorial
 
 from .quadratures import get_spherical_quad_points
 
@@ -202,6 +202,18 @@ def sphvec2cart(sp, vec):
 # real spherical harmonics and vector spherical harmonics
 
 
+def _associated_legendre(l, m, x, diff_n):
+    """Evaluate P_l^m(x) or its first derivative with respect to x.
+
+    Use integer degree l >= 0, signed integer order -l <= m <= l, and
+    x = cos(theta) strictly between -1 and 1. Callers must avoid the poles.
+    Set diff_n=0 for values or diff_n=1 for dP_l^m/dx; the result has the
+    shape of x. SciPy's default branch includes the Condon-Shortley phase
+    and the factorial normalization for negative orders.
+    """
+    return assoc_legendre_p(l, m, x, diff_n=diff_n)[diff_n]
+
+
 def lpmn_em(l, m, x):
     """
     Computes associated Legendre function (Plm) of the first kind of order m and degree l.
@@ -214,7 +226,7 @@ def lpmn_em(l, m, x):
     m: int
         order of Plm
     x: Nx1 array
-        evaluation points
+        evaluation points cos(theta), strictly between -1 and 1 (avoid poles)
 
     Returns
     -------
@@ -223,11 +235,7 @@ def lpmn_em(l, m, x):
 
     """
 
-    lp = np.zeros(x.shape)
-    for i in range(x.shape[0]):
-        a, b = lpmn(m, l, x[i])
-        lp[i] = a[np.abs(m), l]
-    return lp
+    return _associated_legendre(l, m, x, diff_n=0)
 
 
 def derlpmn_em(l, m, x):
@@ -242,7 +250,7 @@ def derlpmn_em(l, m, x):
     m: int
         order of Plm
     x: Nx1 array
-        evaluation points
+        evaluation points cos(theta), strictly between -1 and 1 (avoid poles)
 
     Returns
     -------
@@ -251,11 +259,7 @@ def derlpmn_em(l, m, x):
 
     """
 
-    derlp = np.zeros(x.shape)
-    for i in range(x.shape[0]):
-        a, b = lpmn(m, l, x[i])
-        derlp[i] = b[np.abs(m), l]
-    return derlp
+    return _associated_legendre(l, m, x, diff_n=1)
 
 
 def xlm(l, m, theta):

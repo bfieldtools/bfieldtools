@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "bfieldtools"
 description = "Open-source Python software for magnetic field modeling"
 readme = "README.rst"
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 license = {text = "BSD-3-Clause"}
 maintainers = [
     {name = "Rasmus Zetter", email = "rasmus.zetter@aalto.fi"},
@@ -22,14 +22,9 @@ classifiers = [
 dynamic = ["version"]
 
 dependencies = [
-    # Locked NumPy 2.2.6 can emit spurious matmul divide/overflow/invalid warnings
-    # with Apple Accelerate on newer Apple Silicon, even for correct results.
-    # Upstream issue: https://github.com/numpy/numpy/issues/28687
     "numpy",
-    # SciPy 1.13.x requires NumPy <2.3, blocking the newer NumPy with the fix.
-    # Upgrade both in a separate PR after migrating scipy.special.lpmn
-    # (deprecated in SciPy 1.15 and removed in 1.17).
-    "scipy<1.14.0",
+    # assoc_legendre_p replaces lpmn (removed in SciPy 1.17).
+    "scipy>=1.15",
     "matplotlib>=3.3",
     "sip",
     "pyvista",

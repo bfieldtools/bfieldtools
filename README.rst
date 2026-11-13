@@ -39,7 +39,8 @@ The software currently features
 Dependencies
 ^^^^^^^^^^^^
 
-Requires Python 3.8 or newer, preferably >3.10.
+Requires Python 3.10 or newer. Python 3.11 or newer is recommended to use
+recent NumPy versions with fixes for Apple Silicon numerical warnings.
 
  - `Numpy <https://www.numpy.org/>`_
  - `Scipy <https://www.scipy.org/>`_
