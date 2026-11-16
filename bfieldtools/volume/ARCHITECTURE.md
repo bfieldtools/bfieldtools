@@ -1,5 +1,9 @@
 # Geometry, topology, and matrix assembly
 
+See [PLAN.md](PLAN.md) for status and remaining work,
+[THEORY.md](THEORY.md) for the equivalent-magnetization interpretation and
+formulation, and [VALIDATION.md](VALIDATION.md) for tests and example workflows.
+
 The volume implementation uses composition, with four separate data containers.
 Algorithms live in functions; constructor helpers and cached incidence properties
 delegate to those functions.

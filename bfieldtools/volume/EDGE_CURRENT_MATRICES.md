@@ -2,6 +2,9 @@
 
 Status: current reconstruction, scalar resistance, and numerical inductance
 implemented, with a generalized decay-mode example.
+The equivalent-magnetization interpretation and surface stream-function
+connection are developed in [THEORY.md](THEORY.md). Implementation status and
+remaining work are summarized in [PLAN.md](PLAN.md).
 This develops the current-vector-potential formulation proposed in
 [PLAN.md](PLAN.md): lowest-order, first-kind Nédélec edge functions, their
 piecewise-constant curls, and a boundary-compatible tree–cotree gauge.
@@ -292,8 +295,9 @@ $$
 For the simple tree gauge, $P$ just selects the retained edges, so one can
 assemble their submatrices directly. With cavities or handles, the gradient
 kernel, boundary conditions, and possible missing global current patterns
-must be treated explicitly as described in [PLAN.md](PLAN.md); the solid-ball
-construction above is not a general topology algorithm.
+must be treated explicitly as described in
+[THEORY.md](THEORY.md#boundaries-global-loops-and-the-implementation-basis);
+the solid-ball construction above is not a general topology algorithm.
 
 ## Computational precedents and reference-cell equivalence
 
@@ -333,7 +337,7 @@ reference-cell machinery can be collapsed into edge vectors and cell volumes
 for these affine, lowest-order tetrahedra. Curved cells do not have the same
 constant-curl simplification.
 
-## Checks before implementation
+## Normalization and validation checks
 
 - Compare every local curl $2\mathbf g_i\times\mathbf g_j$ with the directed
   opposing-edge formula, including permuted positive cell orderings.
@@ -347,6 +351,6 @@ constant-curl simplification.
   scaling by $a>0$ at fixed resistivity and fixed coefficient normalization,
   $R\mapsto R/a$ and $M\mapsto aM$.
 
-The key convention to settle is therefore unit edge-integral normalization
+The implemented convention is unit edge-integral normalization
 with the directed local edge list above. It gives the constant current
 $\mathbf d_{T,p(n)}/(3V_T)$ and fixes all factors in both matrices.
