@@ -4,8 +4,15 @@ Coordinates retain the input length unit; volumes use its cube. No geometry
 repair, rescaling, or automatic changes to surface topology are performed.
 """
 
+from functools import cached_property
+
 import numpy as np
 import trimesh
+
+
+# Positive tetrahedron: each edge curl points along edge (n + 3) % 6.
+TETRA_EDGES = ((0, 1), (0, 2), (0, 3), (2, 3), (3, 1), (1, 2))
+TETRA_FACES = ((1, 2, 3), (0, 3, 2), (0, 1, 3), (0, 2, 1))
 
 
 def _indices(values, width, nvertices, name):
@@ -67,7 +74,7 @@ class TetraMesh:
         self.volumes = np.abs(determinants) / 6
 
         # For positive determinants these local face orderings point outward.
-        faces = self.tetrahedra[:, [[1, 2, 3], [0, 3, 2], [0, 1, 3], [0, 2, 1]]]
+        faces = self.tetrahedra[:, TETRA_FACES]
         faces = faces.reshape(-1, 3)
         _, first, inverse, counts = np.unique(
             np.sort(faces, axis=1),
@@ -92,12 +99,29 @@ class TetraMesh:
         ):
             array.flags.writeable = False
 
-    @property
+    @cached_property
     def cell_centers(self):
         """Cell centroids, shape (ncells, 3)."""
-        return self.vertices[self.tetrahedra].mean(axis=1)
+        centers = self.vertices[self.tetrahedra].mean(axis=1)
+        centers.flags.writeable = False
+        return centers
 
-    @property
+    @cached_property
+    def cell_edge_vectors(self):
+        """Directed edge vectors, shape (ncells, 6, 3), in ``TETRA_EDGES`` order.
+
+        The constant local edge curls are the opposing vectors divided by
+        ``3 * volumes``. Local edge n has opposing edge ``(n + 3) % 6``.
+        """
+        edges = np.asarray(TETRA_EDGES)
+        vectors = (
+            self.vertices[self.tetrahedra[:, edges[:, 1]]]
+            - self.vertices[self.tetrahedra[:, edges[:, 0]]]
+        )
+        vectors.flags.writeable = False
+        return vectors
+
+    @cached_property
     def cell_quality(self):
         """Mean-ratio quality: 1 for a regular tetrahedron, tending to 0 for slivers."""
         points = self.vertices[self.tetrahedra]
@@ -106,7 +130,9 @@ class TetraMesh:
             for i in range(4)
             for j in range(i)
         )
-        return 12 * (3 * self.volumes) ** (2 / 3) / edge_sum
+        quality = 12 * (3 * self.volumes) ** (2 / 3) / edge_sum
+        quality.flags.writeable = False
+        return quality
 
     def to_pyvista(self):
         """Return a PyVista UnstructuredGrid with volume and quality cell data."""

@@ -1,6 +1,7 @@
 # Volumetric eddy-current modeling
 
-Status: meshing started; the remaining solver design is proposed for review.
+Status: meshing and solid-ball edge topology implemented; the remaining solver
+design is proposed for review.
 
 ### Implemented meshing foundation
 
@@ -21,6 +22,37 @@ checks, cavities and multiple components, boundary/material labels, and local
 size fields. The first adapter explicitly excludes unsupported boundary topology
 and requires an intersection-free input. Supplied `TetraMesh` arrays must already
 be geometrically conforming; local incidence checks do not detect hanging nodes.
+
+### Implemented topology foundation
+
+- `volume.topology.TetraTopology`: dataclass holding globally oriented edges
+  and faces, local incidence indices and signs, boundary masks, and component
+  labels. Construct with `TetraTopology.from_mesh(mesh)` or the separate
+  `build_topology(mesh)` function.
+- Sparse gradient, curl, and divergence incidence matrices are built by separate
+  functions and exposed as cached properties. They map nodal values to edge
+  differences, edge integrals to face fluxes, and face fluxes to cell balances.
+- `TreeCotreeGauge.from_topology(topology)` delegates to the separate
+  `tree_cotree_gauge` function. It contracts each conductor's boundary to a root,
+  sets an interior spanning forest to zero, and retains independent cotree edge
+  coefficients. It supports disconnected solid-ball conductors; cavities,
+  handles, and nonmanifold boundaries are explicitly rejected by this first
+  gauge implementation. General incidence construction does not impose these
+  topology restrictions.
+- `TetraMesh` remains the geometry container, with cached centers, quality, and
+  local edge vectors in the order `(01, 02, 03, 23, 31, 12)`. Matrix and basis
+  conventions are derived in [EDGE_CURRENT_MATRICES.md](EDGE_CURRENT_MATRICES.md).
+- `examples/volume/topology.py` visualizes boundary/tree/cotree edges and a
+  selectable retained edge's current loop, incident cells, and current arrows.
+  Run `uv run --locked --extra meshing python examples/volume/topology.py` from
+  the repository root. Append `--screenshot /tmp/volume-topology.png` for an
+  offscreen preview.
+- Tests verify incidence identities, geometric flux orientation, zero boundary
+  flux, independence and completeness against the conserved face-flux space,
+  disconnected conductors, and rejection of unsupported topologies.
+
+Still pending: reusable current reconstruction operators, material/magnetic
+matrix assembly, and gauge/global-pattern construction for more general topology.
 
 ## Objective and initial scope
 
