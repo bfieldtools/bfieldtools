@@ -18,6 +18,15 @@ date. No manual environment creation or activation is needed.
 
 For the package without development tools, use `uv sync --locked`.
 
+For optional tetrahedral meshing with TetGen:
+
+```bash
+uv run --locked --extra meshing python examples/volume/sphere_meshing.py
+```
+
+The script displays a tetrahedral cutaway and a central slice of the bundled
+sphere. `pip install 'bfieldtools[meshing]'` installs the same optional backend.
+
 ## Documentation
 
 ```bash

@@ -1,6 +1,26 @@
 # Volumetric eddy-current modeling
 
-Status: proposed plan for review. No implementation decisions below are final.
+Status: meshing started; the remaining solver design is proposed for review.
+
+### Implemented meshing foundation
+
+- `volume.mesh.TetraMesh`: backend-independent vertex/cell arrays, positive cell
+  orientation, outward boundary faces, volumes, centroids, mean-ratio quality,
+  local face-incidence validation, and PyVista conversion.
+- `volume.mesh.tetrahedralize`: optional Python TetGen adapter for one closed,
+  outward-oriented genus-zero solid, with volume and quality controls. TetGen's
+  requested maximum volume is a refinement target; returned cells may exceed it.
+- `examples/volume/sphere_meshing.py`: fills `unit_sphere.stl`, reports mesh
+  statistics, and displays a tetrahedral cutaway and a central quality slice.
+  Run with `uv run --extra meshing python examples/volume/sphere_meshing.py`.
+- Tests cover local geometry, invalid inputs, missing optional backend, sphere
+  volume and boundary preservation, and refinement.
+
+Still pending in geometry processing: geometric self-intersection and overlap
+checks, cavities and multiple components, boundary/material labels, and local
+size fields. The first adapter explicitly excludes unsupported boundary topology
+and requires an intersection-free input. Supplied `TetraMesh` arrays must already
+be geometrically conforming; local incidence checks do not detect hanging nodes.
 
 ## Objective and initial scope
 

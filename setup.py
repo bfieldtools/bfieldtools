@@ -24,6 +24,7 @@ def main():
         setup_requires=["setuptools_scm"],
         python_requires=">=3.6",
         install_requires=requirements,
+        extras_require={"meshing": ["tetgen>=0.8,<0.9"]},
         packages=find_packages(),
         include_package_data=True,
         package_data={"bfieldtools": ["example_meshes/*"]},

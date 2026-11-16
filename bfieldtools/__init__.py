@@ -12,6 +12,7 @@ from . import utils
 from . import integrals
 from . import legacy
 from . import flatten_mesh
+from . import volume
 
 try:
     from .version import __version__
@@ -38,4 +39,5 @@ __all__ = [
     "integrals",
     "legacy",
     "flatten_mesh",
+    "volume",
 ]
