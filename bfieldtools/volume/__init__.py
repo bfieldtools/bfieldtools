@@ -1,6 +1,7 @@
 """Tetrahedral meshes and tools for volumetric conductor models."""
 
-from .mesh import TetraMesh, tetrahedralize
+from .mesh import TetraMesh, tetrahedralize, load_example_tetra_mesh
+from .dynamics import loop_coupling, modal_response
 from .basis import (
     CellCurrentBasis,
     build_edge_current_basis,
@@ -8,7 +9,14 @@ from .basis import (
     cell_edge_current_vectors,
     reconstruct_currents,
 )
-from .impedance import resistance_matrix
+from .impedance import inductance_matrix, resistance_matrix
+from .integrals import (
+    iter_tetrahedron_interactions,
+    tetrahedron_interaction_block,
+    tetrahedron_interaction_matrix,
+    tetrahedron_potential,
+    tetrahedron_quadrature,
+)
 from .topology import (
     TetraTopology,
     TreeCotreeGauge,
@@ -22,6 +30,9 @@ from .topology import (
 __all__ = [
     "TetraMesh",
     "tetrahedralize",
+    "load_example_tetra_mesh",
+    "loop_coupling",
+    "modal_response",
     "TetraTopology",
     "TreeCotreeGauge",
     "build_topology",
@@ -35,4 +46,10 @@ __all__ = [
     "cell_edge_current_vectors",
     "reconstruct_currents",
     "resistance_matrix",
+    "inductance_matrix",
+    "tetrahedron_potential",
+    "tetrahedron_quadrature",
+    "tetrahedron_interaction_block",
+    "tetrahedron_interaction_matrix",
+    "iter_tetrahedron_interactions",
 ]

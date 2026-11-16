@@ -2,7 +2,7 @@
 Tree–cotree gauge and volume edge loops
 =====================================
 
-Build a coarse tetrahedral sphere and inspect independent current loops. Run
+Load the bundled tetrahedral sphere and inspect independent current loops. Run
 ``uv run --locked --extra meshing python examples/volume/topology.py`` from the
 repository root. Use the slider to select a retained edge. For an offscreen
 preview, append ``--screenshot /tmp/volume-topology.png``.
@@ -22,9 +22,8 @@ import argparse
 
 import numpy as np
 import pyvista as pv
-import trimesh
 
-from bfieldtools.volume import TetraTopology, TreeCotreeGauge, tetrahedralize
+from bfieldtools.volume import TetraTopology, TreeCotreeGauge, load_example_tetra_mesh
 
 
 def segments_polydata(segments):
@@ -149,8 +148,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--screenshot", help="render off screen to this image path")
     args = parser.parse_args()
-    surface = trimesh.creation.icosphere(subdivisions=1)
-    mesh = tetrahedralize(surface, max_volume=0.05)
+    mesh = load_example_tetra_mesh()
     topology = TetraTopology.from_mesh(mesh)
     gauge = TreeCotreeGauge.from_topology(topology)
     print(f"Cells: {len(mesh.tetrahedra)}; edges: {len(topology.edges)}")

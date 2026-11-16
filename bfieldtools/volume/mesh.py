@@ -7,6 +7,7 @@ repair, rescaling, or automatic changes to surface topology are performed.
 from __future__ import annotations
 
 from functools import cached_property
+from importlib.resources import files
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -20,6 +21,22 @@ if TYPE_CHECKING:
 # Positive tetrahedron: each edge curl points along edge (n + 3) % 6.
 TETRA_EDGES = ((0, 1), (0, 2), (0, 3), (2, 3), (3, 1), (1, 2))
 TETRA_FACES = ((1, 2, 3), (0, 3, 2), (0, 1, 3), (0, 2, 1))
+
+
+def load_example_tetra_mesh(name: str = "unit_sphere_tetra") -> TetraMesh:
+    """Load bundled tetrahedral geometry without running a meshing backend.
+
+    The default is a unit-radius faceted sphere; coordinates are dimensionless.
+    Scale its vertices explicitly to assign a physical size. Archives contain
+    only vertices and tetrahedra and are loaded without pickle support.
+    """
+    if not isinstance(name, str) or not name or "/" in name or "\\" in name:
+        raise ValueError("name must be an example mesh name without a path")
+    resource = files("bfieldtools").joinpath("example_meshes", name + ".npz")
+    if not resource.is_file():
+        raise ValueError(f"No bundled tetrahedral mesh named {name!r}")
+    with resource.open("rb") as stream, np.load(stream, allow_pickle=False) as data:
+        return TetraMesh(data["vertices"], data["tetrahedra"])
 
 
 def _indices(

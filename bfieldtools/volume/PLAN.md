@@ -1,7 +1,8 @@
 # Volumetric eddy-current modeling
 
-Status: meshing, solid-ball edge topology, and resistance implemented; the
-remaining solver design is proposed for review.
+Status: meshing, solid-ball edge topology, resistance, inductance, loop coupling,
+and modal transients implemented. A driven sphere example completes the first
+end-to-end workflow; spatial convergence and broader physical validation remain.
 
 ### Implemented meshing foundation
 
@@ -16,6 +17,12 @@ remaining solver design is proposed for review.
   Run with `uv run --extra meshing python examples/volume/sphere_meshing.py`.
 - Tests cover local geometry, invalid inputs, missing optional backend, sphere
   volume and boundary preservation, and refinement.
+- `example_meshes/unit_sphere_tetra.npz`: stored unit-radius sphere with 226
+  vertices and 808 tetrahedra (649 independent currents), generated from an
+  icosphere with two subdivisions and TetGen volume target 0.01. Load using
+  `volume.load_example_tetra_mesh()` and scale the vertices for physical units.
+  The topology, resistance, mode, and transient examples reuse these arrays;
+  `sphere_meshing.py` continues to demonstrate boundary-to-volume meshing.
 
 Still pending in geometry processing: geometric self-intersection and overlap
 checks, cavities and multiple components, boundary/material labels, and local
@@ -85,8 +92,64 @@ handles.
   definiteness, conservation, material linearity, and geometric scaling. Real
   and complex current reconstruction and multiple coefficient sets are covered.
 
-Still pending: inductance and field coupling, physical decay modes, and more
-general material models.
+### Implemented inductance and generalized-mode example
+
+- `volume.integrals`: geometry-only tetrahedron potentials and cell interactions.
+  Analytic near-source integration uses the existing triangle kernel. Positive
+  outer Gauss–Jacobi quadrature is refined per pair until successive estimates
+  satisfy the requested tolerance; failure to converge raises an error. Both
+  source/testing directions are averaged for reciprocity. See
+  [INDUCTANCE_INTEGRALS.md](INDUCTANCE_INTEGRALS.md) for accuracy limitations.
+- `volume.impedance.inductance_matrix`: dense basis inductance contracted from
+  streamed cell blocks, with optional reuse of a supplied geometric $K$ matrix.
+  The integration layer depends on geometry, and the contraction layer uses only
+  the current representation. No diagonal/eigenvalue adjustments enforce energy.
+- `examples/volume/eddy_modes.py`: constructs $R$ and $M$, solves
+  $Rv=\lambda Mv$ with M-orthonormal vectors, reports decay times, and displays
+  the first three eigenfunctions. Run
+  `uv run --locked --extra meshing python examples/volume/eddy_modes.py`.
+  `--modes 0 3 8` selects three indices, `--check-convergence` repeats integration
+  at a tighter tolerance, and `--screenshot /tmp/volume-eddy-modes.png` renders
+  off screen. The stored mesh is a demonstration, not a spatial convergence study.
+- Tests cover independent integral references, self/touching/near/far cells,
+  geometric scaling, magnetic energy, blocked assembly, basis invariance,
+  generalized eigenpair residuals, and M-orthogonality.
+
+### Implemented loop-driven transient example
+
+- `volume.dynamics.loop_coupling`: integrates the vector potential of a closed
+  polygonal unit-current loop against each constant-cell basis current. The
+  straight-segment source integration is analytic; positive tetrahedral
+  quadrature integrates the testing cells. Wires touching or crossing the
+  conductor are rejected.
+- `volume.dynamics.modal_response`: integrates the decoupled forced mode
+  equations for prescribed current derivative and optional initial amplitudes.
+  Geometry and source containers are not required by this function.
+- `examples/volume/eddy_currents.py`: the stored sphere at radius 0.1 m and
+  resistivity 1e-8 ohm metres, driven by a nearby 0.075 m radius loop at z=0.14 m.
+  A smooth 1000 A pulse lasts 80 ms, followed by free decay. All generalized
+  modes are retained. The figure shows the input waveform, mode decay times,
+  modal amplitudes, and current snapshots at 20, 60, and 180 ms in A/m².
+  Run `uv run --locked --extra meshing python examples/volume/eddy_currents.py`.
+  Add `--screenshot /tmp/volume-eddy-currents.png` for offscreen output.
+- The example verifies eigenpairs, positive energy, physical face-flux
+  continuity and zero boundary leakage, free decay, and agreement with direct
+  integration of the same coefficient ODE. Coupling quadrature is checked on
+  every run. `--check-convergence` additionally tightens inductance quadrature
+  and doubles loop segmentation. These checks do not establish spatial accuracy.
+- Tests independently integrate the wire kernel numerically and check its
+  coupling and orientation, reject intersecting wires, and compare modal
+  dynamics with analytic ramp/free-decay solutions and the energy balance.
+- On the bundled mesh, the first three decay times are approximately 120.87,
+  120.78, and 120.73 ms. The full modal/direct transient comparison differs by
+  3.1e-7 in relative M norm; normalized face-flux imbalance is 1.6e-15.
+  Tightening inductance quadrature changes the first rates by less than 7e-9;
+  coupling order 4 to 6 changes modal coupling by 3.2e-9, while doubling loop
+  segmentation from 96 to 192 changes it by 2.85e-4. These are numerical checks
+  on this fixed spatial discretization, not error bounds for the physical sphere.
+
+Still pending: spatial convergence and physical validation, volume-current field
+evaluation, global patterns for general topology, and more general material models.
 
 ## Objective and initial scope
 
@@ -662,13 +725,14 @@ Names are provisional; keep the first implementation small.
 | `basis.py` | RT face functions, edge curls, independent current reconstruction |
 | `impedance.py` | Resistance and inductance assembly |
 | `integrals.py` | Tetrahedron interaction kernels and singular integration |
+| `dynamics.py` | Implemented external-loop coupling and prescribed-drive modal dynamics |
 | `magnetics.py` | Vector-potential and magnetic-field coupling |
-| `modes.py` | Generalized modes and modal dynamics |
+| `modes.py` | Possible future eigensolver helpers (examples currently use SciPy directly) |
 
 Reuse existing numerical and visualization conventions where practical, while
 keeping volume-current operators distinct from surface stream-function operators.
-Packaging currently explicitly lists only `bfieldtools`; update package inclusion
-when the new `bfieldtools.volume` subpackage becomes usable.
+Package discovery includes `bfieldtools.volume`, and the example-mesh package data
+includes the stored tetrahedral archive.
 
 ## Literature and reference implementations
 

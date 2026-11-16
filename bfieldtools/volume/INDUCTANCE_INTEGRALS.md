@@ -1,6 +1,8 @@
 # Analytic reductions for volume inductance integrals
 
-Status: findings and proposed derivations for review; no implementation yet.
+Status: analytic source reduction and a converged outer-quadrature implementation
+are available in [integrals.py](integrals.py); further closed-form reductions
+remain investigational.
 This note complements [PLAN.md](PLAN.md) and assumes familiarity with the
 surface-current formulation in [bfieldtools Part I](https://doi.org/10.1063/5.0016090).
 
@@ -230,17 +232,64 @@ The specific scalar formula above follows from the two identities shown here.
   explicitly presents a series; it should not be treated as a general finite
   closed-form formula for touching tetrahedra.
 
-## Proposed implementation and validation
+## Implemented numerical evaluator
 
-1. Implement the four-face formula for $u_U$, reusing the triangle kernel and
-   explicitly checking orientation and boundary limits.
-2. Integrate this potential over the testing tetrahedron, using refinement for
-   self, touching, and close pairs. Establish accuracy before fixing production
-   quadrature orders.
-3. Obtain an independent reference, using a singularity-aware volume quadrature,
-   the face-pair reduction, or a verified analytic special case.
-4. Use direct quadrature or moment expansions for far pairs to reduce cost and
-   avoid cancellation in signed boundary sums.
+`tetrahedron_potential(mesh, points, source_cells=None)` evaluates source point
+potentials using the four-face formula above. Source coordinates are translated
+and normalized before using the existing triangle kernel, controlling its fixed
+edge-logarithm regularization. Interior, face, edge, and vertex limits are tested.
+Beyond eight source radii, a regular 64-point source rule avoids cancellation in
+the signed face sum; this is numerical integration of a smooth kernel.
+
+`tetrahedron_interaction_block(mesh, rows, columns)` integrates the resulting
+finite potentials over testing cells. It uses an interior positive Gauss–Jacobi
+product rule on collapsed tetrahedral coordinates. `quadrature_order=n` means
+$n^3$ points, with polynomial exactness through total degree $2n-1$.
+
+Outer integration starts at order 4 by default, compares with order 6, then
+increases by two for pairs whose successive values differ by more than
+`rtol=1e-4`. The default `max_order=12` limits refinement. Nonconvergence raises
+an error identifying the pair; increase `max_order` or relax `rtol` explicitly.
+The estimate is empirical, not a rigorous error bound. The far-source rule and
+floating-point triangle routine also limit the accuracy attainable by tightening
+outer quadrature alone.
+
+Both source/testing directions are evaluated and averaged to enforce
+reciprocity. `iter_tetrahedron_interactions` yields upper-triangular cell blocks;
+`tetrahedron_interaction_matrix` materializes the complete symmetric $K$ when
+needed. `inductance_matrix` normally contracts blocks directly into the current
+basis, retaining no full cell-pair matrix. It can also reuse a supplied $K$.
+Neither evaluator changes diagonal values or eigenvalues to force positivity.
+
+Tests include:
+
+- Positive quadrature weights and exact barycentric moments.
+- Point potentials against independent numerical face integration.
+- Self interaction against the face-pair distance reduction.
+- The summed interaction of a tetrahedral unit cube against a smooth,
+  independent displacement-space integral.
+- Shared-face, shared-edge, shared-vertex, near, and far cell pairs.
+- Reciprocity, rigid motions, fifth-power scaling, and order refinement.
+- Blocked versus precomputed-kernel assembly, magnetic energy, basis changes,
+  generalized eigenpair residuals, M-orthogonality, and inverse-square scaling
+  of decay rates with conductor size.
+
+`examples/volume/eddy_modes.py` shows the lowest generalized modes and provides
+`--check-convergence` to repeat integration with a tighter tolerance. Its sphere
+mesh is deliberately coarse; quadrature convergence does not establish spatial
+mesh convergence or complete physical validation.
+
+## Further integration work
+
+1. Extend conditioning and boundary-limit validation to very thin tetrahedra and
+   extreme coordinate scales.
+2. Add spatial subdivision or adaptive cell integration when order refinement
+   is inefficient or fails on difficult self, touching, and close pairs.
+3. Expand high-accuracy independent references beyond the cube and current
+   face-pair comparisons, including verified analytic special cases.
+4. Optimize far-pair evaluation with controlled quadrature or moment expansions,
+   and expose its accuracy independently of outer integration if tighter
+   tolerances are needed.
 5. Investigate further analytic reductions if profiling shows close-pair assembly
    is a significant cost.
 
@@ -255,6 +304,7 @@ Validation should cover:
 - Agreement between independent formulations and verified special cases.
 - Positive magnetic energy after assembly in the independent current basis.
 
-The first production candidate is therefore **analytic source integration plus
-controlled outer quadrature**. The face-pair identity is a useful parallel route
-for validation and a starting point for a more complete analytic derivation.
+The implemented baseline is therefore **analytic source integration plus
+controlled outer quadrature**, with regular far-source quadrature. The face-pair
+identity remains an independent validation route and a starting point for a more
+complete analytic derivation.

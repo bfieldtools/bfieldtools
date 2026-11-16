@@ -56,7 +56,7 @@ checks that the three matrices are real, finite CSR matrices with the same shape
 and one row per mesh cell. Independence, conservation, and boundary conditions
 must be established by the construction algorithm, not inferred from matrix shape.
 
-## Resistance and planned inductance
+## Resistance and inductance
 
 For component operators $B_k$ with shape $(N_T,N_b)$,
 
@@ -68,7 +68,7 @@ $$
 Resistance depends on geometry through cell volumes and on the supplied current
 operators. It does not need the origin of the coefficient space.
 
-The same representation supports the proposed inductance factorization
+The same representation supports the implemented inductance factorization
 
 $$
 M=\frac{\mu_0}{4\pi}\sum_{k=x,y,z}B_k^{\mathsf T}KB_k,
@@ -77,17 +77,32 @@ K_{TU}=\int_T\int_U\frac{dV_{\mathbf y}\,dV_{\mathbf x}}
 {|\mathbf x-\mathbf y|}.
 $$
 
-The scalar interaction kernel depends on geometry alone. Its evaluator should
-accept mesh geometry and cell-pair indices, without knowing edge ordering,
+The scalar interaction kernel depends on geometry alone. Its evaluator accepts
+mesh geometry and cell-pair indices, without knowing edge ordering,
 topology, gauge, resistivity, or basis normalization. A computed interaction can
 then be reused for different current bases on the same geometry.
 
-Inductance integration is not implemented by this refactor. When it is added,
-the contraction can process cell blocks so that storing a full dense cell-pair
-matrix is optional. The division between geometric integration and current
-operators applies to dense, blocked, and matrix-free evaluation.
+`inductance_matrix(basis)` processes cell blocks without storing a full dense
+cell-pair matrix. Within each block, dense contraction is restricted to active
+basis coefficients. The final inductance matrix is dense. Alternatively,
+`inductance_matrix(basis, interactions=K)` reuses a precomputed geometric matrix.
+`tetrahedron_interaction_matrix(mesh)` constructs $K$; the lower-level block
+iterator supports streaming. Matrix-free evaluation is a later extension.
 
 The volume factors belong inside $K$. Since $B_k$ already contains current
 density, the inductance contraction must not multiply by cell volumes again.
 The kernel derivations and quadrature limitations are documented in
 [INDUCTANCE_INTEGRALS.md](INDUCTANCE_INTEGRALS.md).
+
+## Excitation and evolution
+
+`loop_coupling(basis, loop_vertices)` returns the coupling vector in the basis
+coefficient space. It needs only current operators and geometry. No topology or
+gauge reference is retained by the coupling or time-integration code.
+
+For M-orthonormal generalized eigenvectors V and positive rates λ, use
+`modal_response(rates, V.T @ coupling, current_derivative, times)`. This solves
+`da/dt + λ*a = -(V.T @ coupling)*dI/dt`, returning amplitudes at the requested
+times. Reconstruct coefficients with `x = V @ a` and cell currents using
+`reconstruct_currents(basis, x)`. Optional initial amplitudes specify a nonzero
+starting state; time evolution otherwise starts from an unexcited conductor.

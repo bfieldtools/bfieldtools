@@ -12,7 +12,7 @@ the default is 1, and the sphere radius is 1 metre.
 These are ordinary coefficient-space eigenpairs R v = lambda v, with Euclidean
 normalization ||v||_2 = 1 A. They depend on the selected tree gauge. Their
 eigenvalues measure Joule loss per squared coefficient norm; they are not decay
-rates. Physical decay modes will require the inductance metric R v = lambda M v.
+rates. Physical decay modes use the inductance metric R v = lambda M v (eddy_modes.py).
 
 Colors show |J| on a central slice. Black arrows show the constant cell
 current directions in the front half of the sphere, with fixed display lengths.
@@ -27,7 +27,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pyvista as pv
 from scipy.linalg import eigh
-import trimesh
 
 from bfieldtools.volume import (
     TreeCotreeGauge,
@@ -35,7 +34,7 @@ from bfieldtools.volume import (
     TetraTopology,
     reconstruct_currents,
     resistance_matrix,
-    tetrahedralize,
+    load_example_tetra_mesh,
 )
 
 
@@ -125,7 +124,7 @@ def main():
     parser.add_argument("--modes", nargs=3, type=int, default=[0, 1, 2])
     parser.add_argument("--screenshot", help="render off screen to this image path")
     args = parser.parse_args()
-    mesh = tetrahedralize(trimesh.creation.icosphere(subdivisions=1), max_volume=0.05)
+    mesh = load_example_tetra_mesh()
     topology = TetraTopology.from_mesh(mesh)
     gauge = TreeCotreeGauge.from_topology(topology)
     basis = build_edge_current_basis(mesh, topology, gauge)

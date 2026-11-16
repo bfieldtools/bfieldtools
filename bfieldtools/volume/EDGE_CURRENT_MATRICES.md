@@ -1,7 +1,7 @@
 # Resistance and inductance from tetrahedral edge curls
 
-Status: current reconstruction and scalar resistance implemented; inductance
-and the decay-mode solver remain proposed.
+Status: current reconstruction, scalar resistance, and numerical inductance
+implemented, with a generalized decay-mode example.
 This develops the current-vector-potential formulation proposed in
 [PLAN.md](PLAN.md): lowest-order, first-kind Nédélec edge functions, their
 piecewise-constant curls, and a boundary-compatible tree–cotree gauge.
@@ -179,7 +179,7 @@ J = reconstruct_currents(basis, coefficients)  # (ncells, 3)
 ```
 
 The result is a `CellCurrentBasis` containing geometry and the three component
-operators. Resistance and future inductance assembly use this representation
+operators. Resistance and inductance assembly use this representation
 without depending on edge topology or gauge metadata; see
 [ARCHITECTURE.md](ARCHITECTURE.md).
 
@@ -242,6 +242,12 @@ source integration and an exact reduction to face-pair distance integrals;
 it does not yet establish a fully integrated formula for arbitrary cell pairs.
 The vector dot products above are exact. Numerical integration is confined to
 the scalar cell interactions. Inductance is generally dense.
+
+`inductance_matrix(basis)` implements this contraction using converged cell
+interaction blocks. `tetrahedron_interaction_matrix(mesh)` can instead construct
+the geometry-only $K$ for reuse via `inductance_matrix(basis, interactions=K)`.
+Quadrature controls and numerical limitations are described in
+[INDUCTANCE_INTEGRALS.md](INDUCTANCE_INTEGRALS.md).
 
 ## Boundary conditions and the tree–cotree gauge
 
