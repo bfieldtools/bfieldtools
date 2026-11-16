@@ -38,11 +38,16 @@ class TetraTopology:
     balances. These are incidence matrices, without metric factors. In
     particular, divergence gives integrated balance, not divergence density.
 
+    Only connectivity and vertex count are retained, with no reference to vertex
+    coordinates. The same topology can be reused with different geometries having
+    identical connectivity and cell ordering.
+
     Unused mesh vertices are allowed and have component label -1. Face, edge,
     and vertex boundary masks refer to the boundary of the volume mesh.
     """
 
-    mesh: TetraMesh
+    tetrahedra: NDArray[np.int64]
+    n_vertices: int
     edges: NDArray[np.int64]
     cell_edges: NDArray[np.intp]
     cell_edge_signs: NDArray[np.int8]
@@ -185,7 +190,8 @@ def build_topology(mesh: TetraMesh) -> TetraTopology:
     )
 
     return TetraTopology(
-        mesh=mesh,
+        tetrahedra=mesh.tetrahedra,
+        n_vertices=len(mesh.vertices),
         edges=edges,
         cell_edges=cell_edges,
         cell_edge_signs=cell_edge_signs,
@@ -213,7 +219,7 @@ def gradient_matrix(topology: TetraTopology) -> csr_matrix:
             np.tile([-1, 1], len(topology.edges)).astype(np.int8),
             (np.repeat(np.arange(len(topology.edges)), 2), topology.edges.ravel()),
         ),
-        shape=(len(topology.edges), len(topology.mesh.vertices)),
+        shape=(len(topology.edges), topology.n_vertices),
     ).tocsr()
 
 
@@ -241,11 +247,11 @@ def divergence_matrix(topology: TetraTopology) -> csr_matrix:
         (
             topology.cell_face_signs.ravel(),
             (
-                np.repeat(np.arange(len(topology.mesh.tetrahedra)), 4),
+                np.repeat(np.arange(len(topology.tetrahedra)), 4),
                 topology.cell_faces.ravel(),
             ),
         ),
-        shape=(len(topology.mesh.tetrahedra), len(topology.faces)),
+        shape=(len(topology.tetrahedra), len(topology.faces)),
     ).tocsr()
 
 
@@ -265,7 +271,7 @@ def tree_cotree_gauge(topology: TetraTopology) -> TreeCotreeGauge:
     _check_supported_boundary(topology)
     interior = topology.active_vertex_mask & ~topology.boundary_vertex_mask
     ninterior = np.count_nonzero(interior)
-    quotient = np.full(len(topology.mesh.vertices), -1, dtype=np.int64)
+    quotient = np.full(topology.n_vertices, -1, dtype=np.int64)
     quotient[interior] = np.arange(ninterior)
     boundary = topology.boundary_vertex_mask
     quotient[boundary] = ninterior + topology.vertex_components[boundary]
@@ -302,7 +308,7 @@ def tree_cotree_gauge(topology: TetraTopology) -> TreeCotreeGauge:
     interior_faces = ~topology.boundary_face_mask
     incidence = topology.divergence[:, interior_faces].astype(np.int64)
     ndual, _ = connected_components(incidence @ incidence.T, directed=False)
-    expected = np.count_nonzero(interior_faces) - len(topology.mesh.tetrahedra) + ndual
+    expected = np.count_nonzero(interior_faces) - len(topology.tetrahedra) + ndual
     if ndual != topology.n_components or n_dofs != expected:
         raise ValueError(
             "mesh topology requires additional global patterns or constraints; "
@@ -333,7 +339,7 @@ def _check_supported_boundary(topology: TetraTopology) -> None:
     boundary_edges = topology.edges[topology.boundary_edge_mask]
     adjacency = coo_matrix(
         (np.ones(len(boundary_edges)), boundary_edges.T),
-        shape=(len(topology.mesh.vertices), len(topology.mesh.vertices)),
+        shape=(topology.n_vertices, topology.n_vertices),
     ).tocsr()[boundary_vertices][:, boundary_vertices]
     _, labels = connected_components(adjacency, directed=False)
     components = topology.vertex_components[boundary_vertices]

@@ -6,16 +6,17 @@ import numpy as np
 from numpy.typing import ArrayLike
 from scipy.sparse import csr_matrix
 
-from .basis import EdgeCurrentBasis
+from .basis import CellCurrentBasis
 
 
-def resistance_matrix(basis: EdgeCurrentBasis, resistivity: ArrayLike) -> csr_matrix:
-    r"""Assemble exact sparse resistance in an independent edge-current basis.
+def resistance_matrix(basis: CellCurrentBasis, resistivity: ArrayLike) -> csr_matrix:
+    r"""Assemble exact sparse resistance for piecewise-constant currents.
 
     Parameters
     ----------
-    basis : EdgeCurrentBasis
-        Boundary-compatible, gauge-fixed current representation.
+    basis : CellCurrentBasis
+        Piecewise-constant current representation. Assembly is independent of
+        its topology, gauge, or construction method.
     resistivity : float or array-like, shape (ncells,)
         Positive, finite scalar resistivity in ohm metres. A scalar applies to
         all cells; an array assigns one scalar per cell. Tensor resistivity is
@@ -36,7 +37,7 @@ def resistance_matrix(basis: EdgeCurrentBasis, resistivity: ArrayLike) -> csr_ma
     eddy-current decay rates require the inductance matrix as the eigenproblem
     metric, R v = lambda M v.
     """
-    mesh = basis.topology.mesh
+    mesh = basis.mesh
     resistivity = np.asarray(resistivity)
     if np.iscomplexobj(resistivity):
         raise ValueError("resistivity must be real, finite, and positive")
@@ -48,7 +49,7 @@ def resistance_matrix(basis: EdgeCurrentBasis, resistivity: ArrayLike) -> csr_ma
     if not np.all(np.isfinite(resistivity)) or np.any(resistivity <= 0):
         raise ValueError("resistivity must be real, finite, and positive")
     weights = np.sqrt(resistivity * mesh.volumes)
-    matrix = csr_matrix((basis.gauge.n_dofs, basis.gauge.n_dofs), dtype=float)
+    matrix = csr_matrix((basis.n_dofs, basis.n_dofs), dtype=float)
     for operator in basis.operators:
         weighted = operator.multiply(weights[:, None]).tocsr()
         matrix += weighted.T @ weighted

@@ -2,7 +2,7 @@
 
 from .mesh import TetraMesh, tetrahedralize
 from .basis import (
-    EdgeCurrentBasis,
+    CellCurrentBasis,
     build_edge_current_basis,
     cell_current_operators,
     cell_edge_current_vectors,
@@ -29,7 +29,7 @@ __all__ = [
     "curl_matrix",
     "divergence_matrix",
     "tree_cotree_gauge",
-    "EdgeCurrentBasis",
+    "CellCurrentBasis",
     "build_edge_current_basis",
     "cell_current_operators",
     "cell_edge_current_vectors",

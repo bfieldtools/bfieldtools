@@ -172,10 +172,16 @@ sparse reconstruction operators from [basis.py](basis.py):
 
 ```python
 topology = TetraTopology.from_mesh(mesh)
-basis = EdgeCurrentBasis.from_topology(topology)
+gauge = TreeCotreeGauge.from_topology(topology)
+basis = build_edge_current_basis(mesh, topology, gauge)
 R = resistance_matrix(basis, resistivity)  # scalar or one value per cell
 J = reconstruct_currents(basis, coefficients)  # (ncells, 3)
 ```
+
+The result is a `CellCurrentBasis` containing geometry and the three component
+operators. Resistance and future inductance assembly use this representation
+without depending on edge topology or gauge metadata; see
+[ARCHITECTURE.md](ARCHITECTURE.md).
 
 If $B_k$ maps independent coefficients to the $k$th current component in each
 cell, assembly is the sparse weighted Gram sum

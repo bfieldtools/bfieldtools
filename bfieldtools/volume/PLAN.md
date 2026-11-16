@@ -27,7 +27,8 @@ be geometrically conforming; local incidence checks do not detect hanging nodes.
 
 - `volume.topology.TetraTopology`: dataclass holding globally oriented edges
   and faces, local incidence indices and signs, boundary masks, and component
-  labels. Construct with `TetraTopology.from_mesh(mesh)` or the separate
+  labels. It retains ordered connectivity and vertex count without geometry.
+  Construct with `TetraTopology.from_mesh(mesh)` or the separate
   `build_topology(mesh)` function.
 - Sparse gradient, curl, and divergence incidence matrices are built by separate
   functions and exposed as cached properties. They map nodal values to edge
@@ -56,12 +57,15 @@ handles.
 
 ### Implemented current reconstruction and resistance
 
-- `volume.basis.EdgeCurrentBasis`: dataclass holding topology and gauge, with
-  cached sparse Cartesian current operators. Its `from_topology` classmethod
-  delegates to `build_edge_current_basis`; the operator construction and
-  `reconstruct_currents` functions are separate from the container. Sparse
-  operators are assembled directly from retained opposing-edge endpoints, one
-  Cartesian component at a time, without materializing all cell edge vectors.
+- `volume.basis.CellCurrentBasis`: dataclass holding geometry and three sparse
+  Cartesian current operators, independent of topology and gauge metadata.
+  `build_edge_current_basis(mesh, topology, gauge)` constructs this representation
+  from an explicitly chosen gauge. Operator construction and current
+  reconstruction remain separate functions. Sparse operators are assembled
+  directly from retained opposing-edge endpoints, one component at a time,
+  without materializing all cell edge vectors. See
+  [ARCHITECTURE.md](ARCHITECTURE.md) for the dependency boundaries and the planned
+  inductance factorization.
 - `volume.impedance.resistance_matrix`: exact sparse resistance from the
   constant cell currents, for positive scalar resistivity uniform over the
   conductor or assigned per cell. Uses the weighted Gram factorization

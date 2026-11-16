@@ -30,7 +30,8 @@ from scipy.linalg import eigh
 import trimesh
 
 from bfieldtools.volume import (
-    EdgeCurrentBasis,
+    TreeCotreeGauge,
+    build_edge_current_basis,
     TetraTopology,
     reconstruct_currents,
     resistance_matrix,
@@ -40,7 +41,7 @@ from bfieldtools.volume import (
 
 def make_plotter(basis, eigenvalues, eigenvectors, modes, *, off_screen=False):
     """Show a spectrum chart and selected current eigenfunctions in one window."""
-    mesh = basis.topology.mesh
+    mesh = basis.mesh
     fields = reconstruct_currents(basis, eigenvectors[:, modes])
     magnitudes = np.linalg.norm(fields, axis=1)
     max_current = magnitudes.max()
@@ -125,10 +126,12 @@ def main():
     parser.add_argument("--screenshot", help="render off screen to this image path")
     args = parser.parse_args()
     mesh = tetrahedralize(trimesh.creation.icosphere(subdivisions=1), max_volume=0.05)
-    basis = EdgeCurrentBasis.from_topology(TetraTopology.from_mesh(mesh))
+    topology = TetraTopology.from_mesh(mesh)
+    gauge = TreeCotreeGauge.from_topology(topology)
+    basis = build_edge_current_basis(mesh, topology, gauge)
     matrix = resistance_matrix(basis, args.resistivity)
-    if min(args.modes) < 0 or max(args.modes) >= basis.gauge.n_dofs:
-        parser.error(f"mode indices must be between 0 and {basis.gauge.n_dofs - 1}")
+    if min(args.modes) < 0 or max(args.modes) >= basis.n_dofs:
+        parser.error(f"mode indices must be between 0 and {basis.n_dofs - 1}")
     eigenvalues, eigenvectors = eigh(matrix.toarray())
     if eigenvalues[0] <= 0:
         raise RuntimeError("resistance is not positive definite")
@@ -140,9 +143,7 @@ def main():
         mesh.volumes[:, None] * np.sum(currents**2, axis=1), axis=0
     )
     np.testing.assert_allclose(losses, eigenvalues[args.modes], rtol=1e-10)
-    print(
-        f"Cells: {len(mesh.tetrahedra)}; independent coefficients: {basis.gauge.n_dofs}"
-    )
+    print(f"Cells: {len(mesh.tetrahedra)}; independent coefficients: {basis.n_dofs}")
     print(f"Resistance: {matrix.shape}, {matrix.nnz} nonzeros")
     print(f"Eigenvalues: {eigenvalues[0]:.6g} … {eigenvalues[-1]:.6g} Ω")
     print(f"Relative eigenpair residual: {residual:.3g}")
