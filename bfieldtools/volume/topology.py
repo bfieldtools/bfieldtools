@@ -4,17 +4,20 @@ Geometry lives in TetraMesh. This module contains integer connectivity and
 sparse incidence operators; it does not assemble material or magnetic matrices.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from functools import cached_property
 
 import numpy as np
+from numpy.typing import NDArray
 from scipy.sparse import coo_matrix, csr_matrix
 from scipy.sparse.csgraph import connected_components, minimum_spanning_tree
 
 from .mesh import TETRA_EDGES, TETRA_FACES, TetraMesh
 
 
-def _readonly(*arrays):
+def _readonly(*arrays: NDArray) -> None:
     for array in arrays:
         array.flags.writeable = False
 
@@ -40,38 +43,38 @@ class TetraTopology:
     """
 
     mesh: TetraMesh
-    edges: np.ndarray
-    cell_edges: np.ndarray
-    cell_edge_signs: np.ndarray
-    faces: np.ndarray
-    cell_faces: np.ndarray
-    cell_face_signs: np.ndarray
-    face_edges: np.ndarray
-    boundary_face_mask: np.ndarray
-    boundary_edge_mask: np.ndarray
-    boundary_vertex_mask: np.ndarray
-    active_vertex_mask: np.ndarray
-    vertex_components: np.ndarray
-    cell_components: np.ndarray
+    edges: NDArray[np.int64]
+    cell_edges: NDArray[np.intp]
+    cell_edge_signs: NDArray[np.int8]
+    faces: NDArray[np.int64]
+    cell_faces: NDArray[np.intp]
+    cell_face_signs: NDArray[np.int8]
+    face_edges: NDArray[np.int64]
+    boundary_face_mask: NDArray[np.bool_]
+    boundary_edge_mask: NDArray[np.bool_]
+    boundary_vertex_mask: NDArray[np.bool_]
+    active_vertex_mask: NDArray[np.bool_]
+    vertex_components: NDArray[np.int64]
+    cell_components: NDArray[np.int64]
     n_components: int
 
     @classmethod
-    def from_mesh(cls, mesh):
+    def from_mesh(cls, mesh: TetraMesh) -> TetraTopology:
         """Construct through the separate build_topology() algorithm."""
         return build_topology(mesh)
 
     @cached_property
-    def gradient(self):
+    def gradient(self) -> csr_matrix:
         """Cached edge–vertex incidence; see gradient_matrix()."""
         return gradient_matrix(self)
 
     @cached_property
-    def curl(self):
+    def curl(self) -> csr_matrix:
         """Cached face–edge incidence; see curl_matrix()."""
         return curl_matrix(self)
 
     @cached_property
-    def divergence(self):
+    def divergence(self) -> csr_matrix:
         """Cached cell–face incidence; see divergence_matrix()."""
         return divergence_matrix(self)
 
@@ -88,19 +91,19 @@ class TreeCotreeGauge:
     Frozen fields prevent reassignment; SciPy matrix storage remains mutable.
     """
 
-    tree_edges: np.ndarray
-    retained_edges: np.ndarray
+    tree_edges: NDArray[np.int64]
+    retained_edges: NDArray[np.intp]
     n_dofs: int
     prolongation: csr_matrix
     curl: csr_matrix
 
     @classmethod
-    def from_topology(cls, topology):
+    def from_topology(cls, topology: TetraTopology) -> TreeCotreeGauge:
         """Construct through the separate tree_cotree_gauge() algorithm."""
         return tree_cotree_gauge(topology)
 
 
-def build_topology(mesh):
+def build_topology(mesh: TetraMesh) -> TetraTopology:
     """Build oriented connectivity and sparse incidence matrices once.
 
     This function does not choose a gauge or assume a solid-ball topology.
@@ -200,7 +203,7 @@ def build_topology(mesh):
     )
 
 
-def gradient_matrix(topology):
+def gradient_matrix(topology: TetraTopology) -> csr_matrix:
     """Edge–vertex incidence G: edge differences = G @ nodal values.
 
     Shape (nedges, nvertices); each row is -1 at the tail, +1 at the head.
@@ -214,7 +217,7 @@ def gradient_matrix(topology):
     ).tocsr()
 
 
-def curl_matrix(topology):
+def curl_matrix(topology: TetraTopology) -> csr_matrix:
     """Face–edge incidence C: oriented face fluxes = C @ edge integrals.
 
     Shape (nfaces, nedges); each sorted face (a,b,c) has boundary ab + bc - ac.
@@ -228,7 +231,7 @@ def curl_matrix(topology):
     ).tocsr()
 
 
-def divergence_matrix(topology):
+def divergence_matrix(topology: TetraTopology) -> csr_matrix:
     """Cell–face incidence D: outward cell balances = D @ face fluxes.
 
     Shape (ncells, nfaces). Divide balances by cell volumes to obtain divergence
@@ -246,7 +249,7 @@ def divergence_matrix(topology):
     ).tocsr()
 
 
-def tree_cotree_gauge(topology):
+def tree_cotree_gauge(topology: TetraTopology) -> TreeCotreeGauge:
     """Choose independent edge curls for solid-ball conductor components.
 
     Set boundary-edge coefficients to zero, contract each component's boundary
@@ -320,7 +323,7 @@ def tree_cotree_gauge(topology):
     )
 
 
-def _check_supported_boundary(topology):
+def _check_supported_boundary(topology: TetraTopology) -> None:
     faces = topology.faces[topology.boundary_face_mask]
     face_edges = topology.face_edges[topology.boundary_face_mask]
     counts = np.bincount(face_edges.ravel(), minlength=len(topology.edges))

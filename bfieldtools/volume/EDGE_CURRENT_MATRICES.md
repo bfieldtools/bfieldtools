@@ -1,6 +1,7 @@
 # Resistance and inductance from tetrahedral edge curls
 
-Status: mathematical draft for discussion; no solver implementation yet.
+Status: current reconstruction and scalar resistance implemented; inductance
+and the decay-mode solver remain proposed.
 This develops the current-vector-potential formulation proposed in
 [PLAN.md](PLAN.md): lowest-order, first-kind Nédélec edge functions, their
 piecewise-constant curls, and a boundary-compatible tree–cotree gauge.
@@ -165,6 +166,28 @@ Only edges sharing a tetrahedron couple, so resistance is sparse.
 For a constant symmetric resistivity tensor, replace
 $\rho_T\,\mathbf b_{T,e}\cdot\mathbf b_{T,f}$ by
 $\mathbf b_{T,e}^{\mathsf T}\boldsymbol\rho_T\mathbf b_{T,f}$.
+
+The scalar case is implemented in [impedance.py](impedance.py), using cached
+sparse reconstruction operators from [basis.py](basis.py):
+
+```python
+topology = TetraTopology.from_mesh(mesh)
+basis = EdgeCurrentBasis.from_topology(topology)
+R = resistance_matrix(basis, resistivity)  # scalar or one value per cell
+J = reconstruct_currents(basis, coefficients)  # (ncells, 3)
+```
+
+If $B_k$ maps independent coefficients to the $k$th current component in each
+cell, assembly is the sparse weighted Gram sum
+
+$$
+R=\sum_{k=x,y,z}B_k^{\mathsf T}
+\operatorname{diag}(\rho_TV_T)B_k.
+$$
+
+Ordinary eigenpairs $Rv=\lambda v$ use a Euclidean norm on the retained edge
+coefficients and therefore depend on the chosen basis and tree gauge. They are
+useful for inspecting resistance, but physical decay rates require $Rv=\lambda Mv$.
 
 ## Inductance matrix
 

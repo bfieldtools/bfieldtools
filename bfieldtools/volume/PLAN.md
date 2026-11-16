@@ -1,7 +1,7 @@
 # Volumetric eddy-current modeling
 
-Status: meshing and solid-ball edge topology implemented; the remaining solver
-design is proposed for review.
+Status: meshing, solid-ball edge topology, and resistance implemented; the
+remaining solver design is proposed for review.
 
 ### Implemented meshing foundation
 
@@ -51,8 +51,38 @@ be geometrically conforming; local incidence checks do not detect hanging nodes.
   flux, independence and completeness against the conserved face-flux space,
   disconnected conductors, and rejection of unsupported topologies.
 
-Still pending: reusable current reconstruction operators, material/magnetic
-matrix assembly, and gauge/global-pattern construction for more general topology.
+Still pending in topology: gauge/global-pattern construction for cavities and
+handles.
+
+### Implemented current reconstruction and resistance
+
+- `volume.basis.EdgeCurrentBasis`: dataclass holding topology and gauge, with
+  cached sparse Cartesian current operators. Its `from_topology` classmethod
+  delegates to `build_edge_current_basis`; the operator construction and
+  `reconstruct_currents` functions are separate from the container. Sparse
+  operators are assembled directly from retained opposing-edge endpoints, one
+  Cartesian component at a time, without materializing all cell edge vectors.
+- `volume.impedance.resistance_matrix`: exact sparse resistance from the
+  constant cell currents, for positive scalar resistivity uniform over the
+  conductor or assigned per cell. Uses the weighted Gram factorization
+  $R=\sum_{k=x,y,z}B_k^{\mathsf T}\operatorname{diag}(\rho_TV_T)B_k$.
+- `examples/volume/resistance.py`: one window with the resistance spectrum and
+  three current eigenfunctions, with central magnitude slices and front-half
+  current directions. Run
+  `uv run --locked --extra meshing python examples/volume/resistance.py`.
+  `--modes 0 5 20` chooses three zero-based mode indices; `--resistivity` sets
+  uniform resistivity in ohm metres (default 1). Append
+  `--screenshot /tmp/volume-resistance.png` for an offscreen preview.
+- These are ordinary eigenpairs $Rv=\lambda v$ with unit Euclidean coefficient
+  norm. They depend on the tree gauge and are a resistance diagnostic; decay
+  modes still require the inductance metric $Rv=\lambda Mv$.
+- Tests verify an analytic cube-loop resistance, Joule loss and mixed bilinear
+  forms against independent barycentric-gradient reconstruction, positive
+  definiteness, conservation, material linearity, and geometric scaling. Real
+  and complex current reconstruction and multiple coefficient sets are covered.
+
+Still pending: inductance and field coupling, physical decay modes, and more
+general material models.
 
 ## Objective and initial scope
 

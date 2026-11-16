@@ -1,6 +1,14 @@
 """Tetrahedral meshes and tools for volumetric conductor models."""
 
 from .mesh import TetraMesh, tetrahedralize
+from .basis import (
+    EdgeCurrentBasis,
+    build_edge_current_basis,
+    cell_current_operators,
+    cell_edge_current_vectors,
+    reconstruct_currents,
+)
+from .impedance import resistance_matrix
 from .topology import (
     TetraTopology,
     TreeCotreeGauge,
@@ -21,4 +29,10 @@ __all__ = [
     "curl_matrix",
     "divergence_matrix",
     "tree_cotree_gauge",
+    "EdgeCurrentBasis",
+    "build_edge_current_basis",
+    "cell_current_operators",
+    "cell_edge_current_vectors",
+    "reconstruct_currents",
+    "resistance_matrix",
 ]

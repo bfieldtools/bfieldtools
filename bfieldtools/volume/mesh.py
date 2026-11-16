@@ -4,10 +4,17 @@ Coordinates retain the input length unit; volumes use its cube. No geometry
 repair, rescaling, or automatic changes to surface topology are performed.
 """
 
+from __future__ import annotations
+
 from functools import cached_property
+from typing import TYPE_CHECKING
 
 import numpy as np
+from numpy.typing import ArrayLike, NDArray
 import trimesh
+
+if TYPE_CHECKING:
+    import pyvista as pv
 
 
 # Positive tetrahedron: each edge curl points along edge (n + 3) % 6.
@@ -15,7 +22,9 @@ TETRA_EDGES = ((0, 1), (0, 2), (0, 3), (2, 3), (3, 1), (1, 2))
 TETRA_FACES = ((1, 2, 3), (0, 3, 2), (0, 1, 3), (0, 2, 1))
 
 
-def _indices(values, width, nvertices, name):
+def _indices(
+    values: ArrayLike, width: int, nvertices: int, name: str
+) -> NDArray[np.int64]:
     values = np.asarray(values)
     if values.ndim != 2 or values.shape[1] != width or not len(values):
         raise ValueError(f"{name} must have nonempty shape (n, {width})")
@@ -31,7 +40,7 @@ def _indices(values, width, nvertices, name):
     return values
 
 
-def _vertices(values):
+def _vertices(values: ArrayLike) -> NDArray[np.float64]:
     values = np.array(values, dtype=float, copy=True)
     if values.ndim != 2 or values.shape[1] != 3 or not len(values):
         raise ValueError("vertices must have nonempty shape (n, 3)")
@@ -60,7 +69,12 @@ class TetraMesh:
     this container.
     """
 
-    def __init__(self, vertices, tetrahedra):
+    vertices: NDArray[np.float64]
+    tetrahedra: NDArray[np.int64]
+    volumes: NDArray[np.float64]
+    boundary_faces: NDArray[np.int64]
+
+    def __init__(self, vertices: ArrayLike, tetrahedra: ArrayLike) -> None:
         self.vertices = _vertices(vertices)
         self.tetrahedra = _indices(tetrahedra, 4, len(self.vertices), "tetrahedra")
         points = self.vertices[self.tetrahedra]
@@ -100,14 +114,14 @@ class TetraMesh:
             array.flags.writeable = False
 
     @cached_property
-    def cell_centers(self):
+    def cell_centers(self) -> NDArray[np.float64]:
         """Cell centroids, shape (ncells, 3)."""
         centers = self.vertices[self.tetrahedra].mean(axis=1)
         centers.flags.writeable = False
         return centers
 
     @cached_property
-    def cell_edge_vectors(self):
+    def cell_edge_vectors(self) -> NDArray[np.float64]:
         """Directed edge vectors, shape (ncells, 6, 3), in ``TETRA_EDGES`` order.
 
         The constant local edge curls are the opposing vectors divided by
@@ -122,7 +136,7 @@ class TetraMesh:
         return vectors
 
     @cached_property
-    def cell_quality(self):
+    def cell_quality(self) -> NDArray[np.float64]:
         """Mean-ratio quality: 1 for a regular tetrahedron, tending to 0 for slivers."""
         points = self.vertices[self.tetrahedra]
         edge_sum = sum(
@@ -134,7 +148,7 @@ class TetraMesh:
         quality.flags.writeable = False
         return quality
 
-    def to_pyvista(self):
+    def to_pyvista(self) -> pv.UnstructuredGrid:
         """Return a PyVista UnstructuredGrid with volume and quality cell data."""
         import pyvista as pv
 
@@ -149,7 +163,13 @@ class TetraMesh:
         return grid
 
 
-def tetrahedralize(surface, *, max_volume=None, min_ratio=2.0, min_dihedral=0.0):
+def tetrahedralize(
+    surface: trimesh.Trimesh,
+    *,
+    max_volume: float | None = None,
+    min_ratio: float = 2.0,
+    min_dihedral: float = 0.0,
+) -> TetraMesh:
     """Fill one closed, consistently oriented triangular surface using TetGen.
 
     Parameters
