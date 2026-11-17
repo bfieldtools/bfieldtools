@@ -1,6 +1,26 @@
 # Finite-permeability magnetostatic BEM
 
-Status: theory and implementation plan; no solver is implemented yet.
+Status: stage 1 implemented. `MagneticBoundary` validates complete metal
+boundaries and material labels; `single_layer_potential`,
+`single_layer_gradient`, and `adjoint_double_layer` provide analytic
+constant-face operators, reusing the existing triangle kernels.
+
+Run `python examples/validation/finite_permeability_bem.py` for a solid sphere
+and spherical shell in a uniform field, with analytic reference curves. The
+example assembles and solves the dense equation directly; a reusable solver
+API remains part of stage 2. Boundary gradients currently support off-surface
+targets only; explicit one-sided trace evaluation is still to be implemented.
+
+Validation covers independent triangle quadrature, potential gradients,
+normal-derivative jumps, scaling, chunking, geometry/material validation,
+sphere and shell convergence, and close inner/outer surface interactions.
+The wheel includes the new subpackage and has been checked for importability.
+At $\mu_r=10$ with 1280 faces per spherical surface, the example gives center
+fields of approximately $0.2854\,\mathrm{A/m}$ for the solid sphere and
+$0.4763\,\mathrm{A/m}$ for the shell, compared with analytic values of
+$0.2500$ and $0.4147\,\mathrm{A/m}$ respectively. These finite-resolution
+errors remain despite linear-system residuals near machine precision. Mesh
+refinement is required, especially for high permeability and thin shields.
 
 ## Objective and scope
 
@@ -297,7 +317,7 @@ target chunking to limit temporary memory.
 
 ## 6. Staged implementation plan
 
-### Stage 1: geometry and integral operators
+### Stage 1: geometry and integral operators (implemented)
 
 1. Add `bfieldtools/bem/__init__.py` and a focused operator module, provisionally
    `operators.py`. Keep the new face-density basis distinct from vertex stream
