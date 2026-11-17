@@ -1,0 +1,318 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.11.17",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "baseline": "/private/tmp/bfieldtools_volume_before_volume_edges.py",
+  "repeats": 5,
+  "point_chunk_size": 256,
+  "source_chunk_size": 16,
+  "timing": "median wall time; warmup; alternating order",
+  "inductance_settings": {
+    "block_size": 16,
+    "quadrature_order": 4,
+    "rtol": 0.0001,
+    "max_order": 12,
+    "precomputed_interactions": false,
+    "basis_construction_timed": false
+  },
+  "cases": [
+    {
+      "name": "potential: 1 point, 1 source",
+      "baseline_seconds": 9.483302710577846e-05,
+      "vectorized_seconds": 9.641703218221664e-05,
+      "speedup": 0.9835713147294909,
+      "output_shape": [
+        1,
+        1
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "max_relative_difference": 0.0,
+      "baseline_samples_seconds": [
+        0.00010629196185618639,
+        9.483302710577846e-05,
+        9.62500344030559e-05,
+        9.362498531118035e-05,
+        9.016599506139755e-05
+      ],
+      "vectorized_samples_seconds": [
+        9.704200783744454e-05,
+        9.641703218221664e-05,
+        9.879202116280794e-05,
+        8.991704089567065e-05,
+        8.67500202730298e-05
+      ]
+    },
+    {
+      "name": "potential: 1 point, 162 sources",
+      "baseline_seconds": 0.0011523750144988298,
+      "vectorized_seconds": 0.0010773329995572567,
+      "speedup": 1.0696553572316196,
+      "output_shape": [
+        1,
+        162
+      ],
+      "relative_frobenius_difference": 3.4975164903066345e-15,
+      "max_absolute_difference": 2.0469737016526324e-16,
+      "max_relative_difference": 3.227062012363155e-14,
+      "baseline_samples_seconds": [
+        0.001169542025309056,
+        0.001110500015784055,
+        0.001111583027523011,
+        0.0011659579467959702,
+        0.0011523750144988298
+      ],
+      "vectorized_samples_seconds": [
+        0.0010773329995572567,
+        0.0010697920224629343,
+        0.001069582998752594,
+        0.0011915000504814088,
+        0.0010904580121859908
+      ]
+    },
+    {
+      "name": "potential: 256 near points, 162 sources",
+      "baseline_seconds": 0.020653749990742654,
+      "vectorized_seconds": 0.020431292010471225,
+      "speedup": 1.0108881014552293,
+      "output_shape": [
+        256,
+        162
+      ],
+      "relative_frobenius_difference": 3.5952332393236575e-15,
+      "max_absolute_difference": 4.371503159461554e-16,
+      "max_relative_difference": 8.800485957948718e-14,
+      "baseline_samples_seconds": [
+        0.020790625014342368,
+        0.020667958015110344,
+        0.020653749990742654,
+        0.020510041038505733,
+        0.02043762500397861
+      ],
+      "vectorized_samples_seconds": [
+        0.0207311250269413,
+        0.020431292010471225,
+        0.020290624990593642,
+        0.02008720801677555,
+        0.020493707968853414
+      ]
+    },
+    {
+      "name": "potential: 256 far points, 162 sources",
+      "baseline_seconds": 0.025744167040102184,
+      "vectorized_seconds": 0.025960624974686652,
+      "speedup": 0.9916620676584046,
+      "output_shape": [
+        256,
+        162
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "max_relative_difference": 0.0,
+      "baseline_samples_seconds": [
+        0.026089042017702013,
+        0.025744167040102184,
+        0.02517808397533372,
+        0.02599566604476422,
+        0.025662917003501207
+      ],
+      "vectorized_samples_seconds": [
+        0.026015000010374933,
+        0.025953833013772964,
+        0.025583542010281235,
+        0.025960624974686652,
+        0.026237083016894758
+      ]
+    },
+    {
+      "name": "potential: 256 mixed points, 162 sources",
+      "baseline_seconds": 0.028657082992140204,
+      "vectorized_seconds": 0.027263082971330732,
+      "speedup": 1.051131415411653,
+      "output_shape": [
+        256,
+        162
+      ],
+      "relative_frobenius_difference": 3.4360111561875104e-15,
+      "max_absolute_difference": 4.588343593958655e-16,
+      "max_relative_difference": 9.650465817052564e-14,
+      "baseline_samples_seconds": [
+        0.028789291041903198,
+        0.028657082992140204,
+        0.028821083018556237,
+        0.028541000036057085,
+        0.02828129200497642
+      ],
+      "vectorized_samples_seconds": [
+        0.026962458970956504,
+        0.027263082971330732,
+        0.027639584033749998,
+        0.027225500030908734,
+        0.02788695797789842
+      ]
+    },
+    {
+      "name": "potential: 1024 near points, 162 sources",
+      "baseline_seconds": 0.08195362502010539,
+      "vectorized_seconds": 0.08133662503678352,
+      "speedup": 1.0075857583596914,
+      "output_shape": [
+        1024,
+        162
+      ],
+      "relative_frobenius_difference": 2.580191584245635e-15,
+      "max_absolute_difference": 5.074066167232161e-16,
+      "max_relative_difference": 1.1030131550502443e-13,
+      "baseline_samples_seconds": [
+        0.08188558300025761,
+        0.0818667919957079,
+        0.08234112500213087,
+        0.08210845803841949,
+        0.08195362502010539
+      ],
+      "vectorized_samples_seconds": [
+        0.08133662503678352,
+        0.08137074997648597,
+        0.08111712499521673,
+        0.08096216700505465,
+        0.08458070800406858
+      ]
+    },
+    {
+      "name": "interaction: 16 x 16 block",
+      "baseline_seconds": 0.036113041976932436,
+      "vectorized_seconds": 0.0359654170460999,
+      "speedup": 1.0041046355904426,
+      "output_shape": [
+        16,
+        16
+      ],
+      "relative_frobenius_difference": 2.601811395956371e-16,
+      "max_absolute_difference": 1.6263032587282567e-19,
+      "max_relative_difference": 2.6138348701749698e-15,
+      "baseline_samples_seconds": [
+        0.03643174999160692,
+        0.036113041976932436,
+        0.036321541003417224,
+        0.03595270897494629,
+        0.03584304201649502
+      ],
+      "vectorized_samples_seconds": [
+        0.03602604096522555,
+        0.035957250045612454,
+        0.03581300005316734,
+        0.03609995899023488,
+        0.0359654170460999
+      ]
+    },
+    {
+      "name": "interaction: 16 x 16 off-diagonal block",
+      "baseline_seconds": 0.07069037499604747,
+      "vectorized_seconds": 0.0704607079969719,
+      "speedup": 1.0032595045608317,
+      "output_shape": [
+        16,
+        16
+      ],
+      "relative_frobenius_difference": 7.567246136624596e-16,
+      "max_absolute_difference": 2.710505431213761e-19,
+      "max_relative_difference": 5.164152107316849e-15,
+      "baseline_samples_seconds": [
+        0.0704014590010047,
+        0.07069037499604747,
+        0.07097066601272672,
+        0.07107870798790827,
+        0.0702972500002943
+      ],
+      "vectorized_samples_seconds": [
+        0.0704607079969719,
+        0.07033616700209677,
+        0.07038220798131078,
+        0.07057891698786989,
+        0.07049050001660362
+      ]
+    },
+    {
+      "name": "interaction: 48 x 48 matrix",
+      "baseline_seconds": 0.3235848750337027,
+      "vectorized_seconds": 0.32345170801272616,
+      "speedup": 1.0004117060373392,
+      "output_shape": [
+        48,
+        48
+      ],
+      "relative_frobenius_difference": 1.5608482604169655e-16,
+      "max_absolute_difference": 1.734723475976807e-18,
+      "max_relative_difference": 4.116391108274647e-15,
+      "baseline_samples_seconds": [
+        0.32124054100131616,
+        0.3249133749632165,
+        0.3217722079716623,
+        0.3235848750337027,
+        0.32373075000941753
+      ],
+      "vectorized_samples_seconds": [
+        0.32471608399646357,
+        0.32345170801272616,
+        0.3226156249875203,
+        0.3215219579869881,
+        0.3285330419894308
+      ]
+    },
+    {
+      "name": "inductance: 48 cells, 25 DOFs",
+      "baseline_seconds": 0.32634020899422467,
+      "vectorized_seconds": 0.32622600003378466,
+      "speedup": 1.0003500915329502,
+      "output_shape": [
+        25,
+        25
+      ],
+      "relative_frobenius_difference": 1.5591609469290172e-16,
+      "max_absolute_difference": 1.6543612251060553e-23,
+      "max_relative_difference": 1.8113963690027802e-14,
+      "baseline_samples_seconds": [
+        0.32634020899422467,
+        0.326140041986946,
+        0.3295439169742167,
+        0.32719029200961813,
+        0.3253940000431612
+      ],
+      "vectorized_samples_seconds": [
+        0.3251639580121264,
+        0.32622600003378466,
+        0.33957745897350833,
+        0.32780766603536904,
+        0.3261649170308374
+      ]
+    },
+    {
+      "name": "inductance: 162 cells, 109 DOFs",
+      "baseline_seconds": 3.724344457965344,
+      "vectorized_seconds": 3.720872625010088,
+      "speedup": 1.0009330695525345,
+      "output_shape": [
+        109,
+        109
+      ],
+      "relative_frobenius_difference": 1.8084118137418976e-15,
+      "max_absolute_difference": 7.0827339949853e-23,
+      "max_relative_difference": 2.2842451513402645e-11,
+      "baseline_samples_seconds": [
+        3.7144541250308976,
+        3.7231196250068024,
+        3.7261275420314632,
+        3.7259704169700854,
+        3.724344457965344
+      ],
+      "vectorized_samples_seconds": [
+        3.707566541968845,
+        3.8172800000174902,
+        3.713450000039302,
+        3.7239542080205865,
+        3.720872625010088
+      ]
+    }
+  ]
+}

@@ -15,7 +15,7 @@ import numpy as np
 from numpy.typing import ArrayLike, NDArray
 from scipy.special import roots_jacobi
 
-from ..integrals import triangle_potential_uniform
+from ..integrals_cached import TriangleIntegrals
 from .mesh import TETRA_FACES, TetraMesh
 
 
@@ -99,8 +99,16 @@ def tetrahedron_potential(
     centers = vertices.mean(axis=1)
     scales = np.linalg.norm(vertices - centers[:, None], axis=-1).max(axis=1)
     vertices = (vertices - centers[:, None]) / scales[:, None, None]
-    faces = vertices[:, np.asarray(TETRA_FACES)]
-    normals = np.cross(faces[:, :, 1] - faces[:, :, 0], faces[:, :, 2] - faces[:, :, 0])
+    # Advanced indexing otherwise puts the face axes before the source axis in
+    # memory. A contiguous layout lets displacement reshapes remain views.
+    faces = np.ascontiguousarray(vertices[:, np.asarray(TETRA_FACES)])
+    # Opposite-edge order matches roll(R, 2) - roll(R, 1) for R = x - vertex.
+    # Source geometry is shared by every point chunk, including the normals.
+    edges = np.empty_like(faces)
+    edges[:, :, 0] = faces[:, :, 2] - faces[:, :, 1]
+    edges[:, :, 1] = faces[:, :, 0] - faces[:, :, 2]
+    edges[:, :, 2] = faces[:, :, 1] - faces[:, :, 0]
+    normals = np.cross(edges[:, :, 2], -edges[:, :, 1])
     normals /= np.linalg.norm(normals, axis=-1)[..., None]
     far_points = np.einsum("qv,svi->sqi", far_barycentric, vertices)
     volumes = mesh.volumes[sources]
@@ -122,26 +130,28 @@ def tetrahedron_potential(
                         x[:, :, None, None, :] - faces[None, columns]
                     ).reshape(len(x), -1, 3, 3)
                     triangle_normals = normals[columns].reshape(-1, 3)
+                    triangle_edges = edges[columns].reshape(-1, 3, 3)
                 else:
-                    # The triangle helpers extract edges from R[0]. Give each
-                    # selected pair/face its own triangle so geometry stays
-                    # consistent when the near mask differs between sources.
+                    # Pack selected point/source/face combinations into one
+                    # triangle axis, matching normals and cached source edges.
                     displacements = (
                         x[p, s, None, None, :] - faces[columns][s]
                     ).reshape(1, -1, 3, 3)
                     triangle_normals = normals[columns][s].reshape(-1, 3)
-                heights = -np.einsum(
-                    "pfi,fi->pf", displacements[:, :, 0], triangle_normals
-                ).reshape(-1, 4)
-                triangle_potentials = triangle_potential_uniform(
-                    displacements, triangle_normals
-                ).reshape(-1, 4)
+                    triangle_edges = edges[columns][s].reshape(-1, 3, 3)
+                triangle = TriangleIntegrals(
+                    displacements, triangle_normals, edges=triangle_edges
+                )
+                heights = -triangle.d_distance.reshape(-1, 4)
+                triangle_potentials = triangle.triangle_potential_uniform.reshape(-1, 4)
                 # Zero heights suppress boundary solid-angle branch ambiguities.
                 values[p, s] = (
                     0.5
                     * np.sum(heights * triangle_potentials, axis=-1)
                     * scales[columns][s] ** 2
                 )
+                # Retain caches only for this evaluation batch.
+                del triangle
             p, s = np.nonzero(far)
             if p.size:
                 distances = np.linalg.norm(

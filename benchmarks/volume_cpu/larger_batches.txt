@@ -1,0 +1,114 @@
+         53436 function calls in 3.865 seconds
+
+   Ordered by: cumulative time
+   List reduced from 173 to 50 due to restriction <50>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    3.865    3.865 profile_volume_cpu.py:42(calculate)
+        1    0.001    0.001    3.865    3.865 impedance.py:62(inductance_matrix)
+        7    0.000    0.000    3.855    0.551 integrals.py:251(iter_tetrahedron_interactions)
+        6    0.000    0.000    3.855    0.642 integrals.py:213(tetrahedron_interaction_block)
+        9    0.000    0.000    3.854    0.428 integrals.py:178(_directed_interactions)
+       18    0.001    0.000    3.854    0.214 integrals.py:163(_integrate_sources)
+       18    0.191    0.011    3.848    0.214 integrals.py:70(tetrahedron_potential)
+      141    0.011    0.000    3.174    0.023 integrals.py:208(triangle_potential_uniform)
+      141    0.401    0.003    1.588    0.011 integrals.py:46(gamma0)
+     1746    0.003    0.000    1.494    0.001 einsumfunc.py:1244(einsum)
+     1746    1.491    0.001    1.491    0.001 {built-in method numpy._core._multiarray_umath.c_einsum}
+      141    0.141    0.001    0.978    0.007 integrals.py:97(omega)
+     1269    0.753    0.001    0.760    0.001 numeric.py:1230(roll)
+      423    0.044    0.000    0.449    0.001 integrals.py:32(norm)
+      141    0.002    0.000    0.404    0.003 integrals.py:137(x_distance)
+      654    0.301    0.000    0.301    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+      141    0.228    0.002    0.228    0.002 integrals.py:24(determinant)
+     1090    0.177    0.000    0.177    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+      282    0.001    0.000    0.142    0.001 fromnumeric.py:66(_wrapreduction)
+      141    0.001    0.000    0.125    0.001 integrals.py:172(d_distance)
+      141    0.000    0.000    0.106    0.001 fromnumeric.py:3287(prod)
+      459    0.001    0.000    0.084    0.000 fromnumeric.py:48(_wrapfunc)
+      141    0.000    0.000    0.057    0.000 fromnumeric.py:106(take)
+      141    0.056    0.000    0.056    0.000 {method 'take' of 'numpy.ndarray' objects}
+      177    0.006    0.000    0.042    0.000 _linalg.py:2599(norm)
+      141    0.000    0.000    0.037    0.000 fromnumeric.py:2304(sum)
+      282    0.000    0.000    0.028    0.000 fromnumeric.py:1993(nonzero)
+      282    0.027    0.000    0.027    0.000 {method 'nonzero' of 'numpy.ndarray' objects}
+       72    0.000    0.000    0.008    0.000 _index.py:29(__getitem__)
+     1377    0.003    0.000    0.006    0.000 numeric.py:1431(normalize_axis_tuple)
+       72    0.000    0.000    0.004    0.000 _compressed.py:30(__init__)
+       36    0.000    0.000    0.003    0.000 _csr.py:274(_get_sliceXarray)
+       36    0.000    0.000    0.003    0.000 _compressed.py:651(_minor_index_fancy)
+     9153    0.003    0.000    0.003    0.000 einsumfunc.py:1236(_einsum_dispatcher)
+       36    0.000    0.000    0.003    0.000 _compressed.py:550(_get_sliceXslice)
+       36    0.000    0.000    0.003    0.000 _compressed.py:706(_get_submatrix)
+      519    0.001    0.000    0.002    0.000 fromnumeric.py:86(_wrapreduction_any_all)
+     2754    0.001    0.000    0.002    0.000 numeric.py:1480(<genexpr>)
+      141    0.001    0.000    0.002    0.000 integrals.py:37(cross)
+      360    0.000    0.000    0.002    0.000 fromnumeric.py:2436(any)
+       72    0.001    0.000    0.002    0.000 _index.py:298(_validate_indices)
+       18    0.000    0.000    0.001    0.000 numeric.py:1567(cross)
+      108    0.000    0.000    0.001    0.000 _base.py:1525(_get_index_dtype)
+     3073    0.001    0.000    0.001    0.000 {built-in method builtins.isinstance}
+       72    0.000    0.000    0.001    0.000 _compressed.py:166(check_format)
+     3140    0.001    0.000    0.001    0.000 {built-in method builtins.len}
+      159    0.000    0.000    0.001    0.000 fromnumeric.py:2548(all)
+      108    0.001    0.000    0.001    0.000 _sputils.py:264(get_index_dtype)
+       54    0.000    0.000    0.001    0.000 numeric.py:1493(moveaxis)
+       72    0.000    0.000    0.001    0.000 _compressed.py:1118(prune)
+
+
+         53436 function calls in 3.865 seconds
+
+   Ordered by: internal time
+   List reduced from 173 to 50 due to restriction <50>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1746    1.491    0.001    1.491    0.001 {built-in method numpy._core._multiarray_umath.c_einsum}
+     1269    0.753    0.001    0.760    0.001 numeric.py:1230(roll)
+      141    0.401    0.003    1.588    0.011 integrals.py:46(gamma0)
+      654    0.301    0.000    0.301    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+      141    0.228    0.002    0.228    0.002 integrals.py:24(determinant)
+       18    0.191    0.011    3.848    0.214 integrals.py:70(tetrahedron_potential)
+     1090    0.177    0.000    0.177    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+      141    0.141    0.001    0.978    0.007 integrals.py:97(omega)
+      141    0.056    0.000    0.056    0.000 {method 'take' of 'numpy.ndarray' objects}
+      423    0.044    0.000    0.449    0.001 integrals.py:32(norm)
+      282    0.027    0.000    0.027    0.000 {method 'nonzero' of 'numpy.ndarray' objects}
+      141    0.011    0.000    3.174    0.023 integrals.py:208(triangle_potential_uniform)
+      177    0.006    0.000    0.042    0.000 _linalg.py:2599(norm)
+     1377    0.003    0.000    0.006    0.000 numeric.py:1431(normalize_axis_tuple)
+     9153    0.003    0.000    0.003    0.000 einsumfunc.py:1236(_einsum_dispatcher)
+     1746    0.003    0.000    1.494    0.001 einsumfunc.py:1244(einsum)
+      141    0.002    0.000    0.404    0.003 integrals.py:137(x_distance)
+      141    0.001    0.000    0.002    0.000 integrals.py:37(cross)
+     2754    0.001    0.000    0.002    0.000 numeric.py:1480(<genexpr>)
+      141    0.001    0.000    0.125    0.001 integrals.py:172(d_distance)
+     3073    0.001    0.000    0.001    0.000 {built-in method builtins.isinstance}
+     3140    0.001    0.000    0.001    0.000 {built-in method builtins.len}
+      282    0.001    0.000    0.142    0.001 fromnumeric.py:66(_wrapreduction)
+       18    0.001    0.000    3.854    0.214 integrals.py:163(_integrate_sources)
+      519    0.001    0.000    0.002    0.000 fromnumeric.py:86(_wrapreduction_any_all)
+        1    0.001    0.001    3.865    3.865 impedance.py:62(inductance_matrix)
+      459    0.001    0.000    0.084    0.000 fromnumeric.py:48(_wrapfunc)
+     2070    0.001    0.000    0.001    0.000 {method 'items' of 'dict' objects}
+       72    0.001    0.000    0.002    0.000 _index.py:298(_validate_indices)
+     1269    0.001    0.000    0.001    0.000 {built-in method fromkeys}
+      108    0.001    0.000    0.001    0.000 _sputils.py:264(get_index_dtype)
+     1449    0.001    0.000    0.001    0.000 {built-in method numpy.lib.array_utils.normalize_axis_index}
+     1521    0.000    0.000    0.000    0.000 {built-in method _operator.index}
+     1363    0.000    0.000    0.000    0.000 {built-in method numpy.asanyarray}
+       72    0.000    0.000    0.004    0.000 _compressed.py:30(__init__)
+       72    0.000    0.000    0.008    0.000 _index.py:29(__getitem__)
+     1269    0.000    0.000    0.000    0.000 numeric.py:1226(_roll_dispatcher)
+     1305    0.000    0.000    0.000    0.000 multiarray.py:115(empty_like)
+       18    0.000    0.000    0.001    0.000 numeric.py:1567(cross)
+       36    0.000    0.000    0.003    0.000 _compressed.py:651(_minor_index_fancy)
+       72    0.000    0.000    0.001    0.000 _compressed.py:1118(prune)
+      214    0.000    0.000    0.000    0.000 {built-in method numpy.zeros}
+      360    0.000    0.000    0.002    0.000 fromnumeric.py:2436(any)
+      495    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+      141    0.000    0.000    0.037    0.000 fromnumeric.py:2304(sum)
+      141    0.000    0.000    0.106    0.001 fromnumeric.py:3287(prod)
+      615    0.000    0.000    0.000    0.000 {built-in method numpy.asarray}
+      282    0.000    0.000    0.028    0.000 fromnumeric.py:1993(nonzero)
+       72    0.000    0.000    0.001    0.000 _sputils.py:444(check_shape)
+      141    0.000    0.000    0.057    0.000 fromnumeric.py:106(take)

@@ -1,0 +1,147 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "numpy": "2.4.6",
+  "revision": "c1632205430a876389d279145bff71ecc59c9556",
+  "method": "fresh process per case; tracemalloc includes NumPy; 1 ms RSS sampling; separate median of 3 warm timings",
+  "cases": [
+    {
+      "kind": "near",
+      "point_chunk_size": 256,
+      "source_chunk_size": 16,
+      "ncells": 162,
+      "output_shape": [
+        1024,
+        162
+      ],
+      "output_bytes": 1327104,
+      "traced_peak_bytes": 7055002,
+      "traced_live_after_call_bytes": 1351706,
+      "rss_baseline_bytes": 163659776,
+      "rss_peak_bytes": 170557440,
+      "rss_increase_bytes": 6897664,
+      "median_seconds": 0.07686445902800187,
+      "samples_seconds": [
+        0.07686445902800187,
+        0.07622745796106756,
+        0.07689137500710785
+      ]
+    },
+    {
+      "kind": "far",
+      "point_chunk_size": 256,
+      "source_chunk_size": 16,
+      "ncells": 162,
+      "output_shape": [
+        1024,
+        162
+      ],
+      "output_bytes": 1327104,
+      "traced_peak_bytes": 20788450,
+      "traced_live_after_call_bytes": 1329284,
+      "rss_baseline_bytes": 163610624,
+      "rss_peak_bytes": 187285504,
+      "rss_increase_bytes": 23674880,
+      "median_seconds": 0.10333487502066419,
+      "samples_seconds": [
+        0.10333487502066419,
+        0.10211083298781887,
+        0.10840395902050659
+      ]
+    },
+    {
+      "kind": "mixed",
+      "point_chunk_size": 256,
+      "source_chunk_size": 16,
+      "ncells": 162,
+      "output_shape": [
+        1024,
+        162
+      ],
+      "output_bytes": 1327104,
+      "traced_peak_bytes": 22243566,
+      "traced_live_after_call_bytes": 1343156,
+      "rss_baseline_bytes": 163643392,
+      "rss_peak_bytes": 192249856,
+      "rss_increase_bytes": 28606464,
+      "median_seconds": 0.08953358395956457,
+      "samples_seconds": [
+        0.08986616600304842,
+        0.08953358395956457,
+        0.0893566669546999
+      ]
+    },
+    {
+      "kind": "inductance",
+      "mesh_n": 2,
+      "block_size": 16,
+      "point_chunk_size": 256,
+      "source_chunk_size": 16,
+      "ncells": 48,
+      "output_shape": [
+        25,
+        25
+      ],
+      "output_bytes": 5000,
+      "traced_peak_bytes": 5989864,
+      "traced_live_after_call_bytes": 88420,
+      "rss_baseline_bytes": 164167680,
+      "rss_peak_bytes": 170049536,
+      "rss_increase_bytes": 5881856,
+      "median_seconds": 0.30500737502006814,
+      "samples_seconds": [
+        0.3059203329612501,
+        0.30227191699668765,
+        0.30500737502006814
+      ]
+    },
+    {
+      "kind": "inductance",
+      "mesh_n": 3,
+      "block_size": 16,
+      "point_chunk_size": 256,
+      "source_chunk_size": 16,
+      "ncells": 162,
+      "output_shape": [
+        109,
+        109
+      ],
+      "output_bytes": 95048,
+      "traced_peak_bytes": 6146634,
+      "traced_live_after_call_bytes": 240866,
+      "rss_baseline_bytes": 164642816,
+      "rss_peak_bytes": 171704320,
+      "rss_increase_bytes": 7061504,
+      "median_seconds": 3.450800792023074,
+      "samples_seconds": [
+        3.470707083994057,
+        3.4253374590189196,
+        3.450800792023074
+      ]
+    },
+    {
+      "kind": "inductance",
+      "mesh_n": 3,
+      "block_size": 64,
+      "point_chunk_size": 1024,
+      "source_chunk_size": 64,
+      "ncells": 162,
+      "output_shape": [
+        109,
+        109
+      ],
+      "output_bytes": 95048,
+      "traced_peak_bytes": 90800012,
+      "traced_live_after_call_bytes": 170570,
+      "rss_baseline_bytes": 164397056,
+      "rss_peak_bytes": 327090176,
+      "rss_increase_bytes": 162693120,
+      "relative_difference_from_defaults": 2.1549306716332932e-16,
+      "median_seconds": 3.273585999966599,
+      "samples_seconds": [
+        3.273585999966599,
+        3.2522141250083223,
+        3.274662709038239
+      ]
+    }
+  ]
+}

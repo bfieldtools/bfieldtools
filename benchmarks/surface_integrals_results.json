@@ -1,0 +1,495 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.11.17",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "repeats": 5,
+  "method": "Warm both implementations; median wall time; alternating execution order; new cache per evaluation call",
+  "surface_production_api_changed": false,
+  "cases": [
+    {
+      "mesh": "disc",
+      "nfaces": 143,
+      "nvertices": 88,
+      "npoints": 256,
+      "kind": "kernel",
+      "planar": true,
+      "name": "disc: uniform kernel (planar)",
+      "functional_seconds": 0.002202209027018398,
+      "cached_seconds": 0.00213945796713233,
+      "speedup": 1.0293303541598333,
+      "output_shape": [
+        256,
+        143
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "functional_samples_seconds": [
+        0.002154249988961965,
+        0.002202209027018398,
+        0.0023271249956451356,
+        0.002153416979126632,
+        0.002209708036389202
+      ],
+      "cached_samples_seconds": [
+        0.0021804580464959145,
+        0.0021503750467672944,
+        0.0021339170052669942,
+        0.002136041992343962,
+        0.00213945796713233
+      ]
+    },
+    {
+      "mesh": "disc",
+      "nfaces": 143,
+      "nvertices": 88,
+      "npoints": 256,
+      "kind": "kernel",
+      "planar": false,
+      "name": "disc: uniform kernel (off-plane)",
+      "functional_seconds": 0.0035824590013362467,
+      "cached_seconds": 0.0033535410184413195,
+      "speedup": 1.0682615723607058,
+      "output_shape": [
+        256,
+        143
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "functional_samples_seconds": [
+        0.0035237499978393316,
+        0.003822166007012129,
+        0.0037713749916292727,
+        0.00357129197800532,
+        0.0035824590013362467
+      ],
+      "cached_samples_seconds": [
+        0.0035339169553481042,
+        0.0034653330221772194,
+        0.0033535410184413195,
+        0.0032645000028423965,
+        0.0032473329920321703
+      ]
+    },
+    {
+      "mesh": "disc",
+      "nfaces": 143,
+      "nvertices": 88,
+      "npoints": 256,
+      "kind": "dipole",
+      "name": "disc: linear dipole kernel",
+      "functional_seconds": 0.004164292011409998,
+      "cached_seconds": 0.003848041989840567,
+      "speedup": 1.0821846597319833,
+      "output_shape": [
+        256,
+        143,
+        3
+      ],
+      "relative_frobenius_difference": 4.943588224006376e-16,
+      "max_absolute_difference": 5.551115123125783e-17,
+      "functional_samples_seconds": [
+        0.004164292011409998,
+        0.004067166999448091,
+        0.004180250049103051,
+        0.004279125016182661,
+        0.003984917013440281
+      ],
+      "cached_samples_seconds": [
+        0.0037935409927740693,
+        0.003880125004798174,
+        0.0037775419768877327,
+        0.003848041989840567,
+        0.004012166988104582
+      ]
+    },
+    {
+      "mesh": "disc",
+      "nfaces": 143,
+      "nvertices": 88,
+      "npoints": 858,
+      "kind": "assembly",
+      "Nchunks": 7,
+      "quad_degree": 3,
+      "approx_far": false,
+      "margin": 2,
+      "chunk_clusters": false,
+      "planar": true,
+      "analytic_self_coupling": true,
+      "name": "disc: self-inductance (exact)",
+      "functional_seconds": 0.010344874986913055,
+      "cached_seconds": 0.010197333001997322,
+      "speedup": 1.014468683614317,
+      "output_shape": [
+        88,
+        88
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "functional_samples_seconds": [
+        0.010344874986913055,
+        0.010040458000730723,
+        0.010099666949827224,
+        0.010451290989294648,
+        0.010380166990216821
+      ],
+      "cached_samples_seconds": [
+        0.010201958008110523,
+        0.010197333001997322,
+        0.010393249976914376,
+        0.009972458006814122,
+        0.010129624977707863
+      ]
+    },
+    {
+      "mesh": "disc",
+      "nfaces": 143,
+      "nvertices": 88,
+      "npoints": 858,
+      "kind": "assembly",
+      "Nchunks": 7,
+      "quad_degree": 3,
+      "approx_far": true,
+      "margin": 2,
+      "chunk_clusters": false,
+      "planar": true,
+      "analytic_self_coupling": true,
+      "name": "disc: self-inductance (approx far)",
+      "functional_seconds": 0.01745720795588568,
+      "cached_seconds": 0.01725320896366611,
+      "speedup": 1.0118238289844617,
+      "output_shape": [
+        88,
+        88
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "functional_samples_seconds": [
+        0.017854416044428945,
+        0.017581208026967943,
+        0.017294624994974583,
+        0.01745720795588568,
+        0.017240666958969086
+      ],
+      "cached_samples_seconds": [
+        0.01725320896366611,
+        0.01716674998169765,
+        0.017168499995023012,
+        0.017275833000894636,
+        0.017575417004991323
+      ]
+    },
+    {
+      "mesh": "plate",
+      "nfaces": 1258,
+      "nvertices": 676,
+      "npoints": 256,
+      "kind": "kernel",
+      "planar": true,
+      "name": "plate: uniform kernel (planar)",
+      "functional_seconds": 0.019529542012605816,
+      "cached_seconds": 0.01952283299760893,
+      "speedup": 1.0003436496638427,
+      "output_shape": [
+        256,
+        1258
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "functional_samples_seconds": [
+        0.020027499995194376,
+        0.019396417017560452,
+        0.019529542012605816,
+        0.019808708981145173,
+        0.0194347090437077
+      ],
+      "cached_samples_seconds": [
+        0.019418333016801625,
+        0.019689665990881622,
+        0.019362916995305568,
+        0.01957754197064787,
+        0.01952283299760893
+      ]
+    },
+    {
+      "mesh": "plate",
+      "nfaces": 1258,
+      "nvertices": 676,
+      "npoints": 256,
+      "kind": "kernel",
+      "planar": false,
+      "name": "plate: uniform kernel (off-plane)",
+      "functional_seconds": 0.030691166000906378,
+      "cached_seconds": 0.028191375022288412,
+      "speedup": 1.088672190577494,
+      "output_shape": [
+        256,
+        1258
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "functional_samples_seconds": [
+        0.030645459017250687,
+        0.0301707080216147,
+        0.030995499982964247,
+        0.030691166000906378,
+        0.03138262499123812
+      ],
+      "cached_samples_seconds": [
+        0.028003874991554767,
+        0.02816095802700147,
+        0.028521624975837767,
+        0.02826420805649832,
+        0.028191375022288412
+      ]
+    },
+    {
+      "mesh": "plate",
+      "nfaces": 1258,
+      "nvertices": 676,
+      "npoints": 256,
+      "kind": "dipole",
+      "name": "plate: linear dipole kernel",
+      "functional_seconds": 0.03496058302698657,
+      "cached_seconds": 0.03293004195438698,
+      "speedup": 1.0616622680108392,
+      "output_shape": [
+        256,
+        1258,
+        3
+      ],
+      "relative_frobenius_difference": 1.1374273629721937e-15,
+      "max_absolute_difference": 2.0816681711721685e-17,
+      "functional_samples_seconds": [
+        0.0344548340071924,
+        0.03509391698753461,
+        0.03485445800470188,
+        0.03496058302698657,
+        0.035249166016001254
+      ],
+      "cached_samples_seconds": [
+        0.0341283330344595,
+        0.03275045898044482,
+        0.03293004195438698,
+        0.03262379195075482,
+        0.03318870801012963
+      ]
+    },
+    {
+      "mesh": "plate",
+      "nfaces": 1258,
+      "nvertices": 676,
+      "npoints": 7548,
+      "kind": "assembly",
+      "Nchunks": 59,
+      "quad_degree": 3,
+      "approx_far": false,
+      "margin": 2,
+      "chunk_clusters": false,
+      "planar": true,
+      "analytic_self_coupling": true,
+      "name": "plate: self-inductance (exact)",
+      "functional_seconds": 0.6720974170020781,
+      "cached_seconds": 0.6672697499743663,
+      "speedup": 1.007234955620118,
+      "output_shape": [
+        676,
+        676
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "functional_samples_seconds": [
+        0.685124208976049,
+        0.6720974170020781,
+        0.6863762909779325,
+        0.6706676670000888,
+        0.6703320409869775
+      ],
+      "cached_samples_seconds": [
+        0.6698932499857619,
+        0.6660850420012139,
+        0.6672697499743663,
+        0.664198792015668,
+        0.6687048749881797
+      ]
+    },
+    {
+      "mesh": "plate",
+      "nfaces": 1258,
+      "nvertices": 676,
+      "npoints": 7548,
+      "kind": "assembly",
+      "Nchunks": 59,
+      "quad_degree": 3,
+      "approx_far": true,
+      "margin": 2,
+      "chunk_clusters": false,
+      "planar": true,
+      "analytic_self_coupling": true,
+      "name": "plate: self-inductance (approx far)",
+      "functional_seconds": 0.39090066601056606,
+      "cached_seconds": 0.3886757920263335,
+      "speedup": 1.0057242412053329,
+      "output_shape": [
+        676,
+        676
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "functional_samples_seconds": [
+        0.39896970900008455,
+        0.39090066601056606,
+        0.3914777080062777,
+        0.38654837501235306,
+        0.39016408304451033
+      ],
+      "cached_samples_seconds": [
+        0.38810016703791916,
+        0.39156020898371935,
+        0.3886757920263335,
+        0.3859620000002906,
+        0.4075155000318773
+      ]
+    },
+    {
+      "mesh": "sphere",
+      "nfaces": 320,
+      "nvertices": 162,
+      "npoints": 256,
+      "kind": "kernel",
+      "planar": false,
+      "name": "sphere: uniform kernel (curved)",
+      "functional_seconds": 0.007606874976772815,
+      "cached_seconds": 0.006989167013671249,
+      "speedup": 1.088380770110843,
+      "output_shape": [
+        256,
+        320
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "functional_samples_seconds": [
+        0.007689082995057106,
+        0.007621249998919666,
+        0.007606874976772815,
+        0.007493958983104676,
+        0.007554667012300342
+      ],
+      "cached_samples_seconds": [
+        0.0070379169774241745,
+        0.006989167013671249,
+        0.006987874978221953,
+        0.007032042020000517,
+        0.006944291992112994
+      ]
+    },
+    {
+      "mesh": "sphere",
+      "nfaces": 320,
+      "nvertices": 162,
+      "npoints": 256,
+      "kind": "dipole",
+      "name": "sphere: linear dipole kernel",
+      "functional_seconds": 0.008612416975665838,
+      "cached_seconds": 0.008197040995582938,
+      "speedup": 1.0506738932142379,
+      "output_shape": [
+        256,
+        320,
+        3
+      ],
+      "relative_frobenius_difference": 6.397490591164271e-16,
+      "max_absolute_difference": 5.551115123125783e-17,
+      "functional_samples_seconds": [
+        0.008612416975665838,
+        0.008442708989605308,
+        0.008545707969460636,
+        0.008710832975339144,
+        0.008687375055160373
+      ],
+      "cached_samples_seconds": [
+        0.008006457996089011,
+        0.008197040995582938,
+        0.008083207998424768,
+        0.008201749995350838,
+        0.008354125020559877
+      ]
+    },
+    {
+      "mesh": "sphere",
+      "nfaces": 320,
+      "nvertices": 162,
+      "npoints": 1920,
+      "kind": "assembly",
+      "Nchunks": 15,
+      "quad_degree": 3,
+      "approx_far": false,
+      "margin": 2,
+      "chunk_clusters": false,
+      "planar": false,
+      "analytic_self_coupling": true,
+      "name": "sphere: self-inductance (exact)",
+      "functional_seconds": 0.06905816600192338,
+      "cached_seconds": 0.06419533299049363,
+      "speedup": 1.0757505691597529,
+      "output_shape": [
+        162,
+        162
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "functional_samples_seconds": [
+        0.06945133296540007,
+        0.06873699999414384,
+        0.06932525004958734,
+        0.06889820797368884,
+        0.06905816600192338
+      ],
+      "cached_samples_seconds": [
+        0.06421350000891834,
+        0.06446945801144466,
+        0.06410124996909872,
+        0.06386341596953571,
+        0.06419533299049363
+      ]
+    },
+    {
+      "mesh": "sphere",
+      "nfaces": 320,
+      "nvertices": 162,
+      "npoints": 1920,
+      "kind": "assembly",
+      "Nchunks": 15,
+      "quad_degree": 3,
+      "approx_far": true,
+      "margin": 2,
+      "chunk_clusters": false,
+      "planar": false,
+      "analytic_self_coupling": true,
+      "name": "sphere: self-inductance (approx far)",
+      "functional_seconds": 0.0578180419979617,
+      "cached_seconds": 0.05522983300033957,
+      "speedup": 1.0468625171762918,
+      "output_shape": [
+        162,
+        162
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "functional_samples_seconds": [
+        0.058195666992105544,
+        0.0578180419979617,
+        0.057751125015784055,
+        0.0580322919995524,
+        0.05761337495641783
+      ],
+      "cached_samples_seconds": [
+        0.05521712504560128,
+        0.055176333989948034,
+        0.05522983300033957,
+        0.05573658301727846,
+        0.05551416601520032
+      ]
+    }
+  ]
+}

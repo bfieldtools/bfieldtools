@@ -24,8 +24,11 @@ import numpy as np
 import scipy
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from bfieldtools import integrals as functional
+from bfieldtools.integrals_cached import TriangleIntegrals
 from bfieldtools.volume import integrals as current
 from bfieldtools.volume import impedance
+from bfieldtools.volume.mesh import TETRA_FACES
 from tests.test_volume_inductance import basis_for
 from tests.test_volume_topology import cube_mesh
 
@@ -45,9 +48,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--baseline-ref", default="HEAD")
     parser.add_argument("--baseline-file", type=Path)
+    parser.add_argument("--surface-baseline-file", type=Path)
+    parser.add_argument("--cached-baseline-file", type=Path)
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--only-inductance", action="store_true")
+    parser.add_argument("--case", help="Run only cases containing this text")
     args = parser.parse_args()
     if args.repeats < 1:
         parser.error("--repeats must be positive")
@@ -65,12 +71,69 @@ def main():
     baseline = types.ModuleType("bfieldtools.volume._benchmark_baseline")
     baseline.__package__ = "bfieldtools.volume"
     exec(compile(source, baseline_name, "exec"), baseline.__dict__)
+    # Shared triangle helpers may also change. Load them from the same revision
+    # so the baseline volume kernel cannot silently use the new implementation.
+    if args.surface_baseline_file:
+        surface_source = args.surface_baseline_file.read_text()
+    elif not args.baseline_file:
+        surface_source = subprocess.check_output(
+            ["git", "show", f"{baseline_name}:bfieldtools/integrals.py"], text=True
+        )
+    else:
+        surface_source = None
+    if surface_source is not None:
+        surface_baseline = types.ModuleType("bfieldtools._benchmark_surface_baseline")
+        exec(compile(surface_source, baseline_name, "exec"), surface_baseline.__dict__)
+        baseline.triangle_potential_uniform = (
+            surface_baseline.triangle_potential_uniform
+        )
+    else:
+        surface_baseline = functional
+    if "TriangleIntegrals" in baseline.__dict__:
+        if args.cached_baseline_file:
+            cached_source = args.cached_baseline_file.read_text()
+        elif not args.baseline_file:
+            cached_source = subprocess.check_output(
+                ["git", "show", f"{baseline_name}:bfieldtools/integrals_cached.py"],
+                text=True,
+            )
+        else:
+            parser.error(
+                "A cached volume baseline file also requires --cached-baseline-file"
+            )
+        cached_baseline = types.ModuleType("bfieldtools._benchmark_cached_baseline")
+        sys.modules[cached_baseline.__name__] = cached_baseline
+        exec(compile(cached_source, baseline_name, "exec"), cached_baseline.__dict__)
+        baseline.TriangleIntegrals = cached_baseline.TriangleIntegrals
 
     rng = np.random.default_rng(20261117)
     small, mesh = cube_mesh(1), cube_mesh(3)
     near = rng.random((256, 3))
     mixed = np.vstack((near[:128], near[128:] + [10, 0, 0]))
+    faces = np.ascontiguousarray(
+        mesh.vertices[mesh.tetrahedra[:16]][:, np.asarray(TETRA_FACES)]
+    ).reshape(-1, 3, 3)
+    triangle_normals = np.cross(faces[:, 1] - faces[:, 0], faces[:, 2] - faces[:, 0])
+    triangle_normals /= np.linalg.norm(triangle_normals, axis=-1)[:, None]
+    R = near[:, None, None] - faces[None]
     cases = [
+        (
+            "triangles: 256 points, 64 faces",
+            "triangle_potential_uniform",
+            (R, triangle_normals),
+            {},
+        ),
+        (
+            "triangles: 128 x 64 packed point/face pairs",
+            "triangle_potential_uniform",
+            (
+                R[:128].reshape(1, -1, 3, 3),
+                np.broadcast_to(
+                    triangle_normals, (128, *triangle_normals.shape)
+                ).reshape(-1, 3),
+            ),
+            {},
+        ),
         (
             "potential: 1 point, 1 source",
             "tetrahedron_potential",
@@ -137,6 +200,10 @@ def main():
     )
     if args.only_inductance:
         cases = [case for case in cases if case[1] == "inductance_matrix"]
+    if args.case:
+        cases = [case for case in cases if args.case in case[0]]
+        if not cases:
+            parser.error("No benchmark cases match --case")
     report = {
         "platform": platform.platform(),
         "python": platform.python_version(),
@@ -146,6 +213,7 @@ def main():
         "repeats": args.repeats,
         "point_chunk_size": 256,
         "source_chunk_size": 16,
+        "implementation": "bfieldtools.integrals_cached.TriangleIntegrals",
         "timing": "median wall time; warmup; alternating order",
         "inductance_settings": {
             "block_size": 16,
@@ -158,7 +226,15 @@ def main():
         "cases": [],
     }
     for name, function, positional, keywords in cases:
-        if function == "inductance_matrix":
+        if function == "triangle_potential_uniform":
+            if "TriangleIntegrals" in baseline.__dict__:
+                old = lambda R, tn: baseline.TriangleIntegrals(
+                    R, tn
+                ).triangle_potential_uniform
+            else:
+                old = surface_baseline.triangle_potential_uniform
+            new = lambda R, tn: TriangleIntegrals(R, tn).triangle_potential_uniform
+        elif function == "inductance_matrix":
             old = partial(assemble_inductance, baseline)
             new = partial(assemble_inductance, current)
         else:

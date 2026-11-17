@@ -9,12 +9,56 @@ from numpy.testing import assert_allclose
 from scipy.sparse import csc_matrix
 
 
-def test_gamma0():
-    """
-    No specific test done for this
-    """
+@pytest.mark.parametrize("symmetrize", [False, True])
+def test_gamma0(symmetrize):
+    triangles = np.array(
+        [[[0, 0, 0], [1, 0, 0], [0, 1, 0]], [[2, 1, 0], [2, 2, 0], [3, 1, 1]]],
+        dtype=float,
+    )
+    points = np.array([[0.2, 0.4, 0.7], [3, 1, 2], [-1, 2, 3]])
+    # Reverse both leading axes to exercise read-only, noncontiguous inputs.
+    R = (points[:, None, None] - triangles[None])[::-1, ::-1]
+    R.flags.writeable = False
+    nodes, weights = np.polynomial.legendre.leggauss(64)
+    t = (nodes + 1) / 2
+    # Independent numerical integration along each opposite edge. gamma0 is
+    # the line potential divided by edge length, hence the unit-interval rule.
+    samples = (
+        triangles[:, [2, 0, 1], None] * (1 - t)[None, None, :, None]
+        + triangles[:, [1, 2, 0], None] * t[None, None, :, None]
+    )
+    distances = np.linalg.norm(points[:, None, None, None] - samples[None], axis=-1)
+    expected = np.einsum("q,pteq->pte", weights / 2, 1 / distances)
+    assert_allclose(
+        integrals.gamma0(R, symmetrize=symmetrize), expected[::-1, ::-1], rtol=2e-12
+    )
 
-    pass
+
+@pytest.mark.parametrize("planar", [False, True])
+def test_precomputed_triangle_edges(planar):
+    triangles = np.array(
+        [[[0, 0, 0], [1, 0, 0], [0, 1, 0]], [[2, 0, 0], [4, 0, 0], [2, 3, 0]]],
+        dtype=float,
+    )
+    points = np.array([[0.2, 0.3, 0 if planar else 1], [2, 3, 0 if planar else 2]])
+    R = (points[:, None, None] - triangles[None])[::-1, ::-1]
+    normals = np.array([[0.0, 0.0, 1.0], [0.0, 0.0, 1.0]])
+    edges = (np.roll(triangles, 1, -2) - np.roll(triangles, 2, -2))[::-1]
+    original_edges = edges.copy()
+    R.flags.writeable = False
+    edges.flags.writeable = False
+    assert_allclose(
+        integrals.triangle_potential_uniform(R, normals, planar, edges=edges),
+        integrals.triangle_potential_uniform(R, normals, planar),
+        rtol=1e-12,
+        atol=1e-13,
+    )
+    # Normalized projections must also leave reusable edge geometry unchanged.
+    areas = np.array([3.0, 0.5])
+    expected = integrals.x_distance(R, normals, areas)
+    for _ in range(2):
+        assert_allclose(integrals.x_distance(R, normals, areas, edges=edges), expected)
+    np.testing.assert_array_equal(edges, original_edges)
 
 
 def test_omega():

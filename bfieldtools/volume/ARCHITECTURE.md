@@ -86,6 +86,11 @@ mesh geometry and cell-pair indices, without knowing edge ordering,
 topology, gauge, resistivity, or basis normalization. A computed interaction can
 then be reused for different current bases on the same geometry.
 
+Analytic triangle integration uses `integrals_cached.TriangleIntegrals` to share
+intermediate arrays within each evaluation chunk. Surface callers retain the
+functional interface. Consolidating these interfaces is deferred; see the
+[triangle integration API checkpoint](../TRIANGLE_INTEGRATION_API.md).
+
 `inductance_matrix(basis)` processes cell blocks without storing a full dense
 cell-pair matrix. Within each block, dense contraction is restricted to active
 basis coefficients. The final inductance matrix is dense. Alternatively,
