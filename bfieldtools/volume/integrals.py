@@ -73,6 +73,7 @@ def tetrahedron_potential(
     source_cells: ArrayLike | None = None,
     *,
     point_chunk_size: int = 256,
+    source_chunk_size: int = 16,
 ) -> NDArray[np.float64]:
     """Uniform-source potentials integral_U 1/|x-y| dV_y, in squared length units.
 
@@ -84,46 +85,78 @@ def tetrahedron_potential(
     control its fixed logarithm regularization. Beyond eight source radii, a
     regular 64-point source quadrature avoids cancellation in the signed face
     sum. Its smooth-kernel error is much smaller than the default outer tolerance.
-    Points are chunked to bound displacement-array memory.
+    Points and sources are chunked to bound displacement-array memory.
     """
     _positive_integer(point_chunk_size, "point_chunk_size")
+    _positive_integer(source_chunk_size, "source_chunk_size")
     points = np.asarray(points, dtype=float)
     if points.ndim != 2 or points.shape[1] != 3 or not np.all(np.isfinite(points)):
         raise ValueError("points must be a finite array of shape (npoints, 3)")
     sources = _cell_indices(mesh, source_cells)
     result = np.empty((len(points), len(sources)))
     far_barycentric, far_weights = tetrahedron_quadrature(4)
-    for column, cell in enumerate(sources):
-        vertices = mesh.vertices[mesh.tetrahedra[cell]]
-        center = vertices.mean(axis=0)
-        scale = np.linalg.norm(vertices - center, axis=1).max()
-        vertices = (vertices - center) / scale
-        faces = vertices[np.asarray(TETRA_FACES)]
-        normals = np.cross(faces[:, 1] - faces[:, 0], faces[:, 2] - faces[:, 0])
-        normals /= np.linalg.norm(normals, axis=1)[:, None]
-        far_points = far_barycentric @ vertices
+    vertices = mesh.vertices[mesh.tetrahedra[sources]]
+    centers = vertices.mean(axis=1)
+    scales = np.linalg.norm(vertices - centers[:, None], axis=-1).max(axis=1)
+    vertices = (vertices - centers[:, None]) / scales[:, None, None]
+    faces = vertices[:, np.asarray(TETRA_FACES)]
+    normals = np.cross(faces[:, :, 1] - faces[:, :, 0], faces[:, :, 2] - faces[:, :, 0])
+    normals /= np.linalg.norm(normals, axis=-1)[..., None]
+    far_points = np.einsum("qv,svi->sqi", far_barycentric, vertices)
+    volumes = mesh.volumes[sources]
+    for column in range(0, len(sources), source_chunk_size):
+        columns = slice(column, min(column + source_chunk_size, len(sources)))
         for start in range(0, len(points), point_chunk_size):
             stop = min(start + point_chunk_size, len(points))
-            x = (points[start:stop] - center) / scale
-            far = np.linalg.norm(x, axis=1) > 8
-            values = np.empty(len(x))
-            if np.any(~far):
-                displacements = x[~far, None, None, :] - faces[None]
-                heights = -np.einsum("pfi,fi->pf", displacements[:, :, 0], normals)
-                triangle_potentials = triangle_potential_uniform(displacements, normals)
-                # Heights exactly zero make the face contribution zero, including
-                # solid-angle branch ambiguities on the source boundary.
-                values[~far] = (
-                    0.5 * np.sum(heights * triangle_potentials, axis=1) * scale**2
+            x = (points[start:stop, None] - centers[None, columns]) / scales[
+                None, columns, None
+            ]
+            far = np.linalg.norm(x, axis=-1) > 8
+            values = np.empty(far.shape)
+            p, s = np.nonzero(~far)
+            if p.size:
+                if not np.any(far):
+                    # Keep the evaluation axis: triangle edges and normals are
+                    # shared across points, avoiding repeated geometry work.
+                    displacements = (
+                        x[:, :, None, None, :] - faces[None, columns]
+                    ).reshape(len(x), -1, 3, 3)
+                    triangle_normals = normals[columns].reshape(-1, 3)
+                else:
+                    # The triangle helpers extract edges from R[0]. Give each
+                    # selected pair/face its own triangle so geometry stays
+                    # consistent when the near mask differs between sources.
+                    displacements = (
+                        x[p, s, None, None, :] - faces[columns][s]
+                    ).reshape(1, -1, 3, 3)
+                    triangle_normals = normals[columns][s].reshape(-1, 3)
+                heights = -np.einsum(
+                    "pfi,fi->pf", displacements[:, :, 0], triangle_normals
+                ).reshape(-1, 4)
+                triangle_potentials = triangle_potential_uniform(
+                    displacements, triangle_normals
+                ).reshape(-1, 4)
+                # Zero heights suppress boundary solid-angle branch ambiguities.
+                values[p, s] = (
+                    0.5
+                    * np.sum(heights * triangle_potentials, axis=-1)
+                    * scales[columns][s] ** 2
                 )
-            if np.any(far):
-                distances = np.linalg.norm(x[far, None, :] - far_points[None], axis=-1)
-                values[far] = mesh.volumes[cell] / scale * (1 / distances @ far_weights)
+            p, s = np.nonzero(far)
+            if p.size:
+                distances = np.linalg.norm(
+                    x[p, s, None, :] - far_points[columns][s], axis=-1
+                )
+                values[p, s] = (
+                    volumes[columns][s]
+                    / scales[columns][s]
+                    * ((1 / distances) @ far_weights)
+                )
             if not np.all(np.isfinite(values)) or np.any(values <= 0):
                 raise FloatingPointError(
                     "nonpositive or nonfinite tetrahedron potential"
                 )
-            result[start:stop, column] = values
+            result[start:stop, columns] = values
     return result
 
 

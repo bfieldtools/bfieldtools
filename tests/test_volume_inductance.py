@@ -125,6 +125,51 @@ def test_far_point_potential_uses_stable_regular_source_integration():
     )
 
 
+@pytest.mark.parametrize(
+    "point_chunk_size,source_chunk_size", [(1, 1), (3, 2), (256, 16)]
+)
+def test_point_potential_batches_mixed_geometry(point_chunk_size, source_chunk_size):
+    # Different scales and face normals expose incorrect pair/face packing.
+    tetra = simple_tetrahedron().vertices
+    vertices = np.concatenate(
+        (tetra, tetra * [2, 3, 1] + [5, 0, 0], tetra[:, [1, 0, 2]] * 0.1 + 30)
+    )
+    mesh = TetraMesh(vertices, np.arange(12).reshape(3, 4))
+    points = np.vstack((mesh.cell_centers, vertices, [[100, 200, 300]]))
+    sources = np.array([2, 0, 1, 2])
+    # Independent face quadrature also covers exact vertices and mixed near/far
+    # classifications, without sharing the analytic triangle implementation.
+    expected = np.column_stack(
+        [
+            point_potential_reference(
+                TetraMesh(mesh.vertices[mesh.tetrahedra[cell]], [[0, 1, 2, 3]]),
+                points,
+            )
+            for cell in sources
+        ]
+    )
+    np.testing.assert_allclose(
+        tetrahedron_potential(
+            mesh,
+            points,
+            sources,
+            point_chunk_size=point_chunk_size,
+            source_chunk_size=source_chunk_size,
+        ),
+        expected,
+        rtol=2e-8,
+    )
+
+
+def test_point_potential_empty_batches_and_invalid_source_chunk_size():
+    mesh = simple_tetrahedron()
+    assert tetrahedron_potential(mesh, np.empty((0, 3))).shape == (0, 1)
+    assert tetrahedron_potential(mesh, [[0, 0, 0]], []).shape == (1, 0)
+    for value in (0, -1, 1.5, True):
+        with pytest.raises(ValueError, match="source_chunk_size"):
+            tetrahedron_potential(mesh, [[0, 0, 0]], source_chunk_size=value)
+
+
 def test_self_integral_against_independent_face_pair_distance_reduction():
     mesh = simple_tetrahedron()
     barycentric, weights = triangle_rule(24)

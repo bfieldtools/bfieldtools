@@ -1,0 +1,75 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.11.17",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "baseline": "bd36d584d1d84c64755bdd62cb26f82566d41a9b",
+  "repeats": 5,
+  "point_chunk_size": 256,
+  "source_chunk_size": 16,
+  "timing": "median wall time; warmup; alternating order",
+  "inductance_settings": {
+    "block_size": 16,
+    "quadrature_order": 4,
+    "rtol": 0.0001,
+    "max_order": 12,
+    "precomputed_interactions": false,
+    "basis_construction_timed": false
+  },
+  "cases": [
+    {
+      "name": "inductance: 48 cells, 25 DOFs",
+      "baseline_seconds": 0.49975274997996166,
+      "vectorized_seconds": 0.33662312501110137,
+      "speedup": 1.4846061154101653,
+      "output_shape": [
+        25,
+        25
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "max_relative_difference": 0.0,
+      "baseline_samples_seconds": [
+        0.49858566699549556,
+        0.49975274997996166,
+        0.4996721660136245,
+        0.5009572500130162,
+        0.5019927500397898
+      ],
+      "vectorized_samples_seconds": [
+        0.33662312501110137,
+        0.3363716659951024,
+        0.33653908397536725,
+        0.33775416703429073,
+        0.3383307079784572
+      ]
+    },
+    {
+      "name": "inductance: 162 cells, 109 DOFs",
+      "baseline_seconds": 5.799844875000417,
+      "vectorized_seconds": 3.8787028339575045,
+      "speedup": 1.4953052923321635,
+      "output_shape": [
+        109,
+        109
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "max_relative_difference": 0.0,
+      "baseline_samples_seconds": [
+        5.74914087500656,
+        5.801796915999148,
+        5.797241958032828,
+        5.809136249998119,
+        5.799844875000417
+      ],
+      "vectorized_samples_seconds": [
+        3.863889333035331,
+        3.8687282920000143,
+        3.881948290974833,
+        3.887806249957066,
+        3.8787028339575045
+      ]
+    }
+  ]
+}
