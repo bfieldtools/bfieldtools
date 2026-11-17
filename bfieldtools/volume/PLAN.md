@@ -9,7 +9,8 @@ quadrature checks do not establish spatial accuracy.
 ## Documentation map
 
 - [THEORY.md](THEORY.md): equivalent magnetization and the existing surface
-  dipole-layer formulation, edge loops, compatible spaces, topology, and dynamics.
+  dipole-layer formulation, proposed exterior scalar potential, edge loops,
+  compatible spaces, topology, and dynamics.
 - [EDGE_CURRENT_MATRICES.md](EDGE_CURRENT_MATRICES.md): local normalization,
   opposing-edge curls, resistance/inductance assembly, and tree–cotree gauge.
 - [INDUCTANCE_INTEGRALS.md](INDUCTANCE_INTEGRALS.md): tetrahedron potentials,
@@ -54,8 +55,11 @@ passed to `CellCurrentBasis`.
    Include skin-depth resolution and a mode-count convergence study.
 2. **Volume-current field evaluation.** Add vector-potential and magnetic-field
    operators, tested outside, near, and inside cells against independent
-   integration. The scalar `tetrahedron_potential` kernel is available, but a
-   general magnetic-field operator is not. Add potential reconstruction and a
+   integration. An exterior magnetic scalar-potential operator can reuse
+   analytic triangle integrals via the [documented cell reduction](THEORY.md#exterior-magnetic-scalar-potential-not-yet-implemented);
+   it is not implemented. The scalar `tetrahedron_potential` kernel is a
+   geometric 1/r integral, not a magnetic scalar-potential operator. Add
+   potential reconstruction and a
    total-dipole-moment operator if using the magnetization interpretation for
    diagnostics or alternative coupling.
 3. **Difficult integration cases.** Validate thin cells and extreme scales;

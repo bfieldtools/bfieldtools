@@ -87,6 +87,128 @@ understood as coupling an equivalent dipole density to the loop's magnetic
 field. Pointwise reconstruction of $\mathbf T_h$, a dipole-moment operator,
 and evaluation of this alternative coupling integral are not yet exposed.
 
+## Exterior magnetic scalar potential (not yet implemented)
+
+The equivalent magnetization gives a scalar potential outside the conductor:
+
+$$
+\boxed{
+U(\mathbf r)=\frac{1}{4\pi}\int_\Omega
+\mathbf T_h(\mathbf r')\cdot
+\frac{\mathbf r-\mathbf r'}{|\mathbf r-\mathbf r'|^3}\,dV',
+\qquad \mathbf r\notin\overline\Omega.
+}
+$$
+
+Choose the additive constant so that $U\to0$ at infinity. With coordinates in
+metres and current coefficients in amperes, $U$ has units A and
+
+$$
+\mathbf H=-\nabla U,\qquad \mathbf B=-\mu_0\nabla U
+\quad\text{outside }\Omega.
+$$
+
+This matches the default normalization of the surface
+`scalar_potential_coupling`; its `multiply_coeff=True` convention instead
+returns $\mu_0 U$. The formula describes the conductor's current contribution;
+any externally imposed field must be added separately. The supported
+solid-ball components admit a single-valued exterior potential. Extending to
+handle-spanning currents requires revisiting global scalar-potential existence
+and possible cuts, alongside the topology extensions.
+
+The zero tangential boundary trace and internal tangential continuity established
+above ensure that this dipole distribution represents exactly the implemented
+volume current. It does not introduce additional current sheets. The exterior
+relation $\mathbf B=-\mu_0\nabla U$ must not be used inside current-carrying
+cells: the equivalent-magnetization field there also contains a local
+$\mu_0\mathbf T_h$ term.
+
+### Exact cell reduction to existing triangle integrals
+
+Each lowest-order Whitney/Nédélec field on a tetrahedron $K$ has the form
+
+$$
+\mathbf T_K(\mathbf r')=\mathbf a_K+\mathbf b_K\times\mathbf r',
+\qquad \nabla\times\mathbf T_K=2\mathbf b_K.
+$$
+
+For example, with affine barycentric functions $\lambda_i$ and constant
+gradients $\mathbf g_i=\nabla\lambda_i$, the edge function is
+$\mathbf N_{ij}=\lambda_i\mathbf g_j-\lambda_j\mathbf g_i$ and its rotational
+part has $\mathbf b_{ij}=\mathbf g_i\times\mathbf g_j$.
+Consequently,
+
+$$
+\bigl[\mathbf T_K(\mathbf r')-\mathbf T_K(\mathbf r)\bigr]
+\cdot(\mathbf r-\mathbf r')=0.
+$$
+
+Here $\mathbf T_K(\mathbf r)$ is the affine continuation of the cell field to
+the observation point, even though that point is outside $K$. It is not the
+physical value of the zero-extended magnetization at that exterior point.
+
+Define the uniform triangle potential and its cell face sum by
+
+$$
+S_f(\mathbf r)=\int_f\frac{dS'}{|\mathbf r-\mathbf r'|},
+\qquad
+\mathbf Q_K(\mathbf r)=\sum_{f\subset\partial K}\mathbf n_{Kf}S_f(\mathbf r),
+$$
+
+where $\mathbf n_{Kf}$ is the unit outward normal of face $f$ relative to $K$.
+Since $\nabla_{\mathbf r'}|\mathbf r-\mathbf r'|^{-1}
+=(\mathbf r-\mathbf r')/|\mathbf r-\mathbf r'|^3$, the divergence theorem gives
+
+$$
+\mathbf Q_K(\mathbf r)=\int_K
+\frac{\mathbf r-\mathbf r'}{|\mathbf r-\mathbf r'|^3}\,dV'.
+$$
+
+The scalar potential therefore reduces to
+
+$$
+\boxed{
+U(\mathbf r)=\frac{1}{4\pi}\sum_K
+\mathbf T_K(\mathbf r)\cdot\mathbf Q_K(\mathbf r).
+}
+$$
+
+The existing [`triangle_potential_uniform`](../integrals.py) evaluates $S_f$.
+Thus this is an analytic source reduction requiring no volume quadrature.
+Internal faces must remain in the cell sum: the normal component of
+$\mathbf T_h$ may jump across them, so their contributions do not generally
+cancel. The boundary condition sets the tangential, not the normal, component
+of $\mathbf T_h$ to zero.
+
+### Proposed coupling operator and validation
+
+For global oriented edge functions, one could assemble
+
+$$
+C_{pe}=\frac{1}{4\pi}\sum_{K\supset e}
+\mathbf N_e|_K(\mathbf r_p)\cdot\mathbf Q_K(\mathbf r_p).
+$$
+
+With the existing coefficient prolongation $t=Px$, exterior values would then
+be $U=CPx$. Local edge functions must include their local-to-global orientation
+signs. The tree–cotree prolongation already zeros boundary and tree edges.
+Construction needs geometry and the chosen edge-potential representation;
+`CellCurrentBasis` alone does not retain the gauge or potential functions.
+
+This reduction is documented here as a proposed operator, not an available
+volume API. Before implementing it, establish:
+
+- Independent volume-dipole quadrature checks, including near-boundary points.
+- Agreement of $-\mu_0\nabla U$ with independent Biot–Savart evaluation of the
+  reconstructed currents, using exterior finite differences or analytic gradients.
+- Far-field agreement with the total dipole moment $\int_\Omega\mathbf T_h\,dV$.
+- Orientation, geometric scaling, and invariance of exterior values under
+  compatible changes of gauge representing the same physical current.
+- Stable coordinate scaling and a controlled far-field treatment. Face sums
+  and affine extrapolation can suffer cancellation far from a cell; the
+  analytic identity alone is not a floating-point accuracy guarantee. See the
+  related stabilization in [INDUCTANCE_INTEGRALS.md](INDUCTANCE_INTEGRALS.md#implemented-numerical-evaluator).
+
 ## Current representation
 
 ### From loops around surface vertices to loops around volume edges
