@@ -16,7 +16,7 @@ The five volume test modules passed together during this documentation audit:
 | [`mesh.py`](mesh.py) | [`test_volume_mesh.py`](../../tests/test_volume_mesh.py) | Orientation, volumes, quality, local incidence, invalid input/backend handling; optional TetGen sphere boundary/volume preservation and refinement |
 | [`topology.py`](topology.py) | [`test_volume_topology.py`](../../tests/test_volume_topology.py) | Incidence identities, physical face-flux signs, zero boundary flux, independent and complete cotree currents against the conserved face-flux space; disconnected solid balls; rejection of handles/cavities/nonmanifold boundaries |
 | [`basis.py`](basis.py), [`impedance.py`](impedance.py) resistance | [`test_volume_resistance.py`](../../tests/test_volume_resistance.py) | Analytic cube-loop resistance; Joule loss and bilinear forms against independent barycentric reconstruction; current continuity; material and length scaling; complex/multiple coefficient fields; basis/layout contracts |
-| [`integrals.py`](integrals.py), [`impedance.py`](impedance.py) inductance | [`test_volume_inductance.py`](../../tests/test_volume_inductance.py) | Independent point/self/pair integral references; touching/near/far cells; rigid motions and scaling; blocked versus dense contraction; energy; basis-invariant generalized modes and metric checks; explicit nonconvergence |
+| [`integrals.py`](integrals.py), [`impedance.py`](impedance.py) inductance | [`test_volume_inductance.py`](../../tests/test_volume_inductance.py) | Independent point/self/pair integral references; touching/near/far cells; rigid motions and scaling; blocked versus dense contraction; energy; basis-invariant generalized modes and metric checks; fixed-order contact dispatch and independent high-order references |
 | [`dynamics.py`](dynamics.py) | [`test_volume_dynamics.py`](../../tests/test_volume_dynamics.py) | Independent wire-kernel/coupling integration, orientation and intersection rejection, analytic ramp/free-decay solutions, modal energy balance, and bundled-mesh contract |
 
 The topology tests compare the retained curls with the full nullspace of the
@@ -66,8 +66,8 @@ On each run, the transient example checks generalized eigenpairs,
 M-orthogonality, positive rates, coupling quadrature refinement, physical
 face-flux continuity/boundary leakage, free decay and decreasing energy, and
 agreement with direct integration of the same coefficient ODE. Its
-`--check-convergence` option also tightens inductance quadrature and doubles
-the loop segmentation. `eddy_modes.py` has a quadrature refinement option
+`--check-convergence` option also increases the two fixed quadrature orders and
+doubles the loop segmentation. `eddy_modes.py` has a quadrature refinement option
 with the same name. Neither performs spatial mesh refinement.
 
 The topology, resistance, mode, and transient examples accept

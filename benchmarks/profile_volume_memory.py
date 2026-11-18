@@ -50,7 +50,12 @@ def worker(config):
         _ = basis.operators
 
         def calculate():
-            with patch.object(integrals, "tetrahedron_potential", kernel):
+            evaluator = partial(
+                integrals._evaluate_potential,
+                point_chunk_size=config["point_chunk_size"],
+                source_chunk_size=config["source_chunk_size"],
+            )
+            with patch.object(integrals, "_evaluate_potential", evaluator):
                 return impedance.inductance_matrix(
                     basis, block_size=config["block_size"]
                 )
@@ -62,7 +67,7 @@ def worker(config):
 
     # Initialize quadrature caches before sampling, but keep array allocators
     # cold by measuring memory before warming the calculation itself.
-    for order in (4, 6, 8, 10, 12):
+    for order in (2, 4):
         integrals.tetrahedron_quadrature(order)
     process = psutil.Process()
     rss_before = process.memory_info().rss

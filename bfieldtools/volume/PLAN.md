@@ -35,7 +35,7 @@ fixed by the tree–cotree construction.
 | Topology (`topology.py`) | Incidence operators and independent boundary-compatible tree–cotree gauge | Gauge supports disconnected solid-ball components; rejects handles, cavities, and nonmanifold boundaries |
 | Current representation (`basis.py`) | General cell-current operators, edge-curl builder, real/complex and multiple-field reconstruction | No public potential/dipole-density reconstruction or explicit dual-cycle/global-pattern builder |
 | Resistance (`impedance.py`) | Exact sparse weighted Gram assembly | Scalar resistivity only |
-| Inductance (`integrals.py`, `impedance.py`) | Near-source analytic potentials, numerical outer integration, reciprocal cell blocks, dense basis matrix, optional cached cell interactions | Empirical quadrature estimator; no general exact pair evaluator, spatial adaptivity, compression, or matrix-free solve |
+| Inductance (`integrals.py`, `impedance.py`) | Fixed analytic self/touching integration, direct quadrature elsewhere, reciprocal streamed blocks, cached geometry, dense basis matrix | No adaptive error estimator; no general exact pair evaluator, spatial adaptivity, compression, or matrix-free solve |
 | Modes (examples using SciPy) | Dense generalized symmetric eigensolves, residual and metric checks | No library eigensolver helper or large-system solver |
 | Excitation/evolution (`dynamics.py`) | External polygonal-loop coupling and prescribed-drive modal integration | No general excitation API or coupled source-circuit dynamics; wires must remain outside the conductor |
 
@@ -62,8 +62,8 @@ passed to `CellCurrentBasis`.
    potential reconstruction and a
    total-dipole-moment operator if using the magnetization interpretation for
    diagnostics or alternative coupling.
-3. **Difficult integration cases.** Validate thin cells and extreme scales;
-   introduce spatial subdivision when order refinement fails or is inefficient.
+3. **Accurate integration.** Develop a controlled-accuracy matrix assembler;
+   validate thin cells, small gaps, extreme scales, and spatial subdivision.
    Expand independent high-accuracy references and control far-source accuracy
    separately. See the integration document for the detailed backlog.
 

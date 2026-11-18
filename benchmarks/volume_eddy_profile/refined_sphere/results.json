@@ -1,0 +1,222 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.11.17",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "settings": {
+    "block_size": 16,
+    "quadrature_order": 2,
+    "rtol": 0.01,
+    "max_order": 12,
+    "spatial_order": true
+  },
+  "radius_m": 0.1,
+  "resistivity_ohm_m": 1e-08,
+  "mesh_generation": {
+    "method": "loaded saved mesh; TetGen on original boundary",
+    "max_volume": 0.004,
+    "path": "benchmarks/volume_eddy_profile/refined_sphere/mesh.npz"
+  },
+  "timing_method": "one uninstrumented sequential assembly per mesh; separate setup, eigensolve, and instrumented refined assembly",
+  "cases": {
+    "coarse": {
+      "ncells": 808,
+      "nvertices": 226,
+      "ndofs": 649,
+      "boundary_faces": 320,
+      "volume_m3": 0.004047044679978849,
+      "min_quality": 0.26135690481854446,
+      "median_quality": 0.8789992249925627,
+      "volume_min_m3": 6.757507791385586e-07,
+      "volume_max_m3": 1.4337859233214449e-05,
+      "setup_wall_seconds": 0.007813458039890975,
+      "dense_inductance_MiB": 3.2135086059570312,
+      "pair_classification": {
+        "order_0": 178579,
+        "order_2": 1068,
+        "order_3": 75782,
+        "order_4": 71407,
+        "near_with_disjoint_spheres": 146306,
+        "overlapping_spheres": 32273,
+        "ncells": 808,
+        "unique_pairs": 326836
+      },
+      "assembly_wall_seconds": 25.04579200001899,
+      "assembly_cpu_seconds": 25.007623,
+      "resistance_wall_seconds": 0.0011836669873446226,
+      "slow_modes_wall_seconds": 0.020931583014316857,
+      "slowest_20_decay_rates_per_s": [
+        8.273179551942473,
+        8.279231678965388,
+        8.283091514590833,
+        17.609954356830706,
+        17.649913588215277,
+        17.654768447697194,
+        17.68935467075545,
+        17.74603927082144,
+        18.25219598159788,
+        18.30767310641044,
+        18.334966633320903,
+        30.2942021409322,
+        30.372985026814774,
+        30.48857593809565,
+        30.51233666556316,
+        30.572932509462532,
+        30.677583087493282,
+        30.82582448956751,
+        32.04129979090872,
+        32.21994320190469
+      ],
+      "slowest_20_generalized_residual": 4.286404540271672e-14,
+      "slowest_20_M_orthogonality_error": 7.047374693215877e-15
+    },
+    "refined": {
+      "ncells": 1804,
+      "nvertices": 404,
+      "ndofs": 1603,
+      "boundary_faces": 404,
+      "volume_m3": 0.00404704467997885,
+      "min_quality": 0.15266041347841164,
+      "median_quality": 0.8806041854061648,
+      "volume_min_m3": 9.157080606142894e-08,
+      "volume_max_m3": 4.653744322328898e-06,
+      "setup_wall_seconds": 0.01342533400747925,
+      "dense_inductance_MiB": 19.60456085205078,
+      "pair_classification": {
+        "order_0": 582841,
+        "order_2": 59570,
+        "order_3": 650540,
+        "order_4": 335159,
+        "near_with_disjoint_spheres": 498585,
+        "overlapping_spheres": 84256,
+        "ncells": 1804,
+        "unique_pairs": 1628110
+      },
+      "assembly_wall_seconds": 93.02034874999663,
+      "assembly_cpu_seconds": 92.905306,
+      "resistance_wall_seconds": 0.0016008749953471124,
+      "slow_modes_wall_seconds": 0.12400024995440617,
+      "slowest_20_decay_rates_per_s": [
+        8.16774361869414,
+        8.170674309658246,
+        8.171460964490201,
+        17.10479215870289,
+        17.123423865570395,
+        17.128604471231792,
+        17.152722787564073,
+        17.160979025002618,
+        17.369882161639584,
+        17.393986949187937,
+        17.428692591614865,
+        28.96817207862935,
+        29.011274147498224,
+        29.064378932395183,
+        29.105015683628665,
+        29.14880712004158,
+        29.197356330105187,
+        29.24885050514896,
+        29.7471671248652,
+        29.789924972876417
+      ],
+      "slowest_20_generalized_residual": 1.60474022756993e-13,
+      "slowest_20_M_orthogonality_error": 7.155831849426006e-15,
+      "instrumentation": {
+        "wall_seconds": 97.17466741701355,
+        "quadrature_orders": {
+          "2": {
+            "calls": 108585,
+            "directed_cell_pairs": 1168458,
+            "outer_point_source_pairs": 9347664,
+            "still_active": 0,
+            "max_relative_change": 0.0,
+            "cpu_seconds": 12.979005000002445
+          },
+          "4": {
+            "calls": 108585,
+            "directed_cell_pairs": 1168458,
+            "outer_point_source_pairs": 74781312,
+            "still_active": 121,
+            "max_relative_change": 0.023956658824010046,
+            "cpu_seconds": 49.598797999995995
+          },
+          "6": {
+            "calls": 105,
+            "directed_cell_pairs": 121,
+            "outer_point_source_pairs": 26136,
+            "still_active": 0,
+            "max_relative_change": 0.0022024350866175512,
+            "cpu_seconds": 0.021278999999850612
+          }
+        },
+        "functions": {
+          "_directed_interactions": {
+            "calls": 108585,
+            "cell_pairs": 1168458,
+            "cpu_seconds": 67.91232899999903
+          },
+          "_near_interactions": {
+            "calls": 54338,
+            "cell_pairs": 595821,
+            "cpu_seconds": 68.06734200000103
+          },
+          "tetrahedron_interaction_block": {
+            "calls": 6441,
+            "cell_pairs": 1641616,
+            "cpu_seconds": 95.06683800000091
+          },
+          "_regular_interactions": {
+            "calls": 140816,
+            "cell_pairs": 1045795,
+            "cpu_seconds": 25.975103000002107
+          }
+        },
+        "point_source_pairs": {
+          "analytic": 84155112,
+          "source_order_4": 0
+        },
+        "block_types": {
+          "uniform_order_0": 373,
+          "mixed": 6062,
+          "uniform_order_3": 6
+        },
+        "unique_directed_terminal_orders": {
+          "4": 1163771,
+          "6": 107
+        },
+        "note": "Function CPU counters are inclusive and include nested instrumentation overhead; do not sum them."
+      }
+    }
+  },
+  "comparison": {
+    "cell_ratio": 2.232673267326733,
+    "dof_ratio": 2.4699537750385208,
+    "pair_ratio": 4.981427994468174,
+    "assembly_time_ratio": 3.71401107019998,
+    "two_point_time_exponent": 1.6336068578925511,
+    "relative_slowest_20_decay_rate_changes": [
+      -0.012744306174713449,
+      -0.01311201008940821,
+      -0.013476918600258347,
+      -0.028686173052565045,
+      -0.029829592083465806,
+      -0.029802938397304857,
+      -0.03033643076186099,
+      -0.032968497189161394,
+      -0.04834014607600401,
+      -0.049907279418408224,
+      -0.04942872598737258,
+      -0.043771744049702965,
+      -0.04483296186115271,
+      -0.04671248039239917,
+      -0.0461230156628033,
+      -0.04658124924654106,
+      -0.04825108787633137,
+      -0.0511575606015745,
+      -0.0715992385144889,
+      -0.07541969313231511
+    ],
+    "max_relative_slowest_20_decay_rate_change": 0.07541969313231511,
+    "mean_slowest_triplet_coarse": 8.278500915166232,
+    "mean_slowest_triplet_refined": 8.16995963094753
+  }
+}

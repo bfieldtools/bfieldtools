@@ -260,7 +260,9 @@ def main():
     )
     print(f"Peak stored magnetic energy: {energy.max():.6g} J")
     if args.check_convergence:
-        refined_magnetic = inductance_matrix(basis, rtol=2.5e-5)
+        refined_magnetic = inductance_matrix(
+            basis, quadrature_order=3, touching_order=6
+        )
         refined_rates = eigh(
             resistance, refined_magnetic, eigvals_only=True, subset_by_index=(0, 2)
         )

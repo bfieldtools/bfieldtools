@@ -77,6 +77,10 @@ class TetraMesh:
         Zero-based vertex indices. Negative orientations are corrected on a
         copy. Degenerate cells, duplicate cells, and nonconforming shared-face
         orientations are rejected.
+    min_quality : float, default 0.01
+        Minimum mean-ratio quality, in [0, 1]. Cells below this threshold
+        are rejected before any integration. Set zero explicitly to accept
+        slivers (the degeneracy check still applies).
 
     Notes
     -----
@@ -91,7 +95,11 @@ class TetraMesh:
     volumes: NDArray[np.float64]
     boundary_faces: NDArray[np.int64]
 
-    def __init__(self, vertices: ArrayLike, tetrahedra: ArrayLike) -> None:
+    def __init__(
+        self, vertices: ArrayLike, tetrahedra: ArrayLike, *, min_quality: float = 0.01
+    ) -> None:
+        if not np.isfinite(min_quality) or not 0 <= min_quality <= 1:
+            raise ValueError("min_quality must be finite and in [0, 1]")
         self.vertices = _vertices(vertices)
         self.tetrahedra = _indices(tetrahedra, 4, len(self.vertices), "tetrahedra")
         points = self.vertices[self.tetrahedra]
@@ -103,6 +111,14 @@ class TetraMesh:
         negative = determinants < 0
         self.tetrahedra[negative] = self.tetrahedra[negative][:, [1, 0, 2, 3]]
         self.volumes = np.abs(determinants) / 6
+        bad = np.flatnonzero(self.cell_quality < min_quality)
+        if bad.size:
+            cell = bad[0]
+            raise ValueError(
+                f"tetrahedron {cell} has mean-ratio quality "
+                f"{self.cell_quality[cell]:.3g} below min_quality={min_quality:g}; "
+                "improve the mesh or explicitly lower min_quality"
+            )
 
         # For positive determinants these local face orderings point outward.
         faces = self.tetrahedra[:, TETRA_FACES]
@@ -133,9 +149,42 @@ class TetraMesh:
     @cached_property
     def cell_centers(self) -> NDArray[np.float64]:
         """Cell centroids, shape (ncells, 3)."""
-        centers = self.vertices[self.tetrahedra].mean(axis=1)
+        points = self.vertices[self.tetrahedra]
+        centers = points[:, 0] + (points - points[:, :1]).mean(axis=1)
         centers.flags.writeable = False
         return centers
+
+    @cached_property
+    def cell_radii(self) -> NDArray[np.float64]:
+        """Radii of centroid-centered bounding spheres, shape (ncells,)."""
+        radii = np.linalg.norm(
+            self.vertices[self.tetrahedra] - self.cell_centers[:, None], axis=-1
+        ).max(axis=1)
+        radii.flags.writeable = False
+        return radii
+
+    @cached_property
+    def spatial_cell_order(self) -> NDArray[np.int64]:
+        """Cell indices grouped by recursive longest-axis centroid bisection.
+
+        Does not change connectivity or cell numbering. Contiguous sections
+        provide local neighborhoods for blockwise integration.
+        """
+
+        def partition(indices):
+            if len(indices) <= 1:
+                return indices
+            centers = self.cell_centers[indices]
+            axis = np.argmax(np.ptp(centers, axis=0))
+            indices = indices[np.argsort(centers[:, axis], kind="stable")]
+            middle = len(indices) // 2
+            return np.concatenate(
+                (partition(indices[:middle]), partition(indices[middle:]))
+            )
+
+        order = partition(np.arange(len(self.tetrahedra)))
+        order.flags.writeable = False
+        return order
 
     @cached_property
     def cell_edge_vectors(self) -> NDArray[np.float64]:

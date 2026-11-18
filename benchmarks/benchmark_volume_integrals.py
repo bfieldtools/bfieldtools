@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 from functools import partial
 import json
+import inspect
 import platform
 from pathlib import Path
 import subprocess
@@ -29,19 +30,35 @@ from bfieldtools.integrals_cached import TriangleIntegrals
 from bfieldtools.volume import integrals as current
 from bfieldtools.volume import impedance
 from bfieldtools.volume.mesh import TETRA_FACES
+from bfieldtools.volume import TetraMesh
 from tests.test_volume_inductance import basis_for
 from tests.test_volume_topology import cube_mesh
 
 
-def assemble_inductance(integrals, basis):
-    # impedance imports the iterator directly. Replace that reference so the
-    # complete assembly uses the selected implementation, including refinement.
-    with patch.object(
-        impedance,
-        "iter_tetrahedron_interactions",
-        integrals.iter_tetrahedron_interactions,
-    ):
-        return impedance.inductance_matrix(basis)
+def assemble_inductance(module, basis, *, quadrature_order, touching_order):
+    # Older baselines have adaptive arguments; keep their original defaults.
+    target = module.iter_tetrahedron_interactions
+    supported = inspect.signature(target).parameters
+
+    def iterator(*args, **kwargs):
+        kwargs = {key: value for key, value in kwargs.items() if key in supported}
+        if "touching_order" not in supported:
+            kwargs["quadrature_order"] = supported["quadrature_order"].default
+        return target(*args, **kwargs)
+
+    with patch.object(impedance, "iter_tetrahedron_interactions", iterator):
+        return impedance.inductance_matrix(
+            basis, quadrature_order=quadrature_order, touching_order=touching_order
+        )
+
+
+def call_interaction(
+    module, function, *args, quadrature_order, touching_order, **kwargs
+):
+    target = getattr(module, function)
+    if "touching_order" in inspect.signature(target).parameters:
+        kwargs.update(quadrature_order=quadrature_order, touching_order=touching_order)
+    return target(*args, **kwargs)
 
 
 def main():
@@ -51,12 +68,19 @@ def main():
     parser.add_argument("--surface-baseline-file", type=Path)
     parser.add_argument("--cached-baseline-file", type=Path)
     parser.add_argument("--repeats", type=int, default=5)
+    parser.add_argument("--quadrature-order", type=int, default=2)
+    parser.add_argument("--touching-order", type=int, default=4)
+    parser.add_argument("--comparison-rtol", type=float, default=2e-2)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--only-inductance", action="store_true")
     parser.add_argument("--case", help="Run only cases containing this text")
     args = parser.parse_args()
     if args.repeats < 1:
         parser.error("--repeats must be positive")
+    if not np.isfinite(args.comparison_rtol) or args.comparison_rtol <= 0:
+        parser.error("--comparison-rtol must be positive and finite")
+    if min(args.quadrature_order, args.touching_order) < 1:
+        parser.error("quadrature orders must be positive")
     if args.baseline_file:
         source = args.baseline_file.read_text()
         baseline_name = str(args.baseline_file)
@@ -70,6 +94,7 @@ def main():
         )
     baseline = types.ModuleType("bfieldtools.volume._benchmark_baseline")
     baseline.__package__ = "bfieldtools.volume"
+    sys.modules[baseline.__name__] = baseline
     exec(compile(source, baseline_name, "exec"), baseline.__dict__)
     # Shared triangle helpers may also change. Load them from the same revision
     # so the baseline volume kernel cannot silently use the new implementation.
@@ -108,6 +133,10 @@ def main():
 
     rng = np.random.default_rng(20261117)
     small, mesh = cube_mesh(1), cube_mesh(3)
+    separated = TetraMesh(
+        np.concatenate((mesh.vertices, mesh.vertices + [30, 0, 0])),
+        np.concatenate((mesh.tetrahedra, mesh.tetrahedra + len(mesh.vertices))),
+    )
     near = rng.random((256, 3))
     mixed = np.vstack((near[:128], near[128:] + [10, 0, 0]))
     faces = np.ascontiguousarray(
@@ -188,6 +217,12 @@ def main():
             (cube_mesh(2),),
             {},
         ),
+        (
+            "interaction: 16 x 16 distant neighborhoods",
+            "tetrahedron_interaction_block",
+            (separated, np.arange(16), len(mesh.tetrahedra) + np.arange(16)),
+            {},
+        ),
     ]
     cases.extend(
         (
@@ -217,15 +252,23 @@ def main():
         "timing": "median wall time; warmup; alternating order",
         "inductance_settings": {
             "block_size": 16,
-            "quadrature_order": 4,
-            "rtol": 1e-4,
-            "max_order": 12,
+            "quadrature_order": args.quadrature_order,
+            "touching_order": args.touching_order,
+            "spatial_order": True,
             "precomputed_interactions": False,
             "basis_construction_timed": False,
         },
         "cases": [],
     }
     for name, function, positional, keywords in cases:
+        if function == "inductance_matrix" or function.startswith(
+            "tetrahedron_interaction"
+        ):
+            keywords = dict(
+                keywords,
+                quadrature_order=args.quadrature_order,
+                touching_order=args.touching_order,
+            )
         if function == "triangle_potential_uniform":
             if "TriangleIntegrals" in baseline.__dict__:
                 old = lambda R, tn: baseline.TriangleIntegrals(
@@ -237,17 +280,31 @@ def main():
         elif function == "inductance_matrix":
             old = partial(assemble_inductance, baseline)
             new = partial(assemble_inductance, current)
+        elif function.startswith("tetrahedron_interaction"):
+            old = partial(call_interaction, baseline, function)
+            new = partial(call_interaction, current, function)
         else:
             old, new = getattr(baseline, function), getattr(current, function)
         print(f"Running {name}...", flush=True)
         expected = old(*positional, **keywords)
         actual = new(*positional, **keywords)
-        np.testing.assert_allclose(
-            actual,
-            expected,
-            rtol=2e-11,
-            atol=1e-20 if function == "inductance_matrix" else 0,
-        )
+        if function == "inductance_matrix":
+            # Signed basis contractions can cancel almost completely in small
+            # entries. Compare the assembled matrix in norm; retain entrywise
+            # checks for the positive cell kernel below.
+            assert np.linalg.norm(
+                actual - expected
+            ) <= args.comparison_rtol * np.linalg.norm(expected)
+        else:
+            np.testing.assert_allclose(
+                actual,
+                expected,
+                # Converged orders can differ within the integration tolerance.
+                rtol=args.comparison_rtol
+                if function.startswith("tetrahedron_interaction")
+                else 2e-11,
+                atol=0,
+            )
         timings = [[], []]
         for repeat in range(args.repeats):
             for index in [0, 1] if repeat % 2 == 0 else [1, 0]:

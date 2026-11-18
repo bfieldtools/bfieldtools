@@ -33,6 +33,24 @@ def test_regular_tetrahedron_quality():
     np.testing.assert_allclose(mesh.cell_quality, 1)
 
 
+def test_sliver_rejected_before_integration():
+    vertices = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0.3, 0.3, 1e-5]]
+    with pytest.raises(ValueError, match="tetrahedron 0.*quality.*min_quality"):
+        TetraMesh(vertices, [[0, 1, 2, 3]])
+    mesh = TetraMesh(vertices, [[0, 1, 2, 3]], min_quality=0)
+    assert 0 < mesh.cell_quality[0] < 0.01
+    with pytest.raises(ValueError, match="quality"):
+        TetraMesh(vertices, [[0, 1, 2, 3]], min_quality=0.5)
+
+
+@pytest.mark.parametrize("minimum", [-1, 1.1, np.nan, np.inf])
+def test_invalid_minimum_quality(minimum):
+    with pytest.raises(ValueError, match="min_quality"):
+        TetraMesh(
+            np.vstack((np.zeros(3), np.eye(3))), [[0, 1, 2, 3]], min_quality=minimum
+        )
+
+
 @pytest.mark.parametrize(
     "cells",
     [

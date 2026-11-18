@@ -1,15 +1,15 @@
-"""Geometry-only Coulomb interactions of uniformly filled tetrahedra.
+"""Fixed-order Coulomb interactions for tetrahedral volume currents.
 
-Near-source point potentials use analytic triangle integration. Outer volume
-integration uses positive Gauss–Jacobi product quadrature with an empirical
-order-refinement check. No coincident 1/r samples or diagonal replacements are
-used. The error estimate is a convergence diagnostic, not a rigorous bound.
+Self and shared-vertex neighbors use analytic source potentials with fixed outer
+quadrature. Other pairs use direct double volume quadrature. The defaults target
+slow, smooth eddy-current modes; there is no adaptive accuracy estimator.
 """
 
 from __future__ import annotations
 
 from collections.abc import Iterator
-from functools import lru_cache
+from dataclasses import dataclass
+from functools import cached_property, lru_cache
 
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
@@ -67,6 +67,59 @@ def _cell_indices(mesh: TetraMesh, cells: ArrayLike | None) -> NDArray[np.int64]
     return cells.astype(np.int64, copy=False)
 
 
+@dataclass(frozen=True)
+class _SourceGeometry:
+    """Normalized source geometry shared by all potential evaluations.
+
+    take() selects matching source arrays for a cell block or neighbor group.
+    """
+
+    centers: NDArray
+    scales: NDArray
+    faces: NDArray
+    edges: NDArray
+    normals: NDArray
+    vertices: NDArray
+    volumes: NDArray
+
+    @classmethod
+    def from_mesh(cls, mesh: TetraMesh, sources: NDArray) -> _SourceGeometry:
+        vertices = mesh.vertices[mesh.tetrahedra[sources]]
+        centers = mesh.cell_centers[sources]
+        scales = mesh.cell_radii[sources]
+        vertices = (vertices - centers[:, None]) / scales[:, None, None]
+        # Advanced indexing otherwise puts the face axes before the source axis in
+        # memory. A contiguous layout lets displacement reshapes remain views.
+        faces = np.ascontiguousarray(vertices[:, np.asarray(TETRA_FACES)])
+        # Opposite-edge order matches roll(R, 2) - roll(R, 1) for R = x - vertex.
+        # Source geometry is shared by every point chunk, including the normals.
+        edges = np.empty_like(faces)
+        edges[:, :, 0] = faces[:, :, 2] - faces[:, :, 1]
+        edges[:, :, 1] = faces[:, :, 0] - faces[:, :, 2]
+        edges[:, :, 2] = faces[:, :, 1] - faces[:, :, 0]
+        normals = np.cross(edges[:, :, 2], -edges[:, :, 1])
+        normals /= np.linalg.norm(normals, axis=-1)[..., None]
+        volumes = mesh.volumes[sources]
+        return cls(centers, scales, faces, edges, normals, vertices, volumes)
+
+    @cached_property
+    def far_points(self):
+        """The stable point-potential fallback is prepared only when needed."""
+        barycentric, _ = tetrahedron_quadrature(4)
+        return np.einsum("qv,svi->sqi", barycentric, self.vertices)
+
+    def take(self, indices: NDArray) -> _SourceGeometry:
+        return _SourceGeometry(
+            self.centers[indices],
+            self.scales[indices],
+            self.faces[indices],
+            self.edges[indices],
+            self.normals[indices],
+            self.vertices[indices],
+            self.volumes[indices],
+        )
+
+
 def tetrahedron_potential(
     mesh: TetraMesh,
     points: ArrayLike,
@@ -84,7 +137,8 @@ def tetrahedron_potential(
     Each source is translated and scaled before calling the triangle routine to
     control its fixed logarithm regularization. Beyond eight source radii, a
     regular 64-point source quadrature avoids cancellation in the signed face
-    sum. Its smooth-kernel error is much smaller than the default outer tolerance.
+    sum. This fixed fallback controls cancellation; it is independent of the
+    cell-interaction quadrature orders.
     Points and sources are chunked to bound displacement-array memory.
     """
     _positive_integer(point_chunk_size, "point_chunk_size")
@@ -93,27 +147,24 @@ def tetrahedron_potential(
     if points.ndim != 2 or points.shape[1] != 3 or not np.all(np.isfinite(points)):
         raise ValueError("points must be a finite array of shape (npoints, 3)")
     sources = _cell_indices(mesh, source_cells)
-    result = np.empty((len(points), len(sources)))
-    far_barycentric, far_weights = tetrahedron_quadrature(4)
-    vertices = mesh.vertices[mesh.tetrahedra[sources]]
-    centers = vertices.mean(axis=1)
-    scales = np.linalg.norm(vertices - centers[:, None], axis=-1).max(axis=1)
-    vertices = (vertices - centers[:, None]) / scales[:, None, None]
-    # Advanced indexing otherwise puts the face axes before the source axis in
-    # memory. A contiguous layout lets displacement reshapes remain views.
-    faces = np.ascontiguousarray(vertices[:, np.asarray(TETRA_FACES)])
-    # Opposite-edge order matches roll(R, 2) - roll(R, 1) for R = x - vertex.
-    # Source geometry is shared by every point chunk, including the normals.
-    edges = np.empty_like(faces)
-    edges[:, :, 0] = faces[:, :, 2] - faces[:, :, 1]
-    edges[:, :, 1] = faces[:, :, 0] - faces[:, :, 2]
-    edges[:, :, 2] = faces[:, :, 1] - faces[:, :, 0]
-    normals = np.cross(edges[:, :, 2], -edges[:, :, 1])
-    normals /= np.linalg.norm(normals, axis=-1)[..., None]
-    far_points = np.einsum("qv,svi->sqi", far_barycentric, vertices)
-    volumes = mesh.volumes[sources]
-    for column in range(0, len(sources), source_chunk_size):
-        columns = slice(column, min(column + source_chunk_size, len(sources)))
+    geometry = _SourceGeometry.from_mesh(mesh, sources)
+    return _evaluate_potential(geometry, points, point_chunk_size, source_chunk_size)
+
+
+def _evaluate_potential(
+    geometry: _SourceGeometry,
+    points: NDArray,
+    point_chunk_size: int = 256,
+    source_chunk_size: int = 16,
+) -> NDArray[np.float64]:
+    centers, scales = geometry.centers, geometry.scales
+    faces, edges, normals = geometry.faces, geometry.edges, geometry.normals
+    volumes = geometry.volumes
+    nsources = len(centers)
+    _, far_weights = tetrahedron_quadrature(4)
+    result = np.empty((len(points), nsources))
+    for column in range(0, nsources, source_chunk_size):
+        columns = slice(column, min(column + source_chunk_size, nsources))
         for start in range(0, len(points), point_chunk_size):
             stop = min(start + point_chunk_size, len(points))
             x = (points[start:stop, None] - centers[None, columns]) / scales[
@@ -155,7 +206,7 @@ def tetrahedron_potential(
             p, s = np.nonzero(far)
             if p.size:
                 distances = np.linalg.norm(
-                    x[p, s, None, :] - far_points[columns][s], axis=-1
+                    x[p, s, None, :] - geometry.far_points[columns][s], axis=-1
                 )
                 values[p, s] = (
                     volumes[columns][s]
@@ -170,54 +221,110 @@ def tetrahedron_potential(
     return result
 
 
-def _integrate_sources(
-    mesh: TetraMesh, rows: NDArray, columns: NDArray, order: int
-) -> NDArray[np.float64]:
-    barycentric, weights = tetrahedron_quadrature(order)
-    # Work relative to a cell vertex so a large coordinate offset does not enter
-    # the barycentric weighted sum multiple times.
-    vertices = mesh.vertices[mesh.tetrahedra[rows]]
-    points = vertices[:, :1] + np.einsum(
-        "qv,tvi->tqi", barycentric, vertices - vertices[:, :1]
-    )
-    potentials = tetrahedron_potential(mesh, points.reshape(-1, 3), columns)
-    potentials = potentials.reshape(len(rows), len(weights), len(columns))
-    return mesh.volumes[rows, None] * np.einsum("q,tqs->ts", weights, potentials)
+@dataclass(frozen=True)
+class _CellIntegrals:
+    """Prepared rules and source geometry, reused across streamed cell blocks."""
 
+    tetrahedra: NDArray
+    sources: _SourceGeometry
+    regular_offsets: NDArray
+    regular_weights: NDArray
+    touching_points: NDArray
+    touching_weights: NDArray
 
-def _directed_interactions(
-    mesh: TetraMesh,
-    rows: NDArray,
-    columns: NDArray,
-    order: int,
-    rtol: float,
-    max_order: int,
-) -> NDArray[np.float64]:
-    previous = _integrate_sources(mesh, rows, columns, order)
-    current = _integrate_sources(mesh, rows, columns, order + 2)
-    relative_change = np.abs(current - previous) / np.abs(current)
-    active = relative_change > rtol
-    for refined_order in range(order + 4, max_order + 1, 2):
-        if not np.any(active):
-            break
-        for row in np.flatnonzero(np.any(active, axis=1)):
-            selected = np.flatnonzero(active[row])
-            values = _integrate_sources(
-                mesh, rows[row : row + 1], columns[selected], refined_order
-            )[0]
-            relative_change[row, selected] = np.abs(
-                values - current[row, selected]
-            ) / np.abs(values)
-            current[row, selected] = values
-        active = relative_change > rtol
-    if np.any(active):
-        i, j = np.argwhere(active)[0]
-        raise RuntimeError(
-            f"tetrahedron interaction ({rows[i]}, {columns[j]}) did not converge "
-            f"at max_order={max_order}: relative change {relative_change[i,j]:.3g} "
-            f"exceeds rtol={rtol:g}; increase max_order or relax rtol"
+    @classmethod
+    def from_mesh(cls, mesh, cells=None, *, quadrature_order=2, touching_order=4):
+        _positive_integer(quadrature_order, "quadrature_order")
+        _positive_integer(touching_order, "touching_order")
+        cells = _cell_indices(mesh, cells)
+        vertices = mesh.vertices[mesh.tetrahedra[cells]]
+        sources = _SourceGeometry.from_mesh(mesh, cells)
+
+        def rule(order):
+            barycentric, weights = tetrahedron_quadrature(order)
+            offsets = np.einsum(
+                "qv,tvi->tqi", barycentric, vertices - sources.centers[:, None]
+            )
+            return offsets, weights
+
+        regular, regular_weights = rule(quadrature_order)
+        touching, touching_weights = rule(touching_order)
+        return cls(
+            mesh.tetrahedra[cells],
+            sources,
+            regular,
+            regular_weights,
+            sources.centers[:, None] + touching,
+            touching_weights,
         )
-    return current
+
+    def _regular(self, rows, columns):
+        """Double quadrature, with bounded temporary point-pair arrays."""
+        result = np.empty((len(rows), len(columns)))
+        centers, volumes = self.sources.centers, self.sources.volumes
+        for i, row in enumerate(rows):
+            for start in range(0, len(columns), 16):
+                batch = slice(start, start + 16)
+                selected = columns[batch]
+                displacement = (
+                    (centers[row] - centers[selected])[:, None, None, :]
+                    + self.regular_offsets[row, None, :, None, :]
+                    - self.regular_offsets[selected, None, :, :]
+                )
+                result[i, batch] = (
+                    volumes[row]
+                    * volumes[selected]
+                    * np.einsum(
+                        "q,sqp,p->s",
+                        self.regular_weights,
+                        1 / np.linalg.norm(displacement, axis=-1),
+                        self.regular_weights,
+                    )
+                )
+        return result
+
+    def _analytic(self, rows, columns):
+        """Fixed outer quadrature of analytic source potentials; average directions."""
+
+        def directed(testing, sources):
+            values = _evaluate_potential(
+                self.sources.take(sources), self.touching_points[testing].reshape(-1, 3)
+            ).reshape(len(testing), len(self.touching_weights), len(sources))
+            return self.sources.volumes[testing, None] * np.einsum(
+                "q,tqs->ts", self.touching_weights, values
+            )
+
+        forward = directed(rows, columns)
+        reverse = (
+            forward.T if np.array_equal(rows, columns) else directed(columns, rows).T
+        )
+        return 0.5 * (forward + reverse)
+
+    def block(self, rows, columns):
+        if not len(rows) or not len(columns):
+            return np.empty((len(rows), len(columns)))
+        touching = np.any(
+            self.tetrahedra[rows, None, :, None]
+            == self.tetrahedra[None, columns, None, :],
+            axis=(2, 3),
+        )
+        if not np.any(touching):
+            result = self._regular(rows, columns)
+        elif np.all(touching):
+            result = self._analytic(rows, columns)
+        else:
+            result = np.empty(touching.shape)
+            for i in range(len(rows)):
+                for mask, integrate in (
+                    (touching[i], self._analytic),
+                    (~touching[i], self._regular),
+                ):
+                    selected = columns[mask]
+                    if len(selected):
+                        result[i, mask] = integrate(rows[i : i + 1], selected)[0]
+        if not np.all(np.isfinite(result)) or np.any(result <= 0):
+            raise FloatingPointError("nonpositive or nonfinite tetrahedron interaction")
+        return 0.5 * (result + result.T) if np.array_equal(rows, columns) else result
 
 
 def tetrahedron_interaction_block(
@@ -225,87 +332,83 @@ def tetrahedron_interaction_block(
     rows: ArrayLike,
     columns: ArrayLike,
     *,
-    quadrature_order: int = 4,
-    rtol: float = 1e-4,
-    max_order: int = 12,
+    quadrature_order: int = 2,
+    touching_order: int = 4,
 ) -> NDArray[np.float64]:
-    """Symmetric-by-reciprocity cell interactions K_TU, in length**5 units.
+    """Cell interactions K_TU in length**5 units, symmetric by reciprocity.
 
-    Analytic inner integration is followed by increasing outer quadrature order
-    by two until successive results change by at most rtol, for each directed
-    cell pair. Both directions are evaluated and averaged. Failure to converge
-    raises RuntimeError; no clipping, diagonal replacement, or regularization of
-    magnetic energy is applied. The refinement estimate is empirical.
+    Self and cells sharing any vertex use analytic source potentials integrated
+    with a fixed order-touching_order outer rule. All other pairs use fixed
+    double volume quadrature at quadrature_order (order**3 points per cell).
+    Defaults are two and four, intended for slow, smooth current patterns.
+    Increase either order explicitly to check sensitivity; no error bound,
+    runtime refinement, diagonal replacement, or energy correction is applied.
+    Supplied meshes must be geometrically conforming with shared vertex indices.
     """
-    _positive_integer(quadrature_order, "quadrature_order")
-    _positive_integer(max_order, "max_order")
-    if max_order < quadrature_order + 2:
-        raise ValueError("max_order must be at least quadrature_order + 2")
-    if not np.isfinite(rtol) or rtol <= 0:
-        raise ValueError("rtol must be positive and finite")
     rows, columns = _cell_indices(mesh, rows), _cell_indices(mesh, columns)
-    if not len(rows) or not len(columns):
-        return np.empty((len(rows), len(columns)))
-    forward = _directed_interactions(
-        mesh, rows, columns, quadrature_order, rtol, max_order
+    cells = np.unique(np.concatenate((rows, columns)))
+    geometry = _CellIntegrals.from_mesh(
+        mesh, cells, quadrature_order=quadrature_order, touching_order=touching_order
     )
-    if np.array_equal(rows, columns):
-        reverse = forward.T
-    else:
-        reverse = _directed_interactions(
-            mesh, columns, rows, quadrature_order, rtol, max_order
-        ).T
-    return 0.5 * (forward + reverse)
+    return geometry.block(np.searchsorted(cells, rows), np.searchsorted(cells, columns))
 
 
 def iter_tetrahedron_interactions(
     mesh: TetraMesh,
     *,
     block_size: int = 16,
-    quadrature_order: int = 4,
-    rtol: float = 1e-4,
-    max_order: int = 12,
-) -> Iterator[tuple[slice, slice, NDArray[np.float64]]]:
-    """Yield upper-triangular cell blocks (row slice, column slice, K block).
+    quadrature_order: int = 2,
+    touching_order: int = 4,
+    spatial_order: bool = False,
+) -> Iterator[tuple[slice | NDArray, slice | NDArray, NDArray[np.float64]]]:
+    """Yield upper-triangular cell blocks (rows, columns, K block).
 
-    Off-diagonal blocks represent both orientations via transposition; consumers
-    must include both. No complete cell-pair matrix is retained.
+    Off-diagonal blocks represent both orientations via transposition. Source
+    geometry and both fixed rules are prepared once; no full cell-pair matrix
+    is retained. The default selectors are consecutive slices. spatial_order=True
+    groups nearby centroids and yields original-numbering index arrays instead;
+    scatter those blocks with np.ix_(rows, columns).
     """
     _positive_integer(block_size, "block_size")
+    geometry = _CellIntegrals.from_mesh(
+        mesh, quadrature_order=quadrature_order, touching_order=touching_order
+    )
     ncells = len(mesh.tetrahedra)
+    order = mesh.spatial_cell_order if spatial_order else np.arange(ncells)
     for start in range(0, ncells, block_size):
         rows = slice(start, min(start + block_size, ncells))
         for other in range(start, ncells, block_size):
             columns = slice(other, min(other + block_size, ncells))
-            block = tetrahedron_interaction_block(
-                mesh,
-                np.arange(rows.start, rows.stop),
-                np.arange(columns.start, columns.stop),
-                quadrature_order=quadrature_order,
-                rtol=rtol,
-                max_order=max_order,
-            )
-            yield rows, columns, block
+            block = geometry.block(order[rows], order[columns])
+            if spatial_order:
+                yield order[rows], order[columns], block
+            else:
+                yield rows, columns, block
 
 
 def tetrahedron_interaction_matrix(
     mesh: TetraMesh,
     *,
     block_size: int = 16,
-    quadrature_order: int = 4,
-    rtol: float = 1e-4,
-    max_order: int = 12,
+    quadrature_order: int = 2,
+    touching_order: int = 4,
+    spatial_order: bool = True,
 ) -> NDArray[np.float64]:
-    """Materialize the dense geometry-only K matrix; use the iterator to stream."""
+    """Dense K in original cell order; use the iterator to stream.
+
+    See tetrahedron_interaction_block() for the two fixed quadrature orders.
+    """
     matrix = np.empty((len(mesh.tetrahedra), len(mesh.tetrahedra)))
     for rows, columns, block in iter_tetrahedron_interactions(
         mesh,
         block_size=block_size,
         quadrature_order=quadrature_order,
-        rtol=rtol,
-        max_order=max_order,
+        touching_order=touching_order,
+        spatial_order=spatial_order,
     ):
-        matrix[rows, columns] = block
-        if rows.start != columns.start:
-            matrix[columns, rows] = block.T
+        selectors = np.ix_(rows, columns) if spatial_order else (rows, columns)
+        matrix[selectors] = block
+        if not np.array_equal(rows, columns):
+            selectors = np.ix_(columns, rows) if spatial_order else (columns, rows)
+            matrix[selectors] = block.T
     return matrix

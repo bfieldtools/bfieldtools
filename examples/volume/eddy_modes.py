@@ -11,9 +11,10 @@ longer decay times ``tau = 1/lambda``.
 The default sphere radius is 0.1 m, with uniform resistivity 1e-8 ohm metres.
 Both can be changed with ``--radius`` and ``--resistivity``. Geometry is loaded
 from ``example_meshes/unit_sphere_tetra.npz``; TetGen is not needed at runtime.
-``--quadrature-rtol`` controls successive outer quadrature refinements, not
-spatial discretization error. ``--check-convergence`` repeats assembly at a
-tighter integration tolerance and reports changes in the selected decay rates.
+``--quadrature-order`` defaults to two for non-touching cells;
+``--touching-order`` defaults to four for self/shared-vertex neighbors. Spatial discretization error
+requires mesh refinement. ``--check-convergence`` repeats assembly at
+higher fixed orders and reports changes in the selected decay rates.
 
 Eigenvectors are M-orthonormal. For display, each current magnitude is divided
 by its own peak. Colors show this relative magnitude on a central slice, and
@@ -132,8 +133,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--radius", type=float, default=0.1)
     parser.add_argument("--resistivity", type=float, default=1e-8)
-    parser.add_argument("--quadrature-rtol", type=float, default=1e-4)
-    parser.add_argument("--max-order", type=int, default=12)
+    parser.add_argument("--quadrature-order", type=int, default=2)
+    parser.add_argument("--touching-order", type=int, default=4)
     parser.add_argument("--check-convergence", action="store_true")
     parser.add_argument("--modes", type=int, nargs=3, default=[0, 1, 2])
     parser.add_argument("--screenshot", help="render off screen to this image path")
@@ -154,7 +155,9 @@ def main():
     )
     start = perf_counter()
     magnetic = inductance_matrix(
-        basis, rtol=args.quadrature_rtol, max_order=args.max_order
+        basis,
+        quadrature_order=args.quadrature_order,
+        touching_order=args.touching_order,
     )
     print(f"Cells: {len(mesh.tetrahedra)}; independent currents: {basis.n_dofs}")
     print(f"Inductance assembly: {perf_counter()-start:.2f} s")
@@ -172,7 +175,9 @@ def main():
         print(f"Mode {mode}: rate={rates[mode]:.6g} /s, tau={1e3/rates[mode]:.6g} ms")
     if args.check_convergence:
         refined = inductance_matrix(
-            basis, rtol=args.quadrature_rtol / 4, max_order=args.max_order
+            basis,
+            quadrature_order=args.quadrature_order + 1,
+            touching_order=args.touching_order + 2,
         )
         refined_rates = eigh(
             resistance, refined, eigvals_only=True, subset_by_index=(0, max(args.modes))

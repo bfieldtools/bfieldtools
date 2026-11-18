@@ -1,7 +1,7 @@
 # Analytic reductions for volume inductance integrals
 
-Status: analytic source reduction and a converged outer-quadrature implementation
-are available in [integrals.py](integrals.py); further closed-form reductions
+Status: analytic source reduction and a fixed-order hybrid matrix assembler
+are available in [integrals.py](integrals.py); controlled-accuracy assembly and further closed-form reductions
 remain investigational.
 This note complements [PLAN.md](PLAN.md) and assumes familiarity with the
 surface-current formulation in [bfieldtools Part I](https://doi.org/10.1063/5.0016090).
@@ -241,25 +241,56 @@ edge-logarithm regularization. Interior, face, edge, and vertex limits are teste
 Beyond eight source radii, a regular 64-point source rule avoids cancellation in
 the signed face sum; this is numerical integration of a smooth kernel.
 
-`tetrahedron_interaction_block(mesh, rows, columns)` integrates the resulting
-finite potentials over testing cells. It uses an interior positive Gauss–Jacobi
-product rule on collapsed tetrahedral coordinates. `quadrature_order=n` means
-$n^3$ points, with polynomial exactness through total degree $2n-1$.
+`tetrahedron_interaction_block(mesh, rows, columns)` uses two fixed rules:
 
-Outer integration starts at order 4 by default, compares with order 6, then
-increases by two for pairs whose successive values differ by more than
-`rtol=1e-4`. The default `max_order=12` limits refinement. Nonconvergence raises
-an error identifying the pair; increase `max_order` or relax `rtol` explicitly.
-The estimate is empirical, not a rigorous error bound. The far-source rule and
-floating-point triangle routine also limit the accuracy attainable by tightening
-outer quadrature alone.
+- **Self and touching cells:** analytic source potentials, integrated over the
+  testing cell with `touching_order=4` (64 points). Touching includes any shared
+  mesh vertex, so face, edge, and vertex neighbors all use this path. Both
+  directions are evaluated and averaged for reciprocity.
+- **All other cells:** direct double-volume quadrature at `quadrature_order=2`
+  (eight points per cell, 64 point pairs). No source-face formula is evaluated.
 
-Both source/testing directions are evaluated and averaged to enforce
-reciprocity. `iter_tetrahedron_interactions` yields upper-triangular cell blocks;
+The interior positive Gauss–Jacobi product rule on collapsed tetrahedral
+coordinates has $n^3$ points and integrates polynomials through total degree
+$2n-1$ exactly. The defaults target slow, smooth eddy-current modes. They supply
+no error bound, runtime refinement, or convergence-failure test. The former
+`rtol` and `max_order` arguments have been removed; increase the two orders
+explicitly to check sensitivity:
+
+```python
+magnetic = inductance_matrix(basis)  # direct order 2, touching order 4
+comparison = inductance_matrix(basis, quadrature_order=3, touching_order=6)
+```
+
+This is an approximate fixed-order matrix assembler. An accurate adaptive
+matrix implementation is future work. Mesh topology must be conforming with
+shared vertex indices: geometrically coincident but separately indexed vertices
+are not recognized as touching. Closely separated or distorted non-touching
+cells receive the same fixed rule as distant cells.
+
+`_CellIntegrals` prepares both rules and normalized source geometry once per
+streamed assembly. Each cell block only selects contacts and evaluates the
+appropriate rule. Direct quadrature uses centroid-relative offsets and bounded
+point-pair batches. Point/source chunking and the fixed eight-radius stability
+fallback belong to the standalone potential evaluator; fallback points are
+prepared lazily when needed.
+
+`tetrahedron_interaction_matrix` and `inductance_matrix` group cells into spatial
+neighborhoods by recursive longest-axis centroid bisection. Original cell
+numbering is preserved; set `spatial_order=False` for consecutive blocks.
+`iter_tetrahedron_interactions` yields upper-triangular cell blocks, retaining
+consecutive slices by default. With `spatial_order=True`, it yields index arrays;
+scatter those blocks with `np.ix_(rows, columns)`.
 `tetrahedron_interaction_matrix` materializes the complete symmetric $K$ when
 needed. `inductance_matrix` normally contracts blocks directly into the current
 basis, retaining no full cell-pair matrix. It can also reuse a supplied $K$.
 Neither evaluator changes diagonal values or eigenvalues to force positivity.
+
+Mesh construction rejects cells with mean-ratio quality below
+`TetraMesh(..., min_quality=0.01)` before integration. A regular tetrahedron has
+quality one; slivers approach zero. The threshold is configurable, including an
+explicit zero to retain only the existing degeneracy check. This validation
+supports numerical conditioning but does not establish quadrature accuracy.
 
 Tests include:
 
@@ -275,7 +306,7 @@ Tests include:
   of decay rates with conductor size.
 
 `examples/volume/eddy_modes.py` shows the lowest generalized modes and provides
-`--check-convergence` to repeat integration with a tighter tolerance. Its sphere
+`--check-convergence` to repeat integration at higher fixed orders. Its sphere
 mesh is deliberately coarse; quadrature convergence does not establish spatial
 mesh convergence or complete physical validation.
 
@@ -287,9 +318,8 @@ mesh convergence or complete physical validation.
    is inefficient or fails on difficult self, touching, and close pairs.
 3. Expand high-accuracy independent references beyond the cube and current
    face-pair comparisons, including verified analytic special cases.
-4. Optimize far-pair evaluation with controlled quadrature or moment expansions,
-   and expose its accuracy independently of outer integration if tighter
-   tolerances are needed.
+4. Add moment expansions or hierarchical compression if dense cell-pair work
+   becomes the limiting cost.
 5. Investigate further analytic reductions if profiling shows close-pair assembly
    is a significant cost.
 
@@ -304,7 +334,7 @@ Validation should cover:
 - Agreement between independent formulations and verified special cases.
 - Positive magnetic energy after assembly in the independent current basis.
 
-The implemented baseline is therefore **analytic source integration plus
-controlled outer quadrature**, with regular far-source quadrature. The face-pair
+The implemented baseline is **fixed-order hybrid quadrature**, using analytic
+source potentials for self/touching neighbors and direct quadrature elsewhere. The face-pair
 identity remains an independent validation route and a starting point for a more
 complete analytic derivation.

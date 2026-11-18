@@ -104,8 +104,9 @@ def main():
         triangle.norm,
         triangle.determinant,
         triangle.cross,
-        volume.tetrahedron_potential,
-        volume._integrate_sources,
+        volume._evaluate_potential,
+        volume._CellIntegrals._analytic,
+        volume._CellIntegrals._regular,
     ]
     reference = inductance_matrix(basis)
     start_cpu, start_wall = process_time(), perf_counter()

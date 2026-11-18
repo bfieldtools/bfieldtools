@@ -177,7 +177,13 @@ def test_nonmanifold_boundary_is_rejected():
 
 def test_geometry_properties_are_cached_and_readonly():
     mesh = cube_mesh()
-    for name in ("cell_centers", "cell_edge_vectors", "cell_quality"):
+    for name in (
+        "cell_centers",
+        "cell_radii",
+        "cell_edge_vectors",
+        "cell_quality",
+        "spatial_cell_order",
+    ):
         array = getattr(mesh, name)
         assert array is getattr(mesh, name)
         assert not array.flags.writeable

@@ -1,0 +1,131 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.11.17",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "baseline": "303f688eb3f9b65e5ef2c1a179568db094408844",
+  "repeats": 5,
+  "point_chunk_size": 256,
+  "source_chunk_size": 16,
+  "implementation": "bfieldtools.integrals_cached.TriangleIntegrals",
+  "timing": "median wall time; warmup; alternating order",
+  "inductance_settings": {
+    "block_size": 16,
+    "quadrature_order": 2,
+    "rtol": 0.0001,
+    "max_order": 12,
+    "spatial_order": true,
+    "precomputed_interactions": false,
+    "basis_construction_timed": false
+  },
+  "cases": [
+    {
+      "name": "interaction: 16 x 16 block",
+      "baseline_seconds": 0.03403799998341128,
+      "vectorized_seconds": 0.0314477079664357,
+      "speedup": 1.0823682291803336,
+      "output_shape": [
+        16,
+        16
+      ],
+      "relative_frobenius_difference": 6.270647353166654e-08,
+      "max_absolute_difference": 1.0145030231471439e-10,
+      "max_relative_difference": 9.048779871804504e-07,
+      "baseline_samples_seconds": [
+        0.034073709044605494,
+        0.03403799998341128,
+        0.034076209005434066,
+        0.03336216596653685,
+        0.0339683749480173
+      ],
+      "vectorized_samples_seconds": [
+        0.03206245903857052,
+        0.03190287499455735,
+        0.031339332985226065,
+        0.031271500047296286,
+        0.0314477079664357
+      ]
+    },
+    {
+      "name": "interaction: 16 x 16 off-diagonal block",
+      "baseline_seconds": 0.0661236250307411,
+      "vectorized_seconds": 0.05387320794397965,
+      "speedup": 1.2273934958449124,
+      "output_shape": [
+        16,
+        16
+      ],
+      "relative_frobenius_difference": 1.2553705893589683e-07,
+      "max_absolute_difference": 1.0145030232826691e-10,
+      "max_relative_difference": 9.048779873013312e-07,
+      "baseline_samples_seconds": [
+        0.0663462919765152,
+        0.0661236250307411,
+        0.06508200004464015,
+        0.06581741699483246,
+        0.06693254102719948
+      ],
+      "vectorized_samples_seconds": [
+        0.05373216699808836,
+        0.05384383397176862,
+        0.05392837501130998,
+        0.05387320794397965,
+        0.05428849998861551
+      ]
+    },
+    {
+      "name": "interaction: 48 x 48 matrix",
+      "baseline_seconds": 0.3047952500055544,
+      "vectorized_seconds": 0.2897002500249073,
+      "speedup": 1.0521055814737796,
+      "output_shape": [
+        48,
+        48
+      ],
+      "relative_frobenius_difference": 1.0523139678971181e-07,
+      "max_absolute_difference": 7.703882336750068e-10,
+      "max_relative_difference": 9.048779877356052e-07,
+      "baseline_samples_seconds": [
+        0.30525054095778614,
+        0.3025032499572262,
+        0.31373995798639953,
+        0.3037387910299003,
+        0.3047952500055544
+      ],
+      "vectorized_samples_seconds": [
+        0.2898173750145361,
+        0.2897002500249073,
+        0.2995671249809675,
+        0.2840645000105724,
+        0.28512750001391396
+      ]
+    },
+    {
+      "name": "interaction: 16 x 16 distant neighborhoods",
+      "baseline_seconds": 0.09089687501545995,
+      "vectorized_seconds": 0.00040983298094943166,
+      "speedup": 221.79004433680635,
+      "output_shape": [
+        16,
+        16
+      ],
+      "relative_frobenius_difference": 4.727753203956948e-11,
+      "max_absolute_difference": 1.1881564085196566e-16,
+      "max_relative_difference": 9.356877533672362e-11,
+      "baseline_samples_seconds": [
+        0.09157141600735486,
+        0.09056408301694319,
+        0.09089687501545995,
+        0.09117337496718392,
+        0.09082229097839445
+      ],
+      "vectorized_samples_seconds": [
+        0.00041674997191876173,
+        0.00037283299025148153,
+        0.00040983298094943166,
+        0.00037224998231977224,
+        0.0004118339857086539
+      ]
+    }
+  ]
+}

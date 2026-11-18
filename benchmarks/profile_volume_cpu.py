@@ -4,13 +4,12 @@ Example:
     .venv/bin/python benchmarks/profile_volume_cpu.py --output-dir /private/tmp/volume-cpu
 
 Writes process-CPU cProfile data, readable cumulative/self-time tables, and JSON.
-Unprofiled timings and order-by-order integration counters are separate runs.
+Unprofiled timings and analytic/direct path counters are separate runs.
 """
 
 from __future__ import annotations
 
 import argparse
-from collections import defaultdict
 import cProfile
 from functools import partial
 import io
@@ -34,13 +33,13 @@ from tests.test_volume_topology import cube_mesh
 
 def run_case(basis, config, output_dir):
     kernel = partial(
-        integrals.tetrahedron_potential,
+        integrals._evaluate_potential,
         point_chunk_size=config["point_chunk_size"],
         source_chunk_size=config["source_chunk_size"],
     )
 
     def calculate():
-        with patch.object(integrals, "tetrahedron_potential", kernel):
+        with patch.object(integrals, "_evaluate_potential", kernel):
             return impedance.inductance_matrix(basis, block_size=config["block_size"])
 
     reference = calculate()
@@ -91,30 +90,13 @@ def run_case(basis, config, output_dir):
                 cumulative_cpu_seconds=cumulative,
             )
         )
-    orders = defaultdict(
-        lambda: dict(
-            calls=0,
-            cell_pairs=0,
-            point_source_pairs=0,
-            cpu_seconds=0.0,
-            single_row_calls=0,
+    from benchmarks.profile_volume_eddy_assembly import instrumented_assembly
+
+    with patch.object(integrals, "_evaluate_potential", kernel):
+        result, paths = instrumented_assembly(
+            basis,
+            dict(block_size=config["block_size"], quadrature_order=2, touching_order=4),
         )
-    )
-    original_integrate = integrals._integrate_sources
-
-    def count_integrate(mesh, rows, columns, order):
-        cpu = process_time()
-        value = original_integrate(mesh, rows, columns, order)
-        record = orders[order]
-        record["calls"] += 1
-        record["cell_pairs"] += len(rows) * len(columns)
-        record["point_source_pairs"] += len(rows) * len(columns) * order**3
-        record["single_row_calls"] += int(len(rows) == 1)
-        record["cpu_seconds"] += process_time() - cpu
-        return value
-
-    with patch.object(integrals, "_integrate_sources", count_integrate):
-        result = calculate()
     np.testing.assert_allclose(result, reference, rtol=2e-11, atol=1e-20)
     report = dict(config)
     report.update(
@@ -127,7 +109,7 @@ def run_case(basis, config, output_dir):
         functions=sorted(
             entries, key=lambda row: row["cumulative_cpu_seconds"], reverse=True
         ),
-        quadrature_orders=dict(sorted(orders.items())),
+        interaction_paths=paths,
     )
     return report, reference
 
@@ -161,8 +143,8 @@ def main():
         "revision": subprocess.check_output(
             ["git", "rev-parse", "HEAD"], text=True
         ).strip(),
-        "method": "3 warm unprofiled timings; separate process_time cProfile run; separate order instrumentation run; mesh/basis excluded",
-        "integration_settings": dict(quadrature_order=4, rtol=1e-4, max_order=12),
+        "method": "3 warm unprofiled timings; separate process_time cProfile run; separate path instrumentation run; mesh/basis excluded",
+        "integration_settings": dict(quadrature_order=2, touching_order=4),
         "cases": [],
     }
     reference = None

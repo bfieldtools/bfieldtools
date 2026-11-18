@@ -64,17 +64,21 @@ def inductance_matrix(
     *,
     interactions: ArrayLike | None = None,
     block_size: int = 16,
-    quadrature_order: int = 4,
-    rtol: float = 1e-4,
-    max_order: int = 12,
+    quadrature_order: int = 2,
+    touching_order: int = 4,
+    spatial_order: bool = True,
 ) -> NDArray[np.float64]:
     """Dense free-space inductance M = mu_0/(4*pi) sum_k Bk.T K Bk, in H.
 
     By default, geometry-only cell interactions are integrated in blocks without
-    storing the complete K matrix. quadrature_order, rtol, and max_order control
-    the outer integration; see tetrahedron_interaction_block(). block_size bounds
-    the cell blocks and dense contraction intermediates. The final basis matrix
-    is dense and occupies 8*n_dofs**2 bytes.
+    storing the complete K matrix. quadrature_order=2 uses fixed double volume
+    quadrature for non-touching cells; touching_order=4 integrates analytic source
+    potentials for self/shared-vertex pairs. These defaults target slow, smooth
+    modes. Increase the orders explicitly to check sensitivity; there is no
+    adaptive error estimate. block_size bounds cell blocks and dense contractions.
+    The final basis matrix is dense and occupies 8*n_dofs**2 bytes.
+    spatial_order groups cells by centroid proximity (without changing their
+    numbering); disable it to use consecutive cell blocks.
 
     interactions optionally supplies a precomputed real symmetric (ncells,ncells)
     K matrix in the basis mesh's exact cell ordering. K includes both volume
@@ -98,8 +102,8 @@ def inductance_matrix(
             basis.mesh,
             block_size=block_size,
             quadrature_order=quadrature_order,
-            rtol=rtol,
-            max_order=max_order,
+            touching_order=touching_order,
+            spatial_order=spatial_order,
         )
     else:
         interactions = np.asarray(interactions)
@@ -136,7 +140,7 @@ def inductance_matrix(
             right = right[:, active_columns].toarray()
             contribution = left.T @ block @ right
             matrix[np.ix_(active_rows, active_columns)] += contribution
-            if rows.start != columns.start:
+            if not np.array_equal(rows, columns):
                 matrix[np.ix_(active_columns, active_rows)] += contribution.T
     matrix *= mu_0 / (4 * np.pi)
     return (matrix + matrix.T) / 2

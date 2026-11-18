@@ -1,0 +1,134 @@
+         35906583 function calls (34892152 primitive calls) in 42.111 seconds
+
+   Ordered by: cumulative time
+   List reduced from 184 to 60 due to restriction <60>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.116    0.116   42.111   42.111 impedance.py:62(inductance_matrix)
+     1327    0.002    0.000   41.239    0.031 integrals.py:413(iter_tetrahedron_interactions)
+     1326    0.047    0.000   41.237    0.031 integrals.py:357(tetrahedron_interaction_block)
+    11121    0.026    0.000   40.478    0.004 integrals.py:346(_near_interactions)
+    22193    0.140    0.000   40.444    0.002 integrals.py:240(_directed_interactions)
+    59044    0.418    0.000   38.945    0.001 integrals.py:221(_integrate_sources)
+    59044    6.778    0.000   37.970    0.001 integrals.py:151(_evaluate_potential)
+1198873/184442    0.729    0.000   29.011    0.000 functools.py:981(__get__)
+    92221    0.215    0.000   28.150    0.000 integrals_cached.py:197(triangle_potential_uniform)
+    92221    3.396    0.000   15.572    0.000 integrals_cached.py:135(gamma0)
+  1071158    0.156    0.000   11.642    0.000 einsumfunc.py:1244(einsum)
+  1071158   11.486    0.000   11.486    0.000 {built-in method numpy._core._multiarray_umath.c_einsum}
+    92221    1.516    0.000    7.051    0.000 integrals_cached.py:154(omega)
+   737768    5.805    0.000    6.615    0.000 numeric.py:1230(roll)
+    92221    0.160    0.000    4.455    0.000 integrals_cached.py:171(x_distance)
+    92221    0.339    0.000    3.877    0.000 integrals_cached.py:127(scaled_distances1)
+    92221    0.138    0.000    3.353    0.000 integrals_cached.py:121(edge_dotprods2)
+    92221    0.142    0.000    3.350    0.000 integrals_cached.py:115(edge_dotprods1)
+   184442    0.341    0.000    2.303    0.000 integrals_cached.py:26(norm)
+   686467    2.141    0.000    2.141    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+    92221    0.018    0.000    1.969    0.000 integrals_cached.py:110(vertex_distances)
+    92221    0.019    0.000    1.883    0.000 integrals_cached.py:150(determinant)
+    92221    1.864    0.000    1.864    0.000 integrals_cached.py:18(determinant)
+   184442    0.089    0.000    1.378    0.000 fromnumeric.py:66(_wrapreduction)
+    92221    0.308    0.000    1.343    0.000 integrals_cached.py:131(scaled_distances2)
+    22193    0.288    0.000    1.196    0.000 integrals.py:87(from_mesh)
+   129620    0.274    0.000    1.006    0.000 _linalg.py:2599(norm)
+    92221    0.033    0.000    1.004    0.000 fromnumeric.py:3287(prod)
+    92221    0.076    0.000    0.997    0.000 integrals_cached.py:166(edge_conormals)
+    92221    0.876    0.000    0.921    0.000 integrals_cached.py:31(cross)
+   870926    0.494    0.000    0.788    0.000 numeric.py:1431(normalize_axis_tuple)
+    92221    0.070    0.000    0.721    0.000 integrals_cached.py:184(d_distance)
+    15912    0.028    0.000    0.647    0.000 _index.py:29(__getitem__)
+     2889    0.257    0.000    0.566    0.000 integrals.py:308(_regular_interactions)
+    22193    0.176    0.000    0.472    0.000 numeric.py:1567(cross)
+    92221    0.041    0.000    0.453    0.000 fromnumeric.py:2304(sum)
+   334625    0.152    0.000    0.393    0.000 fromnumeric.py:86(_wrapreduction_any_all)
+   215938    0.038    0.000    0.392    0.000 fromnumeric.py:1993(nonzero)
+   231850    0.056    0.000    0.371    0.000 fromnumeric.py:48(_wrapfunc)
+    92221    0.018    0.000    0.369    0.000 integrals_cached.py:101(edge_lengths)
+   241050    0.059    0.000    0.334    0.000 fromnumeric.py:2436(any)
+   215938    0.290    0.000    0.290    0.000 {method 'nonzero' of 'numpy.ndarray' objects}
+    66579    0.080    0.000    0.267    0.000 numeric.py:1493(moveaxis)
+     7956    0.004    0.000    0.255    0.000 _csr.py:283(_get_arrayXslice)
+     7956    0.041    0.000    0.237    0.000 _compressed.py:576(_major_index_fancy)
+  5635342    0.236    0.000    0.236    0.000 einsumfunc.py:1236(_einsum_dispatcher)
+    15912    0.031    0.000    0.230    0.000 _compressed.py:30(__init__)
+     7956    0.004    0.000    0.211    0.000 _csr.py:274(_get_sliceXarray)
+     7956    0.029    0.000    0.206    0.000 _compressed.py:651(_minor_index_fancy)
+  1741852    0.148    0.000    0.200    0.000 numeric.py:1480(<genexpr>)
+    93575    0.026    0.000    0.144    0.000 fromnumeric.py:2548(all)
+    15912    0.060    0.000    0.144    0.000 _index.py:298(_validate_indices)
+    31824    0.025    0.000    0.141    0.000 _base.py:1525(_get_index_dtype)
+    31824    0.068    0.000    0.106    0.000 _sputils.py:264(get_index_dtype)
+  1415625    0.080    0.000    0.088    0.000 {built-in method builtins.isinstance}
+    92221    0.072    0.000    0.083    0.000 integrals_cached.py:71(__init__)
+   594799    0.078    0.000    0.078    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+    18404    0.012    0.000    0.078    0.000 _arraysetops_impl.py:145(unique)
+  2397746    0.076    0.000    0.076    0.000 {method 'get' of 'dict' objects}
+   737768    0.075    0.000    0.075    0.000 {built-in method fromkeys}
+
+
+         35906583 function calls (34892152 primitive calls) in 42.111 seconds
+
+   Ordered by: internal time
+   List reduced from 184 to 60 due to restriction <60>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+  1071158   11.486    0.000   11.486    0.000 {built-in method numpy._core._multiarray_umath.c_einsum}
+    59044    6.778    0.000   37.970    0.001 integrals.py:151(_evaluate_potential)
+   737768    5.805    0.000    6.615    0.000 numeric.py:1230(roll)
+    92221    3.396    0.000   15.572    0.000 integrals_cached.py:135(gamma0)
+   686467    2.141    0.000    2.141    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+    92221    1.864    0.000    1.864    0.000 integrals_cached.py:18(determinant)
+    92221    1.516    0.000    7.051    0.000 integrals_cached.py:154(omega)
+    92221    0.876    0.000    0.921    0.000 integrals_cached.py:31(cross)
+1198873/184442    0.729    0.000   29.011    0.000 functools.py:981(__get__)
+   870926    0.494    0.000    0.788    0.000 numeric.py:1431(normalize_axis_tuple)
+    59044    0.418    0.000   38.945    0.001 integrals.py:221(_integrate_sources)
+   184442    0.341    0.000    2.303    0.000 integrals_cached.py:26(norm)
+    92221    0.339    0.000    3.877    0.000 integrals_cached.py:127(scaled_distances1)
+    92221    0.308    0.000    1.343    0.000 integrals_cached.py:131(scaled_distances2)
+   215938    0.290    0.000    0.290    0.000 {method 'nonzero' of 'numpy.ndarray' objects}
+    22193    0.288    0.000    1.196    0.000 integrals.py:87(from_mesh)
+   129620    0.274    0.000    1.006    0.000 _linalg.py:2599(norm)
+     2889    0.257    0.000    0.566    0.000 integrals.py:308(_regular_interactions)
+  5635342    0.236    0.000    0.236    0.000 einsumfunc.py:1236(_einsum_dispatcher)
+    92221    0.215    0.000   28.150    0.000 integrals_cached.py:197(triangle_potential_uniform)
+    22193    0.176    0.000    0.472    0.000 numeric.py:1567(cross)
+    92221    0.160    0.000    4.455    0.000 integrals_cached.py:171(x_distance)
+  1071158    0.156    0.000   11.642    0.000 einsumfunc.py:1244(einsum)
+   334625    0.152    0.000    0.393    0.000 fromnumeric.py:86(_wrapreduction_any_all)
+  1741852    0.148    0.000    0.200    0.000 numeric.py:1480(<genexpr>)
+    92221    0.142    0.000    3.350    0.000 integrals_cached.py:115(edge_dotprods1)
+    22193    0.140    0.000   40.444    0.002 integrals.py:240(_directed_interactions)
+    92221    0.138    0.000    3.353    0.000 integrals_cached.py:121(edge_dotprods2)
+        1    0.116    0.116   42.111   42.111 impedance.py:62(inductance_matrix)
+   184442    0.089    0.000    1.378    0.000 fromnumeric.py:66(_wrapreduction)
+  1415625    0.080    0.000    0.088    0.000 {built-in method builtins.isinstance}
+    66579    0.080    0.000    0.267    0.000 numeric.py:1493(moveaxis)
+   594799    0.078    0.000    0.078    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+    92221    0.076    0.000    0.997    0.000 integrals_cached.py:166(edge_conormals)
+  2397746    0.076    0.000    0.076    0.000 {method 'get' of 'dict' objects}
+   737768    0.075    0.000    0.075    0.000 {built-in method fromkeys}
+    92221    0.072    0.000    0.083    0.000 integrals_cached.py:71(__init__)
+    92221    0.070    0.000    0.721    0.000 integrals_cached.py:184(d_distance)
+    31824    0.068    0.000    0.106    0.000 _sputils.py:264(get_index_dtype)
+  1599118    0.064    0.000    0.064    0.000 {built-in method builtins.len}
+  1198873    0.062    0.000    0.062    0.000 {method '__exit__' of '_thread.RLock' objects}
+    15912    0.060    0.000    0.144    0.000 _index.py:298(_validate_indices)
+   241050    0.059    0.000    0.334    0.000 fromnumeric.py:2436(any)
+   937505    0.056    0.000    0.056    0.000 {built-in method numpy.lib.array_utils.normalize_axis_index}
+   231850    0.056    0.000    0.371    0.000 fromnumeric.py:48(_wrapfunc)
+   121394    0.052    0.000    0.052    0.000 {built-in method numpy.zeros}
+   334625    0.050    0.000    0.050    0.000 fromnumeric.py:88(<dictcomp>)
+    14658    0.049    0.000    0.055    0.000 integrals.py:109(take)
+     1326    0.047    0.000   41.237    0.031 integrals.py:357(tetrahedron_interaction_block)
+  1256835    0.047    0.000    0.047    0.000 {method 'items' of 'dict' objects}
+   625506    0.047    0.000    0.047    0.000 {built-in method numpy.asarray}
+     7956    0.041    0.000    0.237    0.000 _compressed.py:576(_major_index_fancy)
+    92221    0.041    0.000    0.453    0.000 fromnumeric.py:2304(sum)
+   184442    0.041    0.000    0.041    0.000 fromnumeric.py:67(<dictcomp>)
+   811972    0.038    0.000    0.038    0.000 {built-in method numpy.asanyarray}
+     1326    0.038    0.000    0.051    0.000 integrals.py:280(_far_orders)
+   215938    0.038    0.000    0.392    0.000 fromnumeric.py:1993(nonzero)
+   771895    0.037    0.000    0.037    0.000 multiarray.py:115(empty_like)
+   902750    0.036    0.000    0.036    0.000 {built-in method _operator.index}
+   737768    0.036    0.000    0.036    0.000 numeric.py:1226(_roll_dispatcher)

@@ -21,6 +21,7 @@ from bfieldtools.volume import (
     tetrahedron_interaction_matrix,
     tetrahedron_potential,
     tetrahedron_quadrature,
+    iter_tetrahedron_interactions,
 )
 from bfieldtools.volume.mesh import TETRA_FACES
 from .test_volume_topology import cube_mesh
@@ -78,7 +79,7 @@ def cube_self_reference():
     return 24 * np.einsum("i,j,ij", w / 2, w / 2, integrand)
 
 
-@pytest.mark.parametrize("order", [1, 2, 4])
+@pytest.mark.parametrize("order", [1, 2, 3, 4])
 def test_quadrature_moments(order):
     points, weights = tetrahedron_quadrature(order)
     np.testing.assert_allclose(points.sum(axis=1), 1)
@@ -185,13 +186,14 @@ def test_self_integral_against_independent_face_pair_distance_reduction():
                 * np.dot(area_vectors[i], area_vectors[j])
                 * (weights @ distances @ weights)
             )
-    computed = tetrahedron_interaction_matrix(mesh, rtol=1e-7, max_order=20)[0, 0]
+    computed = tetrahedron_interaction_matrix(mesh, touching_order=20)[0, 0]
     # The independent distance-kernel rule converges slowly on coincident faces.
     np.testing.assert_allclose(computed, reference, rtol=4e-4)
 
 
 def test_cube_self_integral_against_independent_displacement_reference():
-    matrix = tetrahedron_interaction_matrix(cube_mesh(1))
+    # Request the precision needed by this independent-reference assertion.
+    matrix = tetrahedron_interaction_matrix(cube_mesh(1), touching_order=12)
     np.testing.assert_allclose(matrix.sum(), cube_self_reference(), rtol=3e-6)
     np.testing.assert_array_equal(matrix, matrix.T)
     assert np.linalg.eigvalsh(matrix).min() > 0
@@ -207,12 +209,19 @@ def test_touching_and_separated_cell_pairs(kind):
         "near": first + [1.001, 0, 0],
         "far": first + [20, 5, 2],
     }[kind]
-    mesh = TetraMesh(np.concatenate((first, second)), [[0, 1, 2, 3], [4, 5, 6, 7]])
-    coarse = tetrahedron_interaction_block(mesh, [0], [1])[0, 0]
-    fine = tetrahedron_interaction_block(mesh, [0], [1], rtol=1e-6, max_order=20)[0, 0]
-    reverse = tetrahedron_interaction_block(mesh, [1], [0], rtol=1e-6, max_order=20)[
-        0, 0
-    ]
+    vertices, inverse = np.unique(
+        np.concatenate((first, second)), axis=0, return_inverse=True
+    )
+    mesh = TetraMesh(vertices, inverse.reshape(2, 4))
+    coarse = tetrahedron_interaction_block(
+        mesh, [0], [1], quadrature_order=4, touching_order=6
+    )[0, 0]
+    fine = tetrahedron_interaction_block(
+        mesh, [0], [1], quadrature_order=6, touching_order=12
+    )[0, 0]
+    reverse = tetrahedron_interaction_block(
+        mesh, [1], [0], quadrature_order=6, touching_order=12
+    )[0, 0]
     assert fine > 0
     np.testing.assert_allclose(coarse, fine, rtol=2e-4)
     np.testing.assert_allclose(fine, reverse, rtol=1e-14)
@@ -296,21 +305,15 @@ def test_generalized_modes_basis_invariance_and_length_scaling():
     )
 
 
-def test_nonconvergence_is_reported_instead_of_adjusting_diagonal():
-    with pytest.raises(RuntimeError, match="did not converge"):
-        tetrahedron_interaction_matrix(
-            simple_tetrahedron(), quadrature_order=1, max_order=3, rtol=1e-12
-        )
-
-
 @pytest.mark.parametrize(
     "options",
     [
         {"quadrature_order": 0},
         {"quadrature_order": 1.5},
-        {"rtol": 0},
-        {"rtol": np.nan},
-        {"max_order": 4},
+        {"quadrature_order": True},
+        {"touching_order": 0},
+        {"touching_order": 1.5},
+        {"touching_order": True},
         {"block_size": 0},
     ],
 )
@@ -329,3 +332,69 @@ def test_invalid_precomputed_kernel(kernel):
 
 def test_empty_current_space():
     assert inductance_matrix(basis_for(simple_tetrahedron())).shape == (0, 0)
+
+
+def test_non_touching_pairs_use_direct_rule_even_at_small_gaps(monkeypatch):
+    from bfieldtools.volume import integrals
+
+    first = simple_tetrahedron().vertices
+    mesh = TetraMesh(
+        np.concatenate((first, first + [1.001, 0, 0])), [[0, 1, 2, 3], [4, 5, 6, 7]]
+    )
+
+    def no_analytic(*args, **kwargs):
+        pytest.fail("Non-touching cells must use the fixed direct rule")
+
+    monkeypatch.setattr(integrals._CellIntegrals, "_analytic", no_analytic)
+    values = tetrahedron_interaction_block(mesh, [0], [1])
+    assert np.all(np.isfinite(values)) and np.all(values > 0)
+
+
+@pytest.mark.parametrize("kind", ["face", "edge", "vertex"])
+def test_touching_pairs_use_analytic_sources(kind, monkeypatch):
+    from bfieldtools.volume import integrals
+
+    first = simple_tetrahedron().vertices
+    second = (
+        first * {"face": [1, 1, -1], "edge": [1, -1, -1], "vertex": [-1, -1, -1]}[kind]
+    )
+    vertices, inverse = np.unique(
+        np.concatenate((first, second)), axis=0, return_inverse=True
+    )
+    mesh = TetraMesh(vertices, inverse.reshape(2, 4))
+
+    def no_regular(*args, **kwargs):
+        pytest.fail("Touching cells must use analytic source potentials")
+
+    monkeypatch.setattr(integrals._CellIntegrals, "_regular", no_regular)
+    values = tetrahedron_interaction_block(mesh, [0], [1])
+    assert np.all(np.isfinite(values)) and np.all(values > 0)
+
+
+def test_mixed_near_far_blocks_and_spatial_scatter():
+    # Deliberately interleave distant neighborhoods in the input numbering.
+    first = cube_mesh(1)
+    vertices = np.concatenate((first.vertices, first.vertices + [50, 0, 0]))
+    cells = np.stack((first.tetrahedra, first.tetrahedra + len(first.vertices)), axis=1)
+    mesh = TetraMesh(vertices, cells.reshape(-1, 4))
+    contiguous = tetrahedron_interaction_matrix(mesh, block_size=4, spatial_order=False)
+    spatial = tetrahedron_interaction_matrix(mesh, block_size=4)
+    np.testing.assert_allclose(spatial, contiguous, rtol=1e-12)
+    np.testing.assert_array_equal(spatial, spatial.T)
+    seen = np.zeros(spatial.shape, dtype=int)
+    for rows, columns, block in iter_tetrahedron_interactions(
+        mesh, block_size=3, spatial_order=True
+    ):
+        np.testing.assert_allclose(block, spatial[np.ix_(rows, columns)], rtol=1e-12)
+        seen[np.ix_(rows, columns)] += 1
+        if not np.array_equal(rows, columns):
+            seen[np.ix_(columns, rows)] += 1
+    np.testing.assert_array_equal(seen, 1)
+    # Permuting cells preserves both the physical result and original numbering.
+    permutation = np.random.default_rng(65).permutation(len(cells.reshape(-1, 4)))
+    permuted = TetraMesh(vertices, mesh.tetrahedra[permutation])
+    np.testing.assert_allclose(
+        tetrahedron_interaction_matrix(permuted, block_size=5),
+        spatial[np.ix_(permutation, permutation)],
+        rtol=1e-12,
+    )
