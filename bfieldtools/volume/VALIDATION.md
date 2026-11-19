@@ -13,7 +13,7 @@ The five volume test modules passed together during this documentation audit:
 
 | Implementation | Evidence | What it establishes |
 | --- | --- | --- |
-| [`mesh.py`](mesh.py) | [`test_volume_mesh.py`](../../tests/test_volume_mesh.py) | Orientation, volumes, quality, local incidence, invalid input/backend handling; optional TetGen sphere boundary/volume preservation and refinement |
+| [`mesh.py`](mesh.py) | [`test_volume_mesh.py`](../../tests/test_volume_mesh.py) | Orientation, volumes, quality, local incidence, invalid input/backend handling; optional TetGen sphere/torus boundary and volume preservation and refinement; torus tunnel and global-mode count; rejection of disconnected/cavity boundaries |
 | [`topology.py`](topology.py) | [`test_volume_topology.py`](../../tests/test_volume_topology.py) | Incidence identities, physical face-flux signs, zero boundary flux, independent and complete cotree currents against the conserved face-flux space; disconnected solid balls; rejection of handles/cavities/nonmanifold boundaries |
 | [`basis.py`](basis.py), [`impedance.py`](impedance.py) resistance | [`test_volume_resistance.py`](../../tests/test_volume_resistance.py) | Analytic cube-loop resistance; Joule loss and bilinear forms against independent barycentric reconstruction; current continuity; material and length scaling; complex/multiple coefficient fields; basis/layout contracts |
 | [`integrals.py`](integrals.py), [`impedance.py`](impedance.py) inductance | [`test_volume_inductance.py`](../../tests/test_volume_inductance.py) | Independent point/self/pair integral references; touching/near/far cells; rigid motions and scaling; blocked versus dense contraction; energy; basis-invariant generalized modes and metric checks; fixed-order contact dispatch and independent high-order references |
@@ -29,6 +29,30 @@ would accompany future potential/dipole operators.
 The general `CellCurrentBasis` validates operator storage and shape. It accepts
 operators supplied by callers, so its container checks alone establish neither
 current conservation nor independence.
+
+## Complete current spaces on handles and cavities
+
+`test_volume_currents.py` checks the sparse dual-cycle and dense augmented
+constructions on solid balls, a solid ring, an enclosed cavity, a two-handle
+solid, a solid with both a handle and a cavity, disconnected rings with an unused
+vertex, and a single tetrahedron. It checks independence
+and completeness against the full conserved-flux space, and integrates the
+reconstructed Cartesian current through every cell face. The ring's global
+mode has nonzero cross-sectional cut flux; all local curl columns have zero
+net cut flux. A cavity adds no handle mode.
+
+Resistance, inductance, generalized decay rates, and external-loop coupling
+agree under change of basis between the two complete ring spaces. Tests cover
+complex coefficients, energy, permutations/orientations, geometric scaling,
+nonmanifold edge/vertex rejection, invalid supplied fluxes, and the dense size
+guard. These establish algebraic completeness and assembly compatibility, not
+spatial convergence of a torus response. The original tree gauge still rejects
+handles and cavities by design; callers use the complete constructors instead.
+
+Run the backend-independent example with
+`uv run --locked python examples/volume/global_currents.py`; append `--show`
+to display the ring current. Run the new checks with
+`uv run --locked --extra dev pytest tests/test_volume_currents.py`.
 
 ## Reproducible examples
 
@@ -95,3 +119,40 @@ For executable regression checks:
 ```sh
 uv run --locked --extra dev --extra meshing pytest tests/test_volume_mesh.py tests/test_volume_topology.py tests/test_volume_resistance.py tests/test_volume_inductance.py tests/test_volume_dynamics.py
 ```
+
+## Meshed torus transient
+
+Run the optional-TetGen example with
+
+```sh
+uv run --locked --extra meshing python examples/volume/torus_eddy_currents.py
+```
+
+Append `--no-show` for numerical checks, `--screenshot /tmp/torus.png` to export
+the figure, or `--check-convergence` to report changes with tighter inductance
+quadrature and refined source-loop integration. `--major-sections`,
+`--minor-sections`, and `--max-volume` control the geometry/volume mesh.
+
+The example meshes a torus with major radius 0.1 m and tube radius 0.025 m.
+Resistivity is 1e-8 ohm metres; a coaxial polygonal loop of radius 0.15 m at
+z=0.06 m carries a prescribed 1000 A, 40 ms smooth pulse. It uses all modes
+from the augmented basis, verifies exactly one global current degree of
+freedom, and reconstructs the driven currents and subsequent free decay.
+
+On each run it checks generalized eigenpairs, M-orthogonality, modal versus
+direct coefficient-space integration, decreasing magnetic energy after the
+pulse, and physical face-flux reconstruction. Integrating cell currents through
+two oblique tube cuts produces the same circulating current; local curl
+columns have zero net cut flux, while the drive excites the global current.
+The PyVista window embeds the source current, circulating current, and magnetic
+energy traces above three linked three-dimensional snapshots. Each snapshot
+removes the upper front quarter to expose surface and interior cell magnitudes,
+using one shared absolute color scale. Cyan arrows sample the original current
+at uniformly spaced physical locations around the tube. Each vector comes from
+its containing tetrahedron, with the same sampling positions in all snapshots.
+Arrows have fixed length to emphasize direction; the cell colors carry current
+magnitude.
+`--show-mesh` reveals cell edges; the default keeps them hidden for readability.
+The coarse default mesh and
+integration sensitivity checks do not establish spatial/skin-depth convergence
+or an independently validated torus response.

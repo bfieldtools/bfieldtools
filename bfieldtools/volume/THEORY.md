@@ -517,10 +517,24 @@ increase basis overlap and fill in $R$.
 [Passarotto, Pitassi and Specogna](https://www.comphys.com/pdf/cmame_22_vinco.pdf)
 compare loop and vector-potential constructions and their treatment of topology.
 
-The tests validate the implemented gauge-fixed edge basis against the full
-conserved face-flux space using dense linear algebra. An explicit dual-cycle
-basis and global-pattern construction are not implemented. These are useful
-reference constructions for extending beyond solid-ball components.
+`dual_cycle_basis(topology)` implements this complete sparse construction,
+including handles and cavities. `augmented_flux_basis(topology)` selects
+independent interior edge curls using pivoted QR and appends the missing
+orthonormal global patterns using a projected dual-cycle space and SVD. This
+second construction is a size-limited dense reference. It removes cavity gauge
+redundancy through rank selection, without changing the original solid-ball
+tree gauge. `build_face_current_basis(mesh, flux_basis)` reconstructs either
+space as constant cell currents for the existing assembly and dynamics APIs.
+
+The appended patterns span the relative cohomology quotient
+$\ker D_i / \operatorname{im} C_i$, with $C_i$ restricted to interior faces and
+interior edges. A solid torus adds one such mode. An enclosed spherical cavity
+adds no mode but introduces additional curl-free potential redundancy.
+Global patterns have Euclidean unit face-flux norm; interpreting their
+coefficients as current through a particular cut requires explicit
+normalization. These global currents do not have a boundary-zero edge potential
+in this space, so the earlier potential/dipole identities must not be applied
+to them without additional treatment.
 
 ## Resistance, inductance, and coupling
 

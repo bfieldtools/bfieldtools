@@ -1,6 +1,6 @@
 # Volumetric eddy-current modeling: status and plan
 
-The first loop-driven sphere demonstration is implemented: mesh → independent
+Loop-driven sphere and torus demonstrations are implemented: mesh → independent
 volume currents → resistance and inductance → decay modes → driven transients.
 Spatial convergence and independent physical validation remain the next milestone.
 This status is based on the source, tests, and examples listed below; an example's
@@ -18,22 +18,26 @@ quadrature checks do not establish spatial accuracy.
 - [ARCHITECTURE.md](ARCHITECTURE.md): containers, dependency boundaries, and APIs.
 - [VALIDATION.md](VALIDATION.md): implementation evidence, runnable examples,
   existing checks, and acceptance criteria for the next milestone.
+- [TOPOLOGY_PLAN.md](../TOPOLOGY_PLAN.md): proposed complete volume and surface
+  current spaces, numerical references, global modes, and delivery criteria.
 
 ## Implemented scope
 
 Isolated stationary conductors, no terminals, scalar positive resistivity uniform
 or constant per tetrahedron, permeability μ₀, and magnetoquasistatic dynamics.
 The current approximation is constant per tetrahedron with matching normal
-components and zero boundary leakage. The equivalent magnetization **T** is a
-lowest-order Nédélec field with zero tangential boundary trace; its gauge is
-fixed by the tree–cotree construction.
+components and zero boundary leakage. In the local edge-curl space, the
+equivalent magnetization **T** is a lowest-order Nédélec field with zero
+tangential boundary trace; the solid-ball gauge uses a tree–cotree construction.
+Complete flux bases additionally represent handle-spanning currents that do not
+admit this boundary-zero potential representation.
 
 | Area | Implemented | Current limit |
 | --- | --- | --- |
 | Geometry (`mesh.py`) | Validated array container, oriented cells/boundary, volumes, quality, PyVista conversion, bundled sphere | Input arrays must already be geometrically conforming; no overlap/self-intersection/hanging-node detection |
-| Meshing (`mesh.py`) | Optional TetGen adapter for one closed outward genus-zero surface | No cavities, multiple solids, labels, material interfaces, or local size fields; maximum volume is a target |
-| Topology (`topology.py`) | Incidence operators and independent boundary-compatible tree–cotree gauge | Gauge supports disconnected solid-ball components; rejects handles, cavities, and nonmanifold boundaries |
-| Current representation (`basis.py`) | General cell-current operators, edge-curl builder, real/complex and multiple-field reconstruction | No public potential/dipole-density reconstruction or explicit dual-cycle/global-pattern builder |
+| Meshing (`mesh.py`) | Optional TetGen adapter for one closed outward connected surface, including handles; sphere and torus checks | No cavities, multiple solids, labels, material interfaces, or local size fields; maximum volume is a target |
+| Topology (`topology.py`, `currents.py`) | Incidence operators, solid-ball tree–cotree gauge, complete sparse dual-cycle basis, and local-curl/global decomposition for handles and cavities | Augmented decomposition uses size-limited dense QR/SVD; original tree gauge remains solid-ball only; conforming manifold input required |
+| Current representation (`basis.py`) | General cell-current operators, edge-curl and conserved face-flux builders, real/complex and multiple-field reconstruction | No public potential/dipole-density reconstruction; global coefficients have Euclidean flux normalization rather than specified cut normalization |
 | Resistance (`impedance.py`) | Exact sparse weighted Gram assembly | Scalar resistivity only |
 | Inductance (`integrals.py`, `impedance.py`) | Fixed analytic self/touching integration, direct quadrature elsewhere, reciprocal streamed blocks, cached geometry, dense basis matrix | No adaptive error estimator; no general exact pair evaluator, spatial adaptivity, compression, or matrix-free solve |
 | Modes (examples using SciPy) | Dense generalized symmetric eigensolves, residual and metric checks | No library eigensolver helper or large-system solver |
@@ -71,12 +75,17 @@ Acceptance criteria and current evidence are in [VALIDATION.md](VALIDATION.md).
 
 ## Subsequent extensions
 
-- **General topology:** cavity-compatible gauge constraints, handle-spanning
-  global currents, and an explicit face-flux/dual-cycle reference builder.
-  Validate completeness and independence, beyond the current solid-ball tests.
+- **General topology:** replace the dense augmented reference with sparse
+  cavity-compatible gauge selection and handle generators; add cut-normalized
+  global coefficients. Complete dual-cycle and augmented reference builders
+  already support supplied meshes with handles and cavities.
+  The [joint surface/volume plan](../TOPOLOGY_PLAN.md) specifies the methods,
+  including preservation of surface boundary-hole currents and support for
+  surface handle currents.
 - **Geometry workflows:** robust intersection/overlap/conformity validation,
-  cavities, multiple-region meshing, labels, and local refinement. Add block,
-  cavity, and torus examples as support becomes available. TetGen is the current
+  cavities, multiple-region meshing, labels, and local refinement. Add block and
+  cavity meshing examples; a meshed torus transient example is implemented.
+  TetGen is the current
   backend; additional adapters are optional follow-up work.
 - **Materials and physics:** tensor resistivity, magnetic materials, terminals
   and imposed transport currents, source-circuit back reaction, and higher-order

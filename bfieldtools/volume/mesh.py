@@ -241,7 +241,8 @@ def tetrahedralize(
     Parameters
     ----------
     surface : trimesh.Trimesh
-        One outward-oriented, watertight genus-zero boundary. STL input should
+        One outward-oriented, watertight connected boundary, including handles
+        such as a torus. STL input should
         be loaded with trimesh's vertex merging enabled (the default). Cavities,
         multiple solids, material interfaces, and boundary labels are not yet
         supported. Self-intersections must be excluded by the caller; the checks
@@ -284,8 +285,8 @@ def tetrahedralize(
         raise ValueError("surface must be watertight with two triangles per edge")
     if not checked.is_winding_consistent:
         raise ValueError("surface must have consistent triangle winding")
-    if len(checked.split(only_watertight=False)) != 1 or checked.euler_number != 2:
-        raise ValueError("only a single genus-zero boundary is currently supported")
+    if len(checked.split(only_watertight=False)) != 1:
+        raise ValueError("only a single connected boundary is currently supported")
     if checked.volume <= 0:
         raise ValueError("surface must face outward; invert its winding explicitly")
     if max_volume is not None and (not np.isfinite(max_volume) or max_volume <= 0):

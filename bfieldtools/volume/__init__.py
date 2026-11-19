@@ -2,9 +2,11 @@
 
 from .mesh import TetraMesh, tetrahedralize, load_example_tetra_mesh
 from .dynamics import loop_coupling, modal_response
+from .currents import ConservedFluxBasis, augmented_flux_basis, dual_cycle_basis
 from .basis import (
     CellCurrentBasis,
     build_edge_current_basis,
+    build_face_current_basis,
     cell_current_operators,
     cell_edge_current_vectors,
     reconstruct_currents,
@@ -41,6 +43,10 @@ __all__ = [
     "divergence_matrix",
     "tree_cotree_gauge",
     "CellCurrentBasis",
+    "ConservedFluxBasis",
+    "dual_cycle_basis",
+    "augmented_flux_basis",
+    "build_face_current_basis",
     "build_edge_current_basis",
     "cell_current_operators",
     "cell_edge_current_vectors",

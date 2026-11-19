@@ -1,4 +1,4 @@
-"""Cell-current representations and construction from oriented volume edges."""
+"""Cell-current representations from oriented volume edges or face fluxes."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ from scipy.sparse import coo_matrix, csr_matrix, isspmatrix_csr
 from .mesh import TETRA_EDGES, TetraMesh
 
 if TYPE_CHECKING:
+    from .currents import ConservedFluxBasis
     from .topology import TetraTopology, TreeCotreeGauge
 
 
@@ -74,6 +75,63 @@ def _check_connectivity(mesh: TetraMesh, topology: TetraTopology) -> None:
         mesh.tetrahedra, topology.tetrahedra
     ):
         raise ValueError("mesh and topology must have identical ordered connectivity")
+
+
+def build_face_current_basis(
+    mesh: TetraMesh, flux_basis: ConservedFluxBasis
+) -> CellCurrentBasis:
+    """Reconstruct conserved face fluxes as constant Cartesian cell currents.
+
+    Accepts dual-cycle and augmented flux bases, including handles and cavities.
+    Checks connectivity, conservation, and zero boundary flux; independence is
+    established by the flux-basis constructor. Geometry and flux signs meet only
+    here. The returned basis works with existing impedance/dynamics functions.
+    """
+    topology = flux_basis.topology
+    _check_connectivity(mesh, topology)
+    fluxes = flux_basis.fluxes
+    if not isspmatrix_csr(fluxes) or fluxes.shape[0] != len(topology.faces):
+        raise ValueError("fluxes must be a CSR matrix with one row per face")
+    if np.iscomplexobj(fluxes.data) or not np.all(np.isfinite(fluxes.data)):
+        raise ValueError("fluxes must be real and finite")
+    if fluxes[topology.boundary_face_mask].count_nonzero():
+        raise ValueError("fluxes must vanish on boundary faces")
+    # Dense nullspace construction has columnwise roundoff, including in cells
+    # where the exact representative vanishes (e.g. another disconnected solid).
+    # Use each column's scale, without an absolute floor that would hide invalid
+    # fluxes when the entire column is small.
+    balances = topology.divergence @ fluxes
+    if fluxes.shape[1]:
+        scales = abs(fluxes).max(axis=0).toarray().ravel()
+        residual = balances.tocoo()
+        if np.any(
+            abs(residual.data) > 256 * np.finfo(float).eps * scales[residual.col]
+        ):
+            raise ValueError("fluxes must conserve current in every cell")
+    ncells = len(mesh.tetrahedra)
+    rows = np.repeat(np.arange(ncells), 4)
+    columns = topology.cell_faces.ravel()
+    operators = []
+    # RT0: sum_i q_out,i (r-r_i)/(3V). Since sum_i q_out,i = 0,
+    # evaluate at the centroid; the result is independent of r. Local face i
+    # is opposite local vertex i in TETRA_FACES.
+    for component in range(3):
+        weights = (
+            topology.cell_face_signs
+            * (
+                mesh.cell_centers[:, component, None]
+                - mesh.vertices[mesh.tetrahedra, component]
+            )
+            / (3 * mesh.volumes[:, None])
+        )
+        reconstruction = coo_matrix(
+            (weights.ravel(), (rows, columns)),
+            shape=(ncells, len(topology.faces)),
+        ).tocsr()
+        operator = (reconstruction @ fluxes).tocsr()
+        operator.eliminate_zeros()
+        operators.append(operator)
+    return CellCurrentBasis(mesh, tuple(operators))
 
 
 def cell_edge_current_vectors(

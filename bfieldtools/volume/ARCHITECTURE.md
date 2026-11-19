@@ -4,7 +4,7 @@ See [PLAN.md](PLAN.md) for status and remaining work,
 [THEORY.md](THEORY.md) for the equivalent-magnetization interpretation and
 formulation, and [VALIDATION.md](VALIDATION.md) for tests and example workflows.
 
-The volume implementation uses composition, with four separate data containers.
+The volume implementation uses composition, with separate data containers.
 Algorithms live in functions; constructor helpers and cached incidence properties
 delegate to those functions.
 
@@ -14,6 +14,7 @@ delegate to those functions.
 | `TetraTopology` | Ordered cell indices, vertex count, edge/face connectivity, signs, boundary masks, cached incidence matrices | Geometry-independent discrete topology |
 | `TreeCotreeGauge` | Tree and retained edges, coefficient prolongation, reduced face-flux map | A particular independent coefficient selection |
 | `CellCurrentBasis` | Mesh and three real CSR component operators | Piecewise-constant Cartesian current representation for numerical assembly |
+| `ConservedFluxBasis` | Topology, oriented face-flux columns, optional local/global metadata | Geometry-independent complete current construction |
 
 `TetraTopology` retains no vertex coordinates or mesh reference. Its cell-index
 array shares the mesh's read-only connectivity. It can be reused for a translated,
@@ -54,11 +55,52 @@ Alternative constructors can provide operators directly:
 basis = CellCurrentBasis(mesh, (Bx, By, Bz))
 ```
 
-This supports changes of basis, future global current patterns, and alternative
+This supports changes of basis, global current patterns, and alternative
 conserved-current constructions without changing matrix assembly. The container
 checks that the three matrices are real, finite CSR matrices with the same shape
 and one row per mesh cell. Independence, conservation, and boundary conditions
 must be established by the construction algorithm, not inferred from matrix shape.
+
+## Handles and cavities
+
+```python
+from bfieldtools.volume import (
+    augmented_flux_basis, dual_cycle_basis, build_face_current_basis,
+)
+
+# Sparse complete basis, including handles and cavities:
+flux_basis = dual_cycle_basis(topology)
+basis = build_face_current_basis(mesh, flux_basis)
+
+# Alternatively, local edge curls followed by explicit global modes:
+flux_basis = augmented_flux_basis(topology)
+basis = build_face_current_basis(mesh, flux_basis)
+```
+
+The augmented builder uses dense QR/SVD and refuses intermediates above
+`max_dense_entries` (default four million entries per dense input). It is a
+reference construction for modest meshes. The dual-cycle builder uses sparse
+storage, proportional to the total fundamental-cycle lengths. Neither requires
+a meshing backend. The existing `tree_cotree_gauge` remains a solid-ball-only
+fast path with its previous edge selection and rejection behavior.
+
+`flux_basis.fluxes` maps coefficients to all globally oriented face fluxes.
+The augmented builder exposes `local_edges` and `n_global`: local curl columns
+come first, followed by Euclidean orthonormal global face-flux columns. A global
+coefficient is not automatically the net current through a user-chosen cut.
+The example `examples/volume/global_currents.py` demonstrates cut normalization.
+Dual cycles mix local and global content, so their `local_edges` and `n_global`
+are `None`.
+
+Face reconstruction checks ordered connectivity, finite real fluxes,
+conservation, and zero boundary leakage, then uses RT0 reconstruction at cell
+centroids. The result retains only mesh and Cartesian operators, like the edge
+builder. Existing resistance, inductance, loop coupling, and modal evolution
+work with either complete basis and include all local/global cross terms.
+The TetGen adapter accepts one connected boundary, including handles, so a torus
+surface can be passed directly to `tetrahedralize`. Cavity meshing and surface
+current extensions remain separate work. The complete meshing-to-transient
+workflow is demonstrated in `examples/volume/torus_eddy_currents.py`.
 
 ## Resistance and inductance
 
