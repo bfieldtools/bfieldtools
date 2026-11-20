@@ -66,8 +66,8 @@ gauss_legendre_rules = (
     QuadratureRule(
         [
             gauss_legendre_points(0),
-            gauss_legendre_points(3 / np.sqrt(5)),
-            gauss_legendre_points(-3 / np.sqrt(5)),
+            gauss_legendre_points(np.sqrt(3 / 5)),
+            gauss_legendre_points(-np.sqrt(3 / 5)),
         ],
         [8 / 18, 5 / 18, 5 / 18],
     ),
