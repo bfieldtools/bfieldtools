@@ -523,7 +523,7 @@ class MeshConductor:
 
     def plot_mesh(self, cull_front=False, cull_back=False, **kwargs):
         """
-        Simply plot the mesh surface in mayavi. kwargs are passed to
+        Simply plot the mesh surface in 3D. kwargs are passed to
         viz.plot_mesh
 
         """
@@ -748,7 +748,7 @@ class StreamFunction(np.ndarray):
 
         self.mesh_conductor = getattr(obj, "mesh_conductor", None)
 
-    def __array_wrap__(self, out_arr, context=None):
+    def __array_wrap__(self, out_arr, context=None, return_scalar=False):
         """
         Return a ndarray for all ufuncs, since the StreamFunction attributes no longer apply
         when e.g. changing shape etc
@@ -824,7 +824,7 @@ class StreamFunction(np.ndarray):
 
         """
         scaling = Nloops / (self.vert.max() - self.vert.min())
-        L_approx = 2 * self.magnetic_energy * (scaling ** 2)
+        L_approx = 2 * self.magnetic_energy * (scaling**2)
 
         return L_approx
 
@@ -832,7 +832,7 @@ class StreamFunction(np.ndarray):
         """
         Plot the stream function
         """
-        from mayavi import mlab
+        import pyvista as pv
 
         mesh = self.mesh_conductor.mesh
         scalars = self.vert
@@ -842,13 +842,15 @@ class StreamFunction(np.ndarray):
             kwargs["vmax"] = np.max(abs(scalars))
 
         s = plot_data_on_vertices(mesh, scalars, **kwargs)
+
         if contours:
-            s.enable_contours = True
-            s.contour.number_of_contours = contours
-            if background:
-                mlab.triangular_mesh(
-                    *mesh.vertices.T, mesh.faces, color=(0.5, 0.5, 0.5), opacity=0.2
-                )
+            meshactor = s.actors[[*s.actors.keys()][-1]]
+            dataset = meshactor.mapper.dataset
+
+            c = dataset.contour(isosurfaces=contours)
+            s.add_mesh(c)
+            if background == False:
+                meshactor.visibility = False
 
         return s
 

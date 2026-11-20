@@ -24,7 +24,7 @@ from bfieldtools.utils import load_example_mesh, combine_meshes
 from bfieldtools.contour import scalar_contour
 from bfieldtools.viz import plot_3d_current_loops
 
-import pkg_resources
+from bfieldtools import resources
 
 
 # Set unit, e.g. meter or millimeter.
@@ -57,7 +57,7 @@ coil = MeshConductor(mesh_obj=joined_planes, fix_normals=True, basis_name="inner
 
 # Separate object for shield geometry
 shieldmesh = trimesh.load(
-    file_obj=pkg_resources.resource_filename(
+    file_obj=resources.files(
         "bfieldtools", "example_meshes/closed_cylinder_remeshed.stl"
     ),
     process=True,
@@ -111,7 +111,9 @@ if PLOT:
 
     if SAVE_FIGURES:
         mlab.savefig(
-            SAVE_DIR + "shielded_biplanar_geometry.png", figure=f, magnification=4,
+            SAVE_DIR + "shielded_biplanar_geometry.png",
+            figure=f,
+            magnification=4,
         )
         mlab.close()
 
@@ -168,7 +170,9 @@ if PLOT:
 
     if SAVE_FIGURES:
         mlab.savefig(
-            SAVE_DIR + "shielded_biplanar_ignored.png", figure=f, magnification=4,
+            SAVE_DIR + "shielded_biplanar_ignored.png",
+            figure=f,
+            magnification=4,
         )
         mlab.close()
 #%%
@@ -254,7 +258,9 @@ if PLOT:
     f.scene.camera.zoom(0.95)
     if SAVE_FIGURES:
         mlab.savefig(
-            SAVE_DIR + "shielded_biplanar_prospective.png", figure=f, magnification=4,
+            SAVE_DIR + "shielded_biplanar_prospective.png",
+            figure=f,
+            magnification=4,
         )
         mlab.close()
 

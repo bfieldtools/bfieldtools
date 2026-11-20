@@ -3,10 +3,10 @@
 Classes for magnetic sensors and sensor arrays
 """
 
-import quadpy
 import numpy as np
 from abc import ABC, abstractmethod
 from .line_conductor import LineConductor
+from .quadratures import get_line_rule, get_triangle_rule
 
 
 class BaseSensor(ABC):
@@ -176,16 +176,16 @@ class MagnetometerLoop(BaseSensor):
     dimensions : tuple/list of loop side lengths (float)
 
     quad_scheme : quadrature scheme for bfield integration
-                 Default: "dunavant_01"
-                 for more schemes see quadpy.c2.__all__
+                 Default: "dunavant degree 1"
+                 for more schemes see quadratures.get_triangle_rule
     """
 
-    def __init__(self, dimensions, quad_scheme="dunavant_01"):
+    def __init__(self, dimensions, quad_scheme=("dunavant",1)):
         if len(dimensions) == 2:
             self.dimensions = tuple(dimensions)
         else:
             raise ValueError("len(dimensions) must be 2")
-        self.quad_scheme = quad_scheme
+        self.quad_scheme = get_triangle_rule(quad_scheme)
         super().__init__()
 
     def init_geometry(self):
@@ -228,15 +228,15 @@ class MagnetometerLoop(BaseSensor):
 
     @property
     def scheme(self):
-        return quadpy.c2.__dict__[self.quad_scheme]()
+        return self.quad_scheme
 
     def measure_bfield(self, bfield_func):
         bfield = bfield_func(self.bfield_points)
         integral = np.einsum("ij,i,j->", bfield, self.quad_weights, self.normal)
         return integral * self.area
 
-    def measure_afield(self, afield_func, scheme_degree=1):
-        scheme = quadpy.c1.gauss_patterson(scheme_degree)
+    def measure_afield(self, afield_func, method=["gauss_legendre", 1]):
+        scheme = quadratures.get_line_rule(method)
         lc = self.line_conductor
         segments = lc.discrete[0][1:] - lc.discrete[0][:-1]
         # Points are from -1 to 1
@@ -286,12 +286,12 @@ class GradiometerLoop(MagnetometerLoop):
     baseline : float, distance of the loop centers in x direction
 
     quad_scheme : quadrature scheme for bfield integration
-                 Default: "dunavant_01"
-                 for more schemes see quadpy.c2.__all__
+                 Default: "dunavant", degree 1
+                 for more schemes see quadratures.get_triangle_rule
     """
 
     def __init__(
-        self, dimensions=(0.007, 0.021), baseline=0.014, quad_scheme="dunavant_01"
+        self, dimensions=(0.007, 0.021), baseline=0.014, quad_scheme=("dunavant",1)
     ):
         self.baseline = baseline
         super().__init__(dimensions, quad_scheme)
@@ -337,19 +337,29 @@ class GradiometerLoop(MagnetometerLoop):
         self.update_position(t)
 
     def plot_quad_points(self):
-        from mayavi import mlab
+        import pyvista as pv
 
         mask = self.quad_weights > 0
-        mlab.points3d(
-            *self.bfield_points[mask].T,
-            color=(1, 0, 0),
-            scale_factor=self.dimensions[0] / 5,
+
+        plotter = pv.Plotter()
+
+        plotter.add_points(
+            self.bfield_points[mask],
+            color="red",
+            point_size=self.dimensions[0] / 5,
+            render_points_as_spheres=True,
         )
-        mlab.points3d(
-            *self.bfield_points[~mask].T,
-            color=(0, 0, 1),
-            scale_factor=self.dimensions[0] / 5,
+
+        plotter.add_points(
+            self.bfield_points[~mask],
+            color="blue",
+            point_size=self.dimensions[0] / 5,
+            render_points_as_spheres=True,
         )
+
+        plotter.show()
+        
+        return plotter
 
 
 class MagnetometerOPM(BaseSensor):
@@ -536,7 +546,6 @@ class MixedArray:
 
 
 def create_mag102():
-    import pkg_resources
 
     fname = (
         pkg_resources.resource_filename("bfieldtools", "sensor_data/mag102_trans.npz"),
@@ -552,7 +561,6 @@ def create_mag102():
 
 
 def create_grad204():
-    import pkg_resources
 
     fname = (
         pkg_resources.resource_filename("bfieldtools", "sensor_data/grad204_trans.npz"),

@@ -59,8 +59,8 @@ def magnetic_field(vertices, points):
         f = cross(a1, a2)
 
         # Vector lengths
-        d1 = np.sqrt(np.sum(a1 ** 2, axis=0))
-        d2 = np.sqrt(np.sum(a2 ** 2, axis=0))
+        d1 = np.sqrt(np.sum(a1**2, axis=0))
+        d2 = np.sqrt(np.sum(a2**2, axis=0))
 
         # Normalize direction field and divide by cylindrical distance
         f *= (d1 + d2) / (d1 * d2 * (d1 * d2 + np.sum(a1 * a2, axis=0)))
@@ -151,7 +151,7 @@ def scalar_potential(vertices, points):
     vertices = np.vstack((vertices, mass_center))
 
     # CREATE TRIANGLE FAN
-    faces = np.full(shape=(N_verts - 1, 3), fill_value=np.nan, dtype=int)
+    faces = np.empty((N_verts - 1, 3), dtype=int)
 
     for i in range(N_verts - 1):
         faces[i] = np.array([i, i + 1, N_verts])
@@ -161,8 +161,8 @@ def scalar_potential(vertices, points):
 
     RR = R2[:, None, None, :] - R1[None, :, :, :]
 
-    # COMPUTE SOLID ANGLE, DIVIDE BY 4*PI*mu0
-    return np.sum(omega(RR), axis=1) * 1e-7
+    # COMPUTE SOLID ANGLE
+    return -1 * np.sum(omega(RR), axis=1) / (4 * np.pi)
 
 
 def mutual_inductance(path1, path2, Nquad=2, radius=1e-3):
@@ -256,7 +256,7 @@ def self_inductance(path, loop, radius=1e-3):
     N_verts = len(vertices)
     mass_center = np.mean(vertices, axis=0)
     vertices = np.vstack((vertices, mass_center))
-    faces = np.full(shape=(N_verts - 1, 3), fill_value=np.nan, dtype=int)
+    faces = np.empty((N_verts - 1, 3), dtype=int)
     for i in range(N_verts - 1):
         faces[i] = np.array([i, i + 1, N_verts])
     mesh = trimesh.Trimesh(vertices, faces)

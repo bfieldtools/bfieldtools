@@ -26,7 +26,7 @@ from bfieldtools.thermal_noise import (
 )
 from bfieldtools.mesh_magnetics import magnetic_field_coupling
 
-import pkg_resources
+from bfieldtools import resources
 
 
 font = {"family": "normal", "weight": "normal", "size": 16}
@@ -49,9 +49,7 @@ mu0 = 4 * np.pi * 1e-7  # permeability of freespace
 #%%
 # DC magnetic noise from unit disc
 
-mesh = trimesh.load(
-    pkg_resources.resource_filename("bfieldtools", "example_meshes/unit_disc.stl")
-)
+mesh = trimesh.load(resources.files("bfieldtools", "example_meshes/unit_disc.stl"))
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 
@@ -77,8 +75,8 @@ B = np.sqrt(noise_var(B_coupling, vl))
 r = 1
 Ban = (
     mu0
-    * np.sqrt(sigma * d * kB * T / (8 * np.pi * z ** 2))
-    * (1 / (1 + z ** 2 / r ** 2))
+    * np.sqrt(sigma * d * kB * T / (8 * np.pi * z**2))
+    * (1 / (1 + z**2 / r**2))
 )
 
 plt.figure()
@@ -123,7 +121,7 @@ fp = np.zeros((1, 3))  # calculate are at origin
 B = np.zeros((Np, 3))
 for i in range(Np):
     mesh = trimesh.load(
-        pkg_resources.resource_filename("bfieldtools", "example_meshes/unit_sphere.stl")
+        resources.files("bfieldtools", "example_meshes/unit_sphere.stl")
     )
     mesh.apply_scale(radius[i])
 
@@ -160,7 +158,7 @@ plt.tight_layout()
 # --------------------------
 
 mesh = trimesh.load(
-    pkg_resources.resource_filename("bfieldtools", "example_meshes/closed_cylinder.stl")
+    resources.files("bfieldtools", "example_meshes/closed_cylinder.stl")
 )
 mesh.vertices, mesh.faces = trimesh.remesh.subdivide(mesh.vertices, mesh.faces)
 
@@ -187,7 +185,7 @@ Gfact = (
     1
     / (8 * np.pi)
     * (
-        (3 * rat ** 5 + 5 * rat ** 3 + 2) / (rat ** 2 * (1 + rat ** 2) ** 2)
+        (3 * rat**5 + 5 * rat**3 + 2) / (rat**2 * (1 + rat**2) ** 2)
         + 3 * np.arctan(rat)
     )
 )
@@ -218,9 +216,7 @@ plt.tight_layout()
 # ------------------
 
 mesh = trimesh.load(
-    pkg_resources.resource_filename(
-        "bfieldtools", "example_meshes/unitdisc_extremelyfine.stl"
-    )
+    resources.files("bfieldtools", "example_meshes/unitdisc_extremelyfine.stl")
 )
 
 Nfreqs = 10

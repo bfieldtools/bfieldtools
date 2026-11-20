@@ -311,7 +311,10 @@ def visualize_current_modes(
         Which (matplotlib) colormap to use
 
     """
-    from mayavi import mlab
+    import pyvista as pv
+
+    figure = pv.Plotter()
+    figure.background_color = "white"
 
     N1 = np.floor(np.sqrt(Nmodes))
     dx = (mesh.vertices[:, 0].max() - mesh.vertices[:, 0].min()) * (1 + dist)
@@ -324,16 +327,25 @@ def visualize_current_modes(
         points = mesh.vertices.copy()
         points[:, 0] += i * dx
         points[:, 1] += j * dy
-        s = mlab.triangular_mesh(
-            *points.T, mesh.faces, scalars=vl[:, n], colormap=colormap
-        )
 
         limit = np.max(np.abs(vl[:, n]))
 
-        s.module_manager.scalar_lut_manager.number_of_colors = 256
-        s.module_manager.scalar_lut_manager.data_range = np.array([-limit, limit])
-        s.actor.mapper.interpolate_scalars_before_mapping = True
-        s.enable_contours = contours
+        s = pv.PolyData()
+
+        meshviz = pv.PolyData(
+            points, np.hstack((np.repeat(3, len(mesh.faces))[:, None], mesh.faces))
+        )
+
+        s = figure.add_mesh(
+            meshviz,
+            scalars=vl[:, n],
+            colormap=colormap,
+            clim=[-limit, limit],
+            interpolate_before_map=True,
+        )
+
+        c = meshviz.contour()
+        figure.add_mesh(c)
 
         if i < N1:
             i += 1
@@ -341,4 +353,5 @@ def visualize_current_modes(
             j += 1
             i = 0
 
-    return s
+    figure.show(interactive_update=True)
+    return figure

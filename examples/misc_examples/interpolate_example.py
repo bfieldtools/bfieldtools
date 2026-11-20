@@ -17,16 +17,14 @@ from scipy.linalg import eigh
 from bfieldtools.mesh_calculus import laplacian_matrix, mass_matrix
 from bfieldtools import utils
 
-import pkg_resources
+from bfieldtools import resources
 
 
 #%%
 # Load a simple mesh and compute an example scalar function on it.
 # In this case, the scalar function is an eigenvector of a generalized eigenvalue decomposition
 
-mesh = trimesh.load(
-    pkg_resources.resource_filename("bfieldtools", "example_meshes/10x10_plane.obj")
-)
+mesh = trimesh.load(resources.files("bfieldtools", "example_meshes/10x10_plane.obj"))
 
 boundaries, inner_verts = utils.find_mesh_boundaries(mesh)
 

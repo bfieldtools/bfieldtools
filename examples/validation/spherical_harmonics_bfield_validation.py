@@ -17,12 +17,10 @@ from bfieldtools.sphtools import compute_sphcoeffs_mesh
 from bfieldtools import sphtools
 
 
-import pkg_resources
+from bfieldtools import resources
 
 # Load simple plane mesh that is centered on the origin
-file_obj = pkg_resources.resource_filename(
-    "bfieldtools", "example_meshes/10x10_plane.obj"
-)
+file_obj = resources.files("bfieldtools", "example_meshes/10x10_plane.obj")
 coilmesh = trimesh.load(file_obj, process=False)
 coil = MeshConductor(mesh_obj=coilmesh)
 

@@ -1,5 +1,6 @@
 import numpy as np
-from mayavi import mlab
+
+import pyvista as pv
 
 from bfieldtools import suhtools
 from bfieldtools.utils import load_example_mesh
@@ -43,7 +44,7 @@ def test_suhbasis():
     except:
         print("Caught test exception")
 
-    f = mlab.figure()
+    f = pv.Plotter()
 
     suh.plot([0, 2], figure=f)
     suh.plot(Nfuncs=4, Ncols=2, figure=f)

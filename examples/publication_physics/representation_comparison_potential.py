@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mayavi import mlab
 import trimesh
-import pkg_resources
+from bfieldtools import resources
 from pyface.api import GUI
 
 _gui = GUI()

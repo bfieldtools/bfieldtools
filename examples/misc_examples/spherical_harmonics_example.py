@@ -106,4 +106,4 @@ coeffs = sph.avsphspectra(B, 7)  # calculate spectra of the r**l terms
 
 # Plot the spectra
 plt.figure()
-plt.semilogy(coeffs ** 2)
+plt.semilogy(coeffs**2)

@@ -6,7 +6,7 @@ An example stream function (red--blue colormap) and its rotated gradient, i.e. t
 """
 
 from bfieldtools.mesh_conductor import MeshConductor, StreamFunction
-import pkg_resources
+from bfieldtools import resources
 from bfieldtools.mesh_calculus import gradient
 import numpy as np
 
@@ -15,9 +15,7 @@ SAVE_DIR = "./Streamfunction gradient/"
 
 
 c = MeshConductor(
-    mesh_file=pkg_resources.resource_filename(
-        "bfieldtools", "example_meshes/curved_surf_w_hole.stl"
-    ),
+    mesh_file=resources.files("bfieldtools", "example_meshes/curved_surf_w_hole.stl"),
     process=True,
     basis_name="suh",
     N_suh=10,
@@ -145,5 +143,7 @@ module_manager2.scalar_lut_manager.title_text_property.bold = False
 
 if SAVE:
     mlab.savefig(
-        SAVE_DIR + "streamfunction_gradient.png", figure=f, magnification=4,
+        SAVE_DIR + "streamfunction_gradient.png",
+        figure=f,
+        magnification=4,
     )

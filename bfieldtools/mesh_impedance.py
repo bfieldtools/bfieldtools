@@ -14,7 +14,7 @@ __all__ = [
 from psutil import virtual_memory
 import numpy as np
 
-from .utils import get_quad_points, get_line_quad_points
+from .quadratures import get_quad_points, get_line_quad_points
 from .mesh_magnetics import vector_potential_coupling
 from .mesh_calculus import gradient_matrix, laplacian_matrix
 
@@ -86,7 +86,7 @@ def self_inductance_matrix(
 
     # Calculate quadrature points
     weights, quadpoints = get_quad_points(
-        mesh.vertices, mesh.faces, "dunavant_0" + str(quad_degree)
+        mesh.vertices, mesh.faces, ("dunavant", quad_degree)
     )
 
     if Nchunks is None:
@@ -160,7 +160,7 @@ def mutual_inductance_matrix(
     # Calculate quadrature points
     # Nt x Nquad x  3 (x,y,z)
     weights, quadpoints = get_quad_points(
-        mesh2.vertices, mesh2.faces, "dunavant_0" + str(quad_degree)
+        mesh2.vertices, mesh2.faces, ("dunavant", quad_degree)
     )
 
     # Compute vector potential at quadrature points
@@ -174,15 +174,15 @@ def mutual_inductance_matrix(
         Nchunks=Nchunks,
         approx_far=approx_far,
         margin=margin,
-    ).reshape(3, Nt, Nw, Nv)
+    ).reshape(Nt, Nw, 3, Nv)
 
     # Integrate over the triangles (current patterns are constant over triangles)
-    A = np.sum(A * weights[None, None, :, None], axis=2)
-    A *= mesh2.area_faces[None, :, None]
+    A = np.sum(A * weights[None, :, None, None], axis=1)
+    A *= mesh2.area_faces[:, None, None]
 
     Gx, Gy, Gz = gradient_matrix(mesh2, rotated=True)
     # Dot product with current patterns and sum over triangle neighbourhoods
-    M = A[0].T @ Gx + A[1].T @ Gy + A[2].T @ Gz
+    M = A[:, 0].T @ Gx + A[:, 1].T @ Gy + A[:, 2].T @ Gz
 
     return M
 
@@ -218,6 +218,8 @@ def _estimate_nchunks(mesh1, mesh2, approx_far):
             % (Nchunks, mem)
         )
 
+    return Nchunks
+
 
 def triangle_self_coupling(mesh):
     """
@@ -250,12 +252,12 @@ def triangle_self_coupling(mesh):
         logterm = np.log((a1 - d1) * (a2 - d2) / ((a1 + d1) * (a2 + d2)))
         integrals.append(logterm / enorms[:, i])
 
-    integral = ((4 / 6) * mesh.area_faces ** 2) * np.sum(integrals, axis=0)
+    integral = ((4 / 6) * mesh.area_faces**2) * np.sum(integrals, axis=0)
 
     return integral
 
 
-def mesh2line_mutual_inductance(mesh, line_vertices, quad_degree=3):
+def mesh2line_mutual_inductance(mesh, line_vertices, quad_degree=2):
     """
     Mutual inductance of a closed line segment loop (last segment connecting to first)
     and a triangle mesh.
@@ -275,7 +277,7 @@ def mesh2line_mutual_inductance(mesh, line_vertices, quad_degree=3):
 
     # Calculate quadrature points
     weights, quadpoints = get_line_quad_points(
-        line_vertices, "gauss_legendre", quad_degree
+        line_vertices, ("gauss_legendre", quad_degree)
     )
     # Ne x Nquad x  3 (x,y,z)
 
@@ -286,13 +288,13 @@ def mesh2line_mutual_inductance(mesh, line_vertices, quad_degree=3):
     Nt = len(line_vertices)
     Nv = len(mesh.vertices)
     M = vector_potential_coupling(mesh, quadpoints.reshape(-1, 3)).reshape(
-        3, Nt, Nw, Nv
+        Nt, Nw, 3, Nv
     )
 
     # Integrate over quadrature points
-    M = np.sum(M * weights[None, None, :, None], axis=2)
+    M = np.sum(M * weights[None, :, None, None], axis=2)
 
     # Scale by segment lengths, integrate over xyz-axis and segments
-    M = np.sum(segments.T[:, :, None] * M, axis=(0, 1))
+    M = np.sum(segments[:, :, None] * M, axis=(0, 1))
 
     return M

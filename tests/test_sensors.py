@@ -49,3 +49,12 @@ def test_sensor_arrays():
         m.finalize()
         f = arr.fluxes(m.bfield_self, field_type="B")
         f = arr.fluxes(m.afield_self, field_type="A")
+        
+def test_plot_quad_points():
+    for cl in MagnetometerLoop, GradiometerLoop:
+        m = cl((1, 1))
+
+        m1 = m.new_from_transform(np.eye(4))
+        
+        m1.plot_quad_points()
+    

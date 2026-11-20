@@ -95,8 +95,8 @@ def test_vs_analytic():
     r = 1
     Ban = (
         mu0
-        * np.sqrt(sigma * d * kB * T / (8 * np.pi * z ** 2))
-        * (1 / (1 + z ** 2 / r ** 2))
+        * np.sqrt(sigma * d * kB * T / (8 * np.pi * z**2))
+        * (1 / (1 + z**2 / r**2))
     )
 
     assert_allclose(B_dc[:, 2], B[:, 2, 0])

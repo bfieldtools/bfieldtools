@@ -15,13 +15,11 @@ from bfieldtools.mesh_magnetics import (
     magnetic_field_coupling_analytic,
 )
 from bfieldtools.mesh_conductor import MeshConductor
-import pkg_resources
+from bfieldtools import resources
 
 
 # Load simple plane mesh that is centered on the origin
-file_obj = pkg_resources.resource_filename(
-    "bfieldtools", "example_meshes/10x10_plane.obj"
-)
+file_obj = resources.files("bfieldtools", "example_meshes/10x10_plane.obj")
 coilmesh = trimesh.load(file_obj, process=False)
 coil = MeshConductor(mesh_obj=coilmesh)
 weights = np.zeros(coilmesh.vertices.shape[0])
@@ -51,9 +49,7 @@ print(
 
 #%% Test against analytic formula
 # Load simple plane mesh that is centered on the origin
-file_obj = pkg_resources.resource_filename(
-    "bfieldtools", "example_meshes/unit_disc.stl"
-)
+file_obj = resources.files("bfieldtools", "example_meshes/unit_disc.stl")
 discmesh = trimesh.load(file_obj, process=True)
 for ii in range(3):
     discmesh = discmesh.subdivide()

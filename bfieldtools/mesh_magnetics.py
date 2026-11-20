@@ -15,7 +15,7 @@ import time
 import numpy as np
 
 
-from .utils import get_quad_points
+from .quadratures import get_quad_points
 from .mesh_calculus import gradient_matrix, mass_matrix
 from .integrals import triangle_potential_dipole_linear, triangle_potential_uniform
 from .integrals import (
@@ -63,7 +63,7 @@ def magnetic_field_coupling(mesh, r, Nchunks=None, quad_degree=1, analytic=False
     start = time.time()
 
     w_quad, r_quad = get_quad_points(
-        mesh.vertices, mesh.faces, method="dunavant_0" + str(quad_degree)
+        mesh.vertices, mesh.faces, ("dunavant", quad_degree)
     )
 
     # Rotated gradients (currents)
@@ -383,7 +383,7 @@ def vector_potential_coupling(
     # Accumulate the elements
     Av = np.array([Af @ Gx, Af @ Gy, Af @ Gz])
 
-    return Av * coeff
+    return np.swapaxes(Av * coeff, 0, 1)
 
 
 def get_chunks(r, Nchunks, clusters=True):

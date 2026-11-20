@@ -12,12 +12,10 @@ import trimesh
 
 from bfieldtools.viz import plot_data_on_vertices
 from bfieldtools.mesh_calculus import gradient
-import pkg_resources
+from bfieldtools import resources
 
 # Load simple plane mesh that is centered on the origin
-file_obj = file_obj = pkg_resources.resource_filename(
-    "bfieldtools", "example_meshes/10x10_plane.obj"
-)
+file_obj = file_obj = resources.files("bfieldtools", "example_meshes/10x10_plane.obj")
 planemesh = trimesh.load(file_obj, process=False)
 
 # Generate a simple scalar function

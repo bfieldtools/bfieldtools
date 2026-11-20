@@ -103,7 +103,7 @@ plt.tight_layout()
 def dip_potential(Reval, Rdip, moment):
     R = Reval - Rdip
     r = np.linalg.norm(R, axis=1)
-    return (moment * R).sum(axis=1) / r ** 3
+    return (moment * R).sum(axis=1) / r**3
 
 
 # Center of mass

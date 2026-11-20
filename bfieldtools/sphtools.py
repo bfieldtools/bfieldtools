@@ -49,10 +49,7 @@ __all__ = [
 import numpy as np
 from scipy.special import factorial, lpmn
 
-try:
-    from quadpy import sphere
-except ImportError:
-    from quadpy import u3 as sphere
+from .quadratures import get_spherical_quad_points
 
 from .mesh_calculus import gradient_matrix
 from .utils import tri_normals_and_areas
@@ -522,7 +519,7 @@ def Wlm(l, m, theta, phi):
     """
 
     Wlm = l * Plm(l, m, theta, phi) + np.sqrt(l * (l + 1)) * Blm(l, m, theta, phi)
-    Wlm *= 1 / np.sqrt(2 * l ** 2 + l)
+    Wlm *= 1 / np.sqrt(2 * l**2 + l)
     return Wlm
 
 
@@ -754,9 +751,9 @@ def basis_fields(p, lmax, normalization="default", R=1):
             _Wlm[:, 2] *= sp[:, 0] ** (l - 1)
 
             if normalization == "default":
-                _Wlm *= np.sqrt(2 * l ** 2 + l) * mu0
+                _Wlm *= np.sqrt(2 * l**2 + l) * mu0
             if normalization == "energy":
-                _Wlm *= np.sqrt(2 * l ** 2 + l) * mu0
+                _Wlm *= np.sqrt(2 * l**2 + l) * mu0
                 _Wlm *= 1 / np.sqrt(R ** (2 * l + 1) * l * mu0)
 
             _Wlm = sphvec2cart(sp, _Wlm)
@@ -905,7 +902,7 @@ class SphBasis:
         Default points are McLaren(10) so that we avoid singularities.
         """
 
-        self.qp = sphere.mclaren_10()
+        self.qp = get_spherical_quad_points()
         sp = cartesian2spherical(self.qp.points)
         self.sqp = sp
 
@@ -958,7 +955,7 @@ class SphBasis:
                 _Wlm = Wlm(l, m, self.sqp[:, 1], self.sqp[:, 2])
                 ctemp = self.innerproduct(fun, _Wlm)
                 ctemp /= self.sqp[0, 0] ** (l - 1) * np.sqrt(
-                    2 * l ** 2 + l
+                    2 * l**2 + l
                 )  # we use this normalization
                 #                ctemp /= (self.sqp[0,0]**(l-1))
                 coeffs.append(ctemp)
@@ -1019,7 +1016,10 @@ def plotYlms(sph, lmax, polar=False):
     polar: boolean
         plot polar representation?
     """
-    from mayavi import mlab
+
+    import pyvista as pv
+
+    figure = pv.Plotter()
 
     theta = np.reshape(sph.sp[:, 1], (sph.Np, sph.Np))
     phi = np.reshape(sph.sp[:, 2], (sph.Np, sph.Np))
@@ -1034,26 +1034,32 @@ def plotYlms(sph, lmax, polar=False):
                 _ylm = ylm(l, m, theta.flatten(), phi.flatten())
                 _ylm = np.reshape(_ylm, (sph.Np, sph.Np))
 
-                mlab.mesh(x - m, y - l, z, scalars=_ylm, colormap="bwr")
-                _ylm /= _ylm.max()
-                mlab.mesh(
-                    _ylm * x - m,
-                    _ylm * y - l,
-                    _ylm * z + 1.3,
-                    scalars=np.abs(_ylm),
-                    colormap="Spectral",
-                )
+                mesh = pv.StructuredGrid(x - m, y - l, z)
+                figure.add_mesh(mesh, scalars=_ylm, colormap="bwr")
 
-        mlab.view(90, 70, 6.2, (-1.3, -2.9, 0.25))
+                _ylm /= _ylm.max()
+
+                mesh = pv.StructuredGrid(_ylm * x - m, _ylm * y - l, _ylm * z + 1.3)
+
+                figure.add_mesh(mesh, scalars=np.abs(_ylm), colormap="Spectral")
+
+        figure.view_isometric()
+
     else:
         for l in range(0, lmax + 1):
             for m in range(-l, l + 1):
                 _ylm = ylm(l, m, theta.flatten(), phi.flatten())
                 _ylm = np.reshape(_ylm, (sph.Np, sph.Np))
 
-                mlab.mesh(x - m, y - l, z, scalars=_ylm, colormap="bwr")
+                mesh = pv.StructuredGrid(x - m, y - l, z)
 
-        mlab.view(0, 180)
+                figure.add_mesh(mesh, scalars=_ylm, colormap="bwr")
+
+        figure.view_isometric()
+
+    figure.show(interactive_update=True)
+
+    return figure
 
 
 def plotYlm(sph, l, m):
@@ -1070,7 +1076,9 @@ def plotYlm(sph, l, m):
         order m
 
     """
-    from mayavi import mlab
+    import pyvista as pv
+
+    figure = pv.Plotter()
 
     theta = np.reshape(sph.sp[:, 1], (sph.Np, sph.Np))
     phi = np.reshape(sph.sp[:, 2], (sph.Np, sph.Np))
@@ -1082,16 +1090,22 @@ def plotYlm(sph, l, m):
     _ylm = ylm(l, m, theta.flatten(), phi.flatten())
     _ylm = np.reshape(_ylm, (sph.Np, sph.Np))
 
-    mlab.mesh(x - m, y - l, z, scalars=_ylm, colormap="bwr")
+    mesh = pv.StructuredGrid(x - m, y - l, z)
+
+    figure.add_mesh(mesh, scalars=_ylm, colormap="bwr")
 
     _ylm /= _ylm.max()
-    mlab.mesh(
-        _ylm * x - m,
-        _ylm * y - l,
-        _ylm * z + 1.3,
+    mesh = pv.StructuredGrid(_ylm * x - m, _ylm * y - l, _ylm * z + 1.3)
+    figure.add_mesh(
+        mesh,
         scalars=np.abs(_ylm),
         colormap="Spectral",
     )
+    figure.view_isometric()
+
+    figure.show(interactive_update=True)
+
+    return figure
 
 
 def plotWlm(sph, l, m):
@@ -1108,18 +1122,23 @@ def plotWlm(sph, l, m):
 
     Returns
     -------
-    obj: mayavi object
+    figure: pyvista figure
 
     """
-    from mayavi import mlab
+    import pyvista as pv
+
+    figure = pv.Plotter()
 
     _Wlm = Wlm(l, m, sph.sp[:, 1], sph.sp[:, 2])
     _Wlm = sphvec2cart(sph.sp, _Wlm)
-    obj = mlab.quiver3d(
-        sph.p[:, 0], sph.p[:, 1], sph.p[:, 2], _Wlm[:, 0], _Wlm[:, 1], _Wlm[:, 2]
-    )
-    obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
-    return obj
+
+    figure.add_arrows(cent=sph.p, direction=_Wlm)
+
+    figure.view_isometric()
+
+    figure.show(interactive_update=True)
+
+    return figure
 
 
 def plotBWlm_volume(sph, l, m, lim, Np, offset):
@@ -1142,11 +1161,12 @@ def plotBWlm_volume(sph, l, m, lim, Np, offset):
 
     Returns
     -------
-        obj: mayavi object
+        figure: pyvista figure
 
     """
+    import pyvista as pv
 
-    from mayavi import mlab
+    figure = pv.Plotter()
 
     x, y, z = np.meshgrid(
         np.linspace(-lim + offset[0], lim + offset[0], Np),
@@ -1158,15 +1178,20 @@ def plotBWlm_volume(sph, l, m, lim, Np, offset):
     sp = cartesian2spherical(p)
 
     _Wlm = Wlm(l, m, sp[:, 1], sp[:, 2])
-    _Wlm *= np.sqrt(2 * l ** 2 + l)
+    _Wlm *= np.sqrt(2 * l**2 + l)
     _Wlm[:, 0] *= sp[:, 0] ** (l - 1)
     _Wlm[:, 1] *= sp[:, 0] ** (l - 1)
     _Wlm[:, 2] *= sp[:, 0] ** (l - 1)
 
     _Wlm = sphvec2cart(sp, _Wlm)
-    obj = mlab.quiver3d(p[:, 0], p[:, 1], p[:, 2], _Wlm[:, 0], _Wlm[:, 1], _Wlm[:, 2])
-    obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
-    return obj
+
+    figure.add_arrows(p, _Wlm)
+
+    figure.view_isometric()
+
+    figure.show(interactive_update=True)
+
+    return figure
 
 
 def plotVlm(sph, l, m):
@@ -1183,18 +1208,21 @@ def plotVlm(sph, l, m):
 
     Returns
     -------
-    obj: mayavi object
+    figure: pyvista figure
 
     """
-    from mayavi import mlab
+    import pyvista as pv
+
+    figure = pv.Plotter()
 
     _Vlm = Vlm(l, m, sph.sp[:, 1], sph.sp[:, 2])
     _Vlm = sphvec2cart(sph.sp, _Vlm)
-    obj = mlab.quiver3d(
-        sph.p[:, 0], sph.p[:, 1], sph.p[:, 2], _Vlm[:, 0], _Vlm[:, 1], _Vlm[:, 2]
-    )
-    obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
-    return obj
+
+    figure.add_arrows(sph.p, _Vlm)
+    figure.view_isometric()
+
+    figure.show(interactive_update=True)
+    return figure
 
 
 def plotBVlm_volume(sph, l, m, lim, Np, offset):
@@ -1217,10 +1245,9 @@ def plotBVlm_volume(sph, l, m, lim, Np, offset):
 
     Returns
     -------
-    obj: mayavi object
+    figure: pyvista figure
 
     """
-    from mayavi import mlab
 
     x, y, z = np.meshgrid(
         np.linspace(-lim + offset[0], lim + offset[0], Np),
@@ -1239,9 +1266,17 @@ def plotBVlm_volume(sph, l, m, lim, Np, offset):
     _Vlm[:, 2] *= sp[:, 0] ** (-1 * (l + 2))
 
     _Vlm = sphvec2cart(sp, _Vlm)
-    obj = mlab.quiver3d(p[:, 0], p[:, 1], p[:, 2], _Vlm[:, 0], _Vlm[:, 1], _Vlm[:, 2])
-    obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
-    return obj
+
+    import pyvista as pv
+
+    figure = pv.Plotter()
+
+    figure.add_arrows(p, _Vlm)
+    figure.view_isometric()
+
+    figure.show(interactive_update=True)
+
+    return figure
 
 
 def plotXlm(sph, l, m):
@@ -1258,15 +1293,20 @@ def plotXlm(sph, l, m):
 
     Returns
     -------
-    obj: mayavi object
+    figure: pyvista figure
 
     """
-    from mayavi import mlab
 
     _Xlm = Xlm(l, m, sph.sp[:, 1], sph.sp[:, 2])
     _Xlm = sphvec2cart(sph.sp, _Xlm)
-    obj = mlab.quiver3d(
-        sph.p[:, 0], sph.p[:, 1], sph.p[:, 2], _Xlm[:, 0], _Xlm[:, 1], _Xlm[:, 2]
-    )
-    obj.glyph.glyph_source.glyph_source.center = np.array((0, 0, 0))
-    return obj
+
+    import pyvista as pv
+
+    figure = pv.Plotter()
+
+    figure.add_arrows(sph.p, _Xlm)
+    figure.view_isometric()
+
+    figure.show(interactive_update=True)
+
+    return figure

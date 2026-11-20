@@ -172,7 +172,7 @@ surf.module_manager.scalar_lut_manager.number_of_colors = 16
 
 #%% Plot spectra
 fig, ax = plt.subplots(1, 1)
-ax.plot(alpha ** 2)
+ax.plot(alpha**2)
 
 
 L = np.zeros((0,))
@@ -195,7 +195,7 @@ for i in range(len(alpha)):
 
 
 plt.figure()
-plt.plot(a ** 2)
+plt.plot(a**2)
 
 
 #%% Compute potential on the helmet mesh

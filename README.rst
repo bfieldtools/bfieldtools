@@ -6,13 +6,13 @@
 
 |
 
-|Travis|_ |Codecov|_ |Zenodo|_ |pypi|_ 
+|GH-Actions|_ |Codecov|_ |Zenodo|_ |pypi|_ 
 
 .. |bfieldtools| image:: https://bfieldtools.github.io/_static/logo_simple_w_name.svg
 .. _bfieldtools: https://bfieldtools.github.io
 
-.. |Travis| image:: https://travis-ci.com/bfieldtools/bfieldtools.svg?token=zziPTxRYBYdrsGqgmpjH&branch=master
-.. _Travis: https://travis-ci.com/bfieldtools/bfieldtools
+.. |GH-Actions| image:: https://github.com/bfieldtools/bfieldtools/workflows/Run%20tests/badge.svg
+.. _GH-Actions: https://github.com/bfieldtools/bfieldtools/actions
 
 .. |Codecov| image:: https://codecov.io/gh/bfieldtools/bfieldtools/branch/master/graph/badge.svg?token=R6WGNQ4QBV
 .. _Codecov: https://codecov.io/gh/bfieldtools/bfieldtools
@@ -39,15 +39,14 @@ The software currently features
 Dependencies
 ^^^^^^^^^^^^
 
-Requires Python 3.6 or newer.
+Requires Python 3.8 or newer, preferably >3.10.
 
  - `Numpy <https://www.numpy.org/>`_
  - `Scipy <https://www.scipy.org/>`_
  - `Trimesh <https://github.com/mikedh/trimesh>`_
- - `Quadpy>=0.13 <https://github.com/nschloe/quadpy/tree/master/quadpy>`_
  - `CVXPY <https://cvxpy.org/>`_
  - `Matplotlib <https://matplotlib.org/>`_
- - `Mayavi <https://docs.enthought.com/mayavi/mayavi/>`_
+ - `Pyvista <https://docs.pyvista.org/>`_
 
 Documentation
 ^^^^^^^^^^^^^
@@ -66,6 +65,8 @@ To install bfieldtools using pip, simply run:
     
     
 For advanced installation instructions, see the online `installation instructions`_.
+
+For development with uv, see `UV_USAGE.md <UV_USAGE.md>`_.
 
 .. _installation instructions: https://bfieldtools.github.io/installation.html
 
@@ -105,7 +106,24 @@ When using the software package in a publication, please cite the following arti
 		eprint = {https://doi.org/10.1063/5.0016087}
 	}    
     
-When using the thermal noise computations, please cite this `preprint <https://arxiv.org/abs/2007.08963>`__ in arXiv.
+When using the thermal noise computations, please cite this one:
+
+.. code-block:: BiBTeX
+
+	@article{10.1063/5.0050371,
+	    author = {Iivanainen, Joonas and Mäkinen, Antti J. and Zetter, Rasmus and Zevenhoven, Koos C. J. and Ilmoniemi, Risto J. and Parkkonen, Lauri},
+	    title = {A general method for computing thermal magnetic noise arising from thin conducting objects},
+	    journal = {Journal of Applied Physics},
+	    volume = {130},
+	    number = {4},
+	    pages = {043901},
+	    year = {2021},
+	    month = {07},
+	    issn = {0021-8979},
+	    doi = {10.1063/5.0050371},
+	    url = {https://doi.org/10.1063/5.0050371},
+	    eprint = {https://pubs.aip.org/aip/jap/article-pdf/doi/10.1063/5.0050371/19790942/043901_1_online.pdf},
+	}
 
 Contributing
 ^^^^^^^^^^^^

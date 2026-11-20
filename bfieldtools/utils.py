@@ -9,8 +9,6 @@ __all__ = [
     "dual_areas",
     "find_mesh_boundaries",
     "fix_normals",
-    "get_line_quad_points",
-    "get_quad_points",
     "inner2vert",
     "load_example_mesh",
     "tri_normals_and_areas",
@@ -20,15 +18,10 @@ __all__ = [
 
 import os
 import numpy as np
-import pkg_resources
+from bfieldtools import resources
 import trimesh
 
-try:
-    from quadpy import triangle
-    from quadpy import line_segment
-except ImportError:
-    from quadpy import t2 as triangle
-    from quadpy import c1 as line_segment
+from .quadratures import get_quad_points
 
 
 def combine_meshes(meshes):
@@ -71,118 +64,6 @@ def tri_normals_and_areas(r, tri):
     n = n / a[:, None]
     a /= 2
     return n, a
-
-
-def get_quad_points(
-    verts, tris, method="seven_point", index=None, return_ref_coords=False
-):
-    """Get quad points and weights from quadrature rules implemented in
-    quadpy
-
-    Parameters
-    ----------
-    verts: array-like [Nverts x 3]
-    tris: array-like [Ntris x 3]
-
-    Returns
-    -------
-    w: array-like  (Nquad, )
-        quadrature weights
-    qp: array-like (Ntris, Nquad)
-        quadrature points in each triangle
-
-    """
-    # methods = [k for k in quadpy.triangle.__dict__.keys()]# if k[0].isupper()]
-    methods = [k for k in triangle.__all__]
-    if method in methods:
-        try:
-            rule = triangle.__dict__[method]()
-        except (TypeError) as error:
-            if index is not None:
-                rule = triangle.__dict__[method](index)
-            else:
-                print("The method requires index (check quadpy documentation)")
-                raise error
-    else:
-        # raise ValueError('method: '+method+' not in the available list of methods: ' + methods)
-        raise ValueError(
-            "method: "
-            + method
-            + " not in the available list of quadrature methods (check triangle.__all__)"
-        )
-
-    x = rule.points[:, 0:2]
-    w = rule.weights
-
-    qp = np.zeros((tris.shape[0], len(w), 3))
-    for i, t in enumerate(tris):
-        p0 = verts[t[0]]
-        p1 = verts[t[1]]
-        p2 = verts[t[2]]
-        B = np.array([p1 - p0, p2 - p0])
-
-        qp[i] = x @ B + p0
-
-    if return_ref_coords:
-        return w, qp, x
-    else:
-        return w, qp
-
-
-def get_line_quad_points(line_vertices, method="midpoint", index=None):
-    """Get quad points and weights from quadrature rules implemented in
-    quadpy
-
-    Parameters
-    ----------
-    line_vertices: array-like [Nverts x 3]
-        Assumes vertices are connected according to index, last index connects to first
-
-    Returns
-    -------
-    w: array-like  (Nquad, )
-        quadrature weights
-    qp: array-like (Nverts, Nquad)
-        quadrature points for each edge connecting the vertices
-
-    """
-    methods = [k for k in line_segment.__all__]  # if k[0].isupper()]
-    if method in methods:
-        try:
-            rule = line_segment.__dict__[method]()
-        except (TypeError) as error:
-            if index is not None:
-                rule = line_segment.__dict__[method](index)
-            else:
-                print("The method requires index (check quadpy documentation)")
-                raise error
-    else:
-        raise ValueError(
-            "method: "
-            + method
-            + " not in the available list of methods (check quadpy.line_segment.__all__)"
-        )
-
-    x = rule.points
-    w = rule.weights
-
-    #    tris -> edges
-
-    qp = np.zeros((len(line_vertices), len(w), 3))
-
-    for i in range(len(line_vertices)):
-        p0 = line_vertices[i]
-
-        if i == len(line_vertices) - 1:
-            p1 = line_vertices[0]
-        else:
-            p1 = line_vertices[i + 1]
-
-        B = np.array([p1 - p0])
-
-        qp[i] = x[:, None] @ B / 2 + B / 2 + p0
-
-    return w, qp
 
 
 def dual_areas(tris, ta):
@@ -412,17 +293,15 @@ def load_example_mesh(mesh_name, process=True, **kwargs):
     -------
     Trimesh object
     """
-    existing_files = pkg_resources.resource_listdir("bfieldtools", "example_meshes")
-
     # Filter according to file extension
     existing_files = [
         file
-        for file in existing_files
-        if file.lower().endswith(tuple(trimesh.exchange.load.mesh_formats()))
+        for file in resources.files("bfieldtools", "example_meshes").iterdir()
+        if file.suffix[1:].lower() in trimesh.exchange.load.mesh_formats()
     ]
 
     # Remove file extension to get name
-    existing_names = [os.path.splitext(file)[0] for file in existing_files]
+    existing_names = [file.name.split(".")[0] for file in existing_files]
 
     # Check if name exists
     if mesh_name not in existing_names:
@@ -432,11 +311,7 @@ def load_example_mesh(mesh_name, process=True, **kwargs):
 
     filename = existing_files[existing_names.index(mesh_name)]
 
-    return trimesh.load(
-        pkg_resources.resource_filename("bfieldtools", "example_meshes/" + filename),
-        process=process,
-        **kwargs
-    )
+    return trimesh.load(filename, process=process, **kwargs)
 
 
 class MeshProjection:
@@ -455,7 +330,7 @@ class MeshProjection:
         self.mesh = mesh
 
         weights, self.quadpoints, ref_coords = get_quad_points(
-            mesh.vertices, mesh.faces, "dunavant_0" + str(quad_degree), None, True
+            mesh.vertices, mesh.faces, ("dunavant", quad_degree), return_ref_coords=True
         )
         # Mapping from coordinates of a reference triangle to barycentric coordinates
         self.M = np.array([[-1.0, -1.0, 1.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]])
