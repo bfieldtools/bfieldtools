@@ -43,7 +43,7 @@ def cross(r1, r2):
     return result
 
 
-def gamma0(R, reg=1e-13, symmetrize=True):
+def gamma0(R, reg=1e-13, symmetrize=True, edges=None):
     """1/r integrals over the edges of a triangle called gamma_0
     (line charge potentials).
 
@@ -61,6 +61,9 @@ def gamma0(R, reg=1e-13, symmetrize=True):
                 the evaluation points with respect the line segment
                 mid point to get rid off the badly behaving points on the
                 negative extension of the line segment
+    edges: ndarray, optional
+        Precomputed edge vectors with shape R.shape[1:]. Equal to
+        roll(R[0], 2, -2) - roll(R[0], 1, -2). Not modified.
 
 
     Returns
@@ -69,11 +72,17 @@ def gamma0(R, reg=1e-13, symmetrize=True):
         The analytic integrals for each vertex/edge
 
     """
-    edges = np.roll(R[0], 2, -2) - np.roll(R[0], 1, -2)
-    dotprods1 = np.einsum("...i,...i", np.roll(R, 1, -2), edges)
-    dotprods2 = np.einsum("...i,...i", np.roll(R, 2, -2), edges)
-    en = norm(edges)
-    del edges
+    if edges is None:
+        _edges = np.roll(R[0], 2, -2) - np.roll(R[0], 1, -2)
+    else:
+        _edges = edges
+    # Shift the small edge array before contraction, then shift scalar results.
+    # This avoids copying the full displacement array for each edge alignment.
+    dotprods1 = np.roll(np.einsum("...i,...i", R, np.roll(_edges, -1, -2)), 1, -1)
+    dotprods2 = np.roll(np.einsum("...i,...i", R, np.roll(_edges, -2, -2)), 2, -1)
+    en = norm(_edges)
+    if edges is None:
+        del _edges
     n = norm(R)
     # Regularize s.t. neither the denominator or the numerator can be zero
     # Avoid numerical issues directly at the edge
@@ -134,7 +143,7 @@ def omega(R):
     return sa
 
 
-def x_distance(R, tn, ta=None):
+def x_distance(R, tn, ta=None, edges=None):
     """Signed distances in the triangle planes from the opposite
     edge towards the node for all evaluation points in R
 
@@ -150,15 +159,21 @@ def x_distance(R, tn, ta=None):
         ta: ndarray (Ntri)
             triangle areas
             if None, normalizization with double area is not carried out
+        edges: ndarray, optional
+            Precomputed edge vectors with shape R.shape[1:]. Equal to
+            roll(R[0], 2, -2) - roll(R[0], 1, -2). Not modified.
 
     returns:
         ndaarray (..., Ntri, N_triverts (3)), distance in the triangle plane
     """
-    edges = np.roll(R[0], 2, -2) - np.roll(R[0], 1, -2)
+    if edges is None:
+        _edges = np.roll(R[0], 2, -2) - np.roll(R[0], 1, -2)
+    else:
+        _edges = edges
+    _edges = -cross(_edges, tn[:, None, :])
     if ta is not None:
-        edges /= 2 * ta[:, None, None]
-    edges = -cross(edges, tn[:, None, :])
-    return np.einsum("...k,...k->...", np.roll(R, 1, -2), edges)
+        _edges /= 2 * ta[:, None, None]
+    return np.roll(np.einsum("...k,...k->...", R, np.roll(_edges, -1, -2)), 1, -1)
 
 
 def x_distance2(mesh):
@@ -183,7 +198,7 @@ def d_distance(R, tn):
 
         ndarray (..., Ntri, N_triverts (3)) of signed distances
     """
-    return np.einsum("...ki,ki->...k", np.take(R, 0, -2), tn)
+    return np.einsum("...ki,ki->...k", R[..., 0, :], tn)
 
 
 def c_coeffs(R, ta):
@@ -205,7 +220,7 @@ def c_coeffs(R, ta):
     return np.einsum("...ik,...jk->...ij", edges, edges / (2 * ta[:, None, None]))
 
 
-def triangle_potential_uniform(R, tn, planar=False):
+def triangle_potential_uniform(R, tn, planar=False, *, edges=None):
     """1/r potential of a uniform triangle
 
     for original derivation see
@@ -228,6 +243,9 @@ def triangle_potential_uniform(R, tn, planar=False):
         If True, assume all the triangles and the evaluation points
                 are on the same plane (for speed), leaves out the
                 omega term
+    edges : (Ntri, 3, 3) array, optional
+        Precomputed edge vectors in the same triangle order as R. Equal to
+        roll(R[0], 2, -2) - roll(R[0], 1, -2). Not modified.
 
     Returns
     -------
@@ -236,8 +254,10 @@ def triangle_potential_uniform(R, tn, planar=False):
         at the field evaluation points (Neval)
 
     """
-    x = x_distance(R, tn, None)
-    result = np.einsum("...i,...i", gamma0(R), x)
+    if edges is None:
+        edges = np.roll(R[0], 2, -2) - np.roll(R[0], 1, -2)
+    x = x_distance(R, tn, ta=None, edges=edges)
+    result = np.einsum("...i,...i", gamma0(R, edges=edges), x)
     if not planar:
         result += d_distance(R, tn) * omega(R)
     return result

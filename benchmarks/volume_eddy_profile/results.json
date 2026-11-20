@@ -1,0 +1,1834 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.11.17",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "base_revision": "303f688eb3f9b65e5ef2c1a179568db094408844",
+  "worktree_diff": " benchmarks/benchmark_volume_integrals.py   |  52 +++++-\n bfieldtools/volume/INDUCTANCE_INTEGRALS.md |  46 ++++-\n bfieldtools/volume/impedance.py            |   8 +-\n bfieldtools/volume/integrals.py            | 281 +++++++++++++++++++++++------\n bfieldtools/volume/mesh.py                 |  53 +++++-\n tests/test_volume_inductance.py            |  63 ++++++-\n tests/test_volume_mesh.py                  |  18 ++\n tests/test_volume_topology.py              |   8 +-\n 8 files changed, 451 insertions(+), 78 deletions(-)\n",
+  "settings": {
+    "block_size": 16,
+    "quadrature_order": 2,
+    "rtol": 0.0001,
+    "max_order": 12,
+    "spatial_order": true
+  },
+  "ncells": 808,
+  "ndofs": 649,
+  "pair_classification": {
+    "order_0": 317373,
+    "order_2": 0,
+    "order_3": 0,
+    "order_4": 9463,
+    "near_with_disjoint_spheres": 285100,
+    "overlapping_spheres": 32273,
+    "ncells": 808,
+    "unique_pairs": 326836
+  },
+  "unprofiled": {
+    "wall_seconds": 37.35629579203669,
+    "cpu_seconds": 37.317429
+  },
+  "cprofile_wall_seconds": 42.110997332958505,
+  "cprofile_functions": [
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/impedance.py",
+      "line": 62,
+      "function": "inductance_matrix",
+      "primitive_calls": 1,
+      "calls": 1,
+      "self_seconds": 0.115538787,
+      "cumulative_seconds": 42.110952125000004
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/integrals.py",
+      "line": 413,
+      "function": "iter_tetrahedron_interactions",
+      "primitive_calls": 1327,
+      "calls": 1327,
+      "self_seconds": 0.002078562,
+      "cumulative_seconds": 41.239271302000006
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/integrals.py",
+      "line": 357,
+      "function": "tetrahedron_interaction_block",
+      "primitive_calls": 1326,
+      "calls": 1326,
+      "self_seconds": 0.047363272000000005,
+      "cumulative_seconds": 41.237051553
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/integrals.py",
+      "line": 346,
+      "function": "_near_interactions",
+      "primitive_calls": 11121,
+      "calls": 11121,
+      "self_seconds": 0.026175723,
+      "cumulative_seconds": 40.478252683
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/integrals.py",
+      "line": 240,
+      "function": "_directed_interactions",
+      "primitive_calls": 22193,
+      "calls": 22193,
+      "self_seconds": 0.14011286,
+      "cumulative_seconds": 40.44433488
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/integrals.py",
+      "line": 221,
+      "function": "_integrate_sources",
+      "primitive_calls": 59044,
+      "calls": 59044,
+      "self_seconds": 0.41772302,
+      "cumulative_seconds": 38.944861223000004
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/integrals.py",
+      "line": 151,
+      "function": "_evaluate_potential",
+      "primitive_calls": 59044,
+      "calls": 59044,
+      "self_seconds": 6.778300115,
+      "cumulative_seconds": 37.969809987000005
+    },
+    {
+      "file": "/Users/anttimc/.local/share/uv/python/cpython-3.11.17-macos-aarch64-none/lib/python3.11/functools.py",
+      "line": 981,
+      "function": "__get__",
+      "primitive_calls": 184442,
+      "calls": 1198873,
+      "self_seconds": 0.728799955,
+      "cumulative_seconds": 29.010634765000002
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 197,
+      "function": "triangle_potential_uniform",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.21541633300000002,
+      "cumulative_seconds": 28.150327099000002
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 135,
+      "function": "gamma0",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 3.396078214,
+      "cumulative_seconds": 15.571841305000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/einsumfunc.py",
+      "line": 1244,
+      "function": "einsum",
+      "primitive_calls": 1071158,
+      "calls": 1071158,
+      "self_seconds": 0.15575977100000002,
+      "cumulative_seconds": 11.641831355
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy._core._multiarray_umath.c_einsum>",
+      "primitive_calls": 1071158,
+      "calls": 1071158,
+      "self_seconds": 11.486071584000001,
+      "cumulative_seconds": 11.486071584000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 154,
+      "function": "omega",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 1.5160354520000001,
+      "cumulative_seconds": 7.0506544820000006
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 1230,
+      "function": "roll",
+      "primitive_calls": 737768,
+      "calls": 737768,
+      "self_seconds": 5.804934331,
+      "cumulative_seconds": 6.614667323000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 171,
+      "function": "x_distance",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.159523951,
+      "cumulative_seconds": 4.455067051
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 127,
+      "function": "scaled_distances1",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.338696584,
+      "cumulative_seconds": 3.8772259640000004
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 121,
+      "function": "edge_dotprods2",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.13780156100000002,
+      "cumulative_seconds": 3.3528801570000004
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 115,
+      "function": "edge_dotprods1",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.142119971,
+      "cumulative_seconds": 3.349690052
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 26,
+      "function": "norm",
+      "primitive_calls": 184442,
+      "calls": 184442,
+      "self_seconds": 0.341429179,
+      "cumulative_seconds": 2.30263775
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'reduce' of 'numpy.ufunc' objects>",
+      "primitive_calls": 686467,
+      "calls": 686467,
+      "self_seconds": 2.141422832,
+      "cumulative_seconds": 2.141422832
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 110,
+      "function": "vertex_distances",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.017522274,
+      "cumulative_seconds": 1.969061133
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 150,
+      "function": "determinant",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.019321291,
+      "cumulative_seconds": 1.8830193590000002
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 18,
+      "function": "determinant",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 1.8636980680000002,
+      "cumulative_seconds": 1.8636980680000002
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 66,
+      "function": "_wrapreduction",
+      "primitive_calls": 184442,
+      "calls": 184442,
+      "self_seconds": 0.089453164,
+      "cumulative_seconds": 1.3783027540000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 131,
+      "function": "scaled_distances2",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.30754178600000004,
+      "cumulative_seconds": 1.343453209
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/integrals.py",
+      "line": 87,
+      "function": "from_mesh",
+      "primitive_calls": 22193,
+      "calls": 22193,
+      "self_seconds": 0.28846388500000003,
+      "cumulative_seconds": 1.195709369
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/linalg/_linalg.py",
+      "line": 2599,
+      "function": "norm",
+      "primitive_calls": 129620,
+      "calls": 129620,
+      "self_seconds": 0.27415094,
+      "cumulative_seconds": 1.006311527
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 3287,
+      "function": "prod",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.032620933000000005,
+      "cumulative_seconds": 1.004107553
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 166,
+      "function": "edge_conormals",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.076095179,
+      "cumulative_seconds": 0.997373115
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 31,
+      "function": "cross",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.8756531580000001,
+      "cumulative_seconds": 0.9212779360000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 1431,
+      "function": "normalize_axis_tuple",
+      "primitive_calls": 870926,
+      "calls": 870926,
+      "self_seconds": 0.494238098,
+      "cumulative_seconds": 0.7878916640000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 184,
+      "function": "d_distance",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.069861198,
+      "cumulative_seconds": 0.720594876
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_index.py",
+      "line": 29,
+      "function": "__getitem__",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.028293495000000002,
+      "cumulative_seconds": 0.646813488
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/integrals.py",
+      "line": 308,
+      "function": "_regular_interactions",
+      "primitive_calls": 2889,
+      "calls": 2889,
+      "self_seconds": 0.257162707,
+      "cumulative_seconds": 0.5658651880000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 1567,
+      "function": "cross",
+      "primitive_calls": 22193,
+      "calls": 22193,
+      "self_seconds": 0.17565982300000002,
+      "cumulative_seconds": 0.47218263400000005
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2304,
+      "function": "sum",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.041070455000000006,
+      "cumulative_seconds": 0.45344319600000005
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 86,
+      "function": "_wrapreduction_any_all",
+      "primitive_calls": 334625,
+      "calls": 334625,
+      "self_seconds": 0.15201962600000002,
+      "cumulative_seconds": 0.39255603800000005
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 1993,
+      "function": "nonzero",
+      "primitive_calls": 215938,
+      "calls": 215938,
+      "self_seconds": 0.037703912,
+      "cumulative_seconds": 0.39155982300000003
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 48,
+      "function": "_wrapfunc",
+      "primitive_calls": 231850,
+      "calls": 231850,
+      "self_seconds": 0.05605289200000001,
+      "cumulative_seconds": 0.371017994
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 101,
+      "function": "edge_lengths",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.017527581,
+      "cumulative_seconds": 0.36862647200000004
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2436,
+      "function": "any",
+      "primitive_calls": 241050,
+      "calls": 241050,
+      "self_seconds": 0.05916107,
+      "cumulative_seconds": 0.333513161
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'nonzero' of 'numpy.ndarray' objects>",
+      "primitive_calls": 215938,
+      "calls": 215938,
+      "self_seconds": 0.289561933,
+      "cumulative_seconds": 0.289561933
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 1493,
+      "function": "moveaxis",
+      "primitive_calls": 66579,
+      "calls": 66579,
+      "self_seconds": 0.079512921,
+      "cumulative_seconds": 0.26694275300000003
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_csr.py",
+      "line": 283,
+      "function": "_get_arrayXslice",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.004357874,
+      "cumulative_seconds": 0.254608304
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 576,
+      "function": "_major_index_fancy",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.041432203,
+      "cumulative_seconds": 0.237083903
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/einsumfunc.py",
+      "line": 1236,
+      "function": "_einsum_dispatcher",
+      "primitive_calls": 5635342,
+      "calls": 5635342,
+      "self_seconds": 0.23586968100000003,
+      "cumulative_seconds": 0.23586968100000003
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 30,
+      "function": "__init__",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.031117095,
+      "cumulative_seconds": 0.230062386
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_csr.py",
+      "line": 274,
+      "function": "_get_sliceXarray",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.0037270330000000003,
+      "cumulative_seconds": 0.210732881
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 651,
+      "function": "_minor_index_fancy",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.028965082000000003,
+      "cumulative_seconds": 0.20566224300000002
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 1480,
+      "function": "<genexpr>",
+      "primitive_calls": 1741852,
+      "calls": 1741852,
+      "self_seconds": 0.14803602100000002,
+      "cumulative_seconds": 0.199735552
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2548,
+      "function": "all",
+      "primitive_calls": 93575,
+      "calls": 93575,
+      "self_seconds": 0.025900615000000002,
+      "cumulative_seconds": 0.14410456200000002
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_index.py",
+      "line": 298,
+      "function": "_validate_indices",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.06021359900000001,
+      "cumulative_seconds": 0.14377298900000002
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_base.py",
+      "line": 1525,
+      "function": "_get_index_dtype",
+      "primitive_calls": 31824,
+      "calls": 31824,
+      "self_seconds": 0.024963999,
+      "cumulative_seconds": 0.141121185
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_sputils.py",
+      "line": 264,
+      "function": "get_index_dtype",
+      "primitive_calls": 31824,
+      "calls": 31824,
+      "self_seconds": 0.068216155,
+      "cumulative_seconds": 0.10553514000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.isinstance>",
+      "primitive_calls": 1415625,
+      "calls": 1415625,
+      "self_seconds": 0.08003940500000001,
+      "cumulative_seconds": 0.087788501
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "line": 71,
+      "function": "__init__",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.071736965,
+      "cumulative_seconds": 0.0834675
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'reshape' of 'numpy.ndarray' objects>",
+      "primitive_calls": 594799,
+      "calls": 594799,
+      "self_seconds": 0.078250264,
+      "cumulative_seconds": 0.078250264
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/lib/_arraysetops_impl.py",
+      "line": 145,
+      "function": "unique",
+      "primitive_calls": 18404,
+      "calls": 18404,
+      "self_seconds": 0.012001639000000001,
+      "cumulative_seconds": 0.07783522000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'get' of 'dict' objects>",
+      "primitive_calls": 2397746,
+      "calls": 2397746,
+      "self_seconds": 0.07566811200000001,
+      "cumulative_seconds": 0.07566811200000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method fromkeys>",
+      "primitive_calls": 737768,
+      "calls": 737768,
+      "self_seconds": 0.07505025900000001,
+      "cumulative_seconds": 0.07505025900000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 166,
+      "function": "check_format",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.019658076,
+      "cumulative_seconds": 0.071634397
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.len>",
+      "primitive_calls": 1599118,
+      "calls": 1599118,
+      "self_seconds": 0.06443451900000001,
+      "cumulative_seconds": 0.06443451900000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 679,
+      "function": "flatnonzero",
+      "primitive_calls": 31440,
+      "calls": 31440,
+      "self_seconds": 0.020087624000000002,
+      "cumulative_seconds": 0.06304948
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method '__exit__' of '_thread.RLock' objects>",
+      "primitive_calls": 1198873,
+      "calls": 1198873,
+      "self_seconds": 0.06221646,
+      "cumulative_seconds": 0.06221646
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/lib/_arraysetops_impl.py",
+      "line": 350,
+      "function": "_unique1d",
+      "primitive_calls": 18404,
+      "calls": 18404,
+      "self_seconds": 0.024364998000000002,
+      "cumulative_seconds": 0.060617359
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.lib.array_utils.normalize_axis_index>",
+      "primitive_calls": 937505,
+      "calls": 937505,
+      "self_seconds": 0.056295391,
+      "cumulative_seconds": 0.056295391
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/integrals.py",
+      "line": 109,
+      "function": "take",
+      "primitive_calls": 14658,
+      "calls": 14658,
+      "self_seconds": 0.049148759,
+      "cumulative_seconds": 0.05501704
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.zeros>",
+      "primitive_calls": 121394,
+      "calls": 121394,
+      "self_seconds": 0.05242079,
+      "cumulative_seconds": 0.05242079
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/integrals.py",
+      "line": 280,
+      "function": "_far_orders",
+      "primitive_calls": 1326,
+      "calls": 1326,
+      "self_seconds": 0.037822342,
+      "cumulative_seconds": 0.051102853000000004
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 88,
+      "function": "<dictcomp>",
+      "primitive_calls": 334625,
+      "calls": 334625,
+      "self_seconds": 0.049541749,
+      "cumulative_seconds": 0.049541749
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'items' of 'dict' objects>",
+      "primitive_calls": 1256835,
+      "calls": 1256835,
+      "self_seconds": 0.047305894,
+      "cumulative_seconds": 0.047305894
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.asarray>",
+      "primitive_calls": 625506,
+      "calls": 625506,
+      "self_seconds": 0.046949318000000004,
+      "cumulative_seconds": 0.046949318000000004
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 1118,
+      "function": "prune",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.021919934000000002,
+      "cumulative_seconds": 0.046383944
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/integrals.py",
+      "line": 319,
+      "function": "offsets",
+      "primitive_calls": 5778,
+      "calls": 5778,
+      "self_seconds": 0.019159911,
+      "cumulative_seconds": 0.043045453000000004
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_index.py",
+      "line": 435,
+      "function": "_asindices",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.010203252000000001,
+      "cumulative_seconds": 0.042666401
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 67,
+      "function": "<dictcomp>",
+      "primitive_calls": 184442,
+      "calls": 184442,
+      "self_seconds": 0.040534924,
+      "cumulative_seconds": 0.040534924
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/lib/_index_tricks_impl.py",
+      "line": 31,
+      "function": "ix_",
+      "primitive_calls": 7803,
+      "calls": 7803,
+      "self_seconds": 0.015461063,
+      "cumulative_seconds": 0.038520042000000004
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.asanyarray>",
+      "primitive_calls": 811972,
+      "calls": 811972,
+      "self_seconds": 0.038415607000000004,
+      "cumulative_seconds": 0.038415607000000004
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/multiarray.py",
+      "line": 115,
+      "function": "empty_like",
+      "primitive_calls": 771895,
+      "calls": 771895,
+      "self_seconds": 0.036910993,
+      "cumulative_seconds": 0.036910993
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method _operator.index>",
+      "primitive_calls": 902750,
+      "calls": 902750,
+      "self_seconds": 0.036046142,
+      "cumulative_seconds": 0.036046142
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 1226,
+      "function": "_roll_dispatcher",
+      "primitive_calls": 737768,
+      "calls": 737768,
+      "self_seconds": 0.035655665,
+      "cumulative_seconds": 0.035655665
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_sputils.py",
+      "line": 444,
+      "function": "check_shape",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.014634579000000002,
+      "cumulative_seconds": 0.031467985000000004
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.empty>",
+      "primitive_calls": 210178,
+      "calls": 210178,
+      "self_seconds": 0.030569318,
+      "cumulative_seconds": 0.030569318
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 2535,
+      "function": "array_equal",
+      "primitive_calls": 18641,
+      "calls": 18641,
+      "self_seconds": 0.011970619,
+      "cumulative_seconds": 0.022484826000000003
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 1002,
+      "function": "toarray",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.008738783,
+      "cumulative_seconds": 0.021725417
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/getlimits.py",
+      "line": 412,
+      "function": "__init__",
+      "primitive_calls": 63648,
+      "calls": 63648,
+      "self_seconds": 0.021363544,
+      "cumulative_seconds": 0.021363544
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numerictypes.py",
+      "line": 475,
+      "function": "issubdtype",
+      "primitive_calls": 18258,
+      "calls": 18258,
+      "self_seconds": 0.009261839000000001,
+      "cumulative_seconds": 0.020763634
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 1879,
+      "function": "ravel",
+      "primitive_calls": 31440,
+      "calls": 31440,
+      "self_seconds": 0.011837564,
+      "cumulative_seconds": 0.019474927
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/integrals.py",
+      "line": 60,
+      "function": "_cell_indices",
+      "primitive_calls": 2652,
+      "calls": 2652,
+      "self_seconds": 0.007303538,
+      "cumulative_seconds": 0.019112802
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'max' of 'numpy.ndarray' objects>",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.0030587210000000004,
+      "cumulative_seconds": 0.018084656
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'astype' of 'numpy.ndarray' objects>",
+      "primitive_calls": 86818,
+      "calls": 86818,
+      "self_seconds": 0.017728465000000002,
+      "cumulative_seconds": 0.017728465000000002
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/_lib/_sparse.py",
+      "line": 10,
+      "function": "issparse",
+      "primitive_calls": 31824,
+      "calls": 31824,
+      "self_seconds": 0.004186823,
+      "cumulative_seconds": 0.017580238
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy._core._multiarray_umath._unique_hash>",
+      "primitive_calls": 18404,
+      "calls": 18404,
+      "self_seconds": 0.016425578,
+      "cumulative_seconds": 0.016425578
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.getattr>",
+      "primitive_calls": 250254,
+      "calls": 250254,
+      "self_seconds": 0.015926102,
+      "cumulative_seconds": 0.015926102
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_base.py",
+      "line": 365,
+      "function": "nnz",
+      "primitive_calls": 63648,
+      "calls": 63648,
+      "self_seconds": 0.008849876000000001,
+      "cumulative_seconds": 0.01578513
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2431,
+      "function": "_any_dispatcher",
+      "primitive_calls": 241050,
+      "calls": 241050,
+      "self_seconds": 0.015672238,
+      "cumulative_seconds": 0.015672238
+    },
+    {
+      "file": "<string>",
+      "line": 2,
+      "function": "__init__",
+      "primitive_calls": 36851,
+      "calls": 36851,
+      "self_seconds": 0.01549988,
+      "cumulative_seconds": 0.01549988
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/_methods.py",
+      "line": 39,
+      "function": "_amax",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.0025880950000000003,
+      "cumulative_seconds": 0.015025935
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.min>",
+      "primitive_calls": 161952,
+      "calls": 161952,
+      "self_seconds": 0.014763239000000001,
+      "cumulative_seconds": 0.014763239000000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_sputils.py",
+      "line": 350,
+      "function": "isintlike",
+      "primitive_calls": 31824,
+      "calls": 31824,
+      "self_seconds": 0.010228605,
+      "cumulative_seconds": 0.014742523
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'min' of 'numpy.ndarray' objects>",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.002739193,
+      "cumulative_seconds": 0.013559442000000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 706,
+      "function": "_get_submatrix",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.005315767000000001,
+      "cumulative_seconds": 0.013166527
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2838,
+      "function": "cumsum",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.0025767200000000002,
+      "cumulative_seconds": 0.013051178
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 1989,
+      "function": "_nonzero_dispatcher",
+      "primitive_calls": 215938,
+      "calls": 215938,
+      "self_seconds": 0.012621413000000001,
+      "cumulative_seconds": 0.012621413000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.issubclass>",
+      "primitive_calls": 184394,
+      "calls": 184394,
+      "self_seconds": 0.011487336,
+      "cumulative_seconds": 0.011487336
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.ascontiguousarray>",
+      "primitive_calls": 22193,
+      "calls": 22193,
+      "self_seconds": 0.011356938,
+      "cumulative_seconds": 0.011356938
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/_methods.py",
+      "line": 43,
+      "function": "_amin",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.002226931,
+      "cumulative_seconds": 0.010820249
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numerictypes.py",
+      "line": 293,
+      "function": "issubclass_",
+      "primitive_calls": 36516,
+      "calls": 36516,
+      "self_seconds": 0.007181014,
+      "cumulative_seconds": 0.010561036000000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 1554,
+      "function": "<listcomp>",
+      "primitive_calls": 66579,
+      "calls": 66579,
+      "self_seconds": 0.010444738,
+      "cumulative_seconds": 0.010444738
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_base.py",
+      "line": 98,
+      "function": "_shape_as_2d",
+      "primitive_calls": 63648,
+      "calls": 63648,
+      "self_seconds": 0.008304108000000001,
+      "cumulative_seconds": 0.010437695
+    },
+    {
+      "file": "<frozen importlib._bootstrap>",
+      "line": 405,
+      "function": "parent",
+      "primitive_calls": 31824,
+      "calls": 31824,
+      "self_seconds": 0.007204247,
+      "cumulative_seconds": 0.009774087
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'transpose' of 'numpy.ndarray' objects>",
+      "primitive_calls": 66579,
+      "calls": 66579,
+      "self_seconds": 0.009584237,
+      "cumulative_seconds": 0.009584237
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'conj' of 'numpy.ndarray' objects>",
+      "primitive_calls": 129620,
+      "calls": 129620,
+      "self_seconds": 0.009336541,
+      "cumulative_seconds": 0.009336541
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 1100,
+      "function": "argsort",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.0025495160000000004,
+      "cumulative_seconds": 0.009237141
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/ma/core.py",
+      "line": 6862,
+      "function": "is_masked",
+      "primitive_calls": 18404,
+      "calls": 18404,
+      "self_seconds": 0.004311412000000001,
+      "cumulative_seconds": 0.009217717
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.sorted>",
+      "primitive_calls": 66579,
+      "calls": 66579,
+      "self_seconds": 0.008644191,
+      "cumulative_seconds": 0.008644191
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_data.py",
+      "line": 21,
+      "function": "__init__",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.0033625260000000002,
+      "cumulative_seconds": 0.00841734
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/linalg/_linalg.py",
+      "line": 2595,
+      "function": "_norm_dispatcher",
+      "primitive_calls": 129620,
+      "calls": 129620,
+      "self_seconds": 0.008015514000000001,
+      "cumulative_seconds": 0.008015514000000001
+    },
+    {
+      "file": "<frozen abc>",
+      "line": 117,
+      "function": "__instancecheck__",
+      "primitive_calls": 31824,
+      "calls": 31824,
+      "self_seconds": 0.004397388,
+      "cumulative_seconds": 0.0077490960000000005
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'all' of 'numpy.ndarray' objects>",
+      "primitive_calls": 5956,
+      "calls": 5956,
+      "self_seconds": 0.00165204,
+      "cumulative_seconds": 0.007576983000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.any>",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.004181683,
+      "cumulative_seconds": 0.007493849
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'cumsum' of 'numpy.ndarray' objects>",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.0072863350000000006,
+      "cumulative_seconds": 0.0072863350000000006
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method scipy.sparse._sparsetools.csr_row_index>",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.007177552,
+      "cumulative_seconds": 0.007177552
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_sputils.py",
+      "line": 472,
+      "function": "<genexpr>",
+      "primitive_calls": 47736,
+      "calls": 47736,
+      "self_seconds": 0.005732996000000001,
+      "cumulative_seconds": 0.007140437
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 118,
+      "function": "_getnnz",
+      "primitive_calls": 63648,
+      "calls": 63648,
+      "self_seconds": 0.006935254,
+      "cumulative_seconds": 0.006935254
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2543,
+      "function": "_all_dispatcher",
+      "primitive_calls": 93575,
+      "calls": 93575,
+      "self_seconds": 0.006758895,
+      "cumulative_seconds": 0.006758895
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_base.py",
+      "line": 1512,
+      "function": "_process_toarray_args",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.002979517,
+      "cumulative_seconds": 0.006538197000000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 3282,
+      "function": "_prod_dispatcher",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.0065173340000000005,
+      "cumulative_seconds": 0.0065173340000000005
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2299,
+      "function": "_sum_dispatcher",
+      "primitive_calls": 92221,
+      "calls": 92221,
+      "self_seconds": 0.006314201,
+      "cumulative_seconds": 0.006314201
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method scipy.sparse._sparsetools.csr_column_index1>",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.006293732000000001,
+      "cumulative_seconds": 0.006293732000000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 1320,
+      "function": "_process_slice",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.004312862000000001,
+      "cumulative_seconds": 0.006222330000000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/_methods.py",
+      "line": 64,
+      "function": "_all",
+      "primitive_calls": 5956,
+      "calls": 5956,
+      "self_seconds": 0.001783473,
+      "cumulative_seconds": 0.005924943
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'ravel' of 'numpy.ndarray' objects>",
+      "primitive_calls": 47352,
+      "calls": 47352,
+      "self_seconds": 0.005900973,
+      "cumulative_seconds": 0.005900973
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_base.py",
+      "line": 138,
+      "function": "__init__",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.00411021,
+      "cumulative_seconds": 0.005054814
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/ma/core.py",
+      "line": 1400,
+      "function": "getmask",
+      "primitive_calls": 18404,
+      "calls": 18404,
+      "self_seconds": 0.0035078460000000002,
+      "cumulative_seconds": 0.0049063050000000006
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'append' of 'list' objects>",
+      "primitive_calls": 119034,
+      "calls": 119034,
+      "self_seconds": 0.004741286,
+      "cumulative_seconds": 0.004741286
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/getlimits.py",
+      "line": 423,
+      "function": "min",
+      "primitive_calls": 31824,
+      "calls": 31824,
+      "self_seconds": 0.004587854000000001,
+      "cumulative_seconds": 0.004587854000000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_index.py",
+      "line": 470,
+      "function": "_compatible_boolean_index",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.0036274600000000003,
+      "cumulative_seconds": 0.004584404
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 97,
+      "function": "zeros_like",
+      "primitive_calls": 3978,
+      "calls": 3978,
+      "self_seconds": 0.0034986270000000002,
+      "cumulative_seconds": 0.004491844
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.array>",
+      "primitive_calls": 47736,
+      "calls": 47736,
+      "self_seconds": 0.004303408,
+      "cumulative_seconds": 0.004303408
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/lib/_arraysetops_impl.py",
+      "line": 131,
+      "function": "_unpack_tuple",
+      "primitive_calls": 18404,
+      "calls": 18404,
+      "self_seconds": 0.0034527470000000004,
+      "cumulative_seconds": 0.004236767000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method scipy.sparse._sparsetools.csr_column_index2>",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.004100245000000001,
+      "cumulative_seconds": 0.004100245000000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_csr.py",
+      "line": 137,
+      "function": "_swap",
+      "primitive_calls": 87516,
+      "calls": 87516,
+      "self_seconds": 0.0040876870000000004,
+      "cumulative_seconds": 0.0040876870000000004
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method scipy.sparse._sparsetools.csr_todense>",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.004036355,
+      "cumulative_seconds": 0.004036355
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 1489,
+      "function": "_moveaxis_dispatcher",
+      "primitive_calls": 66579,
+      "calls": 66579,
+      "self_seconds": 0.003951668,
+      "cumulative_seconds": 0.003951668
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/_lib/_util.py",
+      "line": 154,
+      "function": "_prune_array",
+      "primitive_calls": 31824,
+      "calls": 31824,
+      "self_seconds": 0.003928508,
+      "cumulative_seconds": 0.003928508
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'sort' of 'numpy.ndarray' objects>",
+      "primitive_calls": 18404,
+      "calls": 18404,
+      "self_seconds": 0.003767213,
+      "cumulative_seconds": 0.003767213
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'argsort' of 'numpy.ndarray' objects>",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.0035891910000000003,
+      "cumulative_seconds": 0.0035891910000000003
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/multiarray.py",
+      "line": 600,
+      "function": "can_cast",
+      "primitive_calls": 63648,
+      "calls": 63648,
+      "self_seconds": 0.003549726,
+      "cumulative_seconds": 0.003549726
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'flatten' of 'numpy.ndarray' objects>",
+      "primitive_calls": 18404,
+      "calls": 18404,
+      "self_seconds": 0.003470181,
+      "cumulative_seconds": 0.003470181
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/getlimits.py",
+      "line": 436,
+      "function": "max",
+      "primitive_calls": 31824,
+      "calls": 31824,
+      "self_seconds": 0.003461379,
+      "cumulative_seconds": 0.003461379
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method _abc._abc_instancecheck>",
+      "primitive_calls": 31824,
+      "calls": 31824,
+      "self_seconds": 0.003351708,
+      "cumulative_seconds": 0.003351708
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'insert' of 'list' objects>",
+      "primitive_calls": 66579,
+      "calls": 66579,
+      "self_seconds": 0.0033210130000000003,
+      "cumulative_seconds": 0.0033210130000000003
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_sputils.py",
+      "line": 477,
+      "function": "<genexpr>",
+      "primitive_calls": 47736,
+      "calls": 47736,
+      "self_seconds": 0.003312166,
+      "cumulative_seconds": 0.003312166
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_sputils.py",
+      "line": 372,
+      "function": "isshape",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.002518083,
+      "cumulative_seconds": 0.003112665
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_base.py",
+      "line": 94,
+      "function": "ndim",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.0020759700000000003,
+      "cumulative_seconds": 0.002633016
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'rpartition' of 'str' objects>",
+      "primitive_calls": 31824,
+      "calls": 31824,
+      "self_seconds": 0.0025698400000000003,
+      "cumulative_seconds": 0.0025698400000000003
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_matrix.py",
+      "line": 65,
+      "function": "get_shape",
+      "primitive_calls": 39783,
+      "calls": 39783,
+      "self_seconds": 0.002477416,
+      "cumulative_seconds": 0.002477416
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 3482,
+      "function": "ndim",
+      "primitive_calls": 31824,
+      "calls": 31824,
+      "self_seconds": 0.002459114,
+      "cumulative_seconds": 0.002459114
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'indices' of 'slice' objects>",
+      "primitive_calls": 23868,
+      "calls": 23868,
+      "self_seconds": 0.002271716,
+      "cumulative_seconds": 0.002271716
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 323,
+      "function": "full",
+      "primitive_calls": 1326,
+      "calls": 1326,
+      "self_seconds": 0.0015537180000000002,
+      "cumulative_seconds": 0.0022118840000000003
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method numpy.promote_types>",
+      "primitive_calls": 22193,
+      "calls": 22193,
+      "self_seconds": 0.0021777520000000002,
+      "cumulative_seconds": 0.0021777520000000002
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 3478,
+      "function": "_ndim_dispatcher",
+      "primitive_calls": 31824,
+      "calls": 31824,
+      "self_seconds": 0.002054804,
+      "cumulative_seconds": 0.002054804
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_data.py",
+      "line": 24,
+      "function": "dtype",
+      "primitive_calls": 23868,
+      "calls": 23868,
+      "self_seconds": 0.001993351,
+      "cumulative_seconds": 0.001993351
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 1875,
+      "function": "_ravel_dispatcher",
+      "primitive_calls": 31440,
+      "calls": 31440,
+      "self_seconds": 0.001856956,
+      "cumulative_seconds": 0.001856956
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 675,
+      "function": "_flatnonzero_dispatcher",
+      "primitive_calls": 31440,
+      "calls": 31440,
+      "self_seconds": 0.0018058260000000002,
+      "cumulative_seconds": 0.0018058260000000002
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'wrap' of 'numpy._core._multiarray_umath._array_converter' objects>",
+      "primitive_calls": 18404,
+      "calls": 18404,
+      "self_seconds": 0.001668996,
+      "cumulative_seconds": 0.001668996
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 1563,
+      "function": "_cross_dispatcher",
+      "primitive_calls": 22193,
+      "calls": 22193,
+      "self_seconds": 0.0015679230000000001,
+      "cumulative_seconds": 0.0015679230000000001
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.max>",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.001548055,
+      "cumulative_seconds": 0.001548055
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_base.py",
+      "line": 385,
+      "function": "format",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.001421959,
+      "cumulative_seconds": 0.001421959
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 2516,
+      "function": "_array_equal_dispatcher",
+      "primitive_calls": 18641,
+      "calls": 18641,
+      "self_seconds": 0.001381566,
+      "cumulative_seconds": 0.001381566
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_compressed.py",
+      "line": 611,
+      "function": "_major_slice",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.001343605,
+      "cumulative_seconds": 0.001343605
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/integrals.py",
+      "line": 23,
+      "function": "_positive_integer",
+      "primitive_calls": 2653,
+      "calls": 2653,
+      "self_seconds": 0.001079553,
+      "cumulative_seconds": 0.001324819
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/lib/_arraysetops_impl.py",
+      "line": 139,
+      "function": "_unique_dispatcher",
+      "primitive_calls": 18404,
+      "calls": 18404,
+      "self_seconds": 0.001217116,
+      "cumulative_seconds": 0.001217116
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<built-in method builtins.hasattr>",
+      "primitive_calls": 15912,
+      "calls": 15912,
+      "self_seconds": 0.000956944,
+      "cumulative_seconds": 0.000956944
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 2834,
+      "function": "_cumsum_dispatcher",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.000601161,
+      "cumulative_seconds": 0.000601161
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/lib/_index_tricks_impl.py",
+      "line": 27,
+      "function": "_ix__dispatcher",
+      "primitive_calls": 7803,
+      "calls": 7803,
+      "self_seconds": 0.00057302,
+      "cumulative_seconds": 0.00057302
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/fromnumeric.py",
+      "line": 1096,
+      "function": "_argsort_dispatcher",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.0005255370000000001,
+      "cumulative_seconds": 0.0005255370000000001
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/scipy/sparse/_csr.py",
+      "line": 55,
+      "function": "tocsr",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.000500407,
+      "cumulative_seconds": 0.000500407
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'extend' of 'list' objects>",
+      "primitive_calls": 7956,
+      "calls": 7956,
+      "self_seconds": 0.00048553,
+      "cumulative_seconds": 0.00048553
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/multiarray.py",
+      "line": 1085,
+      "function": "copyto",
+      "primitive_calls": 5304,
+      "calls": 5304,
+      "self_seconds": 0.000341021,
+      "cumulative_seconds": 0.000341021
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/.venv/lib/python3.11/site-packages/numpy/_core/numeric.py",
+      "line": 91,
+      "function": "_zeros_like_dispatcher",
+      "primitive_calls": 3978,
+      "calls": 3978,
+      "self_seconds": 0.000245157,
+      "cumulative_seconds": 0.000245157
+    },
+    {
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/basis.py",
+      "line": 53,
+      "function": "n_dofs",
+      "primitive_calls": 3,
+      "calls": 3,
+      "self_seconds": 1.7100000000000001e-06,
+      "cumulative_seconds": 3.001e-06
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "function": "<method 'disable' of '_lsprof.Profiler' objects>",
+      "primitive_calls": 1,
+      "calls": 1,
+      "self_seconds": 2.92e-07,
+      "cumulative_seconds": 2.92e-07
+    }
+  ],
+  "instrumentation": {
+    "wall_seconds": 38.81543449999299,
+    "quadrature_orders": {
+      "2": {
+        "calls": 22193,
+        "directed_cell_pairs": 634400,
+        "outer_point_source_pairs": 5075200,
+        "still_active": 0,
+        "max_relative_change": 0.0,
+        "cpu_seconds": 4.336669999999756
+      },
+      "4": {
+        "calls": 22193,
+        "directed_cell_pairs": 634400,
+        "outer_point_source_pairs": 40601600,
+        "still_active": 64834,
+        "max_relative_change": 0.019191419728073138,
+        "cpu_seconds": 24.00213300000013
+      },
+      "6": {
+        "calls": 14593,
+        "directed_cell_pairs": 64834,
+        "outer_point_source_pairs": 14004144,
+        "still_active": 101,
+        "max_relative_change": 0.00156804848982976,
+        "cpu_seconds": 7.7650809999992845
+      },
+      "8": {
+        "calls": 64,
+        "directed_cell_pairs": 101,
+        "outer_point_source_pairs": 51712,
+        "still_active": 2,
+        "max_relative_change": 0.00028438366351427567,
+        "cpu_seconds": 0.03651399999999683
+      },
+      "10": {
+        "calls": 1,
+        "directed_cell_pairs": 2,
+        "outer_point_source_pairs": 2000,
+        "still_active": 0,
+        "max_relative_change": 4.482685217004625e-05,
+        "cpu_seconds": 0.0029239999999930433
+      }
+    },
+    "functions": {
+      "_directed_interactions": {
+        "calls": 22193,
+        "cell_pairs": 634400,
+        "cpu_seconds": 37.64898000000046
+      },
+      "_near_interactions": {
+        "calls": 11121,
+        "cell_pairs": 323376,
+        "cpu_seconds": 37.68197599999962
+      },
+      "tetrahedron_interaction_block": {
+        "calls": 1326,
+        "cell_pairs": 332864,
+        "cpu_seconds": 38.36174099999998
+      },
+      "_regular_interactions": {
+        "calls": 2889,
+        "cell_pairs": 9488,
+        "cpu_seconds": 0.5499800000002466
+      }
+    },
+    "point_source_pairs": {
+      "analytic": 59293057,
+      "source_order_4": 441599
+    },
+    "block_types": {
+      "uniform_order_0": 673,
+      "mixed": 653
+    },
+    "unique_directed_terminal_orders": {
+      "4": 569376,
+      "6": 64463,
+      "8": 97,
+      "10": 2
+    },
+    "note": "Function CPU counters are inclusive and include nested instrumentation overhead; do not sum them."
+  },
+  "uniform_cube_pair_counts": [
+    {
+      "order_0": 1176,
+      "order_2": 0,
+      "order_3": 0,
+      "order_4": 0,
+      "near_with_disjoint_spheres": 66,
+      "overlapping_spheres": 1110,
+      "ncells": 48,
+      "unique_pairs": 1176
+    },
+    {
+      "order_0": 13203,
+      "order_2": 0,
+      "order_3": 0,
+      "order_4": 0,
+      "near_with_disjoint_spheres": 6798,
+      "overlapping_spheres": 6405,
+      "ncells": 162,
+      "unique_pairs": 13203
+    },
+    {
+      "order_0": 73920,
+      "order_2": 0,
+      "order_3": 0,
+      "order_4": 0,
+      "near_with_disjoint_spheres": 54756,
+      "overlapping_spheres": 19164,
+      "ncells": 384,
+      "unique_pairs": 73920
+    },
+    {
+      "order_0": 281445,
+      "order_2": 0,
+      "order_3": 0,
+      "order_4": 180,
+      "near_with_disjoint_spheres": 239062,
+      "overlapping_spheres": 42383,
+      "ncells": 750,
+      "unique_pairs": 281625
+    },
+    {
+      "order_0": 823440,
+      "order_2": 0,
+      "order_3": 0,
+      "order_4": 17016,
+      "near_with_disjoint_spheres": 744352,
+      "overlapping_spheres": 79088,
+      "ncells": 1296,
+      "unique_pairs": 840456
+    },
+    {
+      "order_0": 3671046,
+      "order_2": 0,
+      "order_3": 13998,
+      "order_4": 1035084,
+      "near_with_disjoint_spheres": 3462846,
+      "overlapping_spheres": 208200,
+      "ncells": 3072,
+      "unique_pairs": 4720128
+    }
+  ]
+}

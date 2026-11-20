@@ -18,6 +18,27 @@ date. No manual environment creation or activation is needed.
 
 For the package without development tools, use `uv sync --locked`.
 
+For optional tetrahedral meshing with TetGen:
+
+```bash
+uv run --locked --extra meshing python examples/volume/sphere_meshing.py
+```
+
+The script displays a tetrahedral cutaway and a central slice of the bundled
+sphere. `pip install 'bfieldtools[meshing]'` installs the same optional backend.
+
+For a complete torus meshing and eddy-current example:
+
+```bash
+uv run --locked --extra meshing python examples/volume/torus_eddy_currents.py
+```
+
+Use `--no-show` for numerical checks without a window or `--screenshot torus.png`
+to export the PyVista window. Its linked cutaway views use cell colors for
+current magnitude and regularly sampled arrows for direction; `--show-mesh`
+reveals the tetrahedral edges. `--check-convergence` reports integration sensitivity on the
+same mesh.
+
 ## Documentation
 
 ```bash

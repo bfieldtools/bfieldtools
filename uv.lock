@@ -416,6 +416,10 @@ docs = [
     { name = "sphinx-fontawesome" },
     { name = "sphinx-gallery" },
     { name = "sphinxcontrib-bibtex" },
+    { name = "tetgen" },
+]
+meshing = [
+    { name = "tetgen" },
 ]
 
 [package.metadata]
@@ -448,9 +452,11 @@ requires-dist = [
     { name = "sphinx-fontawesome", marker = "extra == 'docs'" },
     { name = "sphinx-gallery", marker = "extra == 'docs'" },
     { name = "sphinxcontrib-bibtex", marker = "extra == 'docs'" },
+    { name = "tetgen", marker = "extra == 'docs'", specifier = ">=0.8,<0.9" },
+    { name = "tetgen", marker = "extra == 'meshing'", specifier = ">=0.8,<0.9" },
     { name = "trimesh" },
 ]
-provides-extras = ["dev", "docs"]
+provides-extras = ["dev", "docs", "meshing"]
 
 [[package]]
 name = "black"
@@ -5308,6 +5314,34 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/8a/11/965c6fd8e5cc254f1fe142d547387da17a8ebfd75a3455f637c663fb38a0/terminado-0.18.1.tar.gz", hash = "sha256:de09f2c4b85de4765f7714688fff57d3e75bad1f909b589fde880460c753fd2e", size = 32701, upload-time = "2024-03-12T14:34:39.026Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/6a/9e/2064975477fdc887e47ad42157e214526dcad8f317a948dee17e1659a62f/terminado-0.18.1-py3-none-any.whl", hash = "sha256:a4468e1b37bb318f8a86514f65814e1afc977cf29b3992a4500d9dd305dcceb0", size = 14154, upload-time = "2024-03-12T14:34:36.569Z" },
+]
+
+[[package]]
+name = "tetgen"
+version = "0.8.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
+    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/af/b6/bd320925cc4127c6f838c9127fdb0b2292147286500489d5ba6aac5d34e1/tetgen-0.8.4.tar.gz", hash = "sha256:b6ca979ccecf43ddc0d31fa4f5a05da3cfeb4ab0705b8128530745bbab38bb86", size = 827105, upload-time = "2026-05-04T17:34:07.274Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/55/53/ac9a72f257926362e1005d81ba158ae5c2c893639db765d85d0719fd7801/tetgen-0.8.4-cp310-cp310-macosx_10_14_x86_64.whl", hash = "sha256:19d17b859cebfae974d613fd7a3afbf6817538047b5a9541349fc2c0bf245d66", size = 401048, upload-time = "2026-05-04T17:33:43.029Z" },
+    { url = "https://files.pythonhosted.org/packages/d3/2c/62ebb483fda3c6db1af385fec0e4fcb3e318d64b847a9142832ba767dc84/tetgen-0.8.4-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:e0d98fb56a6e782e9490dfda3f99f2902d4f3733c1eb4bdd9876d13bf22574f1", size = 364905, upload-time = "2026-05-04T17:33:44.674Z" },
+    { url = "https://files.pythonhosted.org/packages/de/73/49a100715f96a7536c6f00fd22454e36ac6f43aaf2680b55c3dd0cc275cf/tetgen-0.8.4-cp310-cp310-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:95b2df04a868ce9ac800b051f4641471af576997ee8519614f0b55eb134eae9a", size = 411333, upload-time = "2026-05-04T17:33:46.162Z" },
+    { url = "https://files.pythonhosted.org/packages/8f/4a/69c4bbc79f499fa12585ccd8e2f35cff428e3a58423e5d04a5c47ca2ea56/tetgen-0.8.4-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:bc605762e5d3b8dea44c81de508118a5c4420fb911c5aebe69000c1e9deb738f", size = 416146, upload-time = "2026-05-04T17:33:47.966Z" },
+    { url = "https://files.pythonhosted.org/packages/b9/2f/bd90b674c2bd40020dcd595927edd14d66587370eea551c5557d4bcbcf23/tetgen-0.8.4-cp310-cp310-win_amd64.whl", hash = "sha256:ef9a8a950baa9caddb6a4de34ff402426f652e43fead71dfa5b4fdee862bbef4", size = 309229, upload-time = "2026-05-04T17:33:49.493Z" },
+    { url = "https://files.pythonhosted.org/packages/47/e9/1c47a16684133ab5597c9e62b5987031972fec03834d05bd95b33fc2135d/tetgen-0.8.4-cp311-cp311-macosx_10_14_x86_64.whl", hash = "sha256:2d20488f92709cb4db4e5e83bb2440067c762b14419727a15fb91ec1d8870084", size = 400844, upload-time = "2026-05-04T17:33:51.082Z" },
+    { url = "https://files.pythonhosted.org/packages/79/ed/da003fedf6161ed3a20be0514c27d5e8e91311a7121d2c43e017ff565c4b/tetgen-0.8.4-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:1bc405ee5dbfd944a9cee3e62da072e724851562fa0d279933caa91afae0eb8c", size = 364777, upload-time = "2026-05-04T17:33:52.668Z" },
+    { url = "https://files.pythonhosted.org/packages/29/00/1186139e2c53aaed4776610c81129e72c6095b20f059b5a955c60f28e175/tetgen-0.8.4-cp311-cp311-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:adc6cf4af5e90250e9619a4a160468e408edb4307e55c4688c9a0a8ed1394cba", size = 411039, upload-time = "2026-05-04T17:33:54.6Z" },
+    { url = "https://files.pythonhosted.org/packages/8f/af/14d737a3c571d15c4adfd42b4f845a39886158ad15d99aff3e1f3f365d54/tetgen-0.8.4-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:b3a6e7bad3ef934c8780531fb1b063901472bfde3fca3d4426fc85e9e79ee1bf", size = 415932, upload-time = "2026-05-04T17:33:56.377Z" },
+    { url = "https://files.pythonhosted.org/packages/71/c0/fdf1694eca85ea9cee6f015049dc6e21fce8e5b6f9a53a81352fb1c92c45/tetgen-0.8.4-cp311-cp311-win_amd64.whl", hash = "sha256:22993175186927ad4be8c73b678b2c4fa3654a5bff5ec31c0410c78494a58644", size = 309060, upload-time = "2026-05-04T17:33:57.885Z" },
+    { url = "https://files.pythonhosted.org/packages/29/4a/4c38923509ae6ef5e194623bde5ffa6b16b8e9fa2d674136558b10a7dfeb/tetgen-0.8.4-cp312-abi3-macosx_10_14_x86_64.whl", hash = "sha256:2ceff7d99c4c4777ba605b7726a021d51c7e76fce35b524551a160379fa45981", size = 399076, upload-time = "2026-05-04T17:33:59.546Z" },
+    { url = "https://files.pythonhosted.org/packages/aa/60/fa9f368d759ef425f90f3b5d6b2e934fcc30e2b2bcdd63e5bcc7fbca802d/tetgen-0.8.4-cp312-abi3-macosx_11_0_arm64.whl", hash = "sha256:eb74efee0950fdc4cdd65e3eac2b8ae8f37d9a08a8d5e366e52ed052b86e44a4", size = 362528, upload-time = "2026-05-04T17:34:01.256Z" },
+    { url = "https://files.pythonhosted.org/packages/89/d3/7cb2c03fa45c51d4b32caa34423acebfb4f78e3ebdd6fca0a12b3a42931f/tetgen-0.8.4-cp312-abi3-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:58125b8c81b56869d26ba69d5404bacb0ae320ce9b8b45116aee0753dc89edc8", size = 407504, upload-time = "2026-05-04T17:34:02.936Z" },
+    { url = "https://files.pythonhosted.org/packages/f2/6b/b2568feb06fa57f8010f18bf27fd456546e921edf8d71c1147614e54234f/tetgen-0.8.4-cp312-abi3-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:e24f383fdd5d12660fd85cea937506ca2d81cca20fb92945a61f658e3719bc76", size = 411102, upload-time = "2026-05-04T17:34:04.281Z" },
+    { url = "https://files.pythonhosted.org/packages/bf/2e/348cdeb63c0a04cee46fae2d92019123cd6d6ba0f4c3895b7ca0cd33d091/tetgen-0.8.4-cp312-abi3-win_amd64.whl", hash = "sha256:de38fc1e9e684546862f0795f3e91c19450c6d11961542a6035bab249c65b51f", size = 307173, upload-time = "2026-05-04T17:34:05.952Z" },
 ]
 
 [[package]]

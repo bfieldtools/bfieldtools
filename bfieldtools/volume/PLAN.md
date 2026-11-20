@@ -1,0 +1,97 @@
+# Volumetric eddy-current modeling: status and plan
+
+Loop-driven sphere and torus demonstrations are implemented: mesh → independent
+volume currents → resistance and inductance → decay modes → driven transients.
+Spatial convergence and independent physical validation remain the next milestone.
+This status is based on the source, tests, and examples listed below; an example's
+quadrature checks do not establish spatial accuracy.
+
+## Documentation map
+
+- [THEORY.md](THEORY.md): equivalent magnetization and the existing surface
+  dipole-layer formulation, proposed exterior scalar potential, edge loops,
+  compatible spaces, topology, and dynamics.
+- [EDGE_CURRENT_MATRICES.md](EDGE_CURRENT_MATRICES.md): local normalization,
+  opposing-edge curls, resistance/inductance assembly, and tree–cotree gauge.
+- [INDUCTANCE_INTEGRALS.md](INDUCTANCE_INTEGRALS.md): tetrahedron potentials,
+  implemented numerical integration, accuracy limits, and integration research.
+- [ARCHITECTURE.md](ARCHITECTURE.md): containers, dependency boundaries, and APIs.
+- [VALIDATION.md](VALIDATION.md): implementation evidence, runnable examples,
+  existing checks, and acceptance criteria for the next milestone.
+- [TOPOLOGY_PLAN.md](../TOPOLOGY_PLAN.md): proposed complete volume and surface
+  current spaces, numerical references, global modes, and delivery criteria.
+
+## Implemented scope
+
+Isolated stationary conductors, no terminals, scalar positive resistivity uniform
+or constant per tetrahedron, permeability μ₀, and magnetoquasistatic dynamics.
+The current approximation is constant per tetrahedron with matching normal
+components and zero boundary leakage. In the local edge-curl space, the
+equivalent magnetization **T** is a lowest-order Nédélec field with zero
+tangential boundary trace; the solid-ball gauge uses a tree–cotree construction.
+Complete flux bases additionally represent handle-spanning currents that do not
+admit this boundary-zero potential representation.
+
+| Area | Implemented | Current limit |
+| --- | --- | --- |
+| Geometry (`mesh.py`) | Validated array container, oriented cells/boundary, volumes, quality, PyVista conversion, bundled sphere | Input arrays must already be geometrically conforming; no overlap/self-intersection/hanging-node detection |
+| Meshing (`mesh.py`) | Optional TetGen adapter for one closed outward connected surface, including handles; sphere and torus checks | No cavities, multiple solids, labels, material interfaces, or local size fields; maximum volume is a target |
+| Topology (`topology.py`, `currents.py`) | Incidence operators, solid-ball tree–cotree gauge, stacked-nullspace local-curl/global decomposition for handles and cavities | Augmented decomposition uses size-limited dense QR/SVD; original tree gauge remains solid-ball only; conforming manifold input required |
+| Current representation (`basis.py`) | General cell-current operators, edge-curl and conserved face-flux builders, real/complex and multiple-field reconstruction | No public potential/dipole-density reconstruction; global coefficients have Euclidean flux normalization rather than specified cut normalization |
+| Resistance (`impedance.py`) | Exact sparse weighted Gram assembly | Scalar resistivity only |
+| Inductance (`integrals.py`, `impedance.py`) | Fixed analytic self/touching integration, direct quadrature elsewhere, reciprocal streamed blocks, cached geometry, dense basis matrix | No adaptive error estimator; no general exact pair evaluator, spatial adaptivity, compression, or matrix-free solve |
+| Modes (examples using SciPy) | Dense generalized symmetric eigensolves, residual and metric checks | No library eigensolver helper or large-system solver |
+| Excitation/evolution (`dynamics.py`) | External polygonal-loop coupling and prescribed-drive modal integration | No general excitation API or coupled source-circuit dynamics; wires must remain outside the conductor |
+
+The distinction between the meshing adapter and topology support matters:
+multiple supplied solid-ball meshes already work with the gauge, even though the
+adapter cannot generate multiple solids in one call. Conservation and boundary
+conditions are guaranteed by the edge construction, not by arbitrary operators
+passed to `CellCurrentBasis`.
+
+## Next milestone: physical accuracy
+
+1. **Spatial convergence and independent references.** Refine volume and surface
+   geometry, compare sphere/slab decay or driven response with analytical
+   solutions, and compare a thin conductor against bfieldtools' surface model.
+   Track low eigenspaces for degenerate modes. Separate spatial, geometry,
+   quadrature, loop-segmentation, time-integration, and modal-truncation errors.
+   Include skin-depth resolution and a mode-count convergence study.
+2. **Volume-current field evaluation.** Add vector-potential and magnetic-field
+   operators, tested outside, near, and inside cells against independent
+   integration. An exterior magnetic scalar-potential operator can reuse
+   analytic triangle integrals via the [documented cell reduction](THEORY.md#exterior-magnetic-scalar-potential-not-yet-implemented);
+   it is not implemented. The scalar `tetrahedron_potential` kernel is a
+   geometric 1/r integral, not a magnetic scalar-potential operator. Add
+   potential reconstruction and a
+   total-dipole-moment operator if using the magnetization interpretation for
+   diagnostics or alternative coupling.
+3. **Accurate integration.** Develop a controlled-accuracy matrix assembler;
+   validate thin cells, small gaps, extreme scales, and spatial subdivision.
+   Expand independent high-accuracy references and control far-source accuracy
+   separately. See the integration document for the detailed backlog.
+
+Acceptance criteria and current evidence are in [VALIDATION.md](VALIDATION.md).
+
+## Subsequent extensions
+
+- **General topology:** replace the dense augmented reference with sparse
+  cavity-compatible gauge selection and stacked nullspace extraction; add cut-normalized
+  global coefficients. The augmented stacked-nullspace reference builder
+  already supports supplied meshes with handles and cavities.
+  The [joint surface/volume plan](../TOPOLOGY_PLAN.md) specifies the methods,
+  including preservation of surface boundary-hole currents and support for
+  surface handle currents.
+- **Geometry workflows:** robust intersection/overlap/conformity validation,
+  cavities, multiple-region meshing, labels, and local refinement. Add block and
+  cavity meshing examples; a meshed torus transient example is implemented.
+  TetGen is the current
+  backend; additional adapters are optional follow-up work.
+- **Materials and physics:** tensor resistivity, magnetic materials, terminals
+  and imposed transport currents, source-circuit back reaction, and higher-order
+  elements. These require extensions to the present model.
+- **Scale and integration:** profile assembly/eigensolves after validation;
+  investigate compressed or matrix-free inductance and partial eigensolvers.
+  Add a higher-level conductor API and public documentation once interfaces
+  stabilize. `magnetics.py` and `modes.py` remain possible future modules;
+  `meshing.py` does not exist separately from `mesh.py`.

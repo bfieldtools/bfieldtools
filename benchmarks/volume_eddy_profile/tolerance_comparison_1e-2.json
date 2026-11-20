@@ -1,0 +1,179 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "ncells": 808,
+  "ndofs": 649,
+  "reference_rtol": 0.0001,
+  "comparison_rtol": 0.01,
+  "settings_except_rtol": {
+    "block_size": 16,
+    "quadrature_order": 2,
+    "max_order": 12,
+    "spatial_order": true
+  },
+  "cases": {
+    "0.0001": {
+      "pair_classification": {
+        "order_0": 317373,
+        "order_2": 0,
+        "order_3": 0,
+        "order_4": 9463,
+        "near_with_disjoint_spheres": 285100,
+        "overlapping_spheres": 32273,
+        "ncells": 808,
+        "unique_pairs": 326836
+      },
+      "q_thresholds": {
+        "2": 0.08075483656501037,
+        "3": 0.1806037001681136,
+        "4": 0.27054952582145936
+      },
+      "wall_seconds": 37.12688891595462,
+      "cpu_seconds": 37.095228
+    },
+    "0.01": {
+      "pair_classification": {
+        "order_0": 178579,
+        "order_2": 1068,
+        "order_3": 75782,
+        "order_4": 71407,
+        "near_with_disjoint_spheres": 146306,
+        "overlapping_spheres": 32273,
+        "ncells": 808,
+        "unique_pairs": 326836
+      },
+      "q_thresholds": {
+        "2": 0.235806473404625,
+        "3": 0.3641231123100659,
+        "4": 0.455964294518191
+      },
+      "wall_seconds": 25.059872542042285,
+      "cpu_seconds": 25.034354,
+      "instrumentation": {
+        "wall_seconds": 26.244279333972372,
+        "quadrature_orders": {
+          "2": {
+            "calls": 32023,
+            "directed_cell_pairs": 359046,
+            "outer_point_source_pairs": 2872368,
+            "still_active": 0,
+            "max_relative_change": 0.0,
+            "cpu_seconds": 3.859866999999994
+          },
+          "4": {
+            "calls": 32023,
+            "directed_cell_pairs": 359046,
+            "outer_point_source_pairs": 22978944,
+            "still_active": 9,
+            "max_relative_change": 0.019191419728073138,
+            "cpu_seconds": 15.237493000000896
+          },
+          "6": {
+            "calls": 7,
+            "directed_cell_pairs": 9,
+            "outer_point_source_pairs": 1944,
+            "still_active": 0,
+            "max_relative_change": 0.00156804848982976,
+            "cpu_seconds": 0.0015410000000031232
+          }
+        },
+        "functions": {
+          "_directed_interactions": {
+            "calls": 32023,
+            "cell_pairs": 359046,
+            "cpu_seconds": 20.653433999999777
+          },
+          "_near_interactions": {
+            "calls": 16031,
+            "cell_pairs": 184419,
+            "cpu_seconds": 20.698730999999675
+          },
+          "tetrahedron_interaction_block": {
+            "calls": 1326,
+            "cell_pairs": 332864,
+            "cpu_seconds": 25.834251999999843
+          },
+          "_regular_interactions": {
+            "calls": 25603,
+            "cell_pairs": 148445,
+            "cpu_seconds": 4.917726999999971
+          }
+        },
+        "point_source_pairs": {
+          "analytic": 25853256,
+          "source_order_4": 0
+        },
+        "block_types": {
+          "uniform_order_0": 112,
+          "mixed": 1214
+        },
+        "unique_directed_terminal_orders": {
+          "4": 356341,
+          "6": 9
+        },
+        "note": "Function CPU counters are inclusive and include nested instrumentation overhead; do not sum them."
+      }
+    }
+  },
+  "comparison": {
+    "relative_frobenius_matrix_difference": 5.6612634828869214e-05,
+    "max_absolute_matrix_difference_H": 1.1970731522713524e-12,
+    "speedup": 1.4815274440709076,
+    "energy_ratio_min": 0.9994852754189993,
+    "energy_ratio_max": 1.0007335386239522,
+    "slowest_10_decay_rates_baseline_per_s": [
+      8.273178670067379,
+      8.279230676112032,
+      8.283090581318849,
+      17.60995068449717,
+      17.649910404794724,
+      17.654764457352137,
+      17.68935070532137,
+      17.746037038946177,
+      18.252193475395345,
+      18.307671468945586
+    ],
+    "slowest_10_decay_rates_loose_per_s": [
+      8.27317955194248,
+      8.279231678965516,
+      8.283091514590636,
+      17.609954356830396,
+      17.649913588215192,
+      17.654768447697027,
+      17.689354670755364,
+      17.74603927082146,
+      18.252195981597954,
+      18.307673106410228
+    ],
+    "max_relative_slowest_10_decay_rate_change": 2.2602085118210017e-07,
+    "max_relative_all_decay_rate_change": 0.0005727189175410618,
+    "slow_current_patterns": {
+      "3": {
+        "max_principal_angle_degrees": 3.5277782324537706e-05,
+        "max_subspace_sine": 6.157134543650029e-07,
+        "minimum_individual_current_pattern_correlation": 0.9999999999230719,
+        "reference_relative_gap_to_next_mode": 1.1260120859010676,
+        "max_relative_decay_rate_change": 1.211288250132795e-07,
+        "projected_energy_ratio_min": 0.9999998757137424,
+        "projected_energy_ratio_max": 0.999999902994427
+      },
+      "10": {
+        "max_principal_angle_degrees": 0.001184565747399081,
+        "max_subspace_sine": 2.0674572496988573e-05,
+        "minimum_individual_current_pattern_correlation": 0.99999999978398,
+        "reference_relative_gap_to_next_mode": 0.0014907912996015415,
+        "max_relative_decay_rate_change": 2.2602085118210017e-07,
+        "projected_energy_ratio_min": 0.9999997275796405,
+        "projected_energy_ratio_max": 0.9999999412750645
+      },
+      "20": {
+        "max_principal_angle_degrees": 0.001545549295518407,
+        "max_subspace_sine": 2.6974923955403675e-05,
+        "minimum_individual_current_pattern_correlation": 0.9999999864130137,
+        "reference_relative_gap_to_next_mode": 0.0032134552293612458,
+        "max_relative_decay_rate_change": 3.729408577958865e-07,
+        "projected_energy_ratio_min": 0.9999994532650904,
+        "projected_energy_ratio_max": 1.0000000994162475
+      }
+    }
+  }
+}

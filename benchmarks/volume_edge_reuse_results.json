@@ -1,0 +1,75 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.11.17",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "baseline": "/private/tmp/bfieldtools_volume_before_edge_reuse.py",
+  "repeats": 5,
+  "point_chunk_size": 256,
+  "source_chunk_size": 16,
+  "timing": "median wall time; warmup; alternating order",
+  "inductance_settings": {
+    "block_size": 16,
+    "quadrature_order": 4,
+    "rtol": 0.0001,
+    "max_order": 12,
+    "precomputed_interactions": false,
+    "basis_construction_timed": false
+  },
+  "cases": [
+    {
+      "name": "inductance: 48 cells, 25 DOFs",
+      "baseline_seconds": 0.3265857920050621,
+      "vectorized_seconds": 0.3254982079961337,
+      "speedup": 1.003341290311931,
+      "output_shape": [
+        25,
+        25
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "max_relative_difference": 0.0,
+      "baseline_samples_seconds": [
+        0.3250289590214379,
+        0.3270245000021532,
+        0.3265857920050621,
+        0.32698920799884945,
+        0.3263411660445854
+      ],
+      "vectorized_samples_seconds": [
+        0.3238341249525547,
+        0.3253417499945499,
+        0.3254982079961337,
+        0.32568245800212026,
+        0.3259832499898039
+      ]
+    },
+    {
+      "name": "inductance: 162 cells, 109 DOFs",
+      "baseline_seconds": 3.7562380000017583,
+      "vectorized_seconds": 3.725492374971509,
+      "speedup": 1.008252768207715,
+      "output_shape": [
+        109,
+        109
+      ],
+      "relative_frobenius_difference": 0.0,
+      "max_absolute_difference": 0.0,
+      "max_relative_difference": 0.0,
+      "baseline_samples_seconds": [
+        3.7562380000017583,
+        3.7351736669661477,
+        3.742783583002165,
+        3.784432457992807,
+        3.7579827909939922
+      ],
+      "vectorized_samples_seconds": [
+        3.7201652909861878,
+        3.7229212499805726,
+        3.725492374971509,
+        3.864974625001196,
+        3.7280665410216898
+      ]
+    }
+  ]
+}

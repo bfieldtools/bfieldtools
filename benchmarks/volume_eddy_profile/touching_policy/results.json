@@ -1,0 +1,378 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.11.17",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "settings": {
+    "block_size": 16,
+    "quadrature_order": 2,
+    "rtol": 0.01,
+    "max_order": 12,
+    "spatial_order": true
+  },
+  "direct_orders": [
+    2,
+    3
+  ],
+  "contact_definition": "shared vertex index; includes face/edge/vertex contacts and self",
+  "timing_method": "one streamed assembly per policy per mesh; setup and comparison eigensolves excluded",
+  "experimental_error_control": "rtol applies only to touching/self analytic pairs; non-touching direct rules have no bound/refinement",
+  "cases": {
+    "coarse": {
+      "ncells": 808,
+      "ndofs": 649,
+      "min_quality": 0.26135690481854446,
+      "current_dispatch": {
+        "order_0": 178579,
+        "order_2": 1068,
+        "order_3": 75782,
+        "order_4": 71407,
+        "near_with_disjoint_spheres": 146306,
+        "overlapping_spheres": 32273,
+        "ncells": 808,
+        "unique_pairs": 326836
+      },
+      "contacts": {
+        "non_touching": 303420,
+        "vertex": 16436,
+        "edge": 4716,
+        "face": 1456,
+        "self": 808
+      },
+      "policies": {
+        "current": {
+          "wall_seconds": 24.943799083004706,
+          "cpu_seconds": 24.911766,
+          "slowest_20_decay_rates_per_s": [
+            8.273179551942473,
+            8.279231678965388,
+            8.283091514590833,
+            17.609954356830706,
+            17.649913588215277,
+            17.654768447697194,
+            17.68935467075545,
+            17.74603927082144,
+            18.25219598159788,
+            18.30767310641044,
+            18.334966633320903,
+            30.2942021409322,
+            30.372985026814774,
+            30.48857593809565,
+            30.51233666556316,
+            30.572932509462532,
+            30.677583087493282,
+            30.82582448956751,
+            32.04129979090872,
+            32.21994320190469
+          ]
+        },
+        "touching_analytic_regular_2": {
+          "wall_seconds": 4.738377125002444,
+          "cpu_seconds": 4.734897999999998,
+          "speedup": 5.264207222212572,
+          "comparison": {
+            "relative_frobenius_matrix_difference": 0.00028698633474105495,
+            "max_absolute_matrix_difference_H": 1.4099124524827351e-12,
+            "energy_ratio_min": 0.9988509803476936,
+            "energy_ratio_max": 1.0011061295975303,
+            "positive_definite": true,
+            "slowest_20_decay_rates_per_s": [
+              8.273289892205433,
+              8.279347342988906,
+              8.28320041763152,
+              17.610519556557854,
+              17.650338098070172,
+              17.65518273886289,
+              17.689846238240285,
+              17.746500969045663,
+              18.252787105792144,
+              18.308243832220633,
+              18.335462413719547,
+              30.295037928939074,
+              30.37381528459865,
+              30.48920827595576,
+              30.512945587395727,
+              30.573643252918316,
+              30.677887861843978,
+              30.82653387521946,
+              32.041569445092215,
+              32.220060820023654
+            ],
+            "max_relative_slowest_3_rate_change": 1.3970381311094087e-05,
+            "max_relative_slowest_10_rate_change": 3.238646981774282e-05,
+            "max_relative_slowest_20_rate_change": 3.238646981774282e-05,
+            "generalized_residual": 4.483141106571532e-14,
+            "current_patterns": {
+              "3": {
+                "max_principal_angle_degrees": 0.0009923310177161356,
+                "max_subspace_sine": 1.731944352794688e-05,
+                "minimum_individual_current_correlation": 0.9999982682027411,
+                "projected_energy_ratio_min": 0.9999854596728309,
+                "projected_energy_ratio_max": 0.9999875959415562,
+                "reference_relative_gap_to_next_mode": 1.1260122897121703
+              },
+              "10": {
+                "max_principal_angle_degrees": 0.071600095399695,
+                "max_subspace_sine": 0.0012496570842134907,
+                "minimum_individual_current_correlation": 0.999976199986534,
+                "projected_energy_ratio_min": 0.9999623643109797,
+                "projected_energy_ratio_max": 0.9999881209062187,
+                "reference_relative_gap_to_next_mode": 0.0014908244620615014
+              },
+              "20": {
+                "max_principal_angle_degrees": 0.12342042330882062,
+                "max_subspace_sine": 0.002154091085071238,
+                "minimum_individual_current_correlation": 0.999976199986534,
+                "projected_energy_ratio_min": 0.9999553428692786,
+                "projected_energy_ratio_max": 1.000010938494027,
+                "reference_relative_gap_to_next_mode": null
+              }
+            }
+          }
+        },
+        "touching_analytic_regular_3": {
+          "wall_seconds": 7.422951958025806,
+          "cpu_seconds": 7.417904000000004,
+          "speedup": 3.360361110250094,
+          "comparison": {
+            "relative_frobenius_matrix_difference": 1.209481073555989e-05,
+            "max_absolute_matrix_difference_H": 1.2792125419556108e-13,
+            "energy_ratio_min": 0.999910835940219,
+            "energy_ratio_max": 1.0000963173718613,
+            "positive_definite": true,
+            "slowest_20_decay_rates_per_s": [
+              8.273177231501467,
+              8.279229075013095,
+              8.283089210114817,
+              17.609945581694305,
+              17.649906829861465,
+              17.654760296333755,
+              17.689346922414295,
+              17.746032663777846,
+              18.25218427222488,
+              18.307662122567592,
+              18.334956471483252,
+              30.29418711369661,
+              30.37297734014649,
+              30.48856675520495,
+              30.512326236385327,
+              30.57291647512328,
+              30.677575507785654,
+              30.825807667693034,
+              32.041292232969816,
+              32.21993478010422
+            ],
+            "max_relative_slowest_3_rate_change": 3.145161766057155e-07,
+            "max_relative_slowest_10_rate_change": 6.415322852182204e-07,
+            "max_relative_slowest_20_rate_change": 6.415322852182204e-07,
+            "generalized_residual": 4.350093114158599e-14,
+            "current_patterns": {
+              "3": {
+                "max_principal_angle_degrees": 3.233336849897536e-05,
+                "max_subspace_sine": 5.643237385677069e-07,
+                "minimum_individual_current_correlation": 0.999999997768907,
+                "projected_energy_ratio_min": 1.000000253942314,
+                "projected_energy_ratio_max": 1.0000003329990357,
+                "reference_relative_gap_to_next_mode": 1.1260122897121703
+              },
+              "10": {
+                "max_principal_angle_degrees": 0.0009378632999260829,
+                "max_subspace_sine": 1.636880251659827e-05,
+                "minimum_individual_current_correlation": 0.9999999950870735,
+                "projected_energy_ratio_min": 1.000000166302609,
+                "projected_energy_ratio_max": 1.0000007662631314,
+                "reference_relative_gap_to_next_mode": 0.0014908244620615014
+              },
+              "20": {
+                "max_principal_angle_degrees": 0.0009482525631339132,
+                "max_subspace_sine": 1.655012936640665e-05,
+                "minimum_individual_current_correlation": 0.9999999603328115,
+                "projected_energy_ratio_min": 0.9999998203732738,
+                "projected_energy_ratio_max": 1.0000010038873621,
+                "reference_relative_gap_to_next_mode": null
+              }
+            }
+          }
+        }
+      }
+    },
+    "refined": {
+      "ncells": 1804,
+      "ndofs": 1603,
+      "min_quality": 0.15266041347841164,
+      "current_dispatch": {
+        "order_0": 582841,
+        "order_2": 59570,
+        "order_3": 650540,
+        "order_4": 335159,
+        "near_with_disjoint_spheres": 498585,
+        "overlapping_spheres": 84256,
+        "ncells": 1804,
+        "unique_pairs": 1628110
+      },
+      "contacts": {
+        "non_touching": 1572061,
+        "vertex": 39481,
+        "edge": 11358,
+        "face": 3406,
+        "self": 1804
+      },
+      "policies": {
+        "current": {
+          "wall_seconds": 93.13538854196668,
+          "cpu_seconds": 93.054831,
+          "slowest_20_decay_rates_per_s": [
+            8.16774361869414,
+            8.170674309658246,
+            8.171460964490201,
+            17.10479215870289,
+            17.123423865570395,
+            17.128604471231792,
+            17.152722787564073,
+            17.160979025002618,
+            17.369882161639584,
+            17.393986949187937,
+            17.428692591614865,
+            28.96817207862935,
+            29.011274147498224,
+            29.064378932395183,
+            29.105015683628665,
+            29.14880712004158,
+            29.197356330105187,
+            29.24885050514896,
+            29.7471671248652,
+            29.789924972876417
+          ]
+        },
+        "touching_analytic_regular_2": {
+          "wall_seconds": 13.761523458990268,
+          "cpu_seconds": 13.752340000000004,
+          "speedup": 6.76781090549406,
+          "comparison": {
+            "relative_frobenius_matrix_difference": 0.0003494669015336807,
+            "max_absolute_matrix_difference_H": 2.2020638325528515e-12,
+            "energy_ratio_min": 0.9983992939044749,
+            "energy_ratio_max": 1.0015293666955238,
+            "positive_definite": true,
+            "slowest_20_decay_rates_per_s": [
+              8.167823347580097,
+              8.170756300596231,
+              8.17154640061608,
+              17.105109170998656,
+              17.123731173826133,
+              17.128879786042535,
+              17.15306731996513,
+              17.1613049488888,
+              17.370186543156873,
+              17.394273582564463,
+              17.429005129341864,
+              28.96873286861081,
+              29.01200101486015,
+              29.06508108199603,
+              29.10575537034634,
+              29.149594387962484,
+              29.198202610172054,
+              29.249580420819388,
+              29.74766463276198,
+              29.790561432500308
+            ],
+            "max_relative_slowest_3_rate_change": 1.0455428502947923e-05,
+            "max_relative_slowest_10_rate_change": 2.0086163889077135e-05,
+            "max_relative_slowest_20_rate_change": 2.898481825884072e-05,
+            "generalized_residual": 1.656151293390503e-13,
+            "current_patterns": {
+              "3": {
+                "max_principal_angle_degrees": 0.0006192397141652109,
+                "max_subspace_sine": 1.0807771871081093e-05,
+                "minimum_individual_current_correlation": 0.9999874898796163,
+                "projected_energy_ratio_min": 0.9999892410737019,
+                "projected_energy_ratio_max": 0.9999907576157302,
+                "reference_relative_gap_to_next_mode": 1.093235497670889
+              },
+              "10": {
+                "max_principal_angle_degrees": 0.010665353242649602,
+                "max_subspace_sine": 0.00018614552889749392,
+                "minimum_individual_current_correlation": 0.9999734000996042,
+                "projected_energy_ratio_min": 0.9999776233346742,
+                "projected_energy_ratio_max": 0.999991159756122,
+                "reference_relative_gap_to_next_mode": 0.0019952666705058434
+              },
+              "20": {
+                "max_principal_angle_degrees": 0.04537291263756289,
+                "max_subspace_sine": 0.0007919066339756247,
+                "minimum_individual_current_correlation": 0.9999734000996042,
+                "projected_energy_ratio_min": 0.9999667267539197,
+                "projected_energy_ratio_max": 0.9999915790384692,
+                "reference_relative_gap_to_next_mode": null
+              }
+            }
+          }
+        },
+        "touching_analytic_regular_3": {
+          "wall_seconds": 27.627353375020903,
+          "cpu_seconds": 27.604961000000003,
+          "speedup": 3.3711295931145706,
+          "comparison": {
+            "relative_frobenius_matrix_difference": 1.5353124892799163e-05,
+            "max_absolute_matrix_difference_H": 1.9064039285998002e-13,
+            "energy_ratio_min": 0.9998670533815222,
+            "energy_ratio_max": 1.000143279740002,
+            "positive_definite": true,
+            "slowest_20_decay_rates_per_s": [
+              8.167741478298717,
+              8.170672210032572,
+              8.171458725070734,
+              17.104784164111805,
+              17.123416447335707,
+              17.12859750609773,
+              17.152714646409933,
+              17.16097057943711,
+              17.36987506982372,
+              17.393980060418656,
+              17.4286848693322,
+              28.96815765715103,
+              29.01125580071939,
+              29.064360389802772,
+              29.104997090875983,
+              29.14878678277431,
+              29.19733522941746,
+              29.2488320254026,
+              29.74715231044426,
+              29.789908894618875
+            ],
+            "max_relative_slowest_3_rate_change": 2.7405374355624677e-07,
+            "max_relative_slowest_10_rate_change": 4.921377444059781e-07,
+            "max_relative_slowest_20_rate_change": 7.226917220357531e-07,
+            "generalized_residual": 1.6339016211050066e-13,
+            "current_patterns": {
+              "3": {
+                "max_principal_angle_degrees": 2.1721076223747092e-05,
+                "max_subspace_sine": 3.7910429718103415e-07,
+                "minimum_individual_current_correlation": 0.9999999984113932,
+                "projected_energy_ratio_min": 1.0000002438837505,
+                "projected_energy_ratio_max": 1.000000279348546,
+                "reference_relative_gap_to_next_mode": 1.093235497670889
+              },
+              "10": {
+                "max_principal_angle_degrees": 0.00029251049148574046,
+                "max_subspace_sine": 5.105271173030834e-06,
+                "minimum_individual_current_correlation": 0.999999994915574,
+                "projected_energy_ratio_min": 1.000000226333151,
+                "projected_energy_ratio_max": 1.0000005650857895,
+                "reference_relative_gap_to_next_mode": 0.0019952666705058434
+              },
+              "20": {
+                "max_principal_angle_degrees": 0.0012848720505509487,
+                "max_subspace_sine": 2.2425247747085498e-05,
+                "minimum_individual_current_correlation": 0.999999994915574,
+                "projected_energy_ratio_min": 1.0000002221952733,
+                "projected_energy_ratio_max": 1.000000963913559,
+                "reference_relative_gap_to_next_mode": null
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

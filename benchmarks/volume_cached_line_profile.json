@@ -1,0 +1,831 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "numpy": "2.4.6",
+  "ncells": 162,
+  "ndofs": 109,
+  "repeats": 3,
+  "untraced_cpu_seconds": 3.430439,
+  "untraced_wall_seconds": 3.432442124991212,
+  "traced_samples": [
+    {
+      "cpu_seconds": 3.7161149999999994,
+      "wall_seconds": 3.7181558340089396
+    },
+    {
+      "cpu_seconds": 3.725404000000001,
+      "wall_seconds": 3.727492583973799
+    },
+    {
+      "cpu_seconds": 3.8189610000000016,
+      "wall_seconds": 3.823456583020743
+    }
+  ],
+  "method": "Python line trace; process CPU; inclusive per-line timings averaged across assemblies; NumPy kernels timed as calls",
+  "functions": [
+    {
+      "function": "_integrate_sources",
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/integrals.py",
+      "inclusive_cpu_seconds": 3.7209343333333096,
+      "lines": [
+        {
+          "line": 176,
+          "hits": 726,
+          "cpu_seconds": 0.0001473333333166238,
+          "percent_of_function": 0.003959578969098301,
+          "source": "barycentric, weights = tetrahedron_quadrature(order)"
+        },
+        {
+          "line": 179,
+          "hits": 726,
+          "cpu_seconds": 0.0005596666666649597,
+          "percent_of_function": 0.015041025090157818,
+          "source": "vertices = mesh.vertices[mesh.tetrahedra[rows]]"
+        },
+        {
+          "line": 180,
+          "hits": 1452,
+          "cpu_seconds": 0.01614966666667191,
+          "percent_of_function": 0.43402181333860357,
+          "source": "points = vertices[:, :1] + np.einsum("
+        },
+        {
+          "line": 181,
+          "hits": 726,
+          "cpu_seconds": 0.0003486666666544143,
+          "percent_of_function": 0.009370406339368791,
+          "source": "\"qv,tvi->tqi\", barycentric, vertices - vertices[:, :1]"
+        },
+        {
+          "line": 183,
+          "hits": 726,
+          "cpu_seconds": 3.7006616666666683,
+          "percent_of_function": 99.45517268377911,
+          "source": "potentials = tetrahedron_potential(mesh, points.reshape(-1, 3), columns)"
+        },
+        {
+          "line": 184,
+          "hits": 726,
+          "cpu_seconds": 0.00016499999999878648,
+          "percent_of_function": 0.00443437011292202,
+          "source": "potentials = potentials.reshape(len(rows), len(weights), len(columns))"
+        },
+        {
+          "line": 185,
+          "hits": 726,
+          "cpu_seconds": 0.0029023333333351906,
+          "percent_of_function": 0.07800012237074888,
+          "source": "return mesh.volumes[rows, None] * np.einsum(\"q,tqs->ts\", weights, potentials)"
+        }
+      ]
+    },
+    {
+      "function": "tetrahedron_potential",
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/volume/integrals.py",
+      "inclusive_cpu_seconds": 3.659177333333026,
+      "lines": [
+        {
+          "line": 90,
+          "hits": 726,
+          "cpu_seconds": 0.0002220000000011287,
+          "percent_of_function": 0.006066937450088436,
+          "source": "_positive_integer(point_chunk_size, \"point_chunk_size\")"
+        },
+        {
+          "line": 91,
+          "hits": 726,
+          "cpu_seconds": 0.00016899999999638501,
+          "percent_of_function": 0.004618524455125228,
+          "source": "_positive_integer(source_chunk_size, \"source_chunk_size\")"
+        },
+        {
+          "line": 92,
+          "hits": 726,
+          "cpu_seconds": 0.00014433333334255374,
+          "percent_of_function": 0.003944420294358491,
+          "source": "points = np.asarray(points, dtype=float)"
+        },
+        {
+          "line": 93,
+          "hits": 726,
+          "cpu_seconds": 0.0008539999999973938,
+          "percent_of_function": 0.023338579199699866,
+          "source": "if points.ndim != 2 or points.shape[1] != 3 or not np.all(np.isfinite(points)):"
+        },
+        {
+          "line": 95,
+          "hits": 726,
+          "cpu_seconds": 0.0017363333333217195,
+          "percent_of_function": 0.047451467232940844,
+          "source": "sources = _cell_indices(mesh, source_cells)"
+        },
+        {
+          "line": 96,
+          "hits": 726,
+          "cpu_seconds": 0.00020099999999819337,
+          "percent_of_function": 0.0054930379614892555,
+          "source": "result = np.empty((len(points), len(sources)))"
+        },
+        {
+          "line": 97,
+          "hits": 726,
+          "cpu_seconds": 9.366666666939712e-05,
+          "percent_of_function": 0.002559773909183002,
+          "source": "far_barycentric, far_weights = tetrahedron_quadrature(4)"
+        },
+        {
+          "line": 98,
+          "hits": 726,
+          "cpu_seconds": 0.000489333333335118,
+          "percent_of_function": 0.013372769034109645,
+          "source": "vertices = mesh.vertices[mesh.tetrahedra[sources]]"
+        },
+        {
+          "line": 99,
+          "hits": 726,
+          "cpu_seconds": 0.001292333333340186,
+          "percent_of_function": 0.03531759233333033,
+          "source": "centers = vertices.mean(axis=1)"
+        },
+        {
+          "line": 100,
+          "hits": 726,
+          "cpu_seconds": 0.0014333333333243676,
+          "percent_of_function": 0.03917091747009678,
+          "source": "scales = np.linalg.norm(vertices - centers[:, None], axis=-1).max(axis=1)"
+        },
+        {
+          "line": 101,
+          "hits": 726,
+          "cpu_seconds": 0.0005043333333224117,
+          "percent_of_function": 0.013782697239847373,
+          "source": "vertices = (vertices - centers[:, None]) / scales[:, None, None]"
+        },
+        {
+          "line": 104,
+          "hits": 726,
+          "cpu_seconds": 0.0009650000000022511,
+          "percent_of_function": 0.026372047924861402,
+          "source": "faces = np.ascontiguousarray(vertices[:, np.asarray(TETRA_FACES)])"
+        },
+        {
+          "line": 107,
+          "hits": 726,
+          "cpu_seconds": 0.00020066666667043856,
+          "percent_of_function": 0.005483928445950932,
+          "source": "edges = np.empty_like(faces)"
+        },
+        {
+          "line": 108,
+          "hits": 726,
+          "cpu_seconds": 0.0005390000000054703,
+          "percent_of_function": 0.014730086872136165,
+          "source": "edges[:, :, 0] = faces[:, :, 2] - faces[:, :, 1]"
+        },
+        {
+          "line": 109,
+          "hits": 726,
+          "cpu_seconds": 0.0004483333333320516,
+          "percent_of_function": 0.012252298604060255,
+          "source": "edges[:, :, 1] = faces[:, :, 0] - faces[:, :, 2]"
+        },
+        {
+          "line": 110,
+          "hits": 726,
+          "cpu_seconds": 0.0004496666666629068,
+          "percent_of_function": 0.012288736666755638,
+          "source": "edges[:, :, 2] = faces[:, :, 1] - faces[:, :, 0]"
+        },
+        {
+          "line": 111,
+          "hits": 726,
+          "cpu_seconds": 0.005250000000001975,
+          "percent_of_function": 0.1434748721297943,
+          "source": "normals = np.cross(edges[:, :, 2], -edges[:, :, 1])"
+        },
+        {
+          "line": 112,
+          "hits": 726,
+          "cpu_seconds": 0.0009613333333220453,
+          "percent_of_function": 0.02627184325189285,
+          "source": "normals /= np.linalg.norm(normals, axis=-1)[..., None]"
+        },
+        {
+          "line": 113,
+          "hits": 726,
+          "cpu_seconds": 0.006810000000001537,
+          "percent_of_function": 0.18610740556261943,
+          "source": "far_points = np.einsum(\"qv,svi->sqi\", far_barycentric, vertices)"
+        },
+        {
+          "line": 114,
+          "hits": 726,
+          "cpu_seconds": 0.000145999999997611,
+          "percent_of_function": 0.003989967872495109,
+          "source": "volumes = mesh.volumes[sources]"
+        },
+        {
+          "line": 115,
+          "hits": 1452,
+          "cpu_seconds": 0.00021333333333029003,
+          "percent_of_function": 0.005830090042014215,
+          "source": "for column in range(0, len(sources), source_chunk_size):"
+        },
+        {
+          "line": 116,
+          "hits": 726,
+          "cpu_seconds": 0.00015133333332932133,
+          "percent_of_function": 0.004135720123503189,
+          "source": "columns = slice(column, min(column + source_chunk_size, len(sources)))"
+        },
+        {
+          "line": 117,
+          "hits": 6765,
+          "cpu_seconds": 0.0008876666666610689,
+          "percent_of_function": 0.024258640284386603,
+          "source": "for start in range(0, len(points), point_chunk_size):"
+        },
+        {
+          "line": 118,
+          "hits": 6039,
+          "cpu_seconds": 0.0011243333333140388,
+          "percent_of_function": 0.030726396424464078,
+          "source": "stop = min(start + point_chunk_size, len(points))"
+        },
+        {
+          "line": 119,
+          "hits": 12078,
+          "cpu_seconds": 0.06586866666662772,
+          "percent_of_function": 1.8000949575906473,
+          "source": "x = (points[start:stop, None] - centers[None, columns]) / scales["
+        },
+        {
+          "line": 120,
+          "hits": 6039,
+          "cpu_seconds": 0.0007883333333437529,
+          "percent_of_function": 0.02154400460897274,
+          "source": "None, columns, None"
+        },
+        {
+          "line": 122,
+          "hits": 6039,
+          "cpu_seconds": 0.04926433333330582,
+          "percent_of_function": 1.3463226524862772,
+          "source": "far = np.linalg.norm(x, axis=-1) > 8"
+        },
+        {
+          "line": 123,
+          "hits": 6039,
+          "cpu_seconds": 0.0012906666666762472,
+          "percent_of_function": 0.03527204475495099,
+          "source": "values = np.empty(far.shape)"
+        },
+        {
+          "line": 124,
+          "hits": 6039,
+          "cpu_seconds": 0.016901666666659782,
+          "percent_of_function": 0.46189799310066787,
+          "source": "p, s = np.nonzero(~far)"
+        },
+        {
+          "line": 125,
+          "hits": 6039,
+          "cpu_seconds": 0.0008236666666675182,
+          "percent_of_function": 0.022509613271933637,
+          "source": "if p.size:"
+        },
+        {
+          "line": 126,
+          "hits": 6039,
+          "cpu_seconds": 0.004614999999953777,
+          "percent_of_function": 0.12612124473754657,
+          "source": "if not np.any(far):"
+        },
+        {
+          "line": 129,
+          "hits": 6039,
+          "cpu_seconds": 0.0008533333333232326,
+          "percent_of_function": 0.023320360168113494,
+          "source": "displacements = ("
+        },
+        {
+          "line": 130,
+          "hits": 6039,
+          "cpu_seconds": 0.5638943333333165,
+          "percent_of_function": 15.410412832320523,
+          "source": "x[:, :, None, None, :] - faces[None, columns]"
+        },
+        {
+          "line": 131,
+          "hits": 6039,
+          "cpu_seconds": 0.0012413333333466763,
+          "percent_of_function": 0.033923836432818794,
+          "source": ").reshape(len(x), -1, 3, 3)"
+        },
+        {
+          "line": 132,
+          "hits": 6039,
+          "cpu_seconds": 0.0012096666666536748,
+          "percent_of_function": 0.03305843244147527,
+          "source": "triangle_normals = normals[columns].reshape(-1, 3)"
+        },
+        {
+          "line": 133,
+          "hits": 6039,
+          "cpu_seconds": 0.0011339999999950834,
+          "percent_of_function": 0.03099057237988954,
+          "source": "triangle_edges = edges[columns].reshape(-1, 3, 3)"
+        },
+        {
+          "line": 142,
+          "hits": 12078,
+          "cpu_seconds": 0.0038769999999865115,
+          "percent_of_function": 0.10595277699906056,
+          "source": "triangle = TriangleIntegrals("
+        },
+        {
+          "line": 143,
+          "hits": 6039,
+          "cpu_seconds": 0.0007050000000088374,
+          "percent_of_function": 0.01926662568623521,
+          "source": "displacements, triangle_normals, edges=triangle_edges"
+        },
+        {
+          "line": 145,
+          "hits": 6039,
+          "cpu_seconds": 0.08266900000001846,
+          "percent_of_function": 2.259223657923076,
+          "source": "heights = -triangle.d_distance.reshape(-1, 4)"
+        },
+        {
+          "line": 146,
+          "hits": 6039,
+          "cpu_seconds": 2.728184666666678,
+          "percent_of_function": 74.5573230850133,
+          "source": "triangle_potentials = triangle.triangle_potential_uniform.reshape(-1, 4)"
+        },
+        {
+          "line": 148,
+          "hits": 6039,
+          "cpu_seconds": 0.017621666666712166,
+          "percent_of_function": 0.48157454699417807,
+          "source": "values[p, s] = ("
+        },
+        {
+          "line": 149,
+          "hits": 18117,
+          "cpu_seconds": 0.0060469999999013995,
+          "percent_of_function": 0.16525572414369388,
+          "source": "0.5"
+        },
+        {
+          "line": 150,
+          "hits": 6039,
+          "cpu_seconds": 0.047610666666657885,
+          "percent_of_function": 1.3011303451448435,
+          "source": "* np.sum(heights * triangle_potentials, axis=-1)"
+        },
+        {
+          "line": 151,
+          "hits": 6039,
+          "cpu_seconds": 0.005853333333308619,
+          "percent_of_function": 0.15996309552937155,
+          "source": "* scales[columns][s] ** 2"
+        },
+        {
+          "line": 154,
+          "hits": 6039,
+          "cpu_seconds": 0.0024380000000355415,
+          "percent_of_function": 0.06662699776331546,
+          "source": "del triangle"
+        },
+        {
+          "line": 155,
+          "hits": 6039,
+          "cpu_seconds": 0.016114666666586785,
+          "percent_of_function": 0.44039042655274807,
+          "source": "p, s = np.nonzero(far)"
+        },
+        {
+          "line": 156,
+          "hits": 6039,
+          "cpu_seconds": 0.0008323333333404292,
+          "percent_of_function": 0.022746460680064494,
+          "source": "if p.size:"
+        },
+        {
+          "line": 165,
+          "hits": 6039,
+          "cpu_seconds": 0.011930333333307471,
+          "percent_of_function": 0.3260386760878986,
+          "source": "if not np.all(np.isfinite(values)) or np.any(values <= 0):"
+        },
+        {
+          "line": 169,
+          "hits": 6039,
+          "cpu_seconds": 0.0020253333333283643,
+          "percent_of_function": 0.055349417337026245,
+          "source": "result[start:stop, columns] = values"
+        },
+        {
+          "line": 170,
+          "hits": 726,
+          "cpu_seconds": 9.700000000556486e-05,
+          "percent_of_function": 0.0026508690661682334,
+          "source": "return result"
+        }
+      ]
+    },
+    {
+      "function": "triangle_potential_uniform",
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "inclusive_cpu_seconds": 2.7198806666666755,
+      "lines": [
+        {
+          "line": 198,
+          "hits": 6039,
+          "cpu_seconds": 1.908834666666684,
+          "percent_of_function": 70.18082410968562,
+          "source": "result = np.einsum(\"...i,...i\", self.gamma0, self.x_distance)"
+        },
+        {
+          "line": 199,
+          "hits": 6039,
+          "cpu_seconds": 0.0008366666666344003,
+          "percent_of_function": 0.030761153490596677,
+          "source": "if not self.planar:"
+        },
+        {
+          "line": 200,
+          "hits": 6039,
+          "cpu_seconds": 0.8094730000000343,
+          "percent_of_function": 29.761342470663482,
+          "source": "result += self.d_distance * self.omega"
+        },
+        {
+          "line": 201,
+          "hits": 6039,
+          "cpu_seconds": 0.0007363333333228658,
+          "percent_of_function": 0.027072266160311814,
+          "source": "return result"
+        }
+      ]
+    },
+    {
+      "function": "gamma0",
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "inclusive_cpu_seconds": 1.4816296666667104,
+      "lines": [
+        {
+          "line": 137,
+          "hits": 6039,
+          "cpu_seconds": 0.4958523333333454,
+          "percent_of_function": 33.46668499483322,
+          "source": "nn1, nn2 = self.scaled_distances1, self.scaled_distances2"
+        },
+        {
+          "line": 138,
+          "hits": 6039,
+          "cpu_seconds": 0.6255600000000318,
+          "percent_of_function": 42.221076836790296,
+          "source": "dotprods1, dotprods2 = self.edge_dotprods1, self.edge_dotprods2"
+        },
+        {
+          "line": 139,
+          "hits": 6039,
+          "cpu_seconds": 0.22167866666669264,
+          "percent_of_function": 14.961813444611515,
+          "source": "res = np.log((nn1 + dotprods1 + self.reg) / (nn2 + dotprods2 + self.reg))"
+        },
+        {
+          "line": 140,
+          "hits": 6039,
+          "cpu_seconds": 0.0008533333333244167,
+          "percent_of_function": 0.05759423913562689,
+          "source": "if self.symmetrize:"
+        },
+        {
+          "line": 141,
+          "hits": 6039,
+          "cpu_seconds": 0.08159266666666849,
+          "percent_of_function": 5.5069541669094155,
+          "source": "mask = (np.abs(dotprods1 + nn1) < 1e-12) * (dotprods1 + dotprods2 < 0)"
+        },
+        {
+          "line": 142,
+          "hits": 12078,
+          "cpu_seconds": 0.004822333333332374,
+          "percent_of_function": 0.3254749443686151,
+          "source": "res[mask] = -np.log("
+        },
+        {
+          "line": 143,
+          "hits": 12078,
+          "cpu_seconds": 0.008153333333316878,
+          "percent_of_function": 0.5502949567458245,
+          "source": "(nn1[mask] - dotprods1[mask] + self.reg)"
+        },
+        {
+          "line": 144,
+          "hits": 6039,
+          "cpu_seconds": 0.0065156666666711755,
+          "percent_of_function": 0.439763512654938,
+          "source": "/ (nn2[mask] - dotprods2[mask] + self.reg)"
+        },
+        {
+          "line": 146,
+          "hits": 6039,
+          "cpu_seconds": 0.024029000000022727,
+          "percent_of_function": 1.6217952799286113,
+          "source": "res /= self.edge_lengths"
+        },
+        {
+          "line": 147,
+          "hits": 6039,
+          "cpu_seconds": 0.012572333333304542,
+          "percent_of_function": 0.8485476240219387,
+          "source": "return -res"
+        }
+      ]
+    },
+    {
+      "function": "omega",
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "inclusive_cpu_seconds": 0.7764186666665053,
+      "lines": [
+        {
+          "line": 156,
+          "hits": 6039,
+          "cpu_seconds": 0.0007706666666722484,
+          "percent_of_function": 0.09925916258312635,
+          "source": "d = self.vertex_distances"
+        },
+        {
+          "line": 157,
+          "hits": 6039,
+          "cpu_seconds": 0.10976299999998111,
+          "percent_of_function": 14.13708926798994,
+          "source": "denom = np.prod(d, axis=-1)"
+        },
+        {
+          "line": 158,
+          "hits": 24156,
+          "cpu_seconds": 0.003190666666665306,
+          "percent_of_function": 0.4109466713833905,
+          "source": "for i in range(3):"
+        },
+        {
+          "line": 159,
+          "hits": 18117,
+          "cpu_seconds": 0.0026156666666098025,
+          "percent_of_function": 0.3368886889131567,
+          "source": "j, k = (i + 1) % 3, (i + 2) % 3"
+        },
+        {
+          "line": 160,
+          "hits": 36234,
+          "cpu_seconds": 0.3133873333333022,
+          "percent_of_function": 40.36318893243603,
+          "source": "denom += np.einsum("
+        },
+        {
+          "line": 161,
+          "hits": 18117,
+          "cpu_seconds": 0.004157666666617506,
+          "percent_of_function": 0.5354928784064573,
+          "source": "\"...i,...i,...\", self.R[..., i, :], self.R[..., j, :], d[..., k]"
+        },
+        {
+          "line": 163,
+          "hits": 6039,
+          "cpu_seconds": 0.34253366666665713,
+          "percent_of_function": 44.1171343982879,
+          "source": "return -2 * np.arctan2(self.determinant, denom)"
+        }
+      ]
+    },
+    {
+      "function": "scaled_distances1",
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "inclusive_cpu_seconds": 0.36653400000002606,
+      "lines": [
+        {
+          "line": 128,
+          "hits": 6039,
+          "cpu_seconds": 0.36653400000002606,
+          "percent_of_function": 100.0,
+          "source": "return np.roll(self.vertex_distances, 1, -1) * self.edge_lengths"
+        }
+      ]
+    },
+    {
+      "function": "x_distance",
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "inclusive_cpu_seconds": 0.3324806666666345,
+      "lines": [
+        {
+          "line": 173,
+          "hits": 12078,
+          "cpu_seconds": 0.09489766666666395,
+          "percent_of_function": 28.542311232133738,
+          "source": "return np.roll("
+        },
+        {
+          "line": 174,
+          "hits": 6039,
+          "cpu_seconds": 0.23615366666664084,
+          "percent_of_function": 71.02778908447719,
+          "source": "np.einsum(\"...i,...i\", self.R, np.roll(self.edge_conormals, -1, -2)),"
+        },
+        {
+          "line": 175,
+          "hits": 6039,
+          "cpu_seconds": 0.0007346666666319853,
+          "percent_of_function": 0.22096522904551533,
+          "source": "1,"
+        },
+        {
+          "line": 176,
+          "hits": 6039,
+          "cpu_seconds": 0.0006946666666977445,
+          "percent_of_function": 0.20893445434355432,
+          "source": "-1,"
+        }
+      ]
+    },
+    {
+      "function": "edge_dotprods2",
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "inclusive_cpu_seconds": 0.3063416666666831,
+      "lines": [
+        {
+          "line": 122,
+          "hits": 12078,
+          "cpu_seconds": 0.09598400000003811,
+          "percent_of_function": 31.332335899469427,
+          "source": "return np.roll("
+        },
+        {
+          "line": 123,
+          "hits": 6039,
+          "cpu_seconds": 0.210357666666645,
+          "percent_of_function": 68.66766410053057,
+          "source": "np.einsum(\"...i,...i\", self.R, np.roll(self.edges, -2, -2)), 2, -1"
+        }
+      ]
+    },
+    {
+      "function": "edge_dotprods1",
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "inclusive_cpu_seconds": 0.3058003333332338,
+      "lines": [
+        {
+          "line": 116,
+          "hits": 12078,
+          "cpu_seconds": 0.0950186666665805,
+          "percent_of_function": 31.072126583667803,
+          "source": "return np.roll("
+        },
+        {
+          "line": 117,
+          "hits": 6039,
+          "cpu_seconds": 0.21078166666665332,
+          "percent_of_function": 68.92787341633219,
+          "source": "np.einsum(\"...i,...i\", self.R, np.roll(self.edges, -1, -2)), 1, -1"
+        }
+      ]
+    },
+    {
+      "function": "norm",
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "inclusive_cpu_seconds": 0.23113933333336542,
+      "lines": [
+        {
+          "line": 27,
+          "hits": 12078,
+          "cpu_seconds": 0.23113933333336542,
+          "percent_of_function": 100.0,
+          "source": "return np.sqrt(np.einsum(\"...i,...i\", vecs, vecs))"
+        }
+      ]
+    },
+    {
+      "function": "vertex_distances",
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "inclusive_cpu_seconds": 0.2292246666666348,
+      "lines": [
+        {
+          "line": 112,
+          "hits": 6039,
+          "cpu_seconds": 0.2292246666666348,
+          "percent_of_function": 100.0,
+          "source": "return norm(self.R)"
+        }
+      ]
+    },
+    {
+      "function": "determinant",
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "inclusive_cpu_seconds": 0.20551233333340294,
+      "lines": [
+        {
+          "line": 19,
+          "hits": 6039,
+          "cpu_seconds": 0.06558733333333855,
+          "percent_of_function": 31.914061929770476,
+          "source": "det = a[..., 0, 0] * (a[..., 1, 1] * a[..., 2, 2] - a[..., 2, 1] * a[..., 1, 2])"
+        },
+        {
+          "line": 20,
+          "hits": 6039,
+          "cpu_seconds": 0.069740000000035,
+          "percent_of_function": 33.93470302675008,
+          "source": "det += a[..., 0, 1] * (a[..., 1, 2] * a[..., 2, 0] - a[..., 2, 2] * a[..., 1, 0])"
+        },
+        {
+          "line": 21,
+          "hits": 6039,
+          "cpu_seconds": 0.06940666666668822,
+          "percent_of_function": 33.77250675952849,
+          "source": "det += a[..., 0, 2] * (a[..., 1, 0] * a[..., 2, 1] - a[..., 2, 0] * a[..., 1, 1])"
+        },
+        {
+          "line": 22,
+          "hits": 6039,
+          "cpu_seconds": 0.0007783333333411709,
+          "percent_of_function": 0.37872828395095864,
+          "source": "return det"
+        }
+      ]
+    },
+    {
+      "function": "scaled_distances2",
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "inclusive_cpu_seconds": 0.12067766666668127,
+      "lines": [
+        {
+          "line": 132,
+          "hits": 6039,
+          "cpu_seconds": 0.12067766666668127,
+          "percent_of_function": 99.99999999999999,
+          "source": "return np.roll(self.vertex_distances, 2, -1) * self.edge_lengths"
+        }
+      ]
+    },
+    {
+      "function": "d_distance",
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "inclusive_cpu_seconds": 0.07250366666668295,
+      "lines": [
+        {
+          "line": 186,
+          "hits": 6039,
+          "cpu_seconds": 0.07250366666668295,
+          "percent_of_function": 100.0,
+          "source": "return np.einsum(\"...i,...i->...\", self.R[..., 0, :], self.tn)"
+        }
+      ]
+    },
+    {
+      "function": "cross",
+      "file": "/Users/anttimc/coding/bfieldtools/bfieldtools/integrals_cached.py",
+      "inclusive_cpu_seconds": 0.015498999999971433,
+      "lines": [
+        {
+          "line": 32,
+          "hits": 6039,
+          "cpu_seconds": 0.0015230000000077126,
+          "percent_of_function": 9.826440415578551,
+          "source": "result = np.zeros(r1.shape)"
+        },
+        {
+          "line": 33,
+          "hits": 6039,
+          "cpu_seconds": 0.0050290000000261514,
+          "percent_of_function": 32.447254661819606,
+          "source": "result[..., 0] = r1[..., 1] * r2[..., 2] - r1[..., 2] * r2[..., 1]"
+        },
+        {
+          "line": 34,
+          "hits": 6039,
+          "cpu_seconds": 0.0042176666666324065,
+          "percent_of_function": 27.212508333700107,
+          "source": "result[..., 1] = r1[..., 2] * r2[..., 0] - r1[..., 0] * r2[..., 2]"
+        },
+        {
+          "line": 35,
+          "hits": 6039,
+          "cpu_seconds": 0.003974999999982447,
+          "percent_of_function": 25.646815923541986,
+          "source": "result[..., 2] = r1[..., 0] * r2[..., 1] - r1[..., 1] * r2[..., 0]"
+        },
+        {
+          "line": 36,
+          "hits": 6039,
+          "cpu_seconds": 0.0007543333333227172,
+          "percent_of_function": 4.866980665359749,
+          "source": "return result"
+        }
+      ]
+    }
+  ]
+}

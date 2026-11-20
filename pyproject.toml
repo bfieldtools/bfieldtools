@@ -45,6 +45,7 @@ dev = [
     "pytest-timeout",
 ]
 docs = [
+    "tetgen>=0.8,<0.9",
     # Interactive docs require Python 3.10+; retain the base package support.
     "pyvista[jupyter]>=0.48,<0.49; python_version >= '3.10'",
     "sphinx-design",
@@ -60,14 +61,19 @@ docs = [
     "pybtex",
     "pillow",
 ]
+meshing = [
+    "tetgen>=0.8,<0.9",
+]
 
 [project.urls]
 Homepage = "https://bfieldtools.github.io/"
 Download = "https://github.com/bfieldtools/bfieldtools"
 
 [tool.setuptools]
-packages = ["bfieldtools"]
 zip-safe = false
+
+[tool.setuptools.packages.find]
+include = ["bfieldtools*"]
 
 [tool.setuptools.package-data]
 bfieldtools = ["example_meshes/*"]

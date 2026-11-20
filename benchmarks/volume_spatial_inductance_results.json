@@ -1,0 +1,69 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.11.17",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "baseline": "303f688eb3f9b65e5ef2c1a179568db094408844",
+  "repeats": 3,
+  "point_chunk_size": 256,
+  "source_chunk_size": 16,
+  "implementation": "bfieldtools.integrals_cached.TriangleIntegrals",
+  "timing": "median wall time; warmup; alternating order",
+  "inductance_settings": {
+    "block_size": 16,
+    "quadrature_order": 2,
+    "rtol": 0.0001,
+    "max_order": 12,
+    "spatial_order": true,
+    "precomputed_interactions": false,
+    "basis_construction_timed": false
+  },
+  "cases": [
+    {
+      "name": "inductance: 48 cells, 25 DOFs",
+      "baseline_seconds": 0.3221793749835342,
+      "vectorized_seconds": 0.3071383330388926,
+      "speedup": 1.0489715555717918,
+      "output_shape": [
+        25,
+        25
+      ],
+      "relative_frobenius_difference": 1.7589827166445373e-07,
+      "max_absolute_difference": 9.066453890854897e-15,
+      "max_relative_difference": 2.2007523770702572e-05,
+      "baseline_samples_seconds": [
+        0.3217754589859396,
+        0.3221793749835342,
+        0.3223958750022575
+      ],
+      "vectorized_samples_seconds": [
+        0.3080931670265272,
+        0.3069547079503536,
+        0.3071383330388926
+      ]
+    },
+    {
+      "name": "inductance: 162 cells, 109 DOFs",
+      "baseline_seconds": 3.657882250030525,
+      "vectorized_seconds": 2.4612771249958314,
+      "speedup": 1.4861724479874328,
+      "output_shape": [
+        109,
+        109
+      ],
+      "relative_frobenius_difference": 2.970370512232199e-07,
+      "max_absolute_difference": 1.2243344839103302e-14,
+      "max_relative_difference": 0.0004637023558260163,
+      "baseline_samples_seconds": [
+        3.6621796249528416,
+        3.654060374945402,
+        3.657882250030525
+      ],
+      "vectorized_samples_seconds": [
+        2.4556397919659503,
+        2.4612771249958314,
+        2.4910483750281855
+      ]
+    }
+  ]
+}

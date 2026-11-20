@@ -1,0 +1,137 @@
+162-cell / 109-DOF assembly; untraced CPU 3.740 s
+Line times are inclusive averages per assembly; hits count all traced runs. Do not sum across functions.
+
+_integrate_sources: 3.9766 CPU s / assembly
+ line    hits     CPU ms    % function   source
+  175     726      0.161       0.00   barycentric, weights = tetrahedron_quadrature(order)
+  178     726      0.560       0.01   vertices = mesh.vertices[mesh.tetrahedra[rows]]
+  179    1452     16.072       0.40   points = vertices[:, :1] + np.einsum(
+  180     726      0.350       0.01   "qv,tvi->tqi", barycentric, vertices - vertices[:, :1]
+  182     726   3956.313      99.49   potentials = tetrahedron_potential(mesh, points.reshape(-1, 3), columns)
+  183     726      0.187       0.00   potentials = potentials.reshape(len(rows), len(weights), len(columns))
+  184     726      2.957       0.07   return mesh.volumes[rows, None] * np.einsum("q,tqs->ts", weights, potentials)
+
+tetrahedron_potential: 3.9095 CPU s / assembly
+ line    hits     CPU ms    % function   source
+   90     726      0.222       0.01   _positive_integer(point_chunk_size, "point_chunk_size")
+   91     726      0.164       0.00   _positive_integer(source_chunk_size, "source_chunk_size")
+   92     726      0.141       0.00   points = np.asarray(points, dtype=float)
+   93     726      0.860       0.02   if points.ndim != 2 or points.shape[1] != 3 or not np.all(np.isfinite(points)):
+   95     726      1.739       0.04   sources = _cell_indices(mesh, source_cells)
+   96     726      0.202       0.01   result = np.empty((len(points), len(sources)))
+   97     726      0.098       0.00   far_barycentric, far_weights = tetrahedron_quadrature(4)
+   98     726      0.499       0.01   vertices = mesh.vertices[mesh.tetrahedra[sources]]
+   99     726      1.296       0.03   centers = vertices.mean(axis=1)
+  100     726      1.423       0.04   scales = np.linalg.norm(vertices - centers[:, None], axis=-1).max(axis=1)
+  101     726      0.508       0.01   vertices = (vertices - centers[:, None]) / scales[:, None, None]
+  104     726      0.958       0.02   faces = np.ascontiguousarray(vertices[:, np.asarray(TETRA_FACES)])
+  107     726      0.196       0.01   edges = np.empty_like(faces)
+  108     726      0.546       0.01   edges[:, :, 0] = faces[:, :, 2] - faces[:, :, 1]
+  109     726      0.461       0.01   edges[:, :, 1] = faces[:, :, 0] - faces[:, :, 2]
+  110     726      0.452       0.01   edges[:, :, 2] = faces[:, :, 1] - faces[:, :, 0]
+  111     726      5.195       0.13   normals = np.cross(edges[:, :, 2], -edges[:, :, 1])
+  112     726      0.962       0.02   normals /= np.linalg.norm(normals, axis=-1)[..., None]
+  113     726      6.806       0.17   far_points = np.einsum("qv,svi->sqi", far_barycentric, vertices)
+  114     726      0.142       0.00   volumes = mesh.volumes[sources]
+  115    1452      0.232       0.01   for column in range(0, len(sources), source_chunk_size):
+  116     726      0.165       0.00   columns = slice(column, min(column + source_chunk_size, len(sources)))
+  117    6765      0.925       0.02   for start in range(0, len(points), point_chunk_size):
+  118    6039      1.137       0.03   stop = min(start + point_chunk_size, len(points))
+  119   12078     65.940       1.69   x = (points[start:stop, None] - centers[None, columns]) / scales[
+  120    6039      0.796       0.02   None, columns, None
+  122    6039     48.775       1.25   far = np.linalg.norm(x, axis=-1) > 8
+  123    6039      1.304       0.03   values = np.empty(far.shape)
+  124    6039     16.751       0.43   p, s = np.nonzero(~far)
+  125    6039      0.886       0.02   if p.size:
+  126    6039      4.647       0.12   if not np.any(far):
+  129    6039      0.885       0.02   displacements = (
+  130    6039    566.252      14.48   x[:, :, None, None, :] - faces[None, columns]
+  131    6039      1.295       0.03   ).reshape(len(x), -1, 3, 3)
+  132    6039      1.251       0.03   triangle_normals = normals[columns].reshape(-1, 3)
+  133    6039      1.192       0.03   triangle_edges = edges[columns].reshape(-1, 3, 3)
+  142   18117     77.996       2.00   heights = -np.einsum(
+  143    6039      1.090       0.03   "pfi,fi->pf", displacements[:, :, 0], triangle_normals
+  144    6039      1.051       0.03   ).reshape(-1, 4)
+  145   18117   2984.007      76.33   triangle_potentials = triangle_potential_uniform(
+  146    6039      0.752       0.02   displacements, triangle_normals, edges=triangle_edges
+  147    6039      1.151       0.03   ).reshape(-1, 4)
+  149    6039     17.734       0.45   values[p, s] = (
+  150   18117      6.243       0.16   0.5
+  151    6039     47.273       1.21   * np.sum(heights * triangle_potentials, axis=-1)
+  152    6039      5.980       0.15   * scales[columns][s] ** 2
+  154    6039     16.001       0.41   p, s = np.nonzero(far)
+  155    6039      0.837       0.02   if p.size:
+  164    6039     11.874       0.30   if not np.all(np.isfinite(values)) or np.any(values <= 0):
+  168    6039      2.074       0.05   result[start:stop, columns] = values
+  169     726      0.098       0.00   return result
+
+triangle_potential_uniform: 2.9730 CPU s / assembly
+ line    hits     CPU ms    % function   source
+  257    6039      0.733       0.02   if edges is None:
+  259    6039    339.346      11.41   x = x_distance(R, tn, ta=None, edges=edges)
+  260    6039   1530.739      51.49   result = np.einsum("...i,...i", gamma0(R, edges=edges), x)
+  261    6039      0.776       0.03   if not planar:
+  262    6039   1100.570      37.02   result += d_distance(R, tn) * omega(R)
+  263    6039      0.818       0.03   return result
+
+gamma0: 1.4375 CPU s / assembly
+ line    hits     CPU ms    % function   source
+   75    6039      0.752       0.05   if edges is None:
+   78    6039      0.735       0.05   _edges = edges
+   81    6039    302.840      21.07   dotprods1 = np.roll(np.einsum("...i,...i", R, np.roll(_edges, -1, -2)), 1, -1)
+   82    6039    302.794      21.06   dotprods2 = np.roll(np.einsum("...i,...i", R, np.roll(_edges, -2, -2)), 2, -1)
+   83    6039      9.232       0.64   en = norm(_edges)
+   84    6039      0.775       0.05   if edges is None:
+   86    6039    227.625      15.83   n = norm(R)
+   89    6039    119.560       8.32   nn1 = np.roll(n, 1, -1) * en
+   90    6039    119.111       8.29   nn2 = np.roll(n, 2, -1) * en
+   91    6039    218.529      15.20   res = np.log((nn1 + dotprods1 + reg) / (nn2 + dotprods2 + reg))
+   96    6039      0.780       0.05   if symmetrize:
+   97    6039     80.902       5.63   mask = ((np.abs(dotprods1 + nn1)) < 1e-12) * (dotprods1 + dotprods2 < 0)
+   98   12078      4.924       0.34   res[mask] = -np.log(
+   99    6039     13.054       0.91   (nn1[mask] - dotprods1[mask] + reg) / (nn2[mask] - dotprods2[mask] + reg)
+  102    6039     23.484       1.63   res /= en
+  103    6039     12.423       0.86   return -res
+
+omega: 0.9943 CPU s / assembly
+ line    hits     CPU ms    % function   source
+  131    6039    227.099      22.84   d = norm(R)
+  133    6039    211.361      21.26   stp = determinant(R)
+  135    6039    109.924      11.06   denom = np.prod(d, axis=-1)
+  136   24156      3.404       0.34   for i in range(3):
+  137   18117      2.558       0.26   j = (i + 1) % 3
+  138   18117      2.319       0.23   k = (i + 2) % 3
+  140   18117    308.869      31.06   denom += np.einsum("...i,...i,...", R[..., i, :], R[..., j, :], d[..., k])
+  142    6039    127.940      12.87   sa = -2 * np.arctan2(stp, denom)
+  143    6039      0.846       0.09   return sa
+
+norm: 0.4528 CPU s / assembly
+ line    hits     CPU ms    % function   source
+   34   18117    452.840     100.00   return np.sqrt(np.einsum("...i,...i", vecs, vecs))
+
+x_distance: 0.3315 CPU s / assembly
+ line    hits     CPU ms    % function   source
+  169    6039      0.713       0.21   if edges is None:
+  172    6039      0.704       0.21   _edges = edges
+  173    6039     24.154       7.29   _edges = -cross(_edges, tn[:, None, :])
+  174    6039      0.739       0.22   if ta is not None:
+  176    6039    305.172      92.06   return np.roll(np.einsum("...k,...k->...", R, np.roll(_edges, -1, -2)), 1, -1)
+
+determinant: 0.2038 CPU s / assembly
+ line    hits     CPU ms    % function   source
+   26    6039     64.936      31.87   det = a[..., 0, 0] * (a[..., 1, 1] * a[..., 2, 2] - a[..., 2, 1] * a[..., 1, 2])
+   27    6039     69.191      33.96   det += a[..., 0, 1] * (a[..., 1, 2] * a[..., 2, 0] - a[..., 2, 2] * a[..., 1, 0])
+   28    6039     68.851      33.79   det += a[..., 0, 2] * (a[..., 1, 0] * a[..., 2, 1] - a[..., 2, 0] * a[..., 1, 1])
+   29    6039      0.785       0.39   return det
+
+d_distance: 0.0708 CPU s / assembly
+ line    hits     CPU ms    % function   source
+  201    6039     70.829     100.00   return np.einsum("...ki,ki->...k", R[..., 0, :], tn)
+
+cross: 0.0158 CPU s / assembly
+ line    hits     CPU ms    % function   source
+   39    6039      1.493       9.44   result = np.zeros(r1.shape)
+   40    6039      5.092      32.19   result[..., 0] = r1[..., 1] * r2[..., 2] - r1[..., 2] * r2[..., 1]
+   41    6039      4.304      27.21   result[..., 1] = r1[..., 2] * r2[..., 0] - r1[..., 0] * r2[..., 2]
+   42    6039      4.147      26.22   result[..., 2] = r1[..., 0] * r2[..., 1] - r1[..., 1] * r2[..., 0]
+   43    6039      0.781       4.94   return result

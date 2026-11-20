@@ -1,0 +1,176 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.11.17",
+  "numpy": "2.4.6",
+  "scipy": "1.17.1",
+  "settings": {
+    "block_size": 16,
+    "quadrature_order": 2,
+    "touching_order": 4,
+    "spatial_order": true
+  },
+  "radius_m": 0.1,
+  "resistivity_ohm_m": 1e-08,
+  "mesh_generation": {
+    "method": "loaded archived refinement",
+    "path": "benchmarks/volume_eddy_profile/refined_sphere/mesh.npz"
+  },
+  "timing_method": "one uninstrumented sequential assembly per mesh; separate setup, eigensolve, and instrumented refined assembly",
+  "cases": {
+    "coarse": {
+      "ncells": 808,
+      "nvertices": 226,
+      "ndofs": 649,
+      "boundary_faces": 320,
+      "volume_m3": 0.004047044679978849,
+      "min_quality": 0.26135690481854446,
+      "median_quality": 0.8789992249925627,
+      "volume_min_m3": 6.757507791385586e-07,
+      "volume_max_m3": 1.4337859233214449e-05,
+      "setup_wall_seconds": 0.00546908302931115,
+      "dense_inductance_MiB": 3.2135086059570312,
+      "pair_classification": {
+        "ncells": 808,
+        "unique_pairs": 326836,
+        "direct_pairs": 303420,
+        "analytic_pairs": 23416,
+        "contacts": {
+          "non_touching": 303420,
+          "vertex": 16436,
+          "edge": 4716,
+          "face": 1456,
+          "self": 808
+        }
+      },
+      "assembly_wall_seconds": 3.398352332995273,
+      "assembly_cpu_seconds": 3.3951309999999997,
+      "resistance_wall_seconds": 0.0008419999503530562,
+      "slow_modes_wall_seconds": 0.015551666961982846,
+      "slowest_20_decay_rates_per_s": [
+        8.273289847041678,
+        8.279347250827769,
+        8.283200427457704,
+        17.610519162513317,
+        17.650338387749127,
+        17.655182178049586,
+        17.689845615960586,
+        17.746501243773384,
+        18.252787081905375,
+        18.308243672073672,
+        18.335462412095225,
+        30.29503638338538,
+        30.37381429121397,
+        30.489206715416064,
+        30.51294544940858,
+        30.57364247842768,
+        30.677889257703946,
+        30.826533734086418,
+        32.04156919180912,
+        32.22006053181778
+      ],
+      "slowest_20_generalized_residual": 4.2837749067791234e-14,
+      "slowest_20_M_orthogonality_error": 8.740076736449162e-15
+    },
+    "refined": {
+      "ncells": 1804,
+      "nvertices": 404,
+      "ndofs": 1603,
+      "boundary_faces": 404,
+      "volume_m3": 0.00404704467997885,
+      "min_quality": 0.15266041347841164,
+      "median_quality": 0.8806041854061648,
+      "volume_min_m3": 9.157080606142894e-08,
+      "volume_max_m3": 4.653744322328898e-06,
+      "setup_wall_seconds": 0.008836124965455383,
+      "dense_inductance_MiB": 19.60456085205078,
+      "pair_classification": {
+        "ncells": 1804,
+        "unique_pairs": 1628110,
+        "direct_pairs": 1572061,
+        "analytic_pairs": 56049,
+        "contacts": {
+          "non_touching": 1572061,
+          "vertex": 39481,
+          "edge": 11358,
+          "face": 3406,
+          "self": 1804
+        }
+      },
+      "assembly_wall_seconds": 10.702977875014767,
+      "assembly_cpu_seconds": 10.666971,
+      "resistance_wall_seconds": 0.0017076669610105455,
+      "slow_modes_wall_seconds": 0.12634179199812934,
+      "slowest_20_decay_rates_per_s": [
+        8.167823425136952,
+        8.17075637327402,
+        8.171546456221574,
+        17.10510936852995,
+        17.12373164147577,
+        17.1288801360025,
+        17.153067822509758,
+        17.161305016307843,
+        17.37018712323436,
+        17.394274124316457,
+        17.429005390409458,
+        28.968733447689093,
+        29.012001598147123,
+        29.065082205511192,
+        29.105757538483733,
+        29.149595106255035,
+        29.19820256790958,
+        29.249581469955242,
+        29.747665340586476,
+        29.790562301484197
+      ],
+      "slowest_20_generalized_residual": 1.6708853547706182e-13,
+      "slowest_20_M_orthogonality_error": 7.524129000222612e-15,
+      "instrumentation": {
+        "wall_seconds": 10.43961408402538,
+        "functions": {
+          "_analytic": {
+            "calls": 11701,
+            "cell_pairs": 65342,
+            "cpu_seconds": 6.255218000000008
+          },
+          "_regular": {
+            "calls": 29790,
+            "cell_pairs": 1576274,
+            "cpu_seconds": 2.1489870000000444
+          }
+        }
+      }
+    }
+  },
+  "comparison": {
+    "cell_ratio": 2.232673267326733,
+    "dof_ratio": 2.4699537750385208,
+    "pair_ratio": 4.981427994468174,
+    "assembly_time_ratio": 3.149460922900031,
+    "two_point_time_exponent": 1.4283264614054034,
+    "relative_slowest_20_decay_rate_changes": [
+      -0.012747821465778575,
+      -0.013115874266886318,
+      -0.013479568943667308,
+      -0.028699312571046187,
+      -0.029835504266528146,
+      -0.029810060113762415,
+      -0.03034383708620514,
+      -0.03297530140882643,
+      -0.04835425706280039,
+      -0.04992120293610314,
+      -0.04943736903454432,
+      -0.043779545893652294,
+      -0.04483508985767293,
+      -0.04670913622638795,
+      -0.04611773429929955,
+      -0.04657761577402597,
+      -0.048233001865432557,
+      -0.051155678991811615,
+      -0.07159149533191522,
+      -0.07540327951694614
+    ],
+    "max_relative_slowest_20_decay_rate_change": 0.07540327951694614,
+    "mean_slowest_triplet_coarse": 8.278612508442384,
+    "mean_slowest_triplet_refined": 8.170042084877515
+  }
+}
