@@ -38,6 +38,7 @@ dependencies = [
     "trimesh",
     "shapely",
     "psutil",
+	"networkx"
 ]
 
 [project.optional-dependencies]
