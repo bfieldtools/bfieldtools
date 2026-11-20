@@ -6,11 +6,10 @@ extends the volume [roadmap](volume/PLAN.md) and the existing surface
 stream-function construction. Both cases must support handles, even though
 closed surfaces such as a torus are uncommon in present surface workflows.
 
-Implemented volume APIs: `dual_cycle_basis` supplies a complete sparse flux
-space; `augmented_flux_basis` supplies a size-limited dense decomposition into
-independent interior edge curls and global modes; `build_face_current_basis`
-reconstructs both for impedance and dynamics assembly. Cavity gauge redundancy
-is removed by rank selection. The TetGen adapter accepts handles and the torus
+Implemented volume APIs: `augmented_flux_basis` supplies a size-limited dense
+stacked-nullspace decomposition into independent interior edge curls and global
+modes; `build_face_current_basis` reconstructs the fluxes for impedance and
+dynamics assembly. Cavity gauge redundancy is removed by rank selection. The TetGen adapter accepts handles and the torus
 eddy-current example includes excitation and decay. A general cut-normalization
 API, sparse augmented construction, and cavity meshing remain planned. See
 [ARCHITECTURE.md](volume/ARCHITECTURE.md#handles-and-cavities) for usage and
@@ -78,18 +77,15 @@ generators distinct from metric-dependent harmonic representatives.
 
 1. Fix all boundary face fluxes to zero, including cavity walls. Let D_i contain
    the interior-face columns of D.
-2. Construct Z spanning ker(D_i) from fundamental cycles of the cell dual graph:
-   cells are nodes, interior faces are oriented edges, and a spanning forest
-   supplies one cycle per non-tree edge. Preserve signs when traversing cycles.
-3. Verify the dimension N_interior_faces - N_cells + N_dual_components.
+2. For independent small-mesh validation, construct Z spanning ker(D_i) using
+   a dense divergence-only nullspace solve.
+3. Verify the dimension N_interior_faces - N_cells + N_components.
 4. Reconstruct the fluxes with lowest-order Raviart-Thomas functions and expose
    the resulting Cartesian cell-current operators as `CellCurrentBasis`.
    Conservation cancels the linear RT0 term, leaving constant current per cell.
 
-This construction includes handles and cavities without a potential gauge. Use
-it as a complete reference and an initial usable alternative basis. Long cycles
-can increase matrix overlap; measure sparsity and conditioning before adopting
-it as the default.
+The implemented augmented builder below constructs the local/global space
+directly from the sparse divergence/transpose-curl stack.
 
 ### Local edge curls plus global currents
 
@@ -102,7 +98,11 @@ potential coefficients remain zero. It satisfies D_i C_i = 0.
    sufficient. Potentials constant at different values on different boundary
    components can produce additional curl-free relative edge fields.
 2. Extract H_v representing ker(D_i) / im(C_i). For a Euclidean reference solve
-   D_i H_v = 0 and C_i^T H_v = 0. This is relative second cohomology, whose
+   the right nullspace of the sparse stack [D_i; C_i^T]. The current reference
+   uses dense SVD with a size guard; sparse nullspace extraction remains planned.
+   This enforces D_i H_v = 0 and C_i^T H_v = 0 with the identity flux metric.
+   RT0 mass weighting can later replace C_i^T by C_i^T W.
+   This is relative second cohomology, whose
    dimension is b1 of an orientable three-dimensional conductor.
 3. Form q_i = C_independent a + H_v h and reconstruct cell currents using the
    same face-flux reconstruction as the complete reference.
@@ -136,8 +136,8 @@ then Cq = 0. Derive and test this orientation relation against the existing
 rotated-gradient implementation rather than assuming its sign.
 
 1. Set flux through every open boundary edge to zero. Let C_i retain the
-   interior-edge columns of C. Construct the complete reference ker(C_i),
-   equivalently from cycles of the triangle dual graph.
+   interior-edge columns of C. Construct the complete reference ker(C_i)
+   using an independent dense nullspace solve on small meshes.
 2. Let S map existing boundary-compatible stream coefficients to vertex values.
    Define L_s = G[interior_edges, :] S. Remove constant gauges and any redundant
    columns to obtain an independent stream-current map.
@@ -183,13 +183,13 @@ The same restriction applies to volume magnetization/potential diagnostics.
 
 ## Sparse implementation after the reference
 
-Build reusable connectivity, boundary-component, primal-tree, and dual-tree
-utilities for both dimensions. Use sparse homology/cohomology generators and
-independent cycle selection to find the small global subspace. Include cavity
-kernel constraints in volume gauge selection. Use sparse constrained metric
-solves to improve representatives when needed, with explicit gauge fixing.
+Build reusable connectivity and boundary-component utilities for both
+dimensions. Keep the stacked operators sparse and compute only the small
+nullspace, with residual and dimension checks and explicit rank tolerances.
+Use sparse cavity-compatible selection of independent local curls. Sparse
+constrained metric solves can improve representatives when needed.
 
-Keep connectivity and integer generators geometry-independent. Reconstruct
+Keep connectivity and incidence operators geometry-independent. Reconstruct
 Cartesian currents and apply mass/resistance metrics in a separate layer.
 Retain generator/cut metadata for interpretation without making impedance or
 dynamics assembly depend on a topology object. Reuse `CellCurrentBasis` for
@@ -203,12 +203,12 @@ surface callers before committing a public API.
    closed torus surface, punctured torus, solid ball, solid ring, and spherical
    cavity. Include disconnected combinations. Fixtures should not require an
    optional meshing backend.
-2. **Complete references:** dual-cycle face/edge flux bases, dense complement
+2. **Complete references:** independent divergence nullspaces, stacked-nullspace
    extraction, and conservative surface/volume reconstruction. Record ranks and
    expected global counts; compare represented spaces rather than exact columns.
 3. **Volume support:** independent local curls, cavity gauge treatment, global
    handle columns, and existing resistance/inductance/coupling integration.
-   Verify agreement with the complete dual-cycle basis under change of basis.
+   Verify agreement with the full divergence nullspace under change of basis.
 4. **Surface support:** opt-in augmented current basis, general-current operator
    assembly, and explicit behavior for `suh`, scalar potentials, and contours.
    Demonstrate the two global torus currents alongside the ordinary annulus.

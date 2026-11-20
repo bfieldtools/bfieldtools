@@ -406,7 +406,7 @@ contour. After enforcing boundary conditions and removing the full zero-current
 freedom, these coefficients uniquely parametrize the represented current density.
 Assemble $R$ and $M$ directly in this independent edge basis. For conductors with
 handles, also address curl-free freedoms beyond scalar gradients and include the
-required global current patterns, as discussed below. Face fluxes and dual cycles
+required global current patterns, as discussed below. Face fluxes
 serve as reconstruction and validation tools; they need not be solver unknowns.
 
 ### Face basis functions reconstruct the same volume currents
@@ -502,29 +502,37 @@ q_i=Zx,\qquad
 $$
 
 These $\mathbf j_a$ form an independent conserved-current basis for $R$ and $M$.
-One way to construct $Z$ is to draw the **dual graph**: tetrahedra are nodes and
-interior faces connect neighbouring nodes. Each independent graph cycle routes
-current through a closed sequence of cells. A spanning forest gives one cycle
-per remaining graph edge, with count
+The dimension of this space is
 
 $$
-N_{\mathrm{cycles}}=N_{\mathrm{interior\ faces}}-N_{\mathrm{tetrahedra}}
-+N_{\mathrm{dual\ components}}.
+N_{\mathrm{currents}}=N_{\mathrm{interior\ faces}}-N_{\mathrm{tetrahedra}}
++N_{\mathrm{components}},
 $$
 
-This includes circulation around handles automatically, although long cycles
-increase basis overlap and fill in $R$.
-[Passarotto, Pitassi and Specogna](https://www.comphys.com/pdf/cmame_22_vinco.pdf)
-compare loop and vector-potential constructions and their treatment of topology.
+because the face-connectivity divergence has one redundant balance equation per
+connected conductor. To construct the basis, restrict the curl incidence to
+interior faces and interior edges, giving $C_i$ with $D_i C_i=0$. Select independent
+columns $C_{\mathrm{ind}}$ by pivoted QR, then solve the stacked nullspace problem
 
-`dual_cycle_basis(topology)` implements this complete sparse construction,
-including handles and cavities. `augmented_flux_basis(topology)` selects
-independent interior edge curls using pivoted QR and appends the missing
-orthonormal global patterns using a projected dual-cycle space and SVD. This
-second construction is a size-limited dense reference. It removes cavity gauge
-redundancy through rank selection, without changing the original solid-ball
-tree gauge. `build_face_current_basis(mesh, flux_basis)` reconstructs either
-space as constant cell currents for the existing assembly and dynamics APIs.
+$$
+\begin{bmatrix}D_i\\C_i^\mathsf{T}\end{bmatrix}H=0,
+\qquad Z=[C_{\mathrm{ind}}\;H].
+$$
+
+The nullspace columns are conserved and orthogonal to all local curls. They
+supply precisely the missing global currents, without constructing a complete
+cycle basis first. This is a Euclidean face-flux Hodge decomposition. Replacing
+$C_i^\mathsf{T}$ by $C_i^\mathsf{T}W$ for the RT0 mass matrix $W$ would give
+geometry-weighted discrete harmonic representatives with the same dimension.
+Elementwise curl alone cannot select these modes: RT0 fields already have zero
+curl inside each tetrahedron, while tangential jumps remain possible.
+
+`augmented_flux_basis(topology)` implements the identity-metric stack with a
+size-limited dense QR/SVD solve. The stack itself is sparse; large-mesh sparse
+nullspace extraction remains future work. Rank selection removes cavity gauge
+redundancy without changing the original solid-ball tree gauge.
+`build_face_current_basis(mesh, flux_basis)` reconstructs the resulting space as
+constant cell currents for the existing assembly and dynamics APIs.
 
 The appended patterns span the relative cohomology quotient
 $\ker D_i / \operatorname{im} C_i$, with $C_i$ restricted to interior faces and

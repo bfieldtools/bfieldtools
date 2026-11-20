@@ -36,7 +36,7 @@ admit this boundary-zero potential representation.
 | --- | --- | --- |
 | Geometry (`mesh.py`) | Validated array container, oriented cells/boundary, volumes, quality, PyVista conversion, bundled sphere | Input arrays must already be geometrically conforming; no overlap/self-intersection/hanging-node detection |
 | Meshing (`mesh.py`) | Optional TetGen adapter for one closed outward connected surface, including handles; sphere and torus checks | No cavities, multiple solids, labels, material interfaces, or local size fields; maximum volume is a target |
-| Topology (`topology.py`, `currents.py`) | Incidence operators, solid-ball tree–cotree gauge, complete sparse dual-cycle basis, and local-curl/global decomposition for handles and cavities | Augmented decomposition uses size-limited dense QR/SVD; original tree gauge remains solid-ball only; conforming manifold input required |
+| Topology (`topology.py`, `currents.py`) | Incidence operators, solid-ball tree–cotree gauge, stacked-nullspace local-curl/global decomposition for handles and cavities | Augmented decomposition uses size-limited dense QR/SVD; original tree gauge remains solid-ball only; conforming manifold input required |
 | Current representation (`basis.py`) | General cell-current operators, edge-curl and conserved face-flux builders, real/complex and multiple-field reconstruction | No public potential/dipole-density reconstruction; global coefficients have Euclidean flux normalization rather than specified cut normalization |
 | Resistance (`impedance.py`) | Exact sparse weighted Gram assembly | Scalar resistivity only |
 | Inductance (`integrals.py`, `impedance.py`) | Fixed analytic self/touching integration, direct quadrature elsewhere, reciprocal streamed blocks, cached geometry, dense basis matrix | No adaptive error estimator; no general exact pair evaluator, spatial adaptivity, compression, or matrix-free solve |
@@ -76,9 +76,9 @@ Acceptance criteria and current evidence are in [VALIDATION.md](VALIDATION.md).
 ## Subsequent extensions
 
 - **General topology:** replace the dense augmented reference with sparse
-  cavity-compatible gauge selection and handle generators; add cut-normalized
-  global coefficients. Complete dual-cycle and augmented reference builders
-  already support supplied meshes with handles and cavities.
+  cavity-compatible gauge selection and stacked nullspace extraction; add cut-normalized
+  global coefficients. The augmented stacked-nullspace reference builder
+  already supports supplied meshes with handles and cavities.
   The [joint surface/volume plan](../TOPOLOGY_PLAN.md) specifies the methods,
   including preservation of surface boundary-hole currents and support for
   surface handle currents.

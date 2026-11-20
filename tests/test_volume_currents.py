@@ -4,16 +4,16 @@ from dataclasses import replace
 
 import numpy as np
 import pytest
-from scipy.linalg import eigvalsh
+from scipy.linalg import eigvalsh, null_space
 from scipy.sparse import csr_matrix
 
 from bfieldtools.volume import (
+    ConservedFluxBasis,
     TetraMesh,
     augmented_flux_basis,
     build_edge_current_basis,
     build_face_current_basis,
     build_topology,
-    dual_cycle_basis,
     inductance_matrix,
     loop_coupling,
     reconstruct_currents,
@@ -21,7 +21,7 @@ from bfieldtools.volume import (
     tetrahedron_interaction_matrix,
     tree_cotree_gauge,
 )
-from .test_volume_topology import assert_zero, cube_mesh
+from .test_volume_topology import cube_mesh
 
 
 def ring_mesh():
@@ -35,6 +35,15 @@ def double_mesh(mesh):
     )
 
 
+def conserved_reference(topology):
+    """Independent full divergence-nullspace reference; no local curl input."""
+    interior = np.flatnonzero(~topology.boundary_face_mask)
+    z = null_space(topology.divergence[:, interior].toarray().astype(float))
+    fluxes = np.zeros((len(topology.faces), z.shape[1]))
+    fluxes[interior] = z
+    return ConservedFluxBasis(topology, csr_matrix(fluxes))
+
+
 @pytest.mark.parametrize(
     "mesh, expected_global",
     [
@@ -45,56 +54,65 @@ def double_mesh(mesh):
         (double_mesh(ring_mesh()), 2),
         (cube_mesh(5, omit=tuple((x, 2, z) for x in (1, 3) for z in range(5))), 2),
         (cube_mesh(5, omit=tuple((3, 3, z) for z in range(5)) + ((1, 1, 2),)), 1),
+        # Thin two-handle slab: no interior vertices, so the stack is wide.
+        (
+            cube_mesh(
+                5,
+                omit=tuple(
+                    (x, y, z)
+                    for x in range(5)
+                    for y in range(5)
+                    for z in range(5)
+                    if z != 0 or (x, y) in ((1, 2), (3, 2))
+                ),
+            ),
+            2,
+        ),
         (TetraMesh(np.vstack((np.zeros(3), np.eye(3))), [[0, 1, 2, 3]]), 0),
     ],
 )
 def test_complete_flux_spaces(mesh, expected_global):
     topology = build_topology(mesh)
-    cycles = dual_cycle_basis(topology)
     augmented = augmented_flux_basis(topology)
     assert augmented.n_global == expected_global
-    di = topology.divergence[:, ~topology.boundary_face_mask].toarray()
-    dimension = di.shape[1] - np.linalg.matrix_rank(di) if di.size else 0
-    assert cycles.n_dofs == augmented.n_dofs == dimension
-    for space in (cycles, augmented):
-        fluxes = space.fluxes.toarray()
-        if dimension:
-            assert np.linalg.matrix_rank(fluxes) == dimension
-        else:
-            assert fluxes.shape[1] == 0
-        np.testing.assert_allclose(topology.divergence @ fluxes, 0, atol=2e-13)
-        np.testing.assert_array_equal(fluxes[topology.boundary_face_mask], 0)
-        coefficients = np.linalg.lstsq(fluxes, cycles.fluxes.toarray(), rcond=None)[0]
-        np.testing.assert_allclose(
-            fluxes @ coefficients, cycles.fluxes.toarray(), atol=2e-13
-        )
-        # Independently integrate reconstructed currents through every face of
-        # every cell: checks RT reconstruction, orientation, and continuity.
-        basis = build_face_current_basis(mesh, space)
-        currents = reconstruct_currents(basis, np.eye(space.n_dofs))
-        triangles = mesh.vertices[topology.faces]
-        area_vectors = (
-            np.cross(
-                triangles[:, 1] - triangles[:, 0], triangles[:, 2] - triangles[:, 0]
-            )
-            / 2
-        )
-        measured = np.einsum(
-            "tfi,tik->tfk", area_vectors[topology.cell_faces], currents
-        )
-        np.testing.assert_allclose(measured, fluxes[topology.cell_faces], atol=3e-13)
-    assert_zero(topology.divergence @ cycles.fluxes)
+    reference = conserved_reference(topology)
+    dimension = reference.n_dofs
+    assert augmented.n_dofs == dimension
+    fluxes = augmented.fluxes.toarray()
+    if dimension:
+        assert np.linalg.matrix_rank(fluxes) == dimension
+    else:
+        assert fluxes.shape[1] == 0
+    np.testing.assert_allclose(topology.divergence @ fluxes, 0, atol=2e-13)
+    np.testing.assert_array_equal(fluxes[topology.boundary_face_mask], 0)
+    coefficients = np.linalg.lstsq(fluxes, reference.fluxes.toarray(), rcond=None)[0]
+    np.testing.assert_allclose(
+        fluxes @ coefficients, reference.fluxes.toarray(), atol=2e-13
+    )
+    # Independently integrate reconstructed currents through every face of
+    # every cell: checks RT reconstruction, orientation, and continuity.
+    basis = build_face_current_basis(mesh, augmented)
+    currents = reconstruct_currents(basis, np.eye(dimension))
+    triangles = mesh.vertices[topology.faces]
+    area_vectors = (
+        np.cross(triangles[:, 1] - triangles[:, 0], triangles[:, 2] - triangles[:, 0])
+        / 2
+    )
+    measured = np.einsum("tfi,tik->tfk", area_vectors[topology.cell_faces], currents)
+    np.testing.assert_allclose(measured, fluxes[topology.cell_faces], atol=3e-13)
     nlocal = len(augmented.local_edges)
     np.testing.assert_array_equal(
-        augmented.fluxes[:, :nlocal].toarray(),
-        topology.curl[:, augmented.local_edges].toarray(),
+        fluxes[:, :nlocal], topology.curl[:, augmented.local_edges].toarray()
     )
-    global_fluxes = augmented.fluxes[:, nlocal:].toarray()
+    global_fluxes = fluxes[:, nlocal:]
     np.testing.assert_allclose(
         global_fluxes.T @ global_fluxes, np.eye(expected_global), atol=1e-13
     )
+    # The stack uses ALL interior edge curls, including redundant potentials.
     np.testing.assert_allclose(
-        topology.curl[:, ~topology.boundary_edge_mask].T @ global_fluxes, 0, atol=1e-13
+        topology.curl[:, ~topology.boundary_edge_mask].T @ global_fluxes,
+        0,
+        atol=1e-13,
     )
 
 
@@ -124,10 +142,9 @@ def test_face_reconstruction_matches_legacy_edge_operators():
     mesh = cube_mesh(2)
     topology = build_topology(mesh)
     legacy = build_edge_current_basis(mesh, topology, tree_cotree_gauge(topology))
-    cycles = dual_cycle_basis(topology)
     # Use the old gauge's exact flux columns, testing the new reconstruction
     # without a numerically fitted change of basis.
-    flux_basis = replace(cycles, fluxes=tree_cotree_gauge(topology).curl)
+    flux_basis = ConservedFluxBasis(topology, tree_cotree_gauge(topology).curl)
     reconstructed = build_face_current_basis(mesh, flux_basis)
     for actual, expected in zip(reconstructed.operators, legacy.operators):
         np.testing.assert_allclose(actual.toarray(), expected.toarray(), atol=2e-14)
@@ -136,18 +153,18 @@ def test_face_reconstruction_matches_legacy_edge_operators():
 def test_impedance_coupling_and_modes_are_basis_invariant():
     mesh = ring_mesh()
     topology = build_topology(mesh)
-    cycles, augmented = dual_cycle_basis(topology), augmented_flux_basis(topology)
-    dual = build_face_current_basis(mesh, cycles)
+    reference, augmented = conserved_reference(topology), augmented_flux_basis(topology)
+    independent = build_face_current_basis(mesh, reference)
     local_global = build_face_current_basis(mesh, augmented)
     transform = np.linalg.lstsq(
-        cycles.fluxes.toarray(), augmented.fluxes.toarray(), rcond=None
+        reference.fluxes.toarray(), augmented.fluxes.toarray(), rcond=None
     )[0]
     rho = np.linspace(1, 2, len(mesh.tetrahedra))
-    rd = resistance_matrix(dual, rho).toarray()
+    rd = resistance_matrix(independent, rho).toarray()
     ra = resistance_matrix(local_global, rho).toarray()
     np.testing.assert_allclose(ra, transform.T @ rd @ transform, atol=3e-12)
     kernel = tetrahedron_interaction_matrix(mesh, quadrature_order=2, touching_order=4)
-    md = inductance_matrix(dual, interactions=kernel)
+    md = inductance_matrix(independent, interactions=kernel)
     ma = inductance_matrix(local_global, interactions=kernel)
     np.testing.assert_allclose(ma, transform.T @ md @ transform, atol=1e-18)
     assert np.linalg.eigvalsh(ra).min() > 0
@@ -155,7 +172,7 @@ def test_impedance_coupling_and_modes_are_basis_invariant():
     loop = [[-1, -1, 2], [2, -1, 2], [2, 2, 2], [-1, 2, 2], [-1, -1, 2]]
     np.testing.assert_allclose(
         loop_coupling(local_global, loop),
-        transform.T @ loop_coupling(dual, loop),
+        transform.T @ loop_coupling(independent, loop),
         atol=1e-19,
     )
     # Generic coefficients include the global mode and all local/global terms.
@@ -203,17 +220,16 @@ def test_orientation_permutation_and_geometric_scaling():
     np.testing.assert_allclose(b @ fit, a, atol=2e-12)
 
 
-@pytest.mark.parametrize("builder", [dual_cycle_basis, augmented_flux_basis])
-def test_reject_nonmanifold_boundaries(builder):
+def test_reject_nonmanifold_boundaries():
     # Edge pinch, then a vertex-only pinch with otherwise closed edge links.
     vertices = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [0, -1, 0], [0, 0, -1]]
     mesh = TetraMesh(vertices, [[0, 1, 2, 3], [0, 1, 4, 5]])
     with pytest.raises(ValueError, match="manifold"):
-        builder(build_topology(mesh))
+        augmented_flux_basis(build_topology(mesh))
     vertices.append([-1, 0, 0])
     mesh = TetraMesh(vertices, [[0, 1, 2, 3], [0, 6, 4, 5]])
     with pytest.raises(ValueError, match="manifold"):
-        builder(build_topology(mesh))
+        augmented_flux_basis(build_topology(mesh))
 
 
 def test_dense_guard_and_invalid_tolerance():
@@ -231,7 +247,7 @@ def test_dense_guard_and_invalid_tolerance():
 def test_reconstruction_rejects_invalid_fluxes_and_connectivity():
     mesh = cube_mesh(1)
     topology = build_topology(mesh)
-    space = dual_cycle_basis(topology)
+    space = augmented_flux_basis(topology)
     bad = space.fluxes.astype(float).tolil()
     bad[np.flatnonzero(topology.boundary_face_mask)[0], 0] = 1
     with pytest.raises(ValueError, match="boundary"):

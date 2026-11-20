@@ -82,7 +82,7 @@ def build_face_current_basis(
 ) -> CellCurrentBasis:
     """Reconstruct conserved face fluxes as constant Cartesian cell currents.
 
-    Accepts dual-cycle and augmented flux bases, including handles and cavities.
+    Accepts conserved face-flux bases, including handles and cavities.
     Checks connectivity, conservation, and zero boundary flux; independence is
     established by the flux-basis constructor. Geometry and flux signs meet only
     here. The returned basis works with existing impedance/dynamics functions.

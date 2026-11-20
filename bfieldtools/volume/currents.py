@@ -1,7 +1,7 @@
 """Complete conserved face-flux spaces, including handles and cavities.
 
-The dual-cycle construction is sparse. The local/global decomposition is a
-size-limited dense reference, intended for validation and modest meshes.
+Global modes are the right nullspace of the sparse stacked divergence and
+transpose-curl operators. QR/SVD use a size-limited dense reference solve.
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ from dataclasses import dataclass
 import numpy as np
 from numpy.typing import NDArray
 from scipy.linalg import qr, svd
-from scipy.sparse import coo_matrix, csr_matrix, hstack
+from scipy.sparse import coo_matrix, csr_matrix, hstack, vstack
 from scipy.sparse.csgraph import connected_components
 
 from .topology import TetraTopology, _readonly
@@ -28,8 +28,7 @@ class ConservedFluxBasis:
     For the augmented construction, the first len(local_edges) columns are
     curls of the selected edges; the remaining n_global columns are Euclidean
     orthonormal face-flux representatives, orthogonal to all interior edge
-    curls. They are not normalized to a particular physical cut. For dual
-    cycles, local_edges and n_global are None (cycles mix local/global content).
+    curls. They are not normalized to a particular physical cut.
     """
 
     topology: TetraTopology
@@ -42,8 +41,8 @@ class ConservedFluxBasis:
         return self.fluxes.shape[1]
 
 
-def _interior_dual(topology: TetraTopology):
-    """Check boundary manifold links and return oriented dual graph edges."""
+def _interior_faces(topology: TetraTopology):
+    """Check manifold boundaries and face connectivity; return interior face IDs."""
     if not isinstance(topology, TetraTopology):
         raise TypeError("topology must be a TetraTopology")
     boundary_faces = topology.faces[topology.boundary_face_mask]
@@ -77,98 +76,30 @@ def _interior_dual(topology: TetraTopology):
     signs = incidence.data.reshape(-1, 2)
     if np.any(signs.sum(axis=1) != 0):
         raise ValueError("interior faces must have opposite cell orientations")
-    return interior_faces, cells, signs
-
-
-def dual_cycle_basis(topology: TetraTopology) -> ConservedFluxBasis:
-    """Build a complete sparse flux basis using fundamental cell-dual cycles.
-
-    Supports disconnected manifold solids, handles, and cavities. Each chord
-    carries unit positive oriented face flux; its tree path closes the cycle.
-    Storage is proportional to the total cycle lengths, which can be large.
-    No dense nullspace or optional meshing backend is needed.
-    """
-    face_ids, cells, signs = _interior_dual(topology)
-    ncells = len(topology.tetrahedra)
-    union = np.arange(ncells)
-
-    def root(node):
-        while union[node] != node:
-            union[node] = union[union[node]]
-            node = union[node]
-        return node
-
-    adjacency = [[] for _ in range(ncells)]
-    chords = []
-    for edge, (a, b) in enumerate(cells):
-        ra, rb = root(a), root(b)
-        if ra == rb:
-            chords.append(edge)
-        else:
-            union[rb] = ra
-            adjacency[a].append((b, edge, int(signs[edge, 0])))
-            adjacency[b].append((a, edge, int(signs[edge, 1])))
-
-    parent = np.full(ncells, -1, dtype=np.int64)
-    parent_edge = np.full(ncells, -1, dtype=np.int64)
-    parent_sign = np.zeros(ncells, dtype=np.int8)
-    depth = np.zeros(ncells, dtype=np.int64)
-    ncomponents = 0
-    for start in range(ncells):
-        if parent[start] >= 0:
-            continue
-        ncomponents += 1
-        parent[start] = start
-        stack = [start]
-        while stack:
-            a = stack.pop()
-            for b, edge, sign_at_a in adjacency[a]:
-                if parent[b] >= 0:
-                    continue
-                parent[b], parent_edge[b] = a, edge
-                parent_sign[b] = -sign_at_a
-                depth[b] = depth[a] + 1
-                stack.append(b)
-    if ncomponents != topology.n_components:
-        raise ValueError("conductor components must be connected through faces")
-
-    rows, columns, values = [], [], []
-    for column, chord in enumerate(chords):
-        rows.append(int(face_ids[chord]))
-        columns.append(column)
-        values.append(1)
-        a, b = cells[chord]
-        # Cancel the chord's balance at a by routing flux from a towards b.
-        balance = -int(signs[chord, 0])
-        while a != b:
-            if depth[a] >= depth[b]:
-                rows.append(int(face_ids[parent_edge[a]]))
-                columns.append(column)
-                values.append(balance * int(parent_sign[a]))
-                a = parent[a]
-            else:
-                rows.append(int(face_ids[parent_edge[b]]))
-                columns.append(column)
-                values.append(-balance * int(parent_sign[b]))
-                b = parent[b]
-    fluxes = coo_matrix(
-        (np.asarray(values, dtype=np.int64), (rows, columns)),
-        shape=(len(topology.faces), len(chords)),
+    graph = coo_matrix(
+        (np.ones(len(cells)), cells.T),
+        shape=(len(topology.tetrahedra),) * 2,
     ).tocsr()
-    return ConservedFluxBasis(topology, fluxes)
+    if connected_components(graph, directed=False)[0] != topology.n_components:
+        raise ValueError("conductor components must be connected through faces")
+    return interior_faces
 
 
 def augmented_flux_basis(
     topology: TetraTopology, *, rtol: float = 1e-10, max_dense_entries: int = 4_000_000
 ) -> ConservedFluxBasis:
-    """Independent interior-edge curls plus all missing global current modes.
+    """Independent interior-edge curls plus stacked-nullspace global modes.
 
-    Pivoted QR removes all curl-free edge potentials, including cavity gauge
-    modes. A projected dual-cycle basis supplies the handle complement. The
-    result spans exactly the same space as dual_cycle_basis(). This dense
-    reference refuses large intermediates; use dual_cycle_basis for sparse
-    construction. rtol is relative to the largest QR pivot for local rank and
-    to unit scale for the projected orthonormal conserved space.
+    With boundary fluxes fixed to zero, solve D_i H = 0 and C_i.T H = 0.
+    These are Euclidean face-flux harmonic representatives (identity metric),
+    not geometry-weighted RT0 harmonic fields. Pivoted QR selects independent
+    local curls, removing all potential gauges including cavity redundancies.
+    The combined columns span the complete conserved face-flux space.
+
+    The stack is sparse, but this reference uses dense QR/SVD. max_dense_entries
+    bounds each dense input and the square right-singular-vector workspace;
+    it is not a total-memory bound. rtol is relative to the largest QR pivot
+    for local rank and the largest singular value for stacked rank.
     """
     if not np.isfinite(rtol) or not 0 < rtol < 1:
         raise ValueError("rtol must be finite and between zero and one")
@@ -178,35 +109,39 @@ def augmented_flux_basis(
         or max_dense_entries < 1
     ):
         raise ValueError("max_dense_entries must be a positive integer")
-    # Check allocation sizes before constructing the possibly long dual cycles.
-    face_ids, _, _ = _interior_dual(topology)
+    face_ids = _interior_faces(topology)
     edge_ids = np.flatnonzero(~topology.boundary_edge_mask)
-    ncycles = len(face_ids) - len(topology.tetrahedra) + topology.n_components
-    if max(len(face_ids) * len(edge_ids), len(face_ids) * ncycles) > max_dense_entries:
-        raise ValueError(
-            "dense reference exceeds max_dense_entries; use dual_cycle_basis"
-        )
-    cycles = dual_cycle_basis(topology)
-    local = topology.curl[face_ids][:, edge_ids].toarray().astype(float)
-    q, r, pivots = qr(local, mode="economic", pivoting=True)
+    divergence = topology.divergence[:, face_ids].astype(float)
+    local = topology.curl[face_ids][:, edge_ids].astype(float)
+    stacked = vstack((divergence, local.T), format="csr")
+    nfaces = len(face_ids)
+    if (
+        max(nfaces * len(edge_ids), stacked.shape[0] * nfaces, nfaces**2)
+        > max_dense_entries
+    ):
+        raise ValueError("dense reference exceeds max_dense_entries")
+    _, r, pivots = qr(local.toarray(), mode="economic", pivoting=True)
     diagonal = np.abs(np.diag(r))
     rank = (
         int(np.count_nonzero(diagonal > rtol * diagonal.max())) if diagonal.size else 0
     )
     local_edges = edge_ids[pivots[:rank]]
     _readonly(local_edges)
-    n_global = ncycles - rank
-    if n_global < 0:
-        raise ValueError("inconsistent numerical ranks; reduce rtol")
-    z = cycles.fluxes[face_ids].toarray().astype(float)
-    z, _ = qr(z, mode="economic")
-    complement = z - q[:, :rank] @ (q[:, :rank].T @ z)
-    u, singular, _ = svd(complement, full_matrices=False)
-    if np.count_nonzero(singular > rtol) != n_global:
+    dimension = nfaces - len(topology.tetrahedra) + topology.n_components
+    expected_global = dimension - rank
+    # Economic SVD retains the entire right space for tall stacks. Wide
+    # stacks need full Vh to include the implicit zero singular values.
+    _, singular, vh = svd(stacked.toarray(), full_matrices=stacked.shape[0] < nfaces)
+    stacked_rank = (
+        int(np.count_nonzero(singular > rtol * singular.max())) if singular.size else 0
+    )
+    harmonic = vh[stacked_rank:].T
+    n_global = harmonic.shape[1]
+    if expected_global < 0 or n_global != expected_global:
         raise ValueError("inconsistent numerical ranks; adjust rtol")
     global_fluxes = coo_matrix(
         (
-            u[:, :n_global].ravel(),
+            harmonic.ravel(),
             (
                 np.repeat(face_ids, n_global),
                 np.tile(np.arange(n_global), len(face_ids)),

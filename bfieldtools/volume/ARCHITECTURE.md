@@ -65,32 +65,33 @@ must be established by the construction algorithm, not inferred from matrix shap
 
 ```python
 from bfieldtools.volume import (
-    augmented_flux_basis, dual_cycle_basis, build_face_current_basis,
+    augmented_flux_basis, build_face_current_basis,
 )
 
-# Sparse complete basis, including handles and cavities:
-flux_basis = dual_cycle_basis(topology)
-basis = build_face_current_basis(mesh, flux_basis)
-
-# Alternatively, local edge curls followed by explicit global modes:
+# Independent local edge curls followed by explicit global modes:
 flux_basis = augmented_flux_basis(topology)
 basis = build_face_current_basis(mesh, flux_basis)
 ```
 
-The augmented builder uses dense QR/SVD and refuses intermediates above
-`max_dense_entries` (default four million entries per dense input). It is a
-reference construction for modest meshes. The dual-cycle builder uses sparse
-storage, proportional to the total fundamental-cycle lengths. Neither requires
-a meshing backend. The existing `tree_cotree_gauge` remains a solid-ball-only
-fast path with its previous edge selection and rejection behavior.
+The augmented builder assembles the sparse stack `[D_i; C_i.T]`, with divergence
+restricted to interior faces and curl restricted to interior faces/edges. Its
+right nullspace supplies all missing global modes; pivoted QR selects independent
+local curl columns. No cycle basis is constructed. The identity face-flux metric
+keeps this construction geometry-independent; these are not RT0 mass-weighted
+harmonic representatives.
+
+The reference solve uses dense QR/SVD and refuses dense inputs or the square
+right-singular-vector workspace above `max_dense_entries` (default four million
+entries each, not a total-memory bound). A sparse nullspace solver remains
+future work. No meshing backend is required. The existing `tree_cotree_gauge`
+remains a solid-ball-only fast path with its previous selection and rejection
+behavior.
 
 `flux_basis.fluxes` maps coefficients to all globally oriented face fluxes.
 The augmented builder exposes `local_edges` and `n_global`: local curl columns
 come first, followed by Euclidean orthonormal global face-flux columns. A global
 coefficient is not automatically the net current through a user-chosen cut.
 The example `examples/volume/global_currents.py` demonstrates cut normalization.
-Dual cycles mix local and global content, so their `local_edges` and `n_global`
-are `None`.
 
 Face reconstruction checks ordered connectivity, finite real fluxes,
 conservation, and zero boundary leakage, then uses RT0 reconstruction at cell

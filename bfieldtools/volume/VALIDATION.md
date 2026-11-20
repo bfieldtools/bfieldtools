@@ -20,8 +20,8 @@ The five volume test modules passed together during this documentation audit:
 | [`dynamics.py`](dynamics.py) | [`test_volume_dynamics.py`](../../tests/test_volume_dynamics.py) | Independent wire-kernel/coupling integration, orientation and intersection rejection, analytic ramp/free-decay solutions, modal energy balance, and bundled-mesh contract |
 
 The topology tests compare the retained curls with the full nullspace of the
-interior-face divergence matrix. They do not construct an explicit dual-cycle
-basis. Boundary-edge removal enforces zero tangential trace of the potential;
+interior-face divergence matrix. They use an independent dense divergence-nullspace
+reference. Boundary-edge removal enforces zero tangential trace of the potential;
 existing numerical assertions check the resulting current fluxes. Direct tests
 of potential traces, total dipole moment, and magnetization-based coupling
 would accompany future potential/dipole operators.
@@ -32,22 +32,23 @@ current conservation nor independence.
 
 ## Complete current spaces on handles and cavities
 
-`test_volume_currents.py` checks the sparse dual-cycle and dense augmented
-constructions on solid balls, a solid ring, an enclosed cavity, a two-handle
+`test_volume_currents.py` checks the stacked-nullspace augmented
+construction on solid balls, a solid ring, an enclosed cavity, a two-handle
 solid, a solid with both a handle and a cavity, disconnected rings with an unused
-vertex, and a single tetrahedron. It checks independence
-and completeness against the full conserved-flux space, and integrates the
+vertex, a thin two-handle slab with a wide stack, and a single tetrahedron. It
+checks independence and completeness against the full conserved-flux space,
+and integrates the
 reconstructed Cartesian current through every cell face. The ring's global
 mode has nonzero cross-sectional cut flux; all local curl columns have zero
 net cut flux. A cavity adds no handle mode.
 
 Resistance, inductance, generalized decay rates, and external-loop coupling
-agree under change of basis between the two complete ring spaces. Tests cover
-complex coefficients, energy, permutations/orientations, geometric scaling,
+agree under change of basis against an independently constructed full
+divergence-nullspace ring basis. Tests cover complex coefficients, energy, permutations/orientations, geometric scaling,
 nonmanifold edge/vertex rejection, invalid supplied fluxes, and the dense size
 guard. These establish algebraic completeness and assembly compatibility, not
 spatial convergence of a torus response. The original tree gauge still rejects
-handles and cavities by design; callers use the complete constructors instead.
+handles and cavities by design; callers use the augmented constructor instead.
 
 Run the backend-independent example with
 `uv run --locked python examples/volume/global_currents.py`; append `--show`

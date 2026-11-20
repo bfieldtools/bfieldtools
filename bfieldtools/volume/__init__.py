@@ -2,7 +2,7 @@
 
 from .mesh import TetraMesh, tetrahedralize, load_example_tetra_mesh
 from .dynamics import loop_coupling, modal_response
-from .currents import ConservedFluxBasis, augmented_flux_basis, dual_cycle_basis
+from .currents import ConservedFluxBasis, augmented_flux_basis
 from .basis import (
     CellCurrentBasis,
     build_edge_current_basis,
@@ -44,7 +44,6 @@ __all__ = [
     "tree_cotree_gauge",
     "CellCurrentBasis",
     "ConservedFluxBasis",
-    "dual_cycle_basis",
     "augmented_flux_basis",
     "build_face_current_basis",
     "build_edge_current_basis",
