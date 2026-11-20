@@ -64,14 +64,18 @@ def test_sensor_arrays():
 def test_plots():
     m = MagnetometerLoop((0.1, 0.1))
     m.finalize()
-    m.plot_quad_points()
-    m.plot_loop()
+    fig=m.plot_quad_points()
+    m.plot_loop(figure=fig)
     
     
     g = GradiometerLoop((0.05, 0.05), 0.1)
     g.finalize()
-    g.plot_quad_points()
-    g.plot_loop()
+    fig=g.plot_quad_points()
+    g.plot_loop(figure=fig)
+    
+    arr=create_arr306()
+    fig=pv.Plotter()
+    arr.plot(figure=fig)
     
 
 

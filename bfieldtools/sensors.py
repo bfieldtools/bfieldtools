@@ -8,6 +8,7 @@ from abc import ABC, abstractmethod
 from .line_conductor import LineConductor
 from .quadratures import get_line_rule, get_triangle_rule
 from bfieldtools import resources
+import pyvista as pv
 
 
 class BaseSensor(ABC):
@@ -294,16 +295,15 @@ class MagnetometerLoop(BaseSensor):
     def plot_loop(self, figure=None, color='red'):
         return self.line_conductor.plot_loops(figure=figure, colors=color)
 
-    def plot(self):
-        return self.plot_loop()
+    def plot(self, figure=None):
+        return self.plot_loop(figure=figure)
 
-    def plot_quad_points(self):
-        import pyvista as pv
+    def plot_quad_points(self, figure=None):
+        
+        if figure is None:
+            figure = pv.Plotter()
 
-
-        plotter = pv.Plotter()
-
-        plotter.add_points(
+        figure.add_points(
             self.bfield_points,
             color="black"#,
             # point_size=self.dimensions[0] / 5,
@@ -311,10 +311,10 @@ class MagnetometerLoop(BaseSensor):
         )
 
         
-        plotter.show(interactive_update=True)
-        plotter.isometric_view()
+        figure.show(interactive_update=True)
+        figure.isometric_view()
         
-        return plotter
+        return figure
 
 
 class GradiometerLoop(MagnetometerLoop):
@@ -396,30 +396,29 @@ class GradiometerLoop(MagnetometerLoop):
     
         self.update_position(t)
 
-    def plot_quad_points(self):
-        import pyvista as pv
+    def plot_quad_points(self, figure=None):
 
         mask = self.quad_weights > 0
 
-        plotter = pv.Plotter()
+        figure = pv.Plotter()
 
-        plotter.add_points(
+        figure.add_points(
             self.bfield_points[mask],
             color="red"#,
             # point_size=self.dimensions[0] / 5,
             # render_points_as_spheres=True,
         )
 
-        plotter.add_points(
+        figure.add_points(
             self.bfield_points[~mask],
             color="blue"#,
             # point_size=self.dimensions[0] / 5,
             # render_points_as_spheres=True,
         )
 
-        plotter.show(interactive_update=True)
+        figure.show(interactive_update=True)
         
-        return plotter
+        return figure
 
 
 class MagnetometerOPM(BaseSensor):
@@ -536,9 +535,14 @@ class SensorArray:
     def afields_self(self, points):
         return np.array([s.afield_self(points) for s in self.sensors.values()])
 
-    def plot(self):
+    def plot(self, figure=None):
+        import pyvista as pv
+        if figure is None:
+            figure = pv.Plotter()
+            
         for k in self.sensors.keys():
-            self.sensors[k].plot()
+            self.sensors[k].plot(figure=figure)
+        return figure
 
 
 def call_subarrays(f):
@@ -601,7 +605,7 @@ class MixedArray:
         pass
 
     @call_subarrays
-    def plot(self):
+    def plot(self, figure=None):
         pass
 
 
