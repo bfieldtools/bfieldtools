@@ -7,6 +7,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 from .line_conductor import LineConductor
 from .quadratures import get_line_rule, get_triangle_rule
+from bfieldtools import resources
 
 
 class BaseSensor(ABC):
@@ -185,7 +186,10 @@ class MagnetometerLoop(BaseSensor):
             self.dimensions = tuple(dimensions)
         else:
             raise ValueError("len(dimensions) must be 2")
-        self.quad_scheme = get_triangle_rule(quad_scheme)
+        if type(quad_scheme) is tuple:
+            self.quad_scheme = get_triangle_rule(quad_scheme)
+        else:
+            self.quad_scheme = quad_scheme
         super().__init__()
 
     def init_geometry(self):
@@ -199,14 +203,32 @@ class MagnetometerLoop(BaseSensor):
     def finalize(self, transform=np.eye(4)):
         t = transform
         super().finalize(t)
-
+    
         self.init_geometry()
-
-        self.quad_weights = self.scheme.weights
-        self.area_points = np.zeros((len(self.scheme.points), 3))
-        self.area_points[:, 0] = self.scheme.points[:, 0] * self.dimensions[0] / 2
-        self.area_points[:, 1] = self.scheme.points[:, 1] * self.dimensions[1] / 2
-
+    
+        r0 = self.dimensions[0] / 2
+        r1 = self.dimensions[1] / 2
+    
+        verts = np.array([
+            [-r0, -r1, 0.0],
+            [ r0, -r1, 0.0],
+            [ r0,  r1, 0.0],
+            [-r0,  r1, 0.0],
+        ])
+    
+        tri1 = verts[[0, 1, 2]]
+        tri2 = verts[[0, 2, 3]]
+    
+        qp1 = self.scheme.points @ tri1
+        qp2 = self.scheme.points @ tri2
+    
+        self.area_points = np.vstack((qp1, qp2))
+    
+        self.quad_weights = np.hstack((
+            self.scheme.weights,
+            self.scheme.weights
+        )) / 2
+    
         self.update_position(t)
 
     def update_position(self, transform=np.eye(4)):
@@ -236,23 +258,32 @@ class MagnetometerLoop(BaseSensor):
         return integral * self.area
 
     def measure_afield(self, afield_func, method=["gauss_legendre", 1]):
-        scheme = quadratures.get_line_rule(method)
+        scheme = get_line_rule(method)
+    
         lc = self.line_conductor
-        segments = lc.discrete[0][1:] - lc.discrete[0][:-1]
-        # Points are from -1 to 1
-        w = (scheme.points + 1) / 2
-        quad_points = [
-            p + w[:, None] * s for s, p in zip(segments, lc.discrete[0][:-1])
-        ]
-        # Nsegment, Nqpoints_per_segment, Nxyz
-        quad_points = np.array(quad_points)
+    
+        p0 = lc.discrete[0][:-1]
+        p1 = lc.discrete[0][1:]
+    
+        segments = p1 - p0
+    
+        coeffs = np.asarray(scheme.points)
+    
+        quad_points = (
+            coeffs[None, :, 0, None] * p0[:, None, :]
+            + coeffs[None, :, 1, None] * p1[:, None, :]
+        )
+    
         shape = quad_points.shape
-        afield = afield_func(quad_points.reshape(-1, 3)).reshape(shape)
-        # scheme.weights sum to line length == 2
-        weights = scheme.weights / 2
-
-        # Sum integral using einsum
+    
+        afield = afield_func(
+            quad_points.reshape(-1, 3)
+        ).reshape(shape)
+    
+        weights = np.asarray(scheme.weights)
+    
         return np.einsum("ijk,ik,j", afield, segments, weights)
+
 
     def bfield_self(self, points):
         return self.line_conductor.magnetic_field(points)
@@ -260,18 +291,30 @@ class MagnetometerLoop(BaseSensor):
     def afield_self(self, points):
         return self.line_conductor.vector_potential(points)
 
-    def plot_loop(self, color=(0, 0, 1)):
-        self.line_conductor.plot_loops(figure=False, tube_radius=None, colors=color)
+    def plot_loop(self, figure=None, color='red'):
+        return self.line_conductor.plot_loops(figure=figure, colors=color)
 
     def plot(self):
-        self.plot_loop()
+        return self.plot_loop()
 
     def plot_quad_points(self):
-        from mayavi import mlab
+        import pyvista as pv
 
-        mlab.points3d(
-            *self.bfield_points.T, color=(1, 0, 0), scale_factor=self.dimensions[0] / 5
+
+        plotter = pv.Plotter()
+
+        plotter.add_points(
+            self.bfield_points,
+            color="black"#,
+            # point_size=self.dimensions[0] / 5,
+            # render_points_as_spheres=True,
         )
+
+        
+        plotter.show(interactive_update=True)
+        plotter.isometric_view()
+        
+        return plotter
 
 
 class GradiometerLoop(MagnetometerLoop):
@@ -318,22 +361,39 @@ class GradiometerLoop(MagnetometerLoop):
     def finalize(self, transform=np.eye(4)):
         t = transform
         BaseSensor.finalize(self, t)
-
+    
         self.init_geometry()
-
-        w = self.scheme.weights
-        self.quad_weights = np.hstack((w, -w))
-        area_points = np.zeros((len(self.scheme.points), 3))
-        area_points[:, 0] = self.scheme.points[:, 0] * self.dimensions[0] / 2
-        area_points[:, 1] = self.scheme.points[:, 1] * self.dimensions[1] / 2
-
+    
+        r0 = self.dimensions[0] / 2
+        r1 = self.dimensions[1] / 2
+    
+        verts = np.array([
+            [-r0, -r1, 0.0],
+            [ r0, -r1, 0.0],
+            [ r0,  r1, 0.0],
+            [-r0,  r1, 0.0],
+        ])
+    
+        tri1 = verts[[0, 1, 2]]
+        tri2 = verts[[0, 2, 3]]
+    
+        qp1 = self.scheme.points @ tri1
+        qp2 = self.scheme.points @ tri2
+    
+        area_points = np.vstack((qp1, qp2))
+    
+        w = np.hstack((self.scheme.weights, self.scheme.weights)) / 2
+    
         area_points2 = area_points.copy()
         area_points2[:, 0] *= -1
+    
         area_points[:, 0] += self.baseline / 2
         area_points2[:, 0] -= self.baseline / 2
-
+    
         self.area_points = np.vstack((area_points, area_points2))
-
+    
+        self.quad_weights = np.hstack((w, -w))
+    
         self.update_position(t)
 
     def plot_quad_points(self):
@@ -345,19 +405,19 @@ class GradiometerLoop(MagnetometerLoop):
 
         plotter.add_points(
             self.bfield_points[mask],
-            color="red",
-            point_size=self.dimensions[0] / 5,
-            render_points_as_spheres=True,
+            color="red"#,
+            # point_size=self.dimensions[0] / 5,
+            # render_points_as_spheres=True,
         )
 
         plotter.add_points(
             self.bfield_points[~mask],
-            color="blue",
-            point_size=self.dimensions[0] / 5,
-            render_points_as_spheres=True,
+            color="blue"#,
+            # point_size=self.dimensions[0] / 5,
+            # render_points_as_spheres=True,
         )
 
-        plotter.show()
+        plotter.show(interactive_update=True)
         
         return plotter
 
@@ -548,7 +608,7 @@ class MixedArray:
 def create_mag102():
 
     fname = (
-        pkg_resources.resource_filename("bfieldtools", "sensor_data/mag102_trans.npz"),
+        resources.files("bfieldtools", "sensor_data/mag102_trans.npz"),
     )
     arr_info = np.load(fname[0])
 
@@ -563,7 +623,7 @@ def create_mag102():
 def create_grad204():
 
     fname = (
-        pkg_resources.resource_filename("bfieldtools", "sensor_data/grad204_trans.npz"),
+        resources.files("bfieldtools", "sensor_data/grad204_trans.npz"),
     )
     arr_info = np.load(fname[0])
 
